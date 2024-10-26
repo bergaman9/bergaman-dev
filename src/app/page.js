@@ -69,7 +69,7 @@ export default function Home() {
               <p>I developed experimental projects during the times when generative artificial intelligence was becoming popular.</p>
             </div>
             <div className="border border-[#3e503e] p-4 rounded-lg text-center bg-[#0e1b12] text-[#e8c547]">
-              <img src="/images/iaq.jpg" alt="Indoor Air Quality IoT Projects" className="w-full h-32 object-cover rounded-lg mb-2" />
+              <img src="/images/iaq.jpg" alt="Indoor Air Quality IoT Project" className="w-full h-32 object-cover rounded-lg mb-2" />
               <h3 className="font-bold">Project 4 - Indoor Air Quality IoT Projects</h3>
               <p>I made a GUI application that enables wireless data transfer and real-time monitoring of data using Arduino Uno R4 WiFi.</p>
             </div>
