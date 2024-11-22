@@ -17,7 +17,7 @@ export default function Home() {
       <Header />
 
       {/* Main Content */}
-      <main className="flex flex-col items-center gap-8 w-full max-w-3xl">
+      <main className="flex flex-col items-center gap-8 w-full max-w-3xl px-4 sm:px-6 md:px-8">
         <Image
           className="rounded-full border-4 border-[#e8c547] mt-10"
           src="/images/profile.png"
@@ -26,62 +26,61 @@ export default function Home() {
           height={150}
         />
         <p className="text-center text-md max-w-2xl font-semibold leading-relaxed">
-        Hey, I'm Omer! The dragon spirit behind Bergaman - blending futuristic technology with a military edge, specializing in artificial intelligence, blockchain, and full-stack development.
+          Hey, I'm Omer! The dragon spirit behind Bergaman - blending futuristic technology with a military edge, specializing in artificial intelligence, blockchain, and full-stack development.
         </p>
 
         <div className="flex flex-col gap-8 w-full">
-        <section className="border border-[#3e503e] p-6 rounded-lg bg-[#2e3d29]">
-  <h2 className="text-xl font-semibold text-[#e8c547] border-b border-[#3e503e] pb-3">Blog</h2>
-  <ul className="list-disc list-inside mt-6 text-md">
-    <li>
-      <Link href="/blog/the-importance-of-electricity" className="text-[#e8c547] hover:underline">
-        The Importance of Electricity
-      </Link>
-    </li>
-    <li>
-      <Link href="/blog/modern-challenges-in-the-digital-age" className="text-[#e8c547] hover:underline">
-        Modern Challenges in the Digital Age
-      </Link>
-    </li>
-    <li>
-      <Link href="/blog/learning-for-survival" className="text-[#e8c547] hover:underline">
-        Learning for Survival
-      </Link>
-    </li>
-    <li>
-      <Link href="/blog/mastering-computers" className="text-[#e8c547] hover:underline">
-        Mastering Computers
-      </Link>
-    </li>
-  </ul>
-</section>
+          <section className="border border-[#3e503e] p-6 rounded-lg bg-[#2e3d29]">
+            <h2 className="text-xl font-semibold text-[#e8c547] border-b border-[#3e503e] pb-3">Blog</h2>
+            <ul className="list-disc list-inside mt-6 text-md">
+              <li>
+                <Link href="/blog/the-importance-of-electricity" className="text-[#e8c547] hover:underline">
+                  The Importance of Electricity
+                </Link>
+              </li>
+              <li>
+                <Link href="/blog/modern-challenges-in-the-digital-age" className="text-[#e8c547] hover:underline">
+                  Modern Challenges in the Digital Age
+                </Link>
+              </li>
+              <li>
+                <Link href="/blog/learning-for-survival" className="text-[#e8c547] hover:underline">
+                  Learning for Survival
+                </Link>
+              </li>
+              <li>
+                <Link href="/blog/mastering-computers" className="text-[#e8c547] hover:underline">
+                  Mastering Computers
+                </Link>
+              </li>
+            </ul>
+          </section>
 
           <section className="border border-[#3e503e] p-6 rounded-lg bg-[#2e3d29] w-full">
-          <h2 className="text-xl font-semibold text-[#e8c547] border-b border-[#3e503e] pb-3">Projects</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6">
-            <div className="border border-[#3e503e] p-4 rounded-lg text-center bg-[#0e1b12] text-[#e8c547]">
-              <img src="/images/contro.png" alt="Contro Bot" className="w-full h-32 object-cover rounded-lg mb-2" />
-              <h3 className="font-bold">Project 1 - Contro Bot</h3>
-              <p>It is a comprehensive Discord bot that I started to develop and made improvements to during the pandemic period.</p>
+            <h2 className="text-xl font-semibold text-[#e8c547] border-b border-[#3e503e] pb-3">Projects</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6">
+              <div className="border border-[#3e503e] p-4 rounded-lg text-center bg-[#0e1b12] text-[#e8c547]">
+                <img src="/images/contro.png" alt="Contro Bot" className="w-full h-32 object-cover rounded-lg mb-2" />
+                <h3 className="font-bold">Project 1 - Contro Bot</h3>
+                <p>It is a comprehensive Discord bot that I started to develop and made improvements to during the pandemic period.</p>
+              </div>
+              <div className="border border-[#3e503e] p-4 rounded-lg text-center bg-[#0e1b12] text-[#e8c547]">
+                <img src="/images/ligroup.png" alt="Ligroup" className="w-full h-32 object-cover rounded-lg mb-2" />
+                <h3 className="font-bold">Project 2 - Ligroup</h3>
+                <p>This is the first project where I stepped into full stack web development, thinking that this job cannot be done with just bots.</p>
+              </div>
+              <div className="border border-[#3e503e] p-4 rounded-lg text-center bg-[#0e1b12] text-[#e8c547]">
+                <img src="/images/generative-ai.png" alt="RVC & Stable Diffusion Projects" className="w-full h-32 object-cover rounded-lg mb-2" />
+                <h3 className="font-bold">Project 3 - RVC & Stable Diffusion Projects</h3>
+                <p>I developed experimental projects during the times when generative artificial intelligence was becoming popular.</p>
+              </div>
+              <div className="border border-[#3e503e] p-4 rounded-lg text-center bg-[#0e1b12] text-[#e8c547]">
+                <img src="/images/iaq.jpg" alt="Indoor Air Quality IoT Project" className="w-full h-32 object-cover rounded-lg mb-2" />
+                <h3 className="font-bold">Project 4 - Indoor Air Quality IoT Projects</h3>
+                <p>I made a GUI application that enables wireless data transfer and real-time monitoring of data using Arduino Uno R4 WiFi.</p>
+              </div>
             </div>
-            <div className="border border-[#3e503e] p-4 rounded-lg text-center bg-[#0e1b12] text-[#e8c547]">
-              <img src="/images/ligroup.png" alt="Ligroup" className="w-full h-32 object-cover rounded-lg mb-2" />
-              <h3 className="font-bold">Project 2 - Ligroup</h3>
-              <p>This is the first project where I stepped into full stack web development, thinking that this job cannot be done with just bots.</p>
-            </div>
-            <div className="border border-[#3e503e] p-4 rounded-lg text-center bg-[#0e1b12] text-[#e8c547]">
-              <img src="/images/generative-ai.png" alt="RVC & Stable Diffusion Projects" className="w-full h-32 object-cover rounded-lg mb-2" />
-              <h3 className="font-bold">Project 3 - RVC & Stable Diffusion Projects</h3>
-              <p>I developed experimental projects during the times when generative artificial intelligence was becoming popular.</p>
-            </div>
-            <div className="border border-[#3e503e] p-4 rounded-lg text-center bg-[#0e1b12] text-[#e8c547]">
-              <img src="/images/iaq.jpg" alt="Indoor Air Quality IoT Project" className="w-full h-32 object-cover rounded-lg mb-2" />
-              <h3 className="font-bold">Project 4 - Indoor Air Quality IoT Projects</h3>
-              <p>I made a GUI application that enables wireless data transfer and real-time monitoring of data using Arduino Uno R4 WiFi.</p>
-            </div>
-          </div>
-        </section>
-
+          </section>
 
           <section className="border border-[#3e503e] p-6 rounded-lg bg-[#2e3d29]">
             <h2 className="text-xl font-semibold text-[#e8c547] border-b border-[#3e503e] pb-3">Interests</h2>
