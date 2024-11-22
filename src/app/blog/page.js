@@ -4,12 +4,12 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 
 export default function BlogPage() {
-    const blogs = [
-        { title: "The Importance of Electricity", description: "Insights into electricity's role in modern life." },
-        { title: "Modern Challenges in the Digital Age", description: "Exploring technological advancements and their impacts." },
-        { title: "Learning for Survival", description: "Strategies for continuous learning and adaptation." },
-        { title: "Mastering Computers", description: "A guide to building expertise in computer systems." },
-      ];
+  const blogs = [
+    { title: "The Importance of Electricity", description: "Insights into electricity's role in modern life." },
+    { title: "Modern Challenges in the Digital Age", description: "Exploring technological advancements and their impacts." },
+    { title: "Learning for Survival", description: "Strategies for continuous learning and adaptation." },
+    { title: "Mastering Computers", description: "A guide to building expertise in computer systems." },
+  ];
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-[#0e1b12] to-[#2a3b22] text-[#d1d5db]">
@@ -19,7 +19,9 @@ export default function BlogPage() {
         <h1 className="text-4xl font-bold text-[#e8c547] mb-8 text-center">
           Blog
         </h1>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
+
+        {/* Blog List Container */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
           {blogs.map((blog, index) => (
             <div
               key={index}
