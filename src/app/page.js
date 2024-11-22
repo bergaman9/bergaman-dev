@@ -48,11 +48,6 @@ export default function Home() {
                   Learning for Survival
                 </Link>
               </li>
-              <li>
-                <Link href="/blog/mastering-computers" className="text-[#e8c547] hover:underline">
-                  Mastering Computers
-                </Link>
-              </li>
             </ul>
           </section>
 
