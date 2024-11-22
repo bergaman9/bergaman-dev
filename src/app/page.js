@@ -1,5 +1,6 @@
 import Head from 'next/head';
 import Image from 'next/image';
+import Link from "next/link";
 import Header from './components/Header';
 import Footer from './components/Footer';
 
@@ -29,15 +30,31 @@ export default function Home() {
         </p>
 
         <div className="flex flex-col gap-8 w-full">
-          <section className="border border-[#3e503e] p-6 rounded-lg bg-[#2e3d29]">
-            <h2 className="text-xl font-semibold text-[#e8c547] border-b border-[#3e503e] pb-3">Blog</h2>
-            <ul className="list-disc list-inside mt-6 text-md">
-              <li>The Importance of Electricity</li>
-              <li>Modern Challenges in the Digital Age</li>
-              <li>Learning for Survival</li>
-              <li>Mastering Computers</li>
-            </ul>
-          </section>
+        <section className="border border-[#3e503e] p-6 rounded-lg bg-[#2e3d29]">
+  <h2 className="text-xl font-semibold text-[#e8c547] border-b border-[#3e503e] pb-3">Blog</h2>
+  <ul className="list-disc list-inside mt-6 text-md">
+    <li>
+      <Link href="/blog/the-importance-of-electricity" className="text-[#e8c547] hover:underline">
+        The Importance of Electricity
+      </Link>
+    </li>
+    <li>
+      <Link href="/blog/modern-challenges-in-the-digital-age" className="text-[#e8c547] hover:underline">
+        Modern Challenges in the Digital Age
+      </Link>
+    </li>
+    <li>
+      <Link href="/blog/learning-for-survival" className="text-[#e8c547] hover:underline">
+        Learning for Survival
+      </Link>
+    </li>
+    <li>
+      <Link href="/blog/mastering-computers" className="text-[#e8c547] hover:underline">
+        Mastering Computers
+      </Link>
+    </li>
+  </ul>
+</section>
 
           <section className="border border-[#3e503e] p-6 rounded-lg bg-[#2e3d29] w-full">
           <h2 className="text-xl font-semibold text-[#e8c547] border-b border-[#3e503e] pb-3">Projects</h2>
