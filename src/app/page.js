@@ -1,32 +1,21 @@
 import Head from 'next/head';
 import Image from 'next/image';
-import Link from 'next/link';
-import dynamic from 'next/dynamic';
-
-const FaGithub = dynamic(() => import('react-icons/fa').then(mod => mod.FaGithub), { ssr: false });
-const FaLinkedin = dynamic(() => import('react-icons/fa').then(mod => mod.FaLinkedin), { ssr: false });
-const FaEnvelope = dynamic(() => import('react-icons/fa').then(mod => mod.FaEnvelope), { ssr: false });
-const FaMedium = dynamic(() => import('react-icons/fa').then(mod => mod.FaMedium), { ssr: false });
+import Header from './components/Header';
+import Footer from './components/Footer';
 
 export default function Home() {
   return (
-    <div className="flex flex-col items-center min-h-screen p-4 sm:p-10 bg-gradient-to-b from-[#0e1b12] to-[#2a3b22] text-[#d1d5db]">
+    <div className="flex flex-col items-center min-h-screen bg-gradient-to-b from-[#0e1b12] to-[#2a3b22] text-[#d1d5db]">
       <Head>
         <title>Bergaman - The Dragon's Domain</title>
         <meta name="description" content="Bergaman - A futuristic cyber-military web application inspired by dragon mythology." />
-        <link rel="icon" href="/images/favicon.ico" />
+        <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <header className="w-full max-w-3xl flex justify-between items-center pb-6 border-b border-[#3e503e]">
-        <h1 className="text-3xl font-extrabold text-[#e8c547]">Bergaman</h1>
-        <nav className="flex gap-8 text-lg">
-          <Link href="/about" className="hover:text-[#e8c547] transition-colors">About</Link>
-          <Link href="/portfolio" className="hover:text-[#e8c547] transition-colors">Portfolio</Link>
-          <Link href="/suggestions" className="hover:text-[#e8c547] transition-colors">Suggestions</Link>
-          <Link href="/blog" className="hover:text-[#e8c547] transition-colors">Blog</Link>
-        </nav>
-      </header>
+      {/* Header */}
+      <Header />
 
+      {/* Main Content */}
       <main className="flex flex-col items-center gap-8 w-full max-w-3xl">
         <Image
           className="rounded-full border-4 border-[#e8c547] mt-10"
@@ -36,7 +25,7 @@ export default function Home() {
           height={150}
         />
         <p className="text-center text-md max-w-2xl font-semibold leading-relaxed">
-          Hey, I'm Omer! The dragon spirit behind Bergaman - blending futuristic technology with a military edge, specializing in embedded systems, cybersecurity, and full-stack development.
+        Hey, I'm Omer! The dragon spirit behind Bergaman - blending futuristic technology with a military edge, specializing in artificial intelligence, blockchain, and full-stack development.
         </p>
 
         <div className="flex flex-col gap-8 w-full">
@@ -114,42 +103,8 @@ export default function Home() {
           </section>
         </div>
       </main>
-
-      <footer className="flex flex-col items-center gap-6 pt-10 pb-10 w-full max-w-3xl text-center">
-        <div className="flex gap-8">
-          <a
-            href="https://github.com/bergaman9"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-[#e8c547] text-2xl"
-          >
-            <FaGithub />
-          </a>
-          <a
-            href="https://linkedin.com/in/omerguler"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-[#e8c547] text-2xl"
-          >
-            <FaLinkedin />
-          </a>
-          <a
-            href="https://medium.com/@bergaman9"
-            className="hover:text-[#e8c547] text-2xl"
-          >
-            <FaMedium />
-          </a>
-          <a
-            href="mailto:omerguler53@gmail.com"
-            className="hover:text-[#e8c547] text-2xl"
-          >
-            <FaEnvelope />
-          </a>
-        </div>
-        <div className="mt-4 text-xs text-[#c4c4a8]">
-          "Crafting technology inspired by the strength and wisdom of a dragon."
-        </div>
-      </footer>
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }
