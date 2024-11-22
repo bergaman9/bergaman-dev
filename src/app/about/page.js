@@ -5,7 +5,7 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-[#0e1b12] to-[#2a3b22] text-[#d1d5db]">
       {/* Header */}
-      <Header />
+      <Header showHomeLink={true}/>
 
       {/* Main Content */}
 

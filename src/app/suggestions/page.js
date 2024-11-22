@@ -20,7 +20,7 @@ export default function SuggestionsPage() {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-[#0e1b12] to-[#2a3b22] text-[#d1d5db]">
       {/* Header */}
-      <Header />
+      <Header showHomeLink={true}/>
 
       {/* Main Content */}
       <main className="flex flex-col items-center gap-8 w-full max-w-3xl mx-auto px-6 mt-12">

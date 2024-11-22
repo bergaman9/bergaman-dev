@@ -19,7 +19,7 @@ export default function PortfolioPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-[#0e1b12] to-[#2a3b22] text-[#d1d5db]">
-      <Header />
+      <Header showHomeLink={true}/>
 
       <main className="flex flex-col items-center w-full max-w-3xl mx-auto flex-1 px-4 mt-12">
         {/* Sayfa Başlığı */}

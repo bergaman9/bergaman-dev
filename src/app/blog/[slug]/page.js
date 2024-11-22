@@ -43,7 +43,7 @@ export default function BlogDetail({ params }) {
   return (
     <div className="flex flex-col items-center min-h-screen bg-gradient-to-b from-[#0e1b12] to-[#2a3b22] text-[#d1d5db]">
       {/* Header */}
-      <Header />
+      <Header showHomeLink={true}/>
 
       {/* Main Content */}
       <main className="flex flex-col items-center gap-8 w-full max-w-6xl mx-auto flex-1 px-6 mt-12">

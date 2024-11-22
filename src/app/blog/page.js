@@ -14,7 +14,7 @@ export default function BlogPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-[#0e1b12] to-[#2a3b22] text-[#d1d5db]">
-      <Header />
+      <Header showHomeLink={true}/>
 
       <main className="flex flex-col items-center w-full max-w-3xl mx-auto flex-1 px-6 mt-12">
         <h1 className="text-3xl font-bold text-[#e8c547] mb-8 text-center">
