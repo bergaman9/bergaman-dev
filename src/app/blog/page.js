@@ -9,7 +9,6 @@ export default function BlogPage() {
     { title: "The Importance of Electricity", description: "Insights into electricity's role in modern life.", slug: "the-importance-of-electricity" },
     { title: "Modern Challenges in the Digital Age", description: "Exploring technological advancements and their impacts.", slug: "modern-challenges-in-the-digital-age" },
     { title: "Learning for Survival", description: "Strategies for continuous learning and adaptation.", slug: "learning-for-survival" },
-    { title: "Mastering Computers", description: "A guide to building expertise in computer systems.", slug: "mastering-computers" },
   ];
 
   return (
