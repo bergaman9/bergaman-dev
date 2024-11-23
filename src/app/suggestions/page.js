@@ -3,16 +3,17 @@ import Footer from "../components/Footer";
 
 const suggestions = {
   games: [
-    { title: "The Witcher 3: Wild Hunt", description: "An epic RPG adventure.", image: "/images/witcher3.jpg" },
-    { title: "Cyberpunk 2077", description: "A futuristic open-world RPG.", image: "/images/cyberpunk2077.jpg" },
+    { title: "The Witcher 3: Wild Hunt", description: "An epic RPG adventure.", image: "/images/witcher3.png" },
+    { title: "Cyberpunk 2077", description: "A futuristic open-world RPG.", image: "/images/cyberpunk2077.png" },
   ],
   movies: [
-    { title: "Inception", description: "A mind-bending thriller.", image: "/images/inception.jpg" },
-    { title: "The Matrix", description: "A revolutionary sci-fi film.", image: "/images/matrix.jpg" },
-  ],
+  { title: "The Terminator", description: "A sci-fi action film about a cyborg assassin.", image: "/images/terminator.png" },
+  { title: "Drive", description: "A neo-noir crime drama about a getaway driver.", image: "/images/drive.png" },
+],
+
   books: [
-    { title: "1984", description: "A dystopian classic.", image: "/images/1984.jpg" },
-    { title: "Sapiens", description: "A brief history of humankind.", image: "/images/sapiens.jpg" },
+    { title: "1984", description: "A dystopian classic.", image: "/images/1984.png" },
+    { title: "Sapiens", description: "A brief history of humankind.", image: "/images/sapiens.png" },
   ],
 };
 
@@ -77,7 +78,7 @@ export default function SuggestionsPage() {
                 <img
                   src={book.image}
                   alt={book.title}
-                  className="w-full h-32 object-cover rounded-lg mb-2"
+                  className="w-full h-80 object-cover rounded-lg mb-2"
                 />
                 <h3 className="font-bold">{book.title}</h3>
                 <p>{book.description}</p>
