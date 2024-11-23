@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";  // Link importu
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 
@@ -9,11 +10,13 @@ export default function PortfolioPage() {
       title: "Contro Bot",
       description: "An advanced Discord bot developed during the pandemic.",
       image: "/images/contro.png",
+      link: "https://github.com/bergaman9/contro-bot", 
     },
     {
       title: "Ligroup",
       description: "A full-stack web project exploring new horizons.",
       image: "/images/ligroup.png",
+      link: "https://ligroup.herokuapp.com/", 
     },
   ];
 
@@ -40,8 +43,11 @@ export default function PortfolioPage() {
                 className="w-full h-40 object-cover"
               />
               <div className="p-4">
+                {/* Proje başlığını Link etiketiyle sardım */}
                 <h2 className="text-lg font-bold text-[#e8c547] mb-2">
-                  {project.title}
+                  <Link href={project.link} className="hover:text-[#00c8ff] transition-colors">
+                    {project.title}
+                  </Link>
                 </h2>
                 <p className="text-sm text-[#d1d5db]">{project.description}</p>
               </div>
