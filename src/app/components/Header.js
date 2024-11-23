@@ -31,19 +31,19 @@ export default function Header({ showHomeLink = false }) {
       <div 
         className={`sm:hidden ${isMenuOpen ? 'block' : 'hidden'} absolute top-16 left-0 right-0 bg-[#2a3b22] p-6 bg-opacity-80`}>
         <nav className="flex flex-col items-center gap-4 text-lg">
-          <Link href="/" className="text-[#e8c547] hover:text-[#00c8ff] hover:underline transition-colors py-2">
+          <Link href="/" className="text-[#e8c547] hover:text-[#00c8ff] transition-colors py-2">
             Home
           </Link>
-          <Link href="/about" className="text-[#e8c547] hover:text-[#00c8ff] hover:underline transition-colors py-2">
+          <Link href="/about" className="text-[#e8c547] hover:text-[#00c8ff] transition-colors py-2">
             About
           </Link>
-          <Link href="/portfolio" className="text-[#e8c547] hover:text-[#00c8ff] hover:underline transition-colors py-2">
+          <Link href="/portfolio" className="text-[#e8c547] hover:text-[#00c8ff] transition-colors py-2">
             Portfolio
           </Link>
-          <Link href="/suggestions" className="text-[#e8c547] hover:text-[#00c8ff] hover:underline transition-colors py-2">
+          <Link href="/suggestions" className="text-[#e8c547] hover:text-[#00c8ff] transition-colors py-2">
             Suggestions
           </Link>
-          <Link href="/blog" className="text-[#e8c547] hover:text-[#00c8ff] hover:underline transition-colors py-2">
+          <Link href="/blog" className="text-[#e8c547] hover:text-[#00c8ff] transition-colors py-2">
             Blog
           </Link>
         </nav>
@@ -52,20 +52,20 @@ export default function Header({ showHomeLink = false }) {
       {/* Desktop Menu (for larger screens) */}
       <nav className="hidden sm:flex gap-6 text-lg">
         {showHomeLink && (
-          <Link href="/" className="text-[#e8c547] hover:text-[#00c8ff] hover:underline transition-colors">
+          <Link href="/" className="text-[#e8c547] hover:text-[#00c8ff] transition-colors">
             Home
           </Link>
         )}
-        <Link href="/about" className="text-[#e8c547] hover:text-[#00c8ff] hover:underline transition-colors">
+        <Link href="/about" className="text-[#e8c547] hover:text-[#00c8ff] transition-colors">
           About
         </Link>
-        <Link href="/portfolio" className="text-[#e8c547] hover:text-[#00c8ff] hover:underline transition-colors">
+        <Link href="/portfolio" className="text-[#e8c547] hover:text-[#00c8ff] transition-colors">
           Portfolio
         </Link>
-        <Link href="/suggestions" className="text-[#e8c547] hover:text-[#00c8ff] hover:underline transition-colors">
+        <Link href="/suggestions" className="text-[#e8c547] hover:text-[#00c8ff] transition-colors">
           Suggestions
         </Link>
-        <Link href="/blog" className="text-[#e8c547] hover:text-[#00c8ff] hover:underline transition-colors">
+        <Link href="/blog" className="text-[#e8c547] hover:text-[#00c8ff] transition-colors">
           Blog
         </Link>
       </nav>
