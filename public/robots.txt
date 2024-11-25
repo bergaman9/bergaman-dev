@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://bergaman.dev
+
+# Sitemaps
+Sitemap: https://bergaman.dev/sitemap.xml
