@@ -22,7 +22,7 @@ export default function AboutPage() {
 <br/>
 <p>Outside of tech, I enjoy a variety of hobbies including fitness, gaming, movies, and connecting with nature. I’m also an active community leader on Discord, where I engage in discussions related to gaming and engineering, eager to share insights and collaborate with others.</p>
 <br/>
-<p>I’m excited to contribute to the ever-evolving world of technology, building the future while adapting to the continuous advancements in the digital world. Let’s connect and create something great together! You can reach out via the links in the footer.</p>
+<p>I’m excited to contribute to the ever-evolving world of technology, building the future while adapting to the continuous advancements in the digital world. You can reach out via the links in the footer.</p>
 </div>
       </main>
 
