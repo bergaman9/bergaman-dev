@@ -31,24 +31,21 @@ export default function Home() {
 
         <div className="flex flex-col gap-8 w-full">
           <section className="border border-[#3e503e] p-6 rounded-lg bg-[#2e3d29]">
-            <h2 className="text-xl font-semibold text-[#e8c547] border-b border-[#3e503e] pb-3">Blog</h2>
-            <ul className="list-disc list-inside mt-6 text-md">
-              <li>
-                <Link href="/blog/the-importance-of-electricity" className="text-[#e8c547] hover:underline">
-                  The Importance of Electricity
-                </Link>
-              </li>
-              <li>
-                <Link href="/blog/modern-challenges-in-the-digital-age" className="text-[#e8c547] hover:underline">
-                  Modern Challenges in the Digital Age
-                </Link>
-              </li>
-              <li>
-                <Link href="/blog/learning-for-survival" className="text-[#e8c547] hover:underline">
-                  Learning for Survival
-                </Link>
-              </li>
-            </ul>
+            <h2 className="text-lg font-semibold text-[#e8c547] border-b border-[#3e503e] pb-3">Blog</h2>
+            <div className="mt-4 space-y-2">
+              {[
+                { date: "2024-12-05", title: "The Importance of Electricity", link: "/blog/the-importance-of-electricity" },
+                { date: "2024-11-20", title: "Modern Challenges in the Digital Age", link: "/blog/modern-challenges-in-the-digital-age" },
+                { date: "2024-10-15", title: "Learning for Survival", link: "/blog/learning-for-survival" }
+              ].map((post, index) => (
+                <div key={index} className="flex justify-between items-center border border-[#3e503e] px-4 py-2 rounded-lg bg-[#0e1b12] text-sm">
+                  <Link href={post.link} className="text-[#e8c547] hover:underline truncate">
+                    {post.title}
+                  </Link>
+                  <span className="text-xs text-gray-400">{post.date}</span>
+                </div>
+              ))}
+            </div>
           </section>
 
           <section className="border border-[#3e503e] p-6 rounded-lg bg-[#2e3d29] w-full">
