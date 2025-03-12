@@ -3,14 +3,9 @@
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Link from "next/link";
+import { blogPosts } from "../../data/blogPosts"; // Import blog posts
 
 export default function BlogPage() {
-  const blogs = [
-    { title: "The Importance of Electricity", description: "Insights into electricity's role in modern life.", slug: "the-importance-of-electricity" },
-    { title: "Modern Challenges in the Digital Age", description: "Exploring technological advancements and their impacts.", slug: "modern-challenges-in-the-digital-age" },
-    { title: "Learning for Survival", description: "Strategies for continuous learning and adaptation.", slug: "learning-for-survival" },
-  ];
-
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-[#0e1b12] to-[#2a3b22] text-[#d1d5db]">
       <Header showHomeLink={true}/>
@@ -22,7 +17,7 @@ export default function BlogPage() {
 
         {/* Blog List Container */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-6xl mx-auto">
-          {blogs.map((blog, index) => (
+          {blogPosts.map((blog, index) => (
             <div
               key={index}
               className="bg-[#2e3d29] border border-[#3e503e] rounded-lg p-4 shadow-lg"
