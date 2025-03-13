@@ -23,8 +23,8 @@ export default function PortfolioPage() {
       title: "Ligroup",
       description: "A social media directory application built with EJS and Express.",
       image: "/images/ligroup.png",
-      link: "https://ligroup.herokuapp.com/", 
-      techStack: ["EJS", "Express", "Node.js", "MongoDB"], // Tech stack güncellendi
+      link: "https://ligroup-eta.vercel.app/", 
+      techStack: ["Node.js", "Express", "EJS", "MongoDB", "HTML", "Bootstrap", "JavaScript"], // Tech stack güncellendi
       date: "2022", // Add date property
     },
     {
