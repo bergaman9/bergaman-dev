@@ -78,7 +78,7 @@ export default function Home() {
           </section>
 
           <section className="border border-[#3e503e] p-6 rounded-lg bg-[#2e3d29] w-full">
-            <h2 className="text-xl font-semibold text-[#e8c547] border-b border-[#3e503e] pb-3">Projects</h2>
+            <h2 className="text-xl font-semibold text-[#e8c547] border-b border-[#3e503e] pb-3">Featured Projects</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6">
               <div className="border border-[#3e503e] p-4 rounded-lg text-center bg-[#0e1b12] text-[#e8c547]">
                 <img src="/images/contro.png" alt="Contro Bot" className="w-full h-32 object-cover rounded-lg mb-2" />
