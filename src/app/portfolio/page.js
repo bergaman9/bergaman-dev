@@ -32,7 +32,7 @@ export default function PortfolioPage() {
       description: "A dashboard application built with Flask and HTML/CSS.",
       image: "/images/contro-dashboard.png",
       link: "https://contro.space/",
-      techStack: ["Python", "Flask", "HTML", "CSS", "JavaScript"], // Tech stack güncellendi
+      techStack: ["Python", "Flask", "HTML", "CSS", "JavaScript", "MongoDB"], // Tech stack güncellendi
       date: "2025-present", // Add date property
     },
   ];
