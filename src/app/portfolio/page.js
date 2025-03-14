@@ -48,7 +48,7 @@ export default function PortfolioPage() {
     },
     {
       title: "Timekeepers Bot",
-      description: "A ticket bot for game coin sales.",
+      description: "A Discord bot for communicating with customers.",
       image: "/images/timekeepers.png",
       link: "https://github.com/bergaman9/timekeepers-bot",
       techStack: ["Python", "Discord.py", "MongoDB"],
