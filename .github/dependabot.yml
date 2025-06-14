@@ -24,10 +24,7 @@ updates:
         update-types:
           - "minor"
           - "patch"
-    # Allow major updates individually
+    # Allow major updates individually for security
     ignore:
       - dependency-name: "*"
-        update-types: ["version-update:semver-major"]
-    # Security updates
-    security-updates:
-      enabled: true 
+        update-types: ["version-update:semver-major"] 
