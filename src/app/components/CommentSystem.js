@@ -24,26 +24,38 @@ export default function CommentSystem({ postSlug, onCommentCountUpdate }) {
   const [hasCommented, setHasCommented] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
+  const [settings, setSettings] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // Load comments from database on component mount
+  // Load settings and comments from database on component mount
   useEffect(() => {
-    const fetchComments = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch(`/api/comments?postSlug=${postSlug}`);
-        if (response.ok) {
-          const data = await response.json();
-          setComments(data.comments);
+        // Fetch settings
+        const settingsResponse = await fetch('/api/admin/settings');
+        if (settingsResponse.ok) {
+          const settingsData = await settingsResponse.json();
+          setSettings(settingsData);
+        }
+
+        // Fetch comments
+        const commentsResponse = await fetch(`/api/comments?postSlug=${postSlug}`);
+        if (commentsResponse.ok) {
+          const commentsData = await commentsResponse.json();
+          setComments(commentsData.comments);
           // Update parent component with comment count
           if (onCommentCountUpdate) {
-            onCommentCountUpdate(data.comments.length);
+            onCommentCountUpdate(commentsData.comments.length);
           }
         }
       } catch (error) {
-        console.error('Error fetching comments:', error);
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchComments();
+    fetchData();
 
     // Check if user has already commented on this post (still use localStorage for this)
     const userCommented = localStorage.getItem(`user_commented_${postSlug}`);
@@ -172,11 +184,40 @@ export default function CommentSystem({ postSlug, onCommentCountUpdate }) {
     }
   };
 
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="mt-12 mb-8 bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg">
+        <div className="text-center py-8">
+          <i className="fas fa-spinner fa-spin text-2xl text-[#e8c547] mb-2"></i>
+          <p className="text-gray-400">Loading comments...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't show comments section if comments are disabled
+  if (settings && !settings.allowComments) {
+    return (
+      <div className="mt-12 mb-8 bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg">
+        <div className="text-center py-8">
+          <i className="fas fa-comment-slash text-2xl text-gray-400 mb-2"></i>
+          <p className="text-gray-400">Comments are currently disabled for this post.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="mt-12 mb-8 bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg transition-all duration-300">
       <h3 className="text-2xl font-bold bg-gradient-to-r from-[#e8c547] to-[#d4b445] bg-clip-text text-transparent mb-6 flex items-center">
         <i className="fas fa-comments mr-3 text-[#e8c547]"></i>
         Comments ({comments.length})
+        {settings && settings.moderateComments && (
+          <span className="ml-2 text-xs bg-orange-500/20 text-orange-400 px-2 py-1 rounded-full">
+            Moderated
+          </span>
+        )}
       </h3>
 
       {/* Comments List */}
@@ -217,6 +258,17 @@ export default function CommentSystem({ postSlug, onCommentCountUpdate }) {
       {!hasCommented ? (
         <form onSubmit={handleSubmit} className="space-y-4">
           <h4 className="text-lg font-semibold text-[#e8c547] mb-4">Leave a Comment</h4>
+          
+          {settings && settings.moderateComments && (
+            <div className="bg-orange-500/10 border border-orange-500/30 rounded-lg p-4 mb-4">
+              <div className="flex items-center">
+                <i className="fas fa-info-circle text-orange-400 mr-2"></i>
+                <p className="text-orange-400 text-sm">
+                  Comments are moderated and will be reviewed before being published.
+                </p>
+              </div>
+            </div>
+          )}
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>

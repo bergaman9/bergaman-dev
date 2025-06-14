@@ -50,7 +50,7 @@ export default function AdminFooter() {
   ];
 
   return (
-    <footer className="bg-gradient-to-r from-[#1a2e1a] via-[#2e3d29] to-[#1a2e1a] border-t border-[#e8c547]/20 mt-auto w-full">
+    <footer className="bg-gradient-to-r from-[#0a1a0f]/95 via-[#0e1b12]/95 via-[#1a2e1a]/95 to-[#0a1a0f]/95 border-t border-[#e8c547]/20 backdrop-blur-md mt-auto w-full">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         
         {/* Main Footer Content */}
@@ -110,9 +110,9 @@ export default function AdminFooter() {
               Admin Panel
             </h3>
             <div className="space-y-2 text-xs text-gray-400">
-              <p>Bergaman Control Panel</p>
-              <p>Version 2.0.0</p>
-              <p>Dragon's Domain Admin</p>
+              <p>Bergaman - The Dragon's Domain</p>
+              <p>Version 2.0.1</p>
+              <p>Admin Control Panel</p>
               <div className="flex items-center space-x-2 pt-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                 <span className="text-green-400">System Online</span>
@@ -154,8 +154,8 @@ export default function AdminFooter() {
             {/* Copyright */}
             <div className="flex items-center space-x-4 text-xs text-gray-500">
               <div className="flex items-center space-x-2">
-                <i className="fas fa-shield-alt text-[#e8c547]"></i>
-                <span>© 2025 Bergaman Control Panel</span>
+                <i className="fas fa-dragon text-[#e8c547]"></i>
+                <span>© 2025 Bergaman - The Dragon's Domain</span>
               </div>
               <span>•</span>
               <span>All rights reserved</span>
@@ -190,8 +190,8 @@ export default function AdminFooter() {
             {/* Version Badge */}
             <div className="flex items-center space-x-2 bg-[#0e1b12]/50 px-3 py-1 rounded-full">
               <i className="fas fa-code-branch text-[#e8c547] text-xs"></i>
-              <span className="text-xs text-gray-400">v2.0.0</span>
-              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              <span className="text-xs text-gray-400">v2.0.1</span>
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
             </div>
           </div>
         </div>

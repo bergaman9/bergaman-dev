@@ -33,6 +33,31 @@ const ContactSchema = new mongoose.Schema({
     type: String,
     default: null
   },
+  // Nested conversation thread
+  replies: [{
+    message: {
+      type: String,
+      required: true
+    },
+    isFromAdmin: {
+      type: Boolean,
+      default: false
+    },
+    senderName: {
+      type: String,
+      required: true
+    },
+    senderEmail: {
+      type: String,
+      required: true
+    },
+    timestamp: {
+      type: Date,
+      default: Date.now
+    },
+    ipAddress: String,
+    userAgent: String
+  }],
   // Technical information
   ipAddress: String,
   userAgent: String,

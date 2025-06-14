@@ -29,6 +29,14 @@ export async function POST(request) {
     
     const { postSlug, name, email, message } = await request.json();
     
+    // Check if comments are allowed
+    const db = await connectDB();
+    const settings = await db.collection('settings').findOne({ type: 'site' });
+    
+    if (settings && !settings.allowComments) {
+      return NextResponse.json({ error: 'Comments are currently disabled' }, { status: 403 });
+    }
+    
     // Validation
     if (!postSlug || !name || !email || !message) {
       return NextResponse.json({ error: 'All fields are required' }, { status: 400 });
@@ -51,12 +59,16 @@ export async function POST(request) {
     // Get user info (IP, browser, location, etc.)
     const userInfo = await getUserInfo(request);
     
+    // Determine if comment should be auto-approved based on moderation settings
+    const shouldAutoApprove = !settings || !settings.moderateComments;
+    
     // Create new comment with user info
     const comment = new Comment({
       postSlug,
       name,
       email,
       message,
+      approved: shouldAutoApprove,
       ipAddress: userInfo.ipAddress,
       userAgent: userInfo.userAgent,
       browser: userInfo.browser,

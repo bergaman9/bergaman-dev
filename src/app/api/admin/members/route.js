@@ -15,8 +15,13 @@ const memberSchema = {
 
 export async function GET() {
   try {
-    const db = await connectDB();
+    await connectDB();
+    const { MongoClient } = require('mongodb');
+    const client = new MongoClient(process.env.MONGODB_URI || 'mongodb://localhost:27017/bergaman-dev');
+    await client.connect();
+    const db = client.db();
     const members = await db.collection('members').find({}).sort({ createdAt: -1 }).toArray();
+    await client.close();
     
     // Remove password from response
     const sanitizedMembers = members.map(member => {
@@ -39,7 +44,11 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Name, email, and password are required' }, { status: 400 });
     }
 
-    const db = await connectDB();
+    await connectDB();
+    const { MongoClient } = require('mongodb');
+    const client = new MongoClient(process.env.MONGODB_URI || 'mongodb://localhost:27017/bergaman-dev');
+    await client.connect();
+    const db = client.db();
     
     // Check if member already exists
     const existingMember = await db.collection('members').findOne({ email });
@@ -61,6 +70,7 @@ export async function POST(request) {
     };
 
     const result = await db.collection('members').insertOne(newMember);
+    await client.close();
     
     // Return member without password
     const { password: _, ...memberWithoutPassword } = newMember;

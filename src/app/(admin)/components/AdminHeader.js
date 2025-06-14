@@ -29,7 +29,7 @@ export default function AdminHeader() {
   ];
 
   return (
-    <header className="bg-gradient-to-r from-[#0e1b12] via-[#1a2e1a] to-[#0e1b12] border-b border-[#3e503e]/30 backdrop-blur-md sticky top-0 z-50">
+    <header className="bg-gradient-to-r from-[#0a1a0f]/95 via-[#0e1b12]/95 via-[#1a2e1a]/95 to-[#0a1a0f]/95 border-b border-[#e8c547]/20 backdrop-blur-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           
@@ -37,13 +37,14 @@ export default function AdminHeader() {
           <div className="flex items-center">
             <Link href="/admin" className="flex items-center space-x-3 group">
               <div className="relative">
-                <i className="fas fa-dragon text-3xl text-[#e8c547] group-hover:scale-110 transition-transform duration-300 animate-pulse"></i>
+                <div className="absolute inset-0 bg-[#e8c547]/20 rounded-full blur-lg animate-pulse"></div>
+                <i className="fas fa-dragon text-3xl text-[#e8c547] group-hover:scale-110 transition-transform duration-300 animate-pulse relative z-10 drop-shadow-lg"></i>
               </div>
               <div>
                 <h1 className="text-xl font-bold bg-gradient-to-r from-[#e8c547] to-[#f4d76b] bg-clip-text text-transparent">
-                  Bergasoft Portal
+                  Bergaman - The Dragon's Domain
                 </h1>
-                <p className="text-sm text-gray-400 -mt-1">Admin Dashboard</p>
+                <p className="text-sm text-gray-400 -mt-1">Admin Portal</p>
               </div>
             </Link>
           </div>

@@ -11,6 +11,7 @@ export default function AdminContacts() {
   const [showReplyModal, setShowReplyModal] = useState(false);
   const [replyMessage, setReplyMessage] = useState('');
   const [sendingReply, setSendingReply] = useState(false);
+  const [expandedContact, setExpandedContact] = useState(null);
   
   // Filters
   const [statusFilter, setStatusFilter] = useState('all');
@@ -89,12 +90,17 @@ export default function AdminContacts() {
 
     try {
       setSendingReply(true);
-      const response = await fetch(`/api/admin/contacts/${selectedContact._id}`, {
-        method: 'PUT',
+      const response = await fetch(`/api/admin/contacts/${selectedContact._id}/reply`, {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ adminReply: replyMessage }),
+        body: JSON.stringify({ 
+          message: replyMessage,
+          isFromAdmin: true,
+          senderName: 'Admin',
+          senderEmail: 'admin@bergaman.dev'
+        }),
       });
 
       if (response.ok) {
@@ -305,8 +311,81 @@ export default function AdminContacts() {
                           </div>
                           <p className="text-gray-300 mb-3 line-clamp-2">{contact.message}</p>
                           
-                          {/* Show reply preview if exists */}
-                          {contact.adminReply && (
+                          {/* Show conversation thread if exists */}
+                          {contact.replies && contact.replies.length > 0 && (
+                            <div className="mb-3">
+                              <div className="flex items-center justify-between mb-2">
+                                <span className="text-sm text-[#e8c547] font-medium">
+                                  <i className="fas fa-comments mr-1"></i>
+                                  Conversation ({contact.replies.length} {contact.replies.length === 1 ? 'reply' : 'replies'})
+                                </span>
+                                <button
+                                  onClick={() => setExpandedContact(expandedContact === contact._id ? null : contact._id)}
+                                  className="text-xs text-gray-400 hover:text-[#e8c547] transition-colors"
+                                >
+                                  {expandedContact === contact._id ? 'Hide' : 'Show'} Thread
+                                  <i className={`fas fa-chevron-${expandedContact === contact._id ? 'up' : 'down'} ml-1`}></i>
+                                </button>
+                              </div>
+                              
+                              {/* Show latest reply preview */}
+                              {!expandedContact || expandedContact !== contact._id ? (
+                                <div className="bg-[#2e3d29]/50 border-l-4 border-green-500 p-3 rounded-r">
+                                  <div className="flex items-center justify-between mb-1">
+                                    <span className="text-xs text-green-400 font-medium">
+                                      {contact.replies[contact.replies.length - 1].isFromAdmin ? 'Admin' : contact.replies[contact.replies.length - 1].senderName}:
+                                    </span>
+                                    <span className="text-xs text-gray-500">
+                                      {formatDate(contact.replies[contact.replies.length - 1].timestamp)}
+                                    </span>
+                                  </div>
+                                  <p className="text-gray-300 text-sm line-clamp-2">{contact.replies[contact.replies.length - 1].message}</p>
+                                </div>
+                              ) : (
+                                /* Full conversation thread */
+                                <div className="space-y-3 max-h-96 overflow-y-auto">
+                                  {contact.replies.map((reply, index) => (
+                                    <div 
+                                      key={index} 
+                                      className={`p-3 rounded-lg border-l-4 ${
+                                        reply.isFromAdmin 
+                                          ? 'bg-green-900/20 border-green-500 ml-4' 
+                                          : 'bg-blue-900/20 border-blue-500 mr-4'
+                                      }`}
+                                    >
+                                      <div className="flex items-center justify-between mb-2">
+                                        <div className="flex items-center space-x-2">
+                                          <span className={`text-xs font-medium ${
+                                            reply.isFromAdmin ? 'text-green-400' : 'text-blue-400'
+                                          }`}>
+                                            {reply.isFromAdmin ? (
+                                              <>
+                                                <i className="fas fa-user-shield mr-1"></i>
+                                                Admin
+                                              </>
+                                            ) : (
+                                              <>
+                                                <i className="fas fa-user mr-1"></i>
+                                                {reply.senderName}
+                                              </>
+                                            )}
+                                          </span>
+                                          <span className="text-xs text-gray-500">{reply.senderEmail}</span>
+                                        </div>
+                                        <span className="text-xs text-gray-500">
+                                          {formatDate(reply.timestamp)}
+                                        </span>
+                                      </div>
+                                      <p className="text-gray-300 text-sm whitespace-pre-wrap">{reply.message}</p>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          )}
+                          
+                          {/* Show legacy reply if exists and no new replies */}
+                          {contact.adminReply && (!contact.replies || contact.replies.length === 0) && (
                             <div className="bg-[#2e3d29]/50 border-l-4 border-green-500 p-3 mb-3 rounded-r">
                               <div className="flex items-center mb-1">
                                 <i className="fas fa-reply text-green-400 mr-2"></i>
@@ -464,8 +543,55 @@ export default function AdminContacts() {
                   </div>
                 </div>
 
-                {/* Previous Reply */}
-                {selectedContact.adminReply && (
+                {/* Conversation Thread */}
+                {selectedContact.replies && selectedContact.replies.length > 0 && (
+                  <div className="bg-[#0e1b12] border border-[#3e503e] rounded-lg p-4 mb-6">
+                    <h4 className="text-sm font-medium text-[#e8c547] mb-4">
+                      <i className="fas fa-comments mr-2"></i>
+                      Conversation Thread ({selectedContact.replies.length} {selectedContact.replies.length === 1 ? 'reply' : 'replies'})
+                    </h4>
+                    <div className="space-y-3 max-h-64 overflow-y-auto">
+                      {selectedContact.replies.map((reply, index) => (
+                        <div 
+                          key={index} 
+                          className={`p-3 rounded-lg border-l-4 ${
+                            reply.isFromAdmin 
+                              ? 'bg-green-900/20 border-green-500 ml-4' 
+                              : 'bg-blue-900/20 border-blue-500 mr-4'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center space-x-2">
+                              <span className={`text-xs font-medium ${
+                                reply.isFromAdmin ? 'text-green-400' : 'text-blue-400'
+                              }`}>
+                                {reply.isFromAdmin ? (
+                                  <>
+                                    <i className="fas fa-user-shield mr-1"></i>
+                                    Admin
+                                  </>
+                                ) : (
+                                  <>
+                                    <i className="fas fa-user mr-1"></i>
+                                    {reply.senderName}
+                                  </>
+                                )}
+                              </span>
+                              <span className="text-xs text-gray-500">{reply.senderEmail}</span>
+                            </div>
+                            <span className="text-xs text-gray-500">
+                              {formatDate(reply.timestamp)}
+                            </span>
+                          </div>
+                          <p className="text-[#d1d5db] text-sm whitespace-pre-wrap">{reply.message}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Legacy Previous Reply */}
+                {selectedContact.adminReply && (!selectedContact.replies || selectedContact.replies.length === 0) && (
                   <div className="bg-[#0e1b12] border border-[#3e503e] rounded-lg p-4 mb-6">
                     <h4 className="text-sm font-medium text-[#e8c547] mb-2">Previous Reply:</h4>
                     <div className="p-3 bg-[#2e3d29]/50 border-l-4 border-green-500 rounded">

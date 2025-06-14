@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { useAdminMode } from '../../hooks/useAdminMode';
 
@@ -12,7 +12,102 @@ export default function Contact() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
+  const [settings, setSettings] = useState(null);
+  const [loading, setLoading] = useState(true);
   const { isAdminMode, exitEditMode } = useAdminMode();
+
+  useEffect(() => {
+    fetchSettings();
+  }, []);
+
+  const fetchSettings = async () => {
+    try {
+      const response = await fetch('/api/admin/settings');
+      if (response.ok) {
+        const data = await response.json();
+        setSettings(data);
+      }
+    } catch (error) {
+      console.error('Error fetching settings:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="page-container">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <i className="fas fa-spinner fa-spin text-4xl text-[#e8c547] mb-4"></i>
+            <p className="text-gray-400">Loading...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show contact form disabled message if setting is off
+  if (settings && !settings.allowContactForm) {
+    return (
+      <div className="page-container">
+        <Head>
+          <title>Contact Form Disabled - Ömer</title>
+          <meta name="description" content="Contact form is currently disabled." />
+        </Head>
+
+        <main className="page-content py-8">
+          <section className="text-center mb-12 fade-in">
+            <h1 className="text-4xl md:text-5xl font-bold gradient-text mb-4 leading-tight">
+              <i className="fas fa-envelope-slash mr-3"></i>
+              Contact Form Disabled
+            </h1>
+            <p className="text-lg text-gray-300 max-w-3xl mx-auto mb-8">
+              The contact form is currently disabled. Please reach out through alternative methods.
+            </p>
+            
+            <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 rounded-lg p-8 max-w-2xl mx-auto">
+              <h2 className="text-2xl font-bold mb-6 text-[#e8c547]">Alternative Contact Methods</h2>
+              
+              <div className="space-y-6">
+                {/* Email */}
+                <div className="flex items-center justify-center space-x-4">
+                  <div className="w-12 h-12 bg-[#e8c547]/20 rounded-lg flex items-center justify-center">
+                    <i className="fas fa-envelope text-[#e8c547]"></i>
+                  </div>
+                  <div className="text-left">
+                    <h3 className="text-[#e8c547] font-semibold">Email</h3>
+                    <a href="mailto:omerguler53@gmail.com" className="text-gray-300 hover:text-[#e8c547] transition-colors">
+                      omerguler53@gmail.com
+                    </a>
+                  </div>
+                </div>
+
+                {/* GitHub */}
+                <div className="flex items-center justify-center space-x-4">
+                  <div className="w-12 h-12 bg-gray-400/20 rounded-lg flex items-center justify-center">
+                    <i className="fab fa-github text-gray-400"></i>
+                  </div>
+                  <div className="text-left">
+                    <h3 className="text-gray-400 font-semibold">GitHub</h3>
+                    <a 
+                      href="https://github.com/bergaman9" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-gray-300 hover:text-gray-400 transition-colors"
+                    >
+                      github.com/bergaman9
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </main>
+      </div>
+    );
+  }
 
   const handleChange = (e) => {
     setFormData({
