@@ -66,9 +66,26 @@ jobs:
     - name: 📥 Install dependencies
       run: npm ci
       
-    - name: 🧹 Clean environment files
+    - name: 🧹 Clean environment files and configure git
       run: |
-        rm -f .env.local .env*.local
+        # Remove all environment files
+        rm -f .env.local .env*.local .env.development.local .env.test.local .env.production.local
+        
+        # Configure git to ignore advice about ignored files
+        git config --global advice.addIgnoredFile false
+        
+        # Configure git user for semantic release
+        git config --local user.email "action@github.com"
+        git config --local user.name "github-actions[bot]"
+        
+        # Clean git status
+        git status --porcelain
+        
+        # Ensure .env.local is properly ignored
+        echo ".env.local" >> .gitignore
+        echo ".env*.local" >> .gitignore
+        
+        # Show final status
         git status
       
     - name: 🏷️ Semantic Release
@@ -79,8 +96,13 @@ jobs:
         extra_plugins: |
           @semantic-release/changelog@6.0.0
           @semantic-release/git@10.0.0
+        dry_run: false
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GIT_AUTHOR_NAME: github-actions[bot]
+        GIT_AUTHOR_EMAIL: action@github.com
+        GIT_COMMITTER_NAME: github-actions[bot]
+        GIT_COMMITTER_EMAIL: action@github.com
 
   deploy:
     name: 🚀 Deploy to Production
