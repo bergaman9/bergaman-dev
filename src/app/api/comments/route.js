@@ -1,9 +1,14 @@
 import { NextResponse } from 'next/server';
-import connectDB from '../../../lib/mongodb';
+import connectDB from '../../../lib/mongoose';
 import Comment from '../../../models/Comment';
 
 export async function GET(request) {
   try {
+    // Skip database operations during build
+    if (process.env.NODE_ENV === 'production' && !process.env.MONGODB_URI) {
+      return NextResponse.json({ comments: [] });
+    }
+    
     await connectDB();
     
     const { searchParams } = new URL(request.url);
@@ -24,6 +29,11 @@ export async function GET(request) {
 
 export async function POST(request) {
   try {
+    // Skip database operations during build
+    if (process.env.NODE_ENV === 'production' && !process.env.MONGODB_URI) {
+      return NextResponse.json({ error: 'Database not available' }, { status: 503 });
+    }
+    
     await connectDB();
     
     const { postSlug, name, email, message } = await request.json();
