@@ -18,7 +18,7 @@ jobs:
     - name: 📦 Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '18'
+        node-version: '20'
         cache: 'npm'
         
     - name: 📥 Install dependencies
@@ -31,7 +31,10 @@ jobs:
       run: npm run build
       env:
         MONGODB_URI: ${{ secrets.MONGODB_URI }}
-        NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
+        NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+        EMAIL_USER: ${{ secrets.EMAIL_USER }}
+        EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+        NEXT_PUBLIC_SITE_URL: https://bergaman.dev
         NEXT_PUBLIC_APP_VERSION: ${{ github.ref_name }}-${{ github.sha }}
 
   version:
@@ -53,7 +56,7 @@ jobs:
     - name: 📦 Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '18'
+        node-version: '20'
         cache: 'npm'
         
     - name: 📥 Install dependencies
@@ -63,7 +66,7 @@ jobs:
       id: semantic
       uses: cycjimmy/semantic-release-action@v4
       with:
-        semantic_version: 19
+        semantic_version: 24
         extra_plugins: |
           @semantic-release/changelog@6.0.0
           @semantic-release/git@10.0.0
@@ -89,7 +92,10 @@ jobs:
         vercel-args: '--prod'
       env:
         MONGODB_URI: ${{ secrets.MONGODB_URI }}
-        NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
+        NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+        EMAIL_USER: ${{ secrets.EMAIL_USER }}
+        EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+        NEXT_PUBLIC_SITE_URL: https://bergaman.dev
         NEXT_PUBLIC_APP_VERSION: ${{ needs.version.outputs.new_release_version || github.ref_name }}
 
     - name: 📊 Update Deployment Status
@@ -97,7 +103,7 @@ jobs:
       run: |
         echo "🎉 Deployment completed!"
         echo "📦 Version: ${{ needs.version.outputs.new_release_version || 'development' }}"
-        echo "🌐 URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}"
+        echo "🌐 URL: https://bergaman.dev"
 
   notify:
     name: 📢 Notify Success
