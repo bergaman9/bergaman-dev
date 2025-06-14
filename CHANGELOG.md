@@ -6,6 +6,34 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [2.1.0](https://github.com/bergaman9/bergaman-dev/compare/v2.0.1...v2.1.0) (2025-06-14)
+
+### 🚀 Features
+
+* add Dependabot configuration for automated security updates ([da461f6](https://github.com/bergaman9/bergaman-dev/commit/da461f676ef3b381c8e95e954281d6e337ccbbf5))
+* Added public reply system for contact conversations - Created public reply API endpoint for users to respond - Added public reply page for web-based conversation continuation - Created contact fetch API for individual contact retrieval - Enhanced admin reply system with email notifications - Added reply link in admin notification emails - Implemented email verification for reply security - Added beautiful conversation thread display on public page - Enabled seamless conversation flow between admin and users ([33ef1ef](https://github.com/bergaman9/bergaman-dev/commit/33ef1efb1abaed61097b62bc8988e0be60cb3dd9))
+* Complete admin panel redesign and fix migration errors - Redesign admin layout with modern slate theme, remove yellow glow effects, improve migration API with better error handling ([755783a](https://github.com/bergaman9/bergaman-dev/commit/755783af8af77b04fcaa4becceb9b85efa1faaba))
+* Complete newsletter system with admin panel redesign and comprehensive email management ([1a1217b](https://github.com/bergaman9/bergaman-dev/commit/1a1217b03a7f0b68184b4e65d21bff92b40a014e))
+* Enhanced admin panel with nested contact replies and improved background design - Fixed syntax errors in settings API route - Improved admin panel background with professional gradient design - Removed excessive glow effects from header and footer - Added nested conversation thread system for contact management - Updated Contact model to support reply threads - Created new API endpoint for adding replies to contacts - Enhanced admin contacts page with expandable conversation threads - Added visual distinction between admin and user replies - Improved reply modal with full conversation history - Maintained backward compatibility with legacy reply system ([f3a8bd3](https://github.com/bergaman9/bergaman-dev/commit/f3a8bd35ab80b7f17c1c9768869d56ce4cf40c30))
+* Enhanced portfolio and blog with improved UI/UX - Added blog post images, redesigned footer, fixed search bar, improved responsive design, added MIT License, and enhanced overall user experience ([5548e50](https://github.com/bergaman9/bergaman-dev/commit/5548e5061bf516d3a882f0b2aaa3445c6ddbc436))
+* implement advanced admin panel with dragon effects and automated version management ([dc30412](https://github.com/bergaman9/bergaman-dev/commit/dc30412e3a7819ea1b3f8e531991c25ce96c5692))
+* implement advanced admin panel with dragon effects and automated version management ([ecf90f9](https://github.com/bergaman9/bergaman-dev/commit/ecf90f9674be3a8e1591022dfffd8ba6f2f8e871))
+* merge v2-development branch with all improvements and new features ([a5013e7](https://github.com/bergaman9/bergaman-dev/commit/a5013e7547f49917f4390fddc04b3bdc956e2173))
+* restore green theme and improve newsletter integration ([fcd4068](https://github.com/bergaman9/bergaman-dev/commit/fcd406883c7bdd439866cf44aea988611a584e05))
+* update GitHub Actions workflow to use secrets for environment variables ([0b073f3](https://github.com/bergaman9/bergaman-dev/commit/0b073f3fcea679bd9b1e21bf157ec10670f5ca37))
+
+### 🐛 Bug Fixes
+
+* add .env.example and resolve MongoDB connection issues ([fd74122](https://github.com/bergaman9/bergaman-dev/commit/fd741221d3dbdfb380927ff8d85d6d5344e79b77))
+* add missing bcryptjs dependency for admin members functionality ([07ac961](https://github.com/bergaman9/bergaman-dev/commit/07ac9616e4beaefc42bcd00a8d78df83e8ec5452))
+* resolve build errors and improve functionality - Fixed useSearchParams Suspense boundary error in newsletter unsubscribe page - Fixed nodemailer createTransporter typo in newsletter and contact APIs - Removed duplicate email index from Newsletter model - Fixed double header/footer issue in newsletter pages - Added real subscriber count display from database - Enhanced jsconfig.json with comprehensive path mappings and compiler options - Removed unused imports to fix linter warnings - Added newsletter stats API endpoint for real-time subscriber count ([66d08c3](https://github.com/bergaman9/bergaman-dev/commit/66d08c3cd432f48bfee1683a5c8d9e83bdb165e2))
+* resolve Dependabot config and MongoDB URI build issues ([801609f](https://github.com/bergaman9/bergaman-dev/commit/801609f6f822d3faac85d0f78ab25d8e035771e3))
+* resolve hydration mismatch error in version display - Fixed server/client version inconsistency by using useState and useEffect in Footer components - Updated next.config.mjs to automatically read version from package.json - Made version display consistent across admin and public footers - Fixed newsletter stats API import paths - Eliminated hydration mismatch that was causing React errors ([84c4026](https://github.com/bergaman9/bergaman-dev/commit/84c40267b8b50df22c34c11b9acb2fb5d6ee8151))
+* Resolve MongoDB issues and restore green theme to admin panel - Fix duplicate index warning in BlogPost model, prevent admin layout conflicts with main layout, restore original green dragon theme ([7e01c9d](https://github.com/bergaman9/bergaman-dev/commit/7e01c9d5e525500d223b29b5f5c40bc510f86eb6))
+* resolve MongoDB URI build issues with fallback configuration ([1504ce9](https://github.com/bergaman9/bergaman-dev/commit/1504ce91cc2c112a914bda091558890bb025f6b9))
+* resolve package-lock.json sync issues and update dependencies ([f5730fe](https://github.com/bergaman9/bergaman-dev/commit/f5730fe45744fe2b7e89bd432b2771de49898559))
+* Update admin dashboard to match new slate theme design ([72b23b7](https://github.com/bergaman9/bergaman-dev/commit/72b23b7fc42f584d087f00e5fbb84f8a87c26511))
+
 ## [2.0.1](https://github.com/bergaman9/bergaman-dev/compare/v2.0.0...v2.0.1) (2025-06-14)
 
 ### 🐛 Bug Fixes
