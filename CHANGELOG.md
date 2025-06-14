@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [2.1.1](https://github.com/bergaman9/bergaman-dev/compare/v2.1.0...v2.1.1) (2025-06-14)
+
+### 🐛 Bug Fixes
+
+* correct import paths in newsletter stats API - Fixed module resolution error in newsletter stats route - Updated import paths to match project structure - Ensured consistent import pattern with other API routes - Build now succeeds on both local and Vercel environments ([297ec96](https://github.com/bergaman9/bergaman-dev/commit/297ec96af11f5271f37472a760c6f4ca1efd53f3))
+* prevent .env.local from being committed during semantic release - Added cleanup step in GitHub Actions to remove environment files before semantic release - Enhanced .gitignore with more specific environment file patterns - Updated semantic release config to ensure only intended files are committed - Resolves GitHub Actions failure during version commit process ([f0cf777](https://github.com/bergaman9/bergaman-dev/commit/f0cf7772971605e9a8df7f3f3e7f7f093c935ad4))
+
 ## [2.1.0](https://github.com/bergaman9/bergaman-dev/compare/v2.0.1...v2.1.0) (2025-06-14)
 
 ### 🚀 Features
