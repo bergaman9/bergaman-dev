@@ -18,7 +18,7 @@ const isValidEmail = (email) => {
   return emailRegex.test(email);
 };
 
-export default function CommentSystem({ postSlug }) {
+export default function CommentSystem({ postSlug, onCommentCountUpdate }) {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState({ name: '', email: '', message: '' });
   const [hasCommented, setHasCommented] = useState(false);
@@ -33,6 +33,10 @@ export default function CommentSystem({ postSlug }) {
         if (response.ok) {
           const data = await response.json();
           setComments(data.comments);
+          // Update parent component with comment count
+          if (onCommentCountUpdate) {
+            onCommentCountUpdate(data.comments.length);
+          }
         }
       } catch (error) {
         console.error('Error fetching comments:', error);
@@ -46,7 +50,7 @@ export default function CommentSystem({ postSlug }) {
     if (userCommented) {
       setHasCommented(true);
     }
-  }, [postSlug]);
+  }, [postSlug, onCommentCountUpdate]);
 
   // Save comment to database
   const saveComment = async (commentData) => {
@@ -69,6 +73,10 @@ export default function CommentSystem({ postSlug }) {
         if (refreshResponse.ok) {
           const refreshData = await refreshResponse.json();
           setComments(refreshData.comments);
+          // Update parent component with new comment count
+          if (onCommentCountUpdate) {
+            onCommentCountUpdate(refreshData.comments.length);
+          }
         }
         return true;
       } else {
@@ -165,7 +173,7 @@ export default function CommentSystem({ postSlug }) {
   };
 
   return (
-    <div className="mt-12 mb-8 bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg transition-all duration-300 hover:border-[#e8c547]/30 hover:bg-[#2e3d29]/40">
+    <div className="mt-12 mb-8 bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg transition-all duration-300">
       <h3 className="text-2xl font-bold bg-gradient-to-r from-[#e8c547] to-[#d4b445] bg-clip-text text-transparent mb-6 flex items-center">
         <i className="fas fa-comments mr-3 text-[#e8c547]"></i>
         Comments ({comments.length})
@@ -270,7 +278,7 @@ export default function CommentSystem({ postSlug }) {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="bg-gradient-to-r from-[#e8c547] to-[#d4b445] text-[#0e1b12] font-semibold hover:from-[#d4b445] hover:to-[#c4a43d] transition-all duration-300 shadow-lg shadow-[#e8c547]/25 hover:shadow-xl hover:shadow-[#e8c547]/40 px-6 py-3 rounded-lg hover:scale-105 transform disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+            className="bg-gradient-to-r from-[#e8c547] to-[#d4b445] text-[#0e1b12] font-semibold hover:from-[#d4b445] hover:to-[#c4a43d] transition-all duration-300 px-6 py-3 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSubmitting ? (
               <>

@@ -1,14 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { SITE_CONFIG, SOCIAL_LINKS, getAppVersion } from '../../lib/constants';
+import { SITE_CONFIG, SOCIAL_LINKS } from '../../lib/constants';
+import { getAppVersion } from '../../lib/version';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
   const appVersion = getAppVersion();
 
   return (
-    <footer className="w-full bg-gradient-to-t from-[#0e1b12] to-[#2e3d29]/20 border-t border-[#3e503e]/30 mt-auto">
+    <footer className="w-full bg-gradient-to-t from-[#0e1b12] to-[#2e3d29]/20 border-t border-[#3e503e]/50 mt-auto">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-8 py-12">
         
         {/* Main Footer Content */}

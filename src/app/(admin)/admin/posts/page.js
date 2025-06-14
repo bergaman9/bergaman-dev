@@ -9,6 +9,7 @@ export default function AdminPosts() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [userRole, setUserRole] = useState('admin'); // Default to admin, will be fetched
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
@@ -21,7 +22,25 @@ export default function AdminPosts() {
 
   useEffect(() => {
     fetchPosts();
+    fetchUserRole();
   }, [searchTerm, selectedCategory, pagination.page]);
+
+  const fetchUserRole = async () => {
+    try {
+      // For now, we'll check if the user is the main admin
+      // In a real app, this would come from authentication
+      const adminAuth = localStorage.getItem('adminAuth');
+      if (adminAuth === 'true') {
+        // Check if it's the main admin (bergasoft) or a member
+        // For simplicity, we'll assume main admin for now
+        // You can extend this to check against members collection
+        setUserRole('admin');
+      }
+    } catch (error) {
+      console.error('Error fetching user role:', error);
+      setUserRole('editor'); // Default to editor for safety
+    }
+  };
 
   const fetchPosts = async () => {
     setLoading(true);
@@ -48,6 +67,12 @@ export default function AdminPosts() {
   };
 
   const handleDeletePost = async (postId, postTitle) => {
+    // Only allow admins to delete
+    if (userRole !== 'admin') {
+      alert('You do not have permission to delete posts. Only administrators can delete posts.');
+      return;
+    }
+
     if (confirm(`Are you sure you want to delete "${postTitle}"?`)) {
       try {
         const response = await fetch(`/api/admin/posts/${postId}`, {
@@ -68,41 +93,44 @@ export default function AdminPosts() {
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
-    setPagination(prev => ({ ...prev, page: 1 }));
+    setPagination(prev => ({ ...prev, page: 1 })); // Reset to first page
   };
 
   const handleCategoryChange = (e) => {
     setSelectedCategory(e.target.value);
-    setPagination(prev => ({ ...prev, page: 1 }));
+    setPagination(prev => ({ ...prev, page: 1 })); // Reset to first page
   };
 
   return (
     <>
       <Head>
-        <title>Manage Posts - Admin Panel</title>
-        <meta name="robots" content="noindex, nofollow" />
+        <title>Manage Posts - Bergaman Admin Panel</title>
       </Head>
-
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold gradient-text">
-              <i className="fas fa-file-alt mr-3"></i>
-              Blog Posts
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-[#e8c547] to-[#f4d76b] bg-clip-text text-transparent">
+              Manage Posts
             </h1>
-            <p className="text-gray-400 mt-2">Manage your blog posts from MongoDB</p>
+            <p className="text-gray-400 mt-2">Create, edit, and manage your blog posts</p>
+            {userRole === 'editor' && (
+              <p className="text-yellow-400 text-sm mt-1">
+                <i className="fas fa-info-circle mr-1"></i>
+                Editor Mode: You can create and edit posts, but cannot delete them
+              </p>
+            )}
           </div>
           <Link
             href="/admin/posts/new"
-            className="bg-[#e8c547] hover:bg-[#d4b445] text-[#0e1b12] px-6 py-3 rounded-lg font-medium transition-all duration-300 hover:scale-105"
+            className="bg-gradient-to-r from-[#e8c547] to-[#d4b445] text-[#0e1b12] px-6 py-3 rounded-lg font-semibold hover:from-[#d4b445] hover:to-[#c4a43d] transition-all duration-300 flex items-center space-x-2"
           >
-            <i className="fas fa-plus mr-2"></i>
-            New Post
+            <i className="fas fa-plus"></i>
+            <span>New Post</span>
           </Link>
         </div>
 
-        {/* Filters */}
+        {/* Search and Filter */}
         <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1">
@@ -141,7 +169,7 @@ export default function AdminPosts() {
         {/* Posts List */}
         <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 rounded-lg overflow-hidden">
           <div className="p-6 border-b border-[#3e503e]/30">
-            <h2 className="text-xl font-bold gradient-text">
+            <h2 className="text-xl font-semibold text-[#e8c547]">
               Posts ({pagination.total})
             </h2>
           </div>
@@ -210,24 +238,15 @@ export default function AdminPosts() {
                           {new Date(post.createdAt).toLocaleDateString()}
                         </span>
                         <span>
-                          <i className="fas fa-clock mr-1"></i>
-                          {post.readTime || '5 min read'}
-                        </span>
-                        <span>
                           <i className="fas fa-eye mr-1"></i>
                           {post.views || 0} views
                         </span>
                         <span>
-                          <i className="fas fa-heart mr-1"></i>
-                          {post.likes || 0} likes
-                        </span>
-                        <span>
-                          <i className="fas fa-comments mr-1"></i>
+                          <i className="fas fa-comment mr-1"></i>
                           {post.comments?.length || 0} comments
                         </span>
                       </div>
                     </div>
-                    
                     <div className="flex items-center space-x-2 ml-6">
                       <Link
                         href={`/blog/${post.slug}`}
@@ -244,13 +263,16 @@ export default function AdminPosts() {
                       >
                         <i className="fas fa-edit"></i>
                       </Link>
-                      <button
-                        onClick={() => handleDeletePost(post._id, post.title)}
-                        className="p-2 text-gray-400 hover:text-red-400 transition-colors duration-300"
-                        title="Delete Post"
-                      >
-                        <i className="fas fa-trash"></i>
-                      </button>
+                      {/* Only show delete button for admin users */}
+                      {userRole === 'admin' && (
+                        <button
+                          onClick={() => handleDeletePost(post._id, post.title)}
+                          className="p-2 text-gray-400 hover:text-red-400 transition-colors duration-300"
+                          title="Delete Post"
+                        >
+                          <i className="fas fa-trash"></i>
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -264,7 +286,7 @@ export default function AdminPosts() {
           <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-4 rounded-lg">
             <div className="flex items-center justify-between">
               <div className="text-sm text-gray-400">
-                Showing {((pagination.page - 1) * pagination.limit) + 1} to {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} posts
+                Page {pagination.page} of {pagination.pages}
               </div>
               <div className="flex items-center space-x-2">
                 <button
@@ -274,21 +296,9 @@ export default function AdminPosts() {
                 >
                   <i className="fas fa-chevron-left"></i>
                 </button>
-                
-                {Array.from({ length: pagination.pages }, (_, i) => i + 1).map(page => (
-                  <button
-                    key={page}
-                    onClick={() => setPagination(prev => ({ ...prev, page }))}
-                    className={`px-3 py-1 rounded transition-colors ${
-                      page === pagination.page
-                        ? 'bg-[#e8c547] text-[#0e1b12]'
-                        : 'bg-[#0e1b12] border border-[#3e503e] text-gray-400 hover:text-[#e8c547]'
-                    }`}
-                  >
-                    {page}
-                  </button>
-                ))}
-                
+                <span className="px-3 py-1 bg-[#e8c547]/20 text-[#e8c547] rounded">
+                  {pagination.page}
+                </span>
                 <button
                   onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
                   disabled={pagination.page === pagination.pages}
@@ -307,16 +317,23 @@ export default function AdminPosts() {
             <div className="flex items-center justify-between">
               <div className="text-sm text-gray-400">
                 Total: {pagination.total} posts in database
+                {userRole === 'editor' && (
+                  <span className="ml-2 text-yellow-400">
+                    (Editor permissions: Create & Edit only)
+                  </span>
+                )}
               </div>
               <div className="flex items-center space-x-4">
                 <button className="text-gray-400 hover:text-[#e8c547] transition-colors duration-300">
                   <i className="fas fa-download mr-2"></i>
                   Export
                 </button>
-                <button className="text-gray-400 hover:text-[#e8c547] transition-colors duration-300">
-                  <i className="fas fa-upload mr-2"></i>
-                  Import
-                </button>
+                {userRole === 'admin' && (
+                  <button className="text-gray-400 hover:text-[#e8c547] transition-colors duration-300">
+                    <i className="fas fa-upload mr-2"></i>
+                    Import
+                  </button>
+                )}
               </div>
             </div>
           </div>

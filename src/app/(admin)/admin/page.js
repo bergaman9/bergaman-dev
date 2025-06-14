@@ -16,61 +16,149 @@ export default function AdminPage() {
     totalPosts: 0,
     totalViews: 0,
     totalComments: 0,
-    totalLikes: 0
+    totalContacts: 0,
+    totalMembers: 0,
+    pendingComments: 0
   });
-  const [recentPosts, setRecentPosts] = useState([]);
+  const [recentActivity, setRecentActivity] = useState([]);
+  const [systemInfo, setSystemInfo] = useState({
+    uptime: '0 days',
+    lastBackup: 'Never',
+    version: '2.0.0'
+  });
 
   useEffect(() => {
     // Check if user is already authenticated
     const authStatus = localStorage.getItem('adminAuth');
     if (authStatus === 'true') {
       setIsAuthenticated(true);
-      fetchStats();
-      fetchRecentPosts();
+      fetchDashboardData();
     }
     setIsLoading(false);
   }, []);
 
-  const fetchStats = async () => {
+  const fetchDashboardData = async () => {
     try {
-      const response = await fetch('/api/admin/posts?limit=1000');
-      const data = await response.json();
+      // Fetch all dashboard data in parallel with error handling
+      const fetchWithFallback = async (url) => {
+        try {
+          const response = await fetch(url);
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return await response.json();
+        } catch (error) {
+          console.warn(`Failed to fetch ${url}:`, error);
+          return null;
+        }
+      };
+
+      const [postsData, commentsData, contactsData, membersData] = await Promise.all([
+        fetchWithFallback('/api/admin/posts?limit=1000'),
+        fetchWithFallback('/api/admin/comments'),
+        fetchWithFallback('/api/admin/contacts'),
+        fetchWithFallback('/api/admin/members')
+      ]);
+
+      // Calculate stats with fallbacks
+      const totalPosts = postsData?.posts?.length || postsData?.length || 0;
+      const totalViews = postsData?.posts?.reduce((sum, post) => sum + (post.views || 0), 0) || 0;
+      const totalComments = commentsData?.length || 0;
+      const pendingComments = commentsData?.filter(comment => comment.status === 'pending').length || 0;
+      const totalContacts = contactsData?.length || 0;
+      const totalMembers = membersData?.length || 0;
+
+      setStats({
+        totalPosts,
+        totalViews,
+        totalComments,
+        totalContacts,
+        totalMembers,
+        pendingComments
+      });
+
+      // Set recent activity with safe data handling
+      const activities = [];
       
-      if (data.posts) {
-        const totalPosts = data.posts.length;
-        const totalViews = data.posts.reduce((sum, post) => sum + (post.views || 0), 0);
-        const totalComments = data.posts.reduce((sum, post) => sum + (post.comments?.length || 0), 0);
-        const totalLikes = data.posts.reduce((sum, post) => sum + (post.likes || 0), 0);
-        
-        setStats({
-          totalPosts,
-          totalViews,
-          totalComments,
-          totalLikes
+      // Add recent posts
+      if (postsData?.posts || Array.isArray(postsData)) {
+        const posts = postsData.posts || postsData;
+        posts.slice(0, 3).forEach(post => {
+          if (post && post.title) {
+            activities.push({
+              type: 'post',
+              title: `New post: ${post.title}`,
+              time: new Date(post.createdAt || Date.now()).toLocaleDateString(),
+              icon: 'fas fa-file-alt',
+              color: 'text-blue-400'
+            });
+          }
         });
       }
+
+      // Add recent comments
+      if (Array.isArray(commentsData)) {
+        commentsData.slice(0, 2).forEach(comment => {
+          if (comment && comment.name) {
+            activities.push({
+              type: 'comment',
+              title: `New comment from ${comment.name}`,
+              time: new Date(comment.createdAt || Date.now()).toLocaleDateString(),
+              icon: 'fas fa-comment',
+              color: 'text-green-400'
+            });
+          }
+        });
+      }
+
+      // Add recent contacts
+      if (Array.isArray(contactsData)) {
+        contactsData.slice(0, 2).forEach(contact => {
+          if (contact && contact.name) {
+            activities.push({
+              type: 'contact',
+              title: `New message from ${contact.name}`,
+              time: new Date(contact.createdAt || Date.now()).toLocaleDateString(),
+              icon: 'fas fa-envelope',
+              color: 'text-yellow-400'
+            });
+          }
+        });
+      }
+
+      // Sort by most recent
+      activities.sort((a, b) => new Date(b.time) - new Date(a.time));
+      setRecentActivity(activities.slice(0, 5));
+
     } catch (error) {
-      console.error('Error fetching stats:', error);
-      // Fallback to mock data if API fails
+      console.warn('Error fetching dashboard data:', error);
+      // Fallback to mock data
       setStats({
         totalPosts: 8,
         totalViews: 1247,
         totalComments: 23,
-        totalLikes: 156
+        totalContacts: 12,
+        totalMembers: 3,
+        pendingComments: 5
       });
-    }
-  };
-
-  const fetchRecentPosts = async () => {
-    try {
-      const response = await fetch('/api/admin/posts?limit=5');
-      const data = await response.json();
       
-      if (data.posts) {
-        setRecentPosts(data.posts);
-      }
-    } catch (error) {
-      console.error('Error fetching recent posts:', error);
+      // Set mock recent activity
+      setRecentActivity([
+        {
+          type: 'post',
+          title: 'New post: Welcome to Bergaman',
+          time: new Date().toLocaleDateString(),
+          icon: 'fas fa-file-alt',
+          color: 'text-blue-400'
+        },
+        {
+          type: 'comment',
+          title: 'New comment from visitor',
+          time: new Date().toLocaleDateString(),
+          icon: 'fas fa-comment',
+          color: 'text-green-400'
+        }
+      ]);
     }
   };
 
@@ -79,11 +167,10 @@ export default function AdminPage() {
     setLoginError('');
 
     // Simple authentication (in production, this should be server-side)
-    if (loginData.username === 'admin' && loginData.password === 'bergaman2024') {
+    if (loginData.username === 'bergasoft' && loginData.password === 'tE0&5A3&DBb!c55dm98&') {
       localStorage.setItem('adminAuth', 'true');
       setIsAuthenticated(true);
-      fetchStats();
-      fetchRecentPosts();
+      fetchDashboardData();
     } else {
       setLoginError('Invalid username or password');
     }
@@ -101,29 +188,6 @@ export default function AdminPage() {
       ...prev,
       [name]: value
     }));
-  };
-
-  const handleMigration = async () => {
-    if (confirm('This will migrate existing blog posts to MongoDB. Continue?')) {
-      try {
-        const response = await fetch('/api/admin/migrate', {
-          method: 'POST'
-        });
-        
-        const result = await response.json();
-        
-        if (response.ok) {
-          alert(`Success! ${result.message}`);
-          fetchStats(); // Refresh stats
-          fetchRecentPosts(); // Refresh recent posts
-        } else {
-          alert(`Error: ${result.error}`);
-        }
-      } catch (error) {
-        console.error('Migration error:', error);
-        alert('Migration failed. Check console for details.');
-      }
-    }
   };
 
   if (isLoading) {
@@ -144,20 +208,21 @@ export default function AdminPage() {
         <Head>
           <title>Admin Login - Bergaman Admin Panel</title>
         </Head>
-        <div className="min-h-screen bg-[#0e1b12] flex items-center justify-center px-4">
+        <div className="flex items-center justify-center min-h-[calc(100vh-200px)]">
           <div className="max-w-md w-full space-y-8">
             <div className="text-center">
-              <div className="mb-6">
-                <i className="fas fa-dragon text-6xl text-[#e8c547] mb-4"></i>
+              <div className="mb-6 relative">
+                <div className="absolute inset-0 bg-[#e8c547]/20 rounded-full blur-3xl"></div>
+                <i className="fas fa-dragon text-6xl text-[#e8c547] mb-4 relative z-10 animate-pulse"></i>
               </div>
-              <h2 className="text-3xl font-bold gradient-text">
-                Admin Portal
+              <h2 className="text-3xl font-bold bg-gradient-to-r from-[#e8c547] to-[#f4d76b] bg-clip-text text-transparent">
+                Bergaman Control Panel
               </h2>
               <p className="mt-2 text-gray-400">
-                Enter the Dragon's Domain
+                Enter the Dragon's Domain Control Center
               </p>
             </div>
-            <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-8 rounded-lg">
+            <div className="bg-gradient-to-br from-[#2e3d29]/40 to-[#1a2e1a]/40 backdrop-blur-md border border-[#e8c547]/20 p-8 rounded-xl shadow-2xl">
               <form className="space-y-6" onSubmit={handleLogin}>
                 <div>
                   <label htmlFor="username" className="block text-sm font-medium text-gray-300 mb-2">
@@ -199,10 +264,10 @@ export default function AdminPage() {
 
                 <button
                   type="submit"
-                  className="w-full bg-[#e8c547] hover:bg-[#d4b445] text-[#0e1b12] py-3 px-4 rounded-lg font-medium transition-all duration-300 hover:scale-105"
+                  className="w-full bg-gradient-to-r from-[#e8c547] to-[#d4b445] text-[#0e1b12] py-3 px-4 rounded-lg font-semibold hover:from-[#d4b445] hover:to-[#c4a43d] transition-all duration-300 transform hover:scale-105 shadow-lg"
                 >
                   <i className="fas fa-sign-in-alt mr-2"></i>
-                  Enter Portal
+                  Enter Control Panel
                 </button>
               </form>
             </div>
@@ -216,197 +281,234 @@ export default function AdminPage() {
   return (
     <>
       <Head>
-        <title>Admin Dashboard - Bergaman Admin Panel</title>
+        <title>Dashboard - Bergaman Admin Panel</title>
       </Head>
-      <div className="space-y-8">
+      <div className="space-y-6">
         {/* Welcome Header */}
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-4xl font-bold gradient-text mb-2">
-              <i className="fas fa-dragon mr-3"></i>
-              Dragon's Command Center
-            </h1>
-            <p className="text-gray-400">
-              Welcome back, Bergaman! Manage your digital domain.
-            </p>
-          </div>
-          <div className="flex items-center space-x-4">
-            <button
-              onClick={handleMigration}
-              className="bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/50 text-blue-300 px-6 py-3 rounded-lg font-medium transition-all duration-300 hover:scale-105"
-            >
-              <i className="fas fa-database mr-2"></i>
-              Migrate Posts
-            </button>
+        <div className="bg-gradient-to-r from-[#2e3d29]/40 to-[#1a2e1a]/40 backdrop-blur-md border border-[#e8c547]/20 rounded-xl p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-[#e8c547] to-[#f4d76b] bg-clip-text text-transparent">
+                Welcome back, Bergaman! 🐉
+              </h1>
+              <p className="text-gray-400 mt-2">Here's what's happening with your domain today</p>
+            </div>
+            <div className="text-right">
+              <p className="text-sm text-gray-400">Last login</p>
+              <p className="text-[#e8c547] font-semibold">{new Date().toLocaleDateString()}</p>
+            </div>
           </div>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg transition-all duration-300">
-            <div className="flex items-center">
-              <div className="p-3 bg-blue-600/20 rounded-lg">
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
+          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg hover:border-[#e8c547]/30 transition-colors duration-300">
+            <div className="flex items-center space-x-3">
+              <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center">
                 <i className="fas fa-file-alt text-blue-400 text-xl"></i>
               </div>
-              <div className="ml-4">
-                <p className="text-sm text-gray-400">Total Posts</p>
-                <p className="text-2xl font-bold text-[#e8c547]">{stats.totalPosts}</p>
+              <div>
+                <p className="text-2xl font-bold text-blue-400">{stats.totalPosts}</p>
+                <p className="text-gray-400 text-sm">Total Posts</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg transition-all duration-300">
-            <div className="flex items-center">
-              <div className="p-3 bg-green-600/20 rounded-lg">
+          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg hover:border-[#e8c547]/30 transition-colors duration-300">
+            <div className="flex items-center space-x-3">
+              <div className="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center">
                 <i className="fas fa-eye text-green-400 text-xl"></i>
               </div>
-              <div className="ml-4">
-                <p className="text-sm text-gray-400">Total Views</p>
-                <p className="text-2xl font-bold text-[#e8c547]">{stats.totalViews.toLocaleString()}</p>
+              <div>
+                <p className="text-2xl font-bold text-green-400">{stats.totalViews.toLocaleString()}</p>
+                <p className="text-gray-400 text-sm">Total Views</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg transition-all duration-300">
-            <div className="flex items-center">
-              <div className="p-3 bg-red-600/20 rounded-lg">
-                <i className="fas fa-heart text-red-400 text-xl"></i>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm text-gray-400">Total Likes</p>
-                <p className="text-2xl font-bold text-[#e8c547]">{stats.totalLikes}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg transition-all duration-300">
-            <div className="flex items-center">
-              <div className="p-3 bg-purple-600/20 rounded-lg">
+          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg hover:border-[#e8c547]/30 transition-colors duration-300">
+            <div className="flex items-center space-x-3">
+              <div className="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center">
                 <i className="fas fa-comments text-purple-400 text-xl"></i>
               </div>
-              <div className="ml-4">
-                <p className="text-sm text-gray-400">Years Coding</p>
-                <p className="text-2xl font-bold text-[#e8c547]">{new Date().getFullYear() - 2022}</p>
+              <div>
+                <p className="text-2xl font-bold text-purple-400">{stats.totalComments}</p>
+                <p className="text-gray-400 text-sm">Comments</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg hover:border-[#e8c547]/30 transition-colors duration-300">
+            <div className="flex items-center space-x-3">
+              <div className="w-12 h-12 bg-yellow-500/20 rounded-lg flex items-center justify-center">
+                <i className="fas fa-envelope text-yellow-400 text-xl"></i>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-yellow-400">{stats.totalContacts}</p>
+                <p className="text-gray-400 text-sm">Messages</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg hover:border-[#e8c547]/30 transition-colors duration-300">
+            <div className="flex items-center space-x-3">
+              <div className="w-12 h-12 bg-indigo-500/20 rounded-lg flex items-center justify-center">
+                <i className="fas fa-users text-indigo-400 text-xl"></i>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-indigo-400">{stats.totalMembers}</p>
+                <p className="text-gray-400 text-sm">Team Members</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg hover:border-[#e8c547]/30 transition-colors duration-300">
+            <div className="flex items-center space-x-3">
+              <div className="w-12 h-12 bg-red-500/20 rounded-lg flex items-center justify-center">
+                <i className="fas fa-clock text-red-400 text-xl"></i>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-red-400">{stats.pendingComments}</p>
+                <p className="text-gray-400 text-sm">Pending</p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Quick Actions */}
-        <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg mb-8">
-          <h2 className="text-xl font-bold gradient-text mb-6">
-            <i className="fas fa-bolt mr-2"></i>
-            Quick Actions
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Link
-              href="/admin/posts/new"
-              className="bg-green-600/20 hover:bg-green-600/30 border border-green-500/50 text-green-300 p-4 rounded-lg transition-all duration-300 hover:scale-105 block text-center"
-            >
-              <i className="fas fa-plus text-2xl mb-3 block"></i>
-              <h3 className="font-semibold mb-1">New Post</h3>
-              <p className="text-sm opacity-90">Create new blog post</p>
-            </Link>
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Recent Activity */}
+          <div className="lg:col-span-2 bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 rounded-lg p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-semibold text-[#e8c547] flex items-center">
+                <i className="fas fa-clock mr-3"></i>
+                Recent Activity
+              </h2>
+              <Link 
+                href="/admin/posts" 
+                className="text-sm text-gray-400 hover:text-[#e8c547] transition-colors duration-300"
+              >
+                View all →
+              </Link>
+            </div>
+            
+            <div className="space-y-4">
+              {recentActivity.length > 0 ? (
+                recentActivity.map((activity, index) => (
+                  <div key={index} className="flex items-center space-x-4 p-4 bg-[#1a2e1a]/50 rounded-lg border border-[#3e503e]/20">
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center bg-gray-500/20`}>
+                      <i className={`${activity.icon} ${activity.color}`}></i>
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-[#d1d5db] font-medium">{activity.title}</p>
+                      <p className="text-gray-400 text-sm">{activity.time}</p>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-8">
+                  <i className="fas fa-clock text-4xl text-gray-600 mb-4"></i>
+                  <p className="text-gray-400">No recent activity</p>
+                </div>
+              )}
+            </div>
+          </div>
 
-            <Link
-              href="/admin/posts"
-              className="bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/50 text-blue-300 p-4 rounded-lg transition-all duration-300 hover:scale-105 block text-center"
-            >
-              <i className="fas fa-edit text-2xl mb-3 block"></i>
-              <h3 className="font-semibold mb-1">Manage Posts</h3>
-              <p className="text-sm opacity-90">Edit existing posts</p>
-            </Link>
+          {/* Quick Actions */}
+          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 rounded-lg p-6">
+            <h2 className="text-xl font-semibold text-[#e8c547] mb-6 flex items-center">
+              <i className="fas fa-bolt mr-3"></i>
+              Quick Actions
+            </h2>
+            
+            <div className="space-y-3">
+              <Link
+                href="/admin/posts"
+                className="flex items-center space-x-3 p-4 bg-[#1a2e1a]/50 rounded-lg border border-[#3e503e]/20 hover:border-[#e8c547]/30 transition-colors duration-300 group"
+              >
+                <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center group-hover:bg-blue-500/30 transition-colors duration-300">
+                  <i className="fas fa-plus text-blue-400"></i>
+                </div>
+                <div>
+                  <p className="text-[#d1d5db] font-medium">New Post</p>
+                  <p className="text-gray-400 text-sm">Create a new blog post</p>
+                </div>
+              </Link>
 
-            <Link
-              href="/admin/content"
-              className="bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/50 text-purple-300 p-4 rounded-lg transition-all duration-300 hover:scale-105 block text-center"
-            >
-              <i className="fas fa-cog text-2xl mb-3 block"></i>
-              <h3 className="font-semibold mb-1">Site Settings</h3>
-              <p className="text-sm opacity-90">Update site content</p>
-            </Link>
+              <Link
+                href="/admin/comments"
+                className="flex items-center space-x-3 p-4 bg-[#1a2e1a]/50 rounded-lg border border-[#3e503e]/20 hover:border-[#e8c547]/30 transition-colors duration-300 group"
+              >
+                <div className="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center group-hover:bg-purple-500/30 transition-colors duration-300">
+                  <i className="fas fa-comments text-purple-400"></i>
+                </div>
+                <div>
+                  <p className="text-[#d1d5db] font-medium">Moderate Comments</p>
+                  <p className="text-gray-400 text-sm">{stats.pendingComments} pending approval</p>
+                </div>
+              </Link>
 
-            <Link
-              href="/"
-              target="_blank"
-              className="bg-gray-600/20 hover:bg-gray-600/30 border border-gray-500/50 text-gray-300 p-4 rounded-lg transition-all duration-300 hover:scale-105 block text-center"
-            >
-              <i className="fas fa-external-link-alt text-2xl mb-3 block"></i>
-              <h3 className="font-semibold mb-1">View Site</h3>
-              <p className="text-sm opacity-90">Visit public website</p>
-            </Link>
+              <Link
+                href="/admin/members"
+                className="flex items-center space-x-3 p-4 bg-[#1a2e1a]/50 rounded-lg border border-[#3e503e]/20 hover:border-[#e8c547]/30 transition-colors duration-300 group"
+              >
+                <div className="w-10 h-10 bg-indigo-500/20 rounded-lg flex items-center justify-center group-hover:bg-indigo-500/30 transition-colors duration-300">
+                  <i className="fas fa-user-plus text-indigo-400"></i>
+                </div>
+                <div>
+                  <p className="text-[#d1d5db] font-medium">Add Member</p>
+                  <p className="text-gray-400 text-sm">Invite team members</p>
+                </div>
+              </Link>
+
+              <Link
+                href="/admin/settings"
+                className="flex items-center space-x-3 p-4 bg-[#1a2e1a]/50 rounded-lg border border-[#3e503e]/20 hover:border-[#e8c547]/30 transition-colors duration-300 group"
+              >
+                <div className="w-10 h-10 bg-gray-500/20 rounded-lg flex items-center justify-center group-hover:bg-gray-500/30 transition-colors duration-300">
+                  <i className="fas fa-cog text-gray-400"></i>
+                </div>
+                <div>
+                  <p className="text-[#d1d5db] font-medium">Settings</p>
+                  <p className="text-gray-400 text-sm">Configure your site</p>
+                </div>
+              </Link>
+            </div>
           </div>
         </div>
 
-        {/* Recent Posts */}
-        <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold gradient-text">
-              <i className="fas fa-clock mr-2"></i>
-              Recent Posts
-            </h2>
-            <Link
-              href="/admin/posts"
-              className="text-[#e8c547] hover:text-[#d4b445] transition-colors duration-300"
-            >
-              View All →
-            </Link>
-          </div>
+        {/* System Status */}
+        <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 rounded-lg p-6">
+          <h2 className="text-xl font-semibold text-[#e8c547] mb-6 flex items-center">
+            <i className="fas fa-server mr-3"></i>
+            System Status
+          </h2>
           
-          {recentPosts.length === 0 ? (
-            <div className="text-center py-8 text-gray-400">
-              <i className="fas fa-file-alt text-4xl mb-4 block"></i>
-              <p>No posts found. Create your first post!</p>
-              <Link
-                href="/admin/posts/new"
-                className="inline-block mt-4 bg-[#e8c547] hover:bg-[#d4b445] text-[#0e1b12] px-6 py-2 rounded-lg font-medium transition-all duration-300"
-              >
-                Create Post
-              </Link>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="flex items-center space-x-3">
+              <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+              <div>
+                <p className="text-[#d1d5db] font-medium">System Status</p>
+                <p className="text-green-400 text-sm">All systems operational</p>
+              </div>
             </div>
-          ) : (
-            <div className="space-y-4">
-              {recentPosts.map((post) => (
-                <div key={post._id} className="flex items-center justify-between p-4 bg-[#0e1b12] rounded-lg border border-[#3e503e]">
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-[#e8c547] mb-1">{post.title}</h3>
-                    <p className="text-sm text-gray-400 mb-2">{post.description?.substring(0, 100)}...</p>
-                    <div className="flex items-center text-xs text-gray-500 space-x-4">
-                      <span>
-                        <i className="fas fa-calendar mr-1"></i>
-                        {new Date(post.createdAt).toLocaleDateString()}
-                      </span>
-                      <span>
-                        <i className="fas fa-eye mr-1"></i>
-                        {post.views || 0} views
-                      </span>
-                      <span>
-                        <i className="fas fa-heart mr-1"></i>
-                        {post.likes || 0} likes
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-2 ml-4">
-                    <Link
-                      href={`/blog/${post.slug}`}
-                      target="_blank"
-                      className="text-gray-400 hover:text-[#e8c547] transition-colors duration-300 p-2"
-                      title="View Post"
-                    >
-                      <i className="fas fa-eye"></i>
-                    </Link>
-                    <Link
-                      href={`/admin/posts/edit/${post._id}`}
-                      className="text-gray-400 hover:text-[#e8c547] transition-colors duration-300 p-2"
-                      title="Edit Post"
-                    >
-                      <i className="fas fa-edit"></i>
-                    </Link>
-                  </div>
-                </div>
-              ))}
+            
+            <div className="flex items-center space-x-3">
+              <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+              <div>
+                <p className="text-[#d1d5db] font-medium">Version</p>
+                <p className="text-blue-400 text-sm">v{systemInfo.version}</p>
+              </div>
             </div>
-          )}
+            
+            <div className="flex items-center space-x-3">
+              <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+              <div>
+                <p className="text-[#d1d5db] font-medium">Last Backup</p>
+                <p className="text-yellow-400 text-sm">{systemInfo.lastBackup}</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </>

@@ -9,34 +9,162 @@ const suggestions = {
   games: [
     {
       title: "The Witcher 3: Wild Hunt",
-      description: "An epic open-world RPG with incredible storytelling and immersive gameplay.",
-      image: "/images/games/witcher3.png",
+      description: "The best game on my list. Every quest is enjoyable. Even side quests have their own stories. Long gameplay duration and a game that makes you fall in love with it.",
+      image: "/images/games/witcher3.jpg",
       genre: "RPG",
-      rating: 9.5,
+      rating: 10,
       platform: "PC, PlayStation, Xbox, Switch"
     },
     {
-      title: "Cyberpunk 2077",
-      description: "A futuristic open-world action RPG set in Night City.",
-      image: "/images/games/cyberpunk2077.png",
-      genre: "Action RPG",
-      rating: 8.5,
-      platform: "PC, PlayStation, Xbox"
-    },
-    {
-      title: "Elden Ring",
-      description: "A challenging action RPG from FromSoftware with an open world.",
-      image: "/images/games/eldenring.jpg",
-      genre: "Action RPG",
-      rating: 9.7,
-      platform: "PC, PlayStation, Xbox"
-    },
-    {
       title: "Red Dead Redemption 2",
-      description: "An immersive western-themed action-adventure game.",
-      image: "/images/rdr2.jpg",
+      description: "I was wondering if a quality game would come out that could give me the same taste as Witcher 3. Rockstar succeeded in this. A wonderful game in every way.",
+      image: "/images/games/rdr2.jpg",
       genre: "Action-Adventure",
-      rating: 9.8,
+      rating: 10,
+      platform: "PC, PlayStation, Xbox"
+    },
+    {
+      title: "Grand Theft Auto: Vice City",
+      description: "Rockstar games never get old. Even though I finished it in 2021, I still enjoyed playing it.",
+      image: "/images/games/gtavicecity.jpg",
+      genre: "Action-Adventure",
+      rating: 10,
+      platform: "PC, PlayStation, Xbox"
+    },
+    {
+      title: "Grand Theft Auto V",
+      description: "No need to say much, Rockstar once again showed the market how to make games.",
+      image: "/images/games/gtav.jpg",
+      genre: "Action-Adventure",
+      rating: 10,
+      platform: "PC, PlayStation, Xbox"
+    },
+    {
+      title: "Detroit: Become Human",
+      description: "I really loved this genre. Making your own decisions and having different storylines between different characters are engaging points. They gamified the relationship between robots and humans interactively.",
+      image: "/images/games/detroit.jpg",
+      genre: "Interactive Drama",
+      rating: 10,
+      platform: "PC, PlayStation"
+    },
+    {
+      title: "God of War",
+      description: "A wonderful production that makes you love it with its story and gameplay mechanics, makes you play and gives you pleasure while playing. We become partners in the adventure of Kratos and Atreus.",
+      image: "/images/games/godofwar.jpg",
+      genre: "Action-Adventure",
+      rating: 10,
+      platform: "PC, PlayStation"
+    },
+    {
+      title: "Sleeping Dogs",
+      description: "As a police officer in Hong Kong, we infiltrate the gang we want to defeat and do various missions. Side missions don't bore you either. A wonderful game with graphics and gameplay for its year.",
+      image: "/images/games/sleepingdogs.jpg",
+      genre: "Action-Adventure",
+      rating: 10,
+      platform: "PC, PlayStation, Xbox"
+    },
+    {
+      title: "Wolfenstein: The New Colossus",
+      description: "It was a mystery whether the main character survived at the end of the previous series. In this game, he was found seriously injured. Our friend was killed and we wore his armor. The woman whose face we destroyed in the previous game found us and our goal in the game is to kill her.",
+      image: "/images/games/wolfenstein2.jpg",
+      genre: "FPS",
+      rating: 10,
+      platform: "PC, PlayStation, Xbox, Switch"
+    },
+    {
+      title: "Assassin's Creed Origins",
+      description: "It tells the establishment of the assassin organization. We embark on adventures with Bayek in Hellenistic Egypt. It took the series to a different dimension, I really liked it.",
+      image: "/images/games/acorigins.jpg",
+      genre: "Action RPG",
+      rating: 9,
+      platform: "PC, PlayStation, Xbox"
+    },
+    {
+      title: "Assassin's Creed Odyssey",
+      description: "Set in Ancient Greece. We play Kassandra. While trying to find and bring our family together, we try to destroy the Cosmos gang. After destroying it, we rule the country together with the leader of Cosmos.",
+      image: "/images/games/acodyssey.jpg",
+      genre: "Action RPG",
+      rating: 9,
+      platform: "PC, PlayStation, Xbox"
+    },
+    {
+      title: "Assassin's Creed Valhalla",
+      description: "Although I couldn't play at the highest level graphically due to optimization problems, I didn't like it the most atmospherically among the last trilogy, but I found it more successful in terms of mission design.",
+      image: "/images/games/acvalhalla.jpg",
+      genre: "Action RPG",
+      rating: 9,
+      platform: "PC, PlayStation, Xbox"
+    },
+    {
+      title: "Beyond: Two Souls",
+      description: "I loved these movie-like games, I finished this game with love too.",
+      image: "/images/games/beyondtwosouls.jpg",
+      genre: "Interactive Drama",
+      rating: 9,
+      platform: "PC, PlayStation"
+    },
+    {
+      title: "Battlefield V",
+      description: "It deals with different stories from World War II. It's short but each chapter has its own dynamics and fun.",
+      image: "/images/games/battlefieldv.jpg",
+      genre: "FPS",
+      rating: 9,
+      platform: "PC, PlayStation, Xbox"
+    },
+    {
+      title: "Wolfenstein: The New Order",
+      description: "A magnificent FPS experience. A perfect game with very fluid experience and carefully prepared level designs and shooting feel. Especially those music that slows down action times prevented me from leaving the game.",
+      image: "/images/games/wolfenstein1.jpg",
+      genre: "FPS",
+      rating: 9,
+      platform: "PC, PlayStation, Xbox"
+    },
+    {
+      title: "Wolfenstein: The Old Blood",
+      description: "The story of the main game has been expanded by adding a few new mechanics and weapons. I played with the same pleasure as the main game. This game takes us to a time when the war has not yet ended and the Nazis have not won.",
+      image: "/images/games/wolfensteinold.jpg",
+      genre: "FPS",
+      rating: 9,
+      platform: "PC, PlayStation, Xbox"
+    },
+    {
+      title: "Watch Dogs 2",
+      description: "A game that left a good place in my mind. It has improved compared to the first game both in terms of story and gameplay. Especially remote-controlled vehicles made stealth fun.",
+      image: "/images/games/watchdogs2.jpg",
+      genre: "Action-Adventure",
+      rating: 9,
+      platform: "PC, PlayStation, Xbox"
+    },
+    {
+      title: "Need for Speed Heat",
+      description: "A flowing game when it gets interesting. Its main story is about the struggle between police and street racers. Driving dynamics are very good, the map is lively.",
+      image: "/images/games/nfsheat.jpg",
+      genre: "Racing",
+      rating: 9,
+      platform: "PC, PlayStation, Xbox"
+    },
+    {
+      title: "Grand Theft Auto IV",
+      description: "Niko Bellic comes to Liberty City with the hope of living a good life in the messages his cousin wrote, but realizes that things are not like that at all and gets involved in many dirty jobs to make money. He takes revenge and loses the girl he likes in this cause.",
+      image: "/images/games/gtaiv.jpg",
+      genre: "Action-Adventure",
+      rating: 9,
+      platform: "PC, PlayStation, Xbox"
+    },
+    {
+      title: "Forza Horizon 5",
+      description: "I can say that knowing English provides an advantage in games and increases the pleasure taken from the game. Graphic quality has increased over Forza Horizon 4 and the map has completely changed, other things seem to be as usual. I can say it's the best series among car games for me.",
+      image: "/images/games/forzahorizon5.jpg",
+      genre: "Racing",
+      rating: 9,
+      platform: "PC, Xbox"
+    },
+    {
+      title: "Mafia II",
+      description: "A mafia game with a great story. It makes you live the mafia atmosphere. It manages to make you play without boring you. This is the first game I met with this series. That's why it has a special place.",
+      image: "/images/games/mafia2.jpg",
+      genre: "Action-Adventure",
+      rating: 9,
       platform: "PC, PlayStation, Xbox"
     }
   ],
@@ -94,6 +222,33 @@ const suggestions = {
       year: 2017,
       director: "Denis Villeneuve",
       rating: 8.9
+    },
+    {
+      title: "Pulp Fiction",
+      description: "Quentin Tarantino's non-linear crime masterpiece.",
+      image: "/images/movies/pulpfiction.png",
+      genre: "Crime Drama",
+      year: 1994,
+      director: "Quentin Tarantino",
+      rating: 9.4
+    },
+    {
+      title: "The Dark Knight",
+      description: "Christopher Nolan's Batman masterpiece with Heath Ledger's iconic Joker.",
+      image: "/images/movies/darkknight.png",
+      genre: "Superhero Crime",
+      year: 2008,
+      director: "Christopher Nolan",
+      rating: 9.5
+    },
+    {
+      title: "Fight Club",
+      description: "A psychological thriller about consumerism and identity.",
+      image: "/images/movies/fightclub.png",
+      genre: "Psychological Thriller",
+      year: 1999,
+      director: "David Fincher",
+      rating: 9.1
     }
   ],
   books: [
@@ -168,6 +323,113 @@ const suggestions = {
       genre: "Science Fiction",
       year: 2011,
       rating: 8.9
+    },
+    {
+      title: "Atomic Habits",
+      description: "James Clear's guide to building good habits and breaking bad ones.",
+      image: "/images/books/atomichabits.png",
+      author: "James Clear",
+      genre: "Self-Help",
+      year: 2018,
+      rating: 8.8
+    }
+  ],
+  links: [
+    {
+      title: "GitHub",
+      description: "The world's leading software development platform and version control system.",
+      url: "https://github.com",
+      category: "Development",
+      icon: "fab fa-github",
+      color: "#333"
+    },
+    {
+      title: "Stack Overflow",
+      description: "The largest online community for programmers to learn and share knowledge.",
+      url: "https://stackoverflow.com",
+      category: "Development",
+      icon: "fab fa-stack-overflow",
+      color: "#f48024"
+    },
+    {
+      title: "MDN Web Docs",
+      description: "Comprehensive documentation for web technologies including HTML, CSS, and JavaScript.",
+      url: "https://developer.mozilla.org",
+      category: "Documentation",
+      icon: "fab fa-firefox-browser",
+      color: "#ff7139"
+    },
+    {
+      title: "React Documentation",
+      description: "Official React documentation with guides, API reference, and tutorials.",
+      url: "https://react.dev",
+      category: "Documentation",
+      icon: "fab fa-react",
+      color: "#61dafb"
+    },
+    {
+      title: "Next.js Documentation",
+      description: "Complete guide to Next.js framework for production-ready React applications.",
+      url: "https://nextjs.org/docs",
+      category: "Documentation",
+      icon: "fas fa-arrow-right",
+      color: "#000"
+    },
+    {
+      title: "Tailwind CSS",
+      description: "A utility-first CSS framework for rapidly building custom user interfaces.",
+      url: "https://tailwindcss.com",
+      category: "CSS Framework",
+      icon: "fas fa-wind",
+      color: "#06b6d4"
+    },
+    {
+      title: "Vercel",
+      description: "The platform for frontend developers, providing speed and reliability.",
+      url: "https://vercel.com",
+      category: "Deployment",
+      icon: "fas fa-triangle",
+      color: "#000"
+    },
+    {
+      title: "MongoDB Atlas",
+      description: "Cloud-based MongoDB database service with global clusters.",
+      url: "https://www.mongodb.com/atlas",
+      category: "Database",
+      icon: "fas fa-leaf",
+      color: "#47a248"
+    },
+    {
+      title: "VS Code",
+      description: "Free source-code editor with debugging, task running, and version control.",
+      url: "https://code.visualstudio.com",
+      category: "Editor",
+      icon: "fas fa-code",
+      color: "#007acc"
+    },
+    {
+      title: "Figma",
+      description: "Collaborative interface design tool for creating beautiful user interfaces.",
+      url: "https://www.figma.com",
+      category: "Design",
+      icon: "fab fa-figma",
+      color: "#f24e1e"
+    },
+    {
+      title: "Dribbble",
+      description: "Community of designers sharing screenshots of their work, process, and projects.",
+      url: "https://dribbble.com",
+      category: "Design",
+      icon: "fab fa-dribbble",
+      color: "#ea4c89"
+    },
+    {
+      title: "Behance",
+      description: "Creative platform to showcase and discover creative work from around the world.",
+      url: "https://www.behance.net",
+      category: "Design",
+      icon: "fab fa-behance",
+      color: "#1769ff"
     }
   ]
 };
@@ -177,7 +439,8 @@ export default function Suggestions() {
   const [showAll, setShowAll] = useState({
     games: false,
     movies: false,
-    books: false
+    books: false,
+    links: false
   });
   const [modalImage, setModalImage] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -203,7 +466,8 @@ export default function Suggestions() {
     if (showAll[category]) {
       return items;
     }
-    return items.slice(0, 4);
+    // Show 8 items (2 rows of 4 columns) before showing "Show More" button
+    return items.slice(0, 8);
   };
 
   const renderStars = (rating) => {
@@ -259,7 +523,7 @@ export default function Suggestions() {
         {/* Tab Navigation */}
         <section className="mb-8 slide-in-left">
           <div className="flex justify-center">
-            <div className="flex bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 rounded-lg p-2">
+            <div className="flex bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 rounded-lg p-2 gap-2">
               <button
                 onClick={() => setActiveTab('games')}
                 className={`flex items-center px-6 py-3 rounded-lg font-medium transition-all duration-300 ${
@@ -293,6 +557,17 @@ export default function Suggestions() {
                 <i className="fas fa-book mr-2"></i>
                 Books
               </button>
+              <button
+                onClick={() => setActiveTab('links')}
+                className={`flex items-center px-6 py-3 rounded-lg font-medium transition-all duration-300 ${
+                  activeTab === 'links'
+                    ? 'bg-[#e8c547] text-[#0e1b12]'
+                    : 'text-[#d1d5db] hover:text-[#e8c547] hover:bg-[#3e503e]/30'
+                }`}
+              >
+                <i className="fas fa-link mr-2"></i>
+                Links
+              </button>
             </div>
           </div>
         </section>
@@ -300,7 +575,7 @@ export default function Suggestions() {
         {/* Games Section */}
         {activeTab === 'games' && (
           <section className="slide-in-right">
-            <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg transition-all duration-300 hover:border-[#e8c547]/30 hover:bg-[#2e3d29]/40">
+            <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg">
               <h2 className="text-2xl font-bold gradient-text mb-6 flex items-center">
                 <i className="fas fa-gamepad mr-3"></i>
                 Video Games
@@ -308,12 +583,12 @@ export default function Suggestions() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {getDisplayItems(suggestions.games, 'games').map((game, index) => (
                   <div key={index} className="bg-[#0e1b12] border border-[#3e503e] rounded-lg overflow-hidden hover:border-[#e8c547]/50 transition-all duration-300">
-                    <div className="relative h-48 cursor-pointer" onClick={() => openModal(game.image, game.title)}>
+                    <div className="relative h-64 cursor-pointer" onClick={() => openModal(game.image, game.title)}>
                       <Image
                         src={game.image}
                         alt={game.title}
                         fill
-                        className="object-cover hover:scale-105 transition-transform duration-300"
+                        className="object-cover transition-transform duration-300"
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                       />
                     </div>
@@ -341,7 +616,7 @@ export default function Suggestions() {
                   </div>
                 ))}
               </div>
-              {suggestions.games.length > 4 && (
+              {suggestions.games.length > 8 && (
                 <div className="text-center mt-6">
                   <button
                     onClick={() => toggleShowAll('games')}
@@ -358,7 +633,7 @@ export default function Suggestions() {
         {/* Movies Section */}
         {activeTab === 'movies' && (
           <section className="slide-in-right">
-            <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg transition-all duration-300 hover:border-[#e8c547]/30 hover:bg-[#2e3d29]/40">
+            <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg">
               <h2 className="text-2xl font-bold gradient-text mb-6 flex items-center">
                 <i className="fas fa-film mr-3"></i>
                 Movies
@@ -366,12 +641,12 @@ export default function Suggestions() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {getDisplayItems(suggestions.movies, 'movies').map((movie, index) => (
                   <div key={index} className="bg-[#0e1b12] border border-[#3e503e] rounded-lg overflow-hidden hover:border-[#e8c547]/50 transition-all duration-300">
-                    <div className="relative h-48 cursor-pointer" onClick={() => openModal(movie.image, movie.title)}>
+                    <div className="relative h-64 cursor-pointer" onClick={() => openModal(movie.image, movie.title)}>
                       <Image
                         src={movie.image}
                         alt={movie.title}
                         fill
-                        className="object-cover hover:scale-105 transition-transform duration-300"
+                        className="object-cover transition-transform duration-300"
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                       />
                     </div>
@@ -403,7 +678,7 @@ export default function Suggestions() {
                   </div>
                 ))}
               </div>
-              {suggestions.movies.length > 4 && (
+              {suggestions.movies.length > 8 && (
                 <div className="text-center mt-6">
                   <button
                     onClick={() => toggleShowAll('movies')}
@@ -420,57 +695,117 @@ export default function Suggestions() {
         {/* Books Section */}
         {activeTab === 'books' && (
           <section className="slide-in-right">
-            <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg transition-all duration-300 hover:border-[#e8c547]/30 hover:bg-[#2e3d29]/40">
+            <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg">
               <h2 className="text-2xl font-bold gradient-text mb-6 flex items-center">
                 <i className="fas fa-book mr-3"></i>
                 Books
               </h2>
-                              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
-                  {getDisplayItems(suggestions.books, 'books').map((book, index) => (
-                    <div key={index} className="bg-[#0e1b12] border border-[#3e503e] rounded-lg overflow-hidden hover:border-[#e8c547]/50 transition-all duration-300">
-                      <div className="relative h-64 cursor-pointer" onClick={() => openModal(book.image, book.title)}>
-                        <Image
-                          src={book.image}
-                          alt={book.title}
-                          fill
-                          className="object-cover hover:scale-105 transition-transform duration-300"
-                          sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 16vw"
-                        />
-                      </div>
-                      <div className="p-3">
-                        <h3 className="font-bold text-[#e8c547] mb-2 text-sm leading-tight">{book.title}</h3>
-                        <div className="space-y-1 text-xs">
-                          <div className="flex flex-col">
-                            <span className="text-gray-400">Author:</span>
-                            <span className="text-[#e8c547] text-xs leading-tight">{book.author}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-gray-400">Genre:</span>
-                            <span className="text-[#e8c547]">{book.genre}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-gray-400">Year:</span>
-                            <span className="text-[#e8c547]">{book.year}</span>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-gray-400">Rating:</span>
-                            <div className="flex items-center space-x-1">
-                              {renderStars(book.rating / 2)}
-                              <span className="text-[#e8c547] ml-1">{book.rating}/10</span>
-                            </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {getDisplayItems(suggestions.books, 'books').map((book, index) => (
+                  <div key={index} className="bg-[#0e1b12] border border-[#3e503e] rounded-lg overflow-hidden transition-all duration-300">
+                    <div className="relative h-80 cursor-pointer" onClick={() => openModal(book.image, book.title)}>
+                      <Image
+                        src={book.image}
+                        alt={book.title}
+                        fill
+                        className="object-cover transition-transform duration-300"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                      />
+                    </div>
+                    <div className="p-4">
+                      <h3 className="font-bold text-[#e8c547] mb-2 text-sm leading-tight">{book.title}</h3>
+                      <div className="space-y-2 text-xs">
+                        <div className="flex flex-col">
+                          <span className="text-gray-400">Author:</span>
+                          <span className="text-[#e8c547] text-xs leading-tight">{book.author}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Genre:</span>
+                          <span className="text-[#e8c547]">{book.genre}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Year:</span>
+                          <span className="text-[#e8c547]">{book.year}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-gray-400">Rating:</span>
+                          <div className="flex items-center space-x-1">
+                            {renderStars(book.rating / 2)}
+                            <span className="text-[#e8c547] ml-1">{book.rating}/10</span>
                           </div>
                         </div>
                       </div>
                     </div>
-                  ))}
+                  </div>
+                ))}
               </div>
-              {suggestions.books.length > 4 && (
+              {suggestions.books.length > 8 && (
                 <div className="text-center mt-6">
                   <button
                     onClick={() => toggleShowAll('books')}
                     className="bg-[#e8c547] text-[#0e1b12] px-6 py-3 rounded-lg font-medium hover:bg-[#d4b445] transition-colors duration-300"
                   >
                     {showAll.books ? 'Show Less Books' : 'Show More Books'}
+                  </button>
+                </div>
+              )}
+            </div>
+          </section>
+        )}
+
+        {/* Links Section */}
+        {activeTab === 'links' && (
+          <section className="slide-in-right">
+            <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg">
+              <h2 className="text-2xl font-bold gradient-text mb-6 flex items-center">
+                <i className="fas fa-link mr-3"></i>
+                Useful Links
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {getDisplayItems(suggestions.links, 'links').map((link, index) => (
+                  <a 
+                    key={index} 
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-[#0e1b12] border border-[#3e503e] rounded-lg p-6 transition-all duration-300 hover:border-[#e8c547]/50 hover:transform hover:scale-105 group"
+                  >
+                    <div className="flex items-center mb-4">
+                      <div 
+                        className="w-12 h-12 rounded-lg flex items-center justify-center mr-4"
+                        style={{ backgroundColor: `${link.color}20`, border: `1px solid ${link.color}40` }}
+                      >
+                        <i 
+                          className={`${link.icon} text-xl`}
+                          style={{ color: link.color }}
+                        ></i>
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-bold text-[#e8c547] mb-1 group-hover:text-white transition-colors duration-300">
+                          {link.title}
+                        </h3>
+                        <span className="text-xs text-gray-400 bg-[#2e3d29]/50 px-2 py-1 rounded">
+                          {link.category}
+                        </span>
+                      </div>
+                    </div>
+                    <p className="text-sm text-gray-300 leading-relaxed">
+                      {link.description}
+                    </p>
+                    <div className="mt-4 flex items-center text-xs text-[#e8c547] group-hover:text-white transition-colors duration-300">
+                      <span>Visit Site</span>
+                      <i className="fas fa-external-link-alt ml-2"></i>
+                    </div>
+                  </a>
+                ))}
+              </div>
+              {suggestions.links.length > 8 && (
+                <div className="text-center mt-6">
+                  <button
+                    onClick={() => toggleShowAll('links')}
+                    className="bg-[#e8c547] text-[#0e1b12] px-6 py-3 rounded-lg font-medium hover:bg-[#d4b445] transition-colors duration-300"
+                  >
+                    {showAll.links ? 'Show Less Links' : 'Show More Links'}
                   </button>
                 </div>
               )}

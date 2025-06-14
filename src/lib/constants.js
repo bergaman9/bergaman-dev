@@ -52,9 +52,9 @@ export const SOCIAL_LINKS = [
     icon: 'fab fa-github'
   },
   {
-    label: 'Twitter',
-    href: SITE_CONFIG.author.twitter,
-    icon: 'fab fa-twitter'
+    label: 'LinkedIn',
+    href: 'https://www.linkedin.com/in/omerguler/',
+    icon: 'fab fa-linkedin'
   },
   {
     label: 'Discord',
@@ -116,12 +116,4 @@ export const SKILLS = [
   { name: 'Blockchain', level: 65 }
 ];
 
-// Get dynamic version from package.json
-export const getAppVersion = () => {
-  try {
-    // In production, this would be set during build time
-    return process.env.NEXT_PUBLIC_APP_VERSION || SITE_CONFIG.version;
-  } catch (error) {
-    return SITE_CONFIG.version;
-  }
-}; 
+ 

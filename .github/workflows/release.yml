@@ -1,0 +1,154 @@
+name: Release and Version Management
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  version-and-release:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Get current version
+      id: current_version
+      run: |
+        VERSION=$(node -p "require('./package.json').version")
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        echo "Current version: $VERSION"
+
+    - name: Determine version bump
+      id: version_bump
+      run: |
+        # Check commit messages for version bump indicators
+        COMMITS=$(git log --oneline $(git describe --tags --abbrev=0)..HEAD 2>/dev/null || git log --oneline)
+        
+        if echo "$COMMITS" | grep -i "BREAKING CHANGE\|major:"; then
+          echo "bump=major" >> $GITHUB_OUTPUT
+          echo "Version bump: major"
+        elif echo "$COMMITS" | grep -i "feat:\|feature:\|minor:"; then
+          echo "bump=minor" >> $GITHUB_OUTPUT
+          echo "Version bump: minor"
+        else
+          echo "bump=patch" >> $GITHUB_OUTPUT
+          echo "Version bump: patch"
+        fi
+
+    - name: Bump version
+      id: new_version
+      run: |
+        BUMP_TYPE=${{ steps.version_bump.outputs.bump }}
+        NEW_VERSION=$(npm version $BUMP_TYPE --no-git-tag-version)
+        echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+        echo "New version: $NEW_VERSION"
+
+    - name: Update environment variable
+      run: |
+        NEW_VERSION=${{ steps.new_version.outputs.version }}
+        # Update .env.local if it exists
+        if [ -f .env.local ]; then
+          if grep -q "NEXT_PUBLIC_APP_VERSION" .env.local; then
+            sed -i "s/NEXT_PUBLIC_APP_VERSION=.*/NEXT_PUBLIC_APP_VERSION=$NEW_VERSION/" .env.local
+          else
+            echo "NEXT_PUBLIC_APP_VERSION=$NEW_VERSION" >> .env.local
+          fi
+        else
+          echo "NEXT_PUBLIC_APP_VERSION=$NEW_VERSION" > .env.local
+        fi
+        
+        # Also update .env.example if it exists
+        if [ -f .env.example ]; then
+          if grep -q "NEXT_PUBLIC_APP_VERSION" .env.example; then
+            sed -i "s/NEXT_PUBLIC_APP_VERSION=.*/NEXT_PUBLIC_APP_VERSION=$NEW_VERSION/" .env.example
+          else
+            echo "NEXT_PUBLIC_APP_VERSION=$NEW_VERSION" >> .env.example
+          fi
+        fi
+
+    - name: Build project
+      run: npm run build
+
+    - name: Run tests (if available)
+      run: npm test --if-present
+
+    - name: Commit version changes
+      if: github.ref == 'refs/heads/main'
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add package.json package-lock.json .env.local .env.example
+        git commit -m "chore: bump version to ${{ steps.new_version.outputs.version }}" || exit 0
+
+    - name: Create Git tag
+      if: github.ref == 'refs/heads/main'
+      run: |
+        NEW_VERSION=${{ steps.new_version.outputs.version }}
+        git tag -a $NEW_VERSION -m "Release $NEW_VERSION"
+
+    - name: Push changes and tags
+      if: github.ref == 'refs/heads/main'
+      run: |
+        git push origin main
+        git push origin --tags
+
+    - name: Generate changelog
+      if: github.ref == 'refs/heads/main'
+      id: changelog
+      run: |
+        PREVIOUS_TAG=$(git describe --tags --abbrev=0 HEAD~1 2>/dev/null || echo "")
+        NEW_VERSION=${{ steps.new_version.outputs.version }}
+        
+        if [ -n "$PREVIOUS_TAG" ]; then
+          CHANGELOG=$(git log --pretty=format:"- %s (%h)" $PREVIOUS_TAG..HEAD)
+        else
+          CHANGELOG=$(git log --pretty=format:"- %s (%h)" --max-count=10)
+        fi
+        
+        echo "changelog<<EOF" >> $GITHUB_OUTPUT
+        echo "$CHANGELOG" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+
+    - name: Create GitHub Release
+      if: github.ref == 'refs/heads/main'
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.new_version.outputs.version }}
+        release_name: Release ${{ steps.new_version.outputs.version }}
+        body: |
+          ## Changes in ${{ steps.new_version.outputs.version }}
+          
+          ${{ steps.changelog.outputs.changelog }}
+          
+          ## 🚀 Deployment
+          This release has been automatically deployed to production.
+          
+          ## 🐉 Bergaman Portfolio
+          Visit the live site: [bergaman.dev](https://bergaman.dev)
+        draft: false
+        prerelease: false
+
+    - name: Deploy to production (if configured)
+      if: github.ref == 'refs/heads/main'
+      run: |
+        echo "🚀 Deployment would happen here"
+        echo "Version ${{ steps.new_version.outputs.version }} ready for deployment"
+        # Add your deployment commands here
+        # For example: npm run deploy or trigger Vercel deployment 

@@ -16,11 +16,13 @@ export default function BlogPost() {
   const [likes, setLikes] = useState(0);
   const [hasLiked, setHasLiked] = useState(false);
   const [modalImage, setModalImage] = useState(null);
+  const [commentCount, setCommentCount] = useState(0);
 
   useEffect(() => {
     if (params.slug) {
       fetchPost();
       loadLikes();
+      fetchCommentCount();
     }
   }, [params.slug]);
 
@@ -42,6 +44,18 @@ export default function BlogPost() {
       setError('Failed to load post');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchCommentCount = async () => {
+    try {
+      const response = await fetch(`/api/comments?postSlug=${params.slug}`);
+      if (response.ok) {
+        const data = await response.json();
+        setCommentCount(data.comments?.length || 0);
+      }
+    } catch (error) {
+      console.error('Error fetching comment count:', error);
     }
   };
 
@@ -109,6 +123,10 @@ export default function BlogPost() {
     setModalImage(null);
   };
 
+  const handleCommentCountUpdate = (count) => {
+    setCommentCount(count);
+  };
+
   if (loading) {
     return (
       <div className="page-container">
@@ -169,7 +187,7 @@ export default function BlogPost() {
             <span className="text-gray-400">•</span>
             <span className="text-gray-400">
               <i className="fas fa-clock mr-1"></i>
-              {post.readTime || '6 min read'}
+              {post.readTime ? `${post.readTime} minutes` : '5 minutes'}
             </span>
           </div>
           
@@ -218,7 +236,7 @@ export default function BlogPost() {
               </span>
               <span>
                 <i className="fas fa-comments mr-1"></i>
-                {post.comments?.length || 0} comments
+                {commentCount} comments
               </span>
             </div>
             
@@ -278,7 +296,7 @@ export default function BlogPost() {
         )}
 
         {/* Comments Section */}
-        <CommentSystem postSlug={params.slug} />
+        <CommentSystem postSlug={params.slug} onCommentCountUpdate={handleCommentCountUpdate} />
       </div>
 
       {/* Image Modal */}

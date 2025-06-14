@@ -97,7 +97,7 @@ export default function EditPost() {
       title,
       slug: generateSlug(title),
       seo: {
-        ...prev.seo,
+        ...prev?.seo,
         metaTitle: title
       }
     }));
@@ -109,7 +109,7 @@ export default function EditPost() {
       ...prev,
       tags,
       seo: {
-        ...prev.seo,
+        ...prev?.seo,
         keywords: tags
       }
     }));
@@ -159,7 +159,7 @@ export default function EditPost() {
                 </label>
                 <input
                   type="text"
-                  value={post.title}
+                  value={post?.title || ''}
                   onChange={handleTitleChange}
                   className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-white focus:border-[#e8c547] focus:outline-none transition-colors duration-300"
                   required
@@ -173,7 +173,7 @@ export default function EditPost() {
                 </label>
                 <input
                   type="text"
-                  value={post.slug}
+                  value={post?.slug || ''}
                   onChange={(e) => setPost(prev => ({ ...prev, slug: e.target.value }))}
                   className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-white focus:border-[#e8c547] focus:outline-none transition-colors duration-300"
                   required
@@ -186,7 +186,7 @@ export default function EditPost() {
                   Description *
                 </label>
                 <textarea
-                  value={post.description}
+                  value={post?.description || ''}
                   onChange={(e) => setPost(prev => ({ ...prev, description: e.target.value }))}
                   rows={3}
                   className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-white focus:border-[#e8c547] focus:outline-none transition-colors duration-300 resize-vertical"
@@ -200,7 +200,7 @@ export default function EditPost() {
                   Content *
                 </label>
                 <textarea
-                  value={post.content}
+                  value={post?.content || ''}
                   onChange={(e) => setPost(prev => ({ ...prev, content: e.target.value }))}
                   rows={15}
                   className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-white focus:border-[#e8c547] focus:outline-none transition-colors duration-300 resize-vertical font-mono"
@@ -220,7 +220,7 @@ export default function EditPost() {
                   <label className="flex items-center">
                     <input
                       type="checkbox"
-                      checked={post.published}
+                      checked={post?.published || false}
                       onChange={(e) => setPost(prev => ({ ...prev, published: e.target.checked }))}
                       className="mr-2 text-[#e8c547] focus:ring-[#e8c547]"
                     />
@@ -230,7 +230,7 @@ export default function EditPost() {
                   <label className="flex items-center">
                     <input
                       type="checkbox"
-                      checked={post.featured}
+                      checked={post?.featured || false}
                       onChange={(e) => setPost(prev => ({ ...prev, featured: e.target.checked }))}
                       className="mr-2 text-[#e8c547] focus:ring-[#e8c547]"
                     />
@@ -245,7 +245,7 @@ export default function EditPost() {
                   Category
                 </label>
                 <select
-                  value={post.category}
+                  value={post?.category || 'technology'}
                   onChange={(e) => setPost(prev => ({ ...prev, category: e.target.value }))}
                   className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-white focus:border-[#e8c547] focus:outline-none transition-colors duration-300"
                 >
@@ -264,7 +264,7 @@ export default function EditPost() {
                 </label>
                 <input
                   type="text"
-                  value={post.tags.join(', ')}
+                  value={post?.tags?.join(', ') || ''}
                   onChange={handleTagsChange}
                   placeholder="tag1, tag2, tag3"
                   className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-white focus:border-[#e8c547] focus:outline-none transition-colors duration-300"
@@ -279,7 +279,7 @@ export default function EditPost() {
                 </label>
                 <input
                   type="url"
-                  value={post.image}
+                  value={post?.image || ''}
                   onChange={(e) => setPost(prev => ({ ...prev, image: e.target.value }))}
                   placeholder="https://example.com/image.jpg"
                   className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-white focus:border-[#e8c547] focus:outline-none transition-colors duration-300"
@@ -297,10 +297,10 @@ export default function EditPost() {
                     </label>
                     <input
                       type="text"
-                      value={post.seo.metaTitle}
+                      value={post?.seo?.metaTitle || ''}
                       onChange={(e) => setPost(prev => ({
                         ...prev,
-                        seo: { ...prev.seo, metaTitle: e.target.value }
+                        seo: { ...prev?.seo, metaTitle: e.target.value }
                       }))}
                       className="w-full px-4 py-2 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-white focus:border-[#e8c547] focus:outline-none transition-colors duration-300"
                     />
@@ -311,10 +311,10 @@ export default function EditPost() {
                       Meta Description
                     </label>
                     <textarea
-                      value={post.seo.metaDescription}
+                      value={post?.seo?.metaDescription || ''}
                       onChange={(e) => setPost(prev => ({
                         ...prev,
-                        seo: { ...prev.seo, metaDescription: e.target.value }
+                        seo: { ...prev?.seo, metaDescription: e.target.value }
                       }))}
                       rows={3}
                       className="w-full px-4 py-2 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-white focus:border-[#e8c547] focus:outline-none transition-colors duration-300 resize-vertical"

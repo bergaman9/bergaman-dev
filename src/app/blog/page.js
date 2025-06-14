@@ -28,7 +28,9 @@ export default function Blog() {
       const data = await response.json();
       
       if (data.posts) {
-        setPosts(data.posts);
+        // Sort posts by creation date (newest first)
+        const sortedPosts = data.posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        setPosts(sortedPosts);
       }
     } catch (error) {
       console.error('Error fetching posts:', error);
@@ -102,7 +104,7 @@ export default function Blog() {
 
         {/* Search and Filter */}
         <section className="mb-8 slide-in-left">
-          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg transition-all duration-300 hover:border-[#e8c547]/30 hover:shadow-lg hover:shadow-[#e8c547]/10 hover:bg-[#2e3d29]/40 hover:scale-[1.01]">
+          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg">
             <div className="flex flex-col md:flex-row gap-4">
               
               {/* Search Bar */}
@@ -147,7 +149,7 @@ export default function Blog() {
           </div>
         </section>
 
-        {/* Blog Posts Grid */}
+        {/* Blog Posts Grid - Moodboard Layout */}
         <section className="mb-12 slide-in-right">
           {loading ? (
             <div className="text-center py-16">
@@ -175,8 +177,8 @@ export default function Blog() {
               )}
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredPosts.map((post) => (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredPosts.map((post, index) => (
                 <div key={post._id} className="relative">
                   {isAdminMode && (
                     <div className="absolute top-2 right-2 z-10 flex gap-2">
@@ -191,73 +193,68 @@ export default function Blog() {
                   )}
                   <Link
                     href={`/blog/${post.slug}`}
-                    className="glass p-6 rounded-lg hover-lift block group"
+                    className="glass p-4 rounded-lg block group"
                   >
-                  <div className="mb-4">
-                    {post.image ? (
-                      <Image
-                        src={post.image}
-                        alt={post.title}
-                        width={400}
-                        height={200}
-                        className="w-full h-48 object-cover rounded-lg cursor-pointer"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          openModal(post.image, post.title);
-                        }}
-                      />
-                    ) : (
-                      <div 
-                        className="cursor-pointer"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          // Generate and show placeholder image
-                        }}
-                      >
-                        <BlogImageGenerator 
-                          title={post.title} 
-                          category={post.category} 
-                          width={400} 
-                          height={200}
-                          className="w-full h-48"
+                    <div className="mb-4">
+                      {post.image ? (
+                        <Image
+                          src={post.image}
+                          alt={post.title}
+                          width={400}
+                          height={250}
+                          className="w-full h-48 object-cover rounded-lg cursor-pointer"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            openModal(post.image, post.title);
+                          }}
                         />
-                      </div>
-                    )}
-                  </div>
-                  
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="px-2 py-1 bg-[#e8c547]/20 text-[#e8c547] text-xs rounded-full">
-                      {post.category}
-                    </span>
-                    <span className="text-gray-400 text-sm">
-                      {new Date(post.createdAt).toLocaleDateString()}
-                    </span>
-                  </div>
-                  
-                  <h2 className="text-xl font-semibold text-[#e8c547] mb-3 group-hover:text-[#d4b445] transition-colors duration-300">
-                    {post.title}
-                  </h2>
-                  
-                  <p className="text-gray-300 mb-4 line-clamp-3">
-                    {post.description}
-                  </p>
-                  
-                  <div className="flex items-center justify-between text-sm text-gray-400">
-                    <span>
-                      <i className="fas fa-clock mr-1"></i>
-                      {post.readTime || '6 min read'}
-                    </span>
-                    <div className="flex items-center space-x-3">
-                      <span>
-                        <i className="fas fa-eye mr-1"></i>
-                        {post.views || 0}
+                      ) : (
+                        <div 
+                          className="cursor-pointer"
+                          onClick={(e) => {
+                            e.preventDefault();
+                          }}
+                        >
+                          <BlogImageGenerator 
+                            title={post.title} 
+                            category={post.category} 
+                            width={400} 
+                            height={250}
+                            className="w-full h-48 rounded-lg"
+                          />
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="px-2 py-1 bg-[#e8c547]/20 text-[#e8c547] text-xs rounded-full">
+                        {post.category}
                       </span>
-                      <span>
-                        <i className="fas fa-heart mr-1"></i>
-                        {post.likes || 0}
+                      <span className="text-gray-400 text-sm">
+                        {new Date(post.createdAt).toLocaleDateString()}
                       </span>
                     </div>
-                  </div>
+                    <h3 className="text-lg font-semibold text-[#e8c547] mb-2 leading-tight">
+                      {post.title}
+                    </h3>
+                    <p className="text-gray-300 mb-3 text-sm line-clamp-3">
+                      {post.description}
+                    </p>
+                    <div className="flex items-center justify-between text-xs text-gray-400">
+                      <span>
+                        <i className="fas fa-clock mr-1"></i>
+                        {post.readTime || '6 min read'}
+                      </span>
+                      <div className="flex items-center space-x-3">
+                        <span>
+                          <i className="fas fa-eye mr-1"></i>
+                          {post.views || 0}
+                        </span>
+                        <span>
+                          <i className="fas fa-heart mr-1"></i>
+                          {post.likes || 0}
+                        </span>
+                      </div>
+                    </div>
                   </Link>
                 </div>
               ))}

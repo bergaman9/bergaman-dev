@@ -10,7 +10,7 @@ export async function GET(request, { params }) {
   try {
     await connectDB();
     
-    const { id } = params;
+    const { id } = await params;
     const post = await BlogPost.findById(id);
     
     if (!post) {
@@ -35,7 +35,7 @@ export async function PUT(request, { params }) {
   try {
     await connectDB();
     
-    const { id } = params;
+    const { id } = await params;
     const data = await request.json();
     
     const post = await BlogPost.findByIdAndUpdate(
@@ -74,7 +74,7 @@ export async function DELETE(request, { params }) {
   try {
     await connectDB();
     
-    const { id } = params;
+    const { id } = await params;
     const post = await BlogPost.findByIdAndDelete(id);
     
     if (!post) {

@@ -19,41 +19,65 @@ export default function Home() {
     {
       id: 1,
       title: "Contro Bot",
-      description: "Comprehensive Discord bot developed during the pandemic with advanced features",
+      description: "It is a comprehensive Discord bot that I started to develop and made improvements to during the pandemic period.",
       image: "/images/projects/contro.png",
       tech: ["Python", "Discord.py", "SQLite"],
       github: "https://github.com/bergaman9/contro-bot",
-      demo: null
+      demo: null,
+      date: "2020 - 2022"
     },
     {
       id: 2,
+      title: "Ligroup",
+      description: "This is the first project where I stepped into full stack web development, thinking that this job cannot be done with just bots.",
+      image: "/images/projects/ligroup.png",
+      tech: ["React", "Node.js", "MongoDB", "Express"],
+      github: "https://github.com/bergaman9/ligroup",
+      demo: null,
+      date: "2022"
+    },
+    {
+      id: 3,
+      title: "RVC & Stable Diffusion Projects",
+      description: "I developed experimental projects during the times when generative artificial intelligence was becoming popular.",
+      image: "/images/projects/ai-projects.png",
+      tech: ["Python", "AI/ML", "RVC", "Stable Diffusion"],
+      github: "https://github.com/bergaman9/ai-projects",
+      demo: null,
+      date: "2023"
+    },
+    {
+      id: 4,
       title: "Indoor Air Quality IoT Project",
-      description: "GUI application with wireless data transfer and real-time monitoring using Arduino",
+      description: "I made a GUI application that enables wireless data transfer and real-time monitoring of data using Arduino Uno R4 WiFi.",
       image: "/images/projects/iaq.jpg",
       tech: ["Arduino", "C++", "IoT", "Sensors"],
       github: "https://github.com/bergaman9/arduino-projects",
-      demo: null
+      demo: null,
+      date: "2024"
     }
   ];
 
   // Skills data
   const skills = [
-    { name: "React/Next.js", level: 90 },
-    { name: "JavaScript/TypeScript", level: 85 },
-    { name: "Python", level: 90 },
-    { name: "C# / WPF", level: 85 },
-    { name: "Node.js", level: 80 },
-    { name: "MongoDB", level: 75 }
+    { name: "Python", level: 80 },
+    { name: "JavaScript", level: 70 },
+    { name: "C#", level: 60 },
+    { name: "HTML & CSS", level: 90 },
+    { name: "React", level: 75 },
+    { name: "Node.js", level: 65 },
+    { name: "SQL", level: 70 },
+    { name: "Git", level: 85 }
   ];
 
   // Interests data
   const interests = [
-    { name: "AI Development", icon: "fas fa-robot" },
-    { name: "Game Development", icon: "fas fa-gamepad" },
-    { name: "IoT Projects", icon: "fas fa-microchip" },
-    { name: "Blockchain", icon: "fas fa-link" },
-    { name: "Mobile Apps", icon: "fas fa-mobile-alt" },
-    { name: "Web3", icon: "fas fa-cube" }
+    { name: "AI", icon: "fas fa-robot" },
+    { name: "Embedded Systems", icon: "fas fa-microchip" },
+    { name: "Full Stack Development", icon: "fas fa-code" },
+    { name: "Cybersecurity", icon: "fas fa-shield-alt" },
+    { name: "Robotics", icon: "fas fa-cogs" },
+    { name: "Blockchain", icon: "fas fa-link" }
   ];
 
   useEffect(() => {
@@ -87,16 +111,16 @@ export default function Home() {
   return (
     <div className="page-container">
       <Head>
-        <title>Bergaman - The Dragon's Domain | Full-Stack Developer & AI Enthusiast</title>
-        <meta name="description" content="Welcome to Bergaman's digital domain. Explore cutting-edge web development, AI projects, and innovative solutions crafted with the strength and wisdom of a dragon." />
-        <meta name="keywords" content="bergaman, full-stack developer, AI, web development, portfolio, dragon domain, technology, programming" />
-        <meta property="og:title" content="Bergaman - The Dragon's Domain" />
-        <meta property="og:description" content="Crafting technology inspired by the strength and wisdom of a dragon" />
+        <title>Ömer Güler - Bergaman | Electrical Electronics Engineer & Full-Stack Developer</title>
+        <meta name="description" content="Welcome to Ömer Güler's digital domain. Electrical Electronics Engineer based in İstanbul, Turkey. Explore cutting-edge technical solutions, AI projects, and innovative full-stack development." />
+        <meta name="keywords" content="ömer güler, bergaman, electrical electronics engineer, istanbul, turkey, full-stack developer, AI, web development, portfolio" />
+        <meta property="og:title" content="Ömer Güler - Bergaman | Electrical Electronics Engineer" />
+        <meta property="og:description" content="Electrical Electronics Engineer - Crafting innovative technical solutions and AI-powered applications" />
         <meta property="og:url" content="https://bergaman.dev" />
         <meta property="og:type" content="website" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Bergaman - The Dragon's Domain" />
-        <meta name="twitter:description" content="Crafting technology inspired by the strength and wisdom of a dragon" />
+        <meta name="twitter:title" content="Ömer Güler - Bergaman | Electrical Electronics Engineer" />
+        <meta name="twitter:description" content="Electrical Electronics Engineer - Crafting innovative technical solutions and AI-powered applications" />
         <link rel="canonical" href="https://bergaman.dev" />
       </Head>
 
@@ -126,18 +150,17 @@ export default function Home() {
               alt="Bergaman Profile"
               width={150}
               height={150}
-              className="rounded-full mx-auto mb-6 cursor-pointer hover:scale-105 transition-transform duration-300"
-              onClick={() => openModal("/images/profile/profile.png", "Bergaman Profile")}
+              className="rounded-full mx-auto mb-6"
             />
           </div>
           <h1 className="text-5xl md:text-6xl font-bold gradient-text mb-6 leading-tight">
             Bergaman - The Dragon's Domain
           </h1>
           <p className="text-xl md:text-2xl text-gray-300 mb-4 max-w-3xl mx-auto">
-            Hey, I'm Ömer! The dragon spirit behind Bergaman - blending futuristic technology with a military edge, specializing in artificial intelligence, blockchain, and full-stack development.
+            Hey, I'm Ömer! The dragon spirit behind Bergaman - blending futuristic technology with engineering excellence, specializing in artificial intelligence, technical solutions, and full-stack development.
           </p>
           <p className="text-lg text-gray-400 mb-8 max-w-2xl mx-auto">
-            Crafting technology inspired by the strength and wisdom of a dragon
+            Crafting innovative technical solutions with the strength and wisdom of a dragon
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
@@ -248,7 +271,7 @@ export default function Home() {
                   )}
                   <Link
                     href={`/blog/${post.slug}`}
-                    className="glass p-6 rounded-lg hover-lift block"
+                    className="glass p-6 rounded-lg block"
                   >
                     <div className="mb-4">
                       {post.image ? (
@@ -336,9 +359,15 @@ export default function Home() {
                     onClick={() => openModal(project.image, project.title)}
                   />
                 </div>
-                <h3 className="text-xl font-semibold text-[#e8c547] mb-3">
-                  {project.title}
-                </h3>
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-xl font-semibold text-[#e8c547]">
+                    {project.title}
+                  </h3>
+                  <span className="text-gray-400 text-sm">
+                    <i className="fas fa-calendar mr-1"></i>
+                    {project.date}
+                  </span>
+                </div>
                 <p className="text-gray-300 mb-4">
                   {project.description}
                 </p>
