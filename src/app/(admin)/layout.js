@@ -33,9 +33,12 @@ export default function AdminLayout({ children }) {
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-radial from-[#e8c547]/5 via-[#e8c547]/2 to-transparent rounded-full blur-3xl animate-pulse delay-500"></div>
         
         {/* Dragon Scale Pattern */}
-        <div className="absolute inset-0 opacity-30" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23e8c547' fill-opacity='0.03'%3E%3Cpath d='M40 40c0-11.046-8.954-20-20-20s-20 8.954-20 20 8.954 20 20 20 20-8.954 20-20zm20-20c0-11.046-8.954-20-20-20s-20 8.954-20 20 8.954 20 20 20 20-8.954 20-20z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
-        }}></div>
+        <div 
+          className="absolute inset-0 opacity-30" 
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23e8c547' fill-opacity='0.03'%3E%3Cpath d='M40 40c0-11.046-8.954-20-20-20s-20 8.954-20 20 8.954 20 20 20 20-8.954 20-20zm20-20c0-11.046-8.954-20-20-20s-20 8.954-20 20 8.954 20 20 20 20-8.954 20-20z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+          }}
+        ></div>
         
         {/* Mystical Floating Orbs */}
         <div className="absolute top-1/4 left-1/5 w-3 h-3 bg-[#e8c547]/30 rounded-full animate-bounce delay-300 shadow-lg shadow-[#e8c547]/20"></div>
@@ -49,9 +52,12 @@ export default function AdminLayout({ children }) {
         <div className="absolute top-0 right-1/3 w-px h-full bg-gradient-to-b from-transparent via-[#e8c547]/8 to-transparent animate-pulse delay-800"></div>
         
         {/* Subtle Grid Overlay */}
-        <div className="absolute inset-0 opacity-20" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23e8c547' fill-opacity='0.02'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
-        }}></div>
+        <div 
+          className="absolute inset-0 opacity-20" 
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23e8c547' fill-opacity='0.02'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+          }}
+        ></div>
         
         {/* Dragon Breath Effect */}
         <div className="absolute top-20 right-20 w-64 h-64 bg-gradient-conic from-[#e8c547]/5 via-transparent to-[#e8c547]/5 rounded-full blur-2xl animate-spin" style={{ animationDuration: '20s' }}></div>
