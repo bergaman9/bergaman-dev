@@ -20,7 +20,7 @@ export function getAppVersion() {
   }
   
   // Final fallback - updated to current version
-  return 'v2.1.1';
+  return 'v2.3.0';
 }
 
 /**

@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [2.3.0](https://github.com/bergaman9/bergaman-dev/compare/v2.2.0...v2.3.0) (2025-06-14)
+
+### 🚀 Features
+
+* enhance mobile responsiveness across all components - Improved footer layouts with better mobile breakpoints - Enhanced home page sections with responsive design - Added mobile-first approach with sm/lg breakpoints - Optimized text sizes and spacing for mobile devices - Fixed version display consistency in footers - Added newsletter link to footer navigation ([db6ab67](https://github.com/bergaman9/bergaman-dev/commit/db6ab673d6475676617a3bc3ead1fc6c921887fa))
+* fix newsletter theme and optimize admin header layout ([d3bf21f](https://github.com/bergaman9/bergaman-dev/commit/d3bf21f96cc0f8e04b2bb9b912b7fb5a2db568f2))
+
+### 🐛 Bug Fixes
+
+* merge remote changes ([1984a2c](https://github.com/bergaman9/bergaman-dev/commit/1984a2cc77b8ea0ef32a146de18510e9f45c35ec))
+* resolve JSX syntax error in Footer background pattern ([855f0b7](https://github.com/bergaman9/bergaman-dev/commit/855f0b79fdbfc20a875d8e46d091d8d5c9b2555d))
+
 ## [2.2.0](https://github.com/bergaman9/bergaman-dev/compare/v2.1.2...v2.2.0) (2025-06-14)
 
 ### 🚀 Features

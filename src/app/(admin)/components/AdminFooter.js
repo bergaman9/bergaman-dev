@@ -6,7 +6,7 @@ import { getAppVersion } from '../../../lib/version';
 
 export default function AdminFooter() {
   const [currentTime, setCurrentTime] = useState('');
-  const [appVersion, setAppVersion] = useState('v2.1.1');
+  const [appVersion, setAppVersion] = useState('v2.3.0');
   const [systemStats, setSystemStats] = useState({
     uptime: '0h 0m',
     memory: '0%',
@@ -48,7 +48,7 @@ export default function AdminFooter() {
   const quickActions = [
     { href: '/admin/posts/new', icon: 'fas fa-plus', label: 'New Post' },
     { href: '/admin/comments', icon: 'fas fa-comments', label: 'Comments' },
-    { href: '/admin/newsletter', icon: 'fas fa-envelope', label: 'Newsletter' },
+    { href: '/admin/contacts', icon: 'fas fa-envelope', label: 'Contacts' },
     { href: '/admin/content', icon: 'fas fa-cog', label: 'Settings' },
     { href: '/', icon: 'fas fa-external-link-alt', label: 'View Site', external: true }
   ];

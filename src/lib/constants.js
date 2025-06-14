@@ -24,7 +24,7 @@ export const SITE_CONFIG = {
     'Dragon Developer'
   ],
   themeColor: '#e8c547',
-  version: '2.1.1', // Current version
+  version: '2.3.0', // Current version - updated to match package.json
   previousVersions: {
     v1: {
       url: 'https://bergaman-v1.vercel.app/',

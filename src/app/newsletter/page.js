@@ -119,15 +119,15 @@ export default function NewsletterSignup() {
             </p>
             <div className="flex justify-center space-x-6 text-sm text-gray-400">
               <div className="flex items-center">
-                <i className="fas fa-check text-green-400 mr-2"></i>
+                <i className="fas fa-check text-[#4ade80] mr-2"></i>
                 <span>Weekly Updates</span>
               </div>
               <div className="flex items-center">
-                <i className="fas fa-check text-green-400 mr-2"></i>
+                <i className="fas fa-check text-[#4ade80] mr-2"></i>
                 <span>No Spam</span>
               </div>
               <div className="flex items-center">
-                <i className="fas fa-check text-green-400 mr-2"></i>
+                <i className="fas fa-check text-[#4ade80] mr-2"></i>
                 <span>Unsubscribe Anytime</span>
               </div>
             </div>
@@ -135,12 +135,12 @@ export default function NewsletterSignup() {
 
           {/* Success Message */}
           {success && (
-            <div className="bg-green-900/20 border border-green-500 rounded-lg p-6 mb-8 text-center">
+            <div className="bg-[#0a1a0f]/50 border border-[#4ade80] rounded-lg p-6 mb-8 text-center backdrop-blur-md">
               <div className="flex items-center justify-center mb-4">
-                <i className="fas fa-check-circle text-4xl text-green-400"></i>
+                <i className="fas fa-check-circle text-4xl text-[#4ade80]"></i>
               </div>
-              <h3 className="text-xl font-semibold text-green-400 mb-2">Welcome to the Dragon's Domain!</h3>
-              <p className="text-green-300">
+              <h3 className="text-xl font-semibold text-[#4ade80] mb-2">Welcome to the Dragon's Domain!</h3>
+              <p className="text-[#86efac]">
                 Thank you for subscribing! Check your email for a welcome message.
               </p>
             </div>
@@ -148,7 +148,7 @@ export default function NewsletterSignup() {
 
           {/* Signup Form */}
           {!success && (
-            <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 rounded-lg p-8">
+            <div className="bg-[#0a1a0f]/30 backdrop-blur-md border border-[#3e503e]/50 rounded-lg p-8">
               <form onSubmit={handleSubmit} className="space-y-6">
                 
                 {/* Email */}
@@ -160,7 +160,7 @@ export default function NewsletterSignup() {
                     type="email"
                     value={formData.email}
                     onChange={(e) => setFormData({...formData, email: e.target.value})}
-                    className="w-full px-4 py-3 bg-[#0a1a0f] border border-[#3e503e] rounded-lg text-[#d1d5db] placeholder-gray-400 focus:border-[#e8c547] focus:outline-none transition-colors"
+                    className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] placeholder-gray-400 focus:border-[#e8c547] focus:outline-none transition-colors"
                     placeholder="your@email.com"
                     required
                   />
@@ -175,7 +175,7 @@ export default function NewsletterSignup() {
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    className="w-full px-4 py-3 bg-[#0a1a0f] border border-[#3e503e] rounded-lg text-[#d1d5db] placeholder-gray-400 focus:border-[#e8c547] focus:outline-none transition-colors"
+                    className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] placeholder-gray-400 focus:border-[#e8c547] focus:outline-none transition-colors"
                     placeholder="Your name"
                   />
                 </div>
@@ -197,7 +197,7 @@ export default function NewsletterSignup() {
                         className={`px-4 py-3 rounded-lg border transition-colors ${
                           formData.preferences.frequency === freq
                             ? 'bg-[#e8c547] border-[#e8c547] text-[#0e1b12]'
-                            : 'bg-[#0a1a0f] border-[#3e503e] text-gray-300 hover:border-[#e8c547]'
+                            : 'bg-[#0e1b12] border-[#3e503e] text-gray-300 hover:border-[#e8c547]'
                         }`}
                       >
                         {freq.charAt(0).toUpperCase() + freq.slice(1)}
@@ -209,29 +209,27 @@ export default function NewsletterSignup() {
                 {/* Categories */}
                 <div>
                   <label className="block text-sm font-medium text-[#d1d5db] mb-3">
-                    Interests (Select all that apply)
+                    Content Preferences
                   </label>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  <div className="grid grid-cols-2 gap-3">
                     {[
-                      { id: 'tech', label: '💻 Tech', icon: 'fas fa-laptop-code' },
-                      { id: 'blockchain', label: '⛓️ Blockchain', icon: 'fas fa-link' },
-                      { id: 'ai', label: '🤖 AI/ML', icon: 'fas fa-robot' },
-                      { id: 'projects', label: '🚀 Projects', icon: 'fas fa-rocket' },
-                      { id: 'tutorials', label: '📚 Tutorials', icon: 'fas fa-book' }
+                      { id: 'tech', label: 'Tech Updates', icon: 'fas fa-code' },
+                      { id: 'projects', label: 'New Projects', icon: 'fas fa-rocket' },
+                      { id: 'ai', label: 'AI Insights', icon: 'fas fa-robot' },
+                      { id: 'tutorials', label: 'Tutorials', icon: 'fas fa-graduation-cap' }
                     ].map((category) => (
                       <button
                         key={category.id}
                         type="button"
                         onClick={() => handleCategoryChange(category.id)}
-                        className={`px-4 py-3 rounded-lg border transition-colors text-left ${
+                        className={`px-4 py-3 rounded-lg border transition-colors flex items-center space-x-2 ${
                           formData.preferences.categories.includes(category.id)
-                            ? 'bg-[#e8c547] border-[#e8c547] text-[#0e1b12]'
-                            : 'bg-[#0a1a0f] border-[#3e503e] text-gray-300 hover:border-[#e8c547]'
+                            ? 'bg-[#e8c547]/20 border-[#e8c547] text-[#e8c547]'
+                            : 'bg-[#0e1b12] border-[#3e503e] text-gray-300 hover:border-[#e8c547]'
                         }`}
                       >
-                        <div className="flex items-center space-x-2">
-                          <span>{category.label}</span>
-                        </div>
+                        <i className={category.icon}></i>
+                        <span>{category.label}</span>
                       </button>
                     ))}
                   </div>
@@ -239,126 +237,86 @@ export default function NewsletterSignup() {
 
                 {/* Error Message */}
                 {error && (
-                  <div className="bg-red-900/20 border border-red-500 rounded-lg p-4">
-                    <div className="flex items-center">
-                      <i className="fas fa-exclamation-triangle text-red-400 mr-3"></i>
-                      <span className="text-red-400">{error}</span>
-                    </div>
+                  <div className="bg-red-900/20 border border-red-500 rounded-lg p-4 text-center">
+                    <p className="text-red-400">{error}</p>
                   </div>
                 )}
 
                 {/* Submit Button */}
                 <button
                   type="submit"
-                  disabled={loading || !formData.email.trim()}
-                  className="w-full px-6 py-4 bg-gradient-to-r from-[#e8c547] to-[#d4b445] text-[#0e1b12] rounded-lg font-medium hover:from-[#d4b445] hover:to-[#c4a435] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                  disabled={loading}
+                  className="w-full px-6 py-4 bg-gradient-to-r from-[#e8c547] to-[#d4b445] text-[#0e1b12] rounded-lg font-medium hover:from-[#d4b445] hover:to-[#c4a435] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
                 >
                   {loading ? (
                     <>
-                      <i className="fas fa-spinner fa-spin mr-2"></i>
-                      Subscribing...
+                      <i className="fas fa-spinner fa-spin"></i>
+                      <span>Subscribing...</span>
                     </>
                   ) : (
                     <>
-                      <i className="fas fa-paper-plane mr-2"></i>
-                      Subscribe to Newsletter
+                      <i className="fas fa-paper-plane"></i>
+                      <span>Subscribe to Newsletter</span>
                     </>
                   )}
                 </button>
-
-                {/* Privacy Note */}
-                <p className="text-xs text-gray-400 text-center">
-                  By subscribing, you agree to receive emails from Bergaman. 
-                  You can unsubscribe at any time. We respect your privacy and will never share your email.
-                </p>
               </form>
             </div>
           )}
 
-          {/* What You'll Get */}
-          <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-[#2e3d29]/20 border border-[#3e503e]/20 rounded-lg p-6">
-              <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-[#e8c547]/20 rounded-lg flex items-center justify-center mr-4">
-                  <i className="fas fa-robot text-[#e8c547] text-xl"></i>
-                </div>
-                <h3 className="text-lg font-semibold text-[#d1d5db]">AI & Machine Learning</h3>
-              </div>
-              <p className="text-gray-400">
-                Latest developments in AI, machine learning projects, and practical implementations.
-              </p>
-            </div>
-
-            <div className="bg-[#2e3d29]/20 border border-[#3e503e]/20 rounded-lg p-6">
-              <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-[#e8c547]/20 rounded-lg flex items-center justify-center mr-4">
-                  <i className="fas fa-link text-[#e8c547] text-xl"></i>
-                </div>
-                <h3 className="text-lg font-semibold text-[#d1d5db]">Blockchain Development</h3>
-              </div>
-              <p className="text-gray-400">
-                Smart contracts, DeFi protocols, and blockchain architecture insights.
-              </p>
-            </div>
-
-            <div className="bg-[#2e3d29]/20 border border-[#3e503e]/20 rounded-lg p-6">
-              <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-[#e8c547]/20 rounded-lg flex items-center justify-center mr-4">
-                  <i className="fas fa-code text-[#e8c547] text-xl"></i>
-                </div>
-                <h3 className="text-lg font-semibold text-[#d1d5db]">Full-Stack Development</h3>
-              </div>
-              <p className="text-gray-400">
-                Modern web development, frameworks, tools, and best practices.
-              </p>
-            </div>
-
-            <div className="bg-[#2e3d29]/20 border border-[#3e503e]/20 rounded-lg p-6">
-              <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-[#e8c547]/20 rounded-lg flex items-center justify-center mr-4">
-                  <i className="fas fa-rocket text-[#e8c547] text-xl"></i>
-                </div>
-                <h3 className="text-lg font-semibold text-[#d1d5db]">Project Updates</h3>
-              </div>
-              <p className="text-gray-400">
-                Behind-the-scenes looks at ongoing projects and new releases.
-              </p>
-            </div>
-          </div>
-
-          {/* Footer */}
+          {/* Stats */}
           <div className="mt-12 text-center">
-            <p className="text-gray-400 mb-4">
-              Join <span className="text-[#e8c547] font-semibold">{subscriberCount}+</span> developers already subscribed
-            </p>
-            <div className="flex justify-center space-x-6">
-              <a 
-                href="https://bergaman.dev" 
-                className="text-gray-400 hover:text-[#e8c547] transition-colors"
-              >
-                <i className="fas fa-globe mr-2"></i>
-                Portfolio
-              </a>
-              <a 
-                href="https://github.com/bergaman9" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-gray-400 hover:text-[#e8c547] transition-colors"
-              >
-                <i className="fab fa-github mr-2"></i>
-                GitHub
-              </a>
-              <a 
-                href="mailto:omerguler53@gmail.com" 
-                className="text-gray-400 hover:text-[#e8c547] transition-colors"
-              >
-                <i className="fas fa-envelope mr-2"></i>
-                Contact
-              </a>
+            <div className="bg-[#0a1a0f]/30 backdrop-blur-md border border-[#3e503e]/50 rounded-lg p-6">
+              <div className="flex items-center justify-center space-x-8">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-[#e8c547]">{subscriberCount}+</div>
+                  <div className="text-sm text-gray-400">Subscribers</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-[#4ade80]">Weekly</div>
+                  <div className="text-sm text-gray-400">Updates</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-[#e8c547]">0%</div>
+                  <div className="text-sm text-gray-400">Spam</div>
+                </div>
+              </div>
             </div>
           </div>
 
+          {/* Features */}
+          <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-[#0a1a0f]/30 backdrop-blur-md border border-[#3e503e]/50 rounded-lg p-6">
+              <div className="flex items-center space-x-3 mb-3">
+                <i className="fas fa-dragon text-2xl text-[#e8c547]"></i>
+                <h3 className="text-lg font-semibold text-[#e8c547]">Exclusive Content</h3>
+              </div>
+              <p className="text-gray-300 text-sm">
+                Get behind-the-scenes insights into my latest projects, AI experiments, and development journey.
+              </p>
+            </div>
+            
+            <div className="bg-[#0a1a0f]/30 backdrop-blur-md border border-[#3e503e]/50 rounded-lg p-6">
+              <div className="flex items-center space-x-3 mb-3">
+                <i className="fas fa-code text-2xl text-[#4ade80]"></i>
+                <h3 className="text-lg font-semibold text-[#4ade80]">Technical Deep Dives</h3>
+              </div>
+              <p className="text-gray-300 text-sm">
+                Detailed tutorials, code snippets, and technical analysis of cutting-edge technologies.
+              </p>
+            </div>
           </div>
+
+          {/* Unsubscribe Link */}
+          <div className="mt-8 text-center">
+            <p className="text-sm text-gray-400">
+              Already subscribed? 
+              <a href="/newsletter/unsubscribe" className="text-[#e8c547] hover:text-[#d4b445] ml-1 transition-colors">
+                Manage your subscription
+              </a>
+            </p>
+          </div>
+        </div>
         </div>
       </div>
     </div>

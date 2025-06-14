@@ -7,7 +7,7 @@ import { getAppVersion } from '../../lib/version';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
-  const [appVersion, setAppVersion] = useState('v2.1.1'); // Default fallback - updated to current version
+  const [appVersion, setAppVersion] = useState('v2.3.0'); // Updated to match package.json
   
   useEffect(() => {
     // Set version on client-side to avoid hydration mismatch
@@ -48,7 +48,7 @@ export default function Footer() {
             
             <p className="text-gray-300 text-base leading-relaxed mb-6 max-w-md mx-auto sm:mx-0">
               Crafting innovative technology solutions inspired by the strength and wisdom of a dragon. 
-              Specializing in AI, full-stack development, and cutting-edge engineering.
+              Specializing in embedded systems, web development, and artificial intelligence.
             </p>
             
             <div className="flex justify-center sm:justify-start space-x-4">
@@ -79,7 +79,6 @@ export default function Footer() {
                 { href: '/about', label: 'About Me', icon: 'fas fa-user' },
                 { href: '/portfolio', label: 'Portfolio', icon: 'fas fa-briefcase' },
                 { href: '/blog', label: 'Blog', icon: 'fas fa-blog' },
-                { href: '/newsletter', label: 'Newsletter', icon: 'fas fa-newspaper' },
                 { href: '/contact', label: 'Contact', icon: 'fas fa-envelope' }
               ].map((link, index) => (
                 <Link 
@@ -142,38 +141,6 @@ export default function Footer() {
                 <i className="fas fa-history text-sm group-hover:scale-110 transition-transform duration-300"></i>
                 <span className="text-sm group-hover:translate-x-1 transition-transform duration-300">Portfolio v1.0</span>
               </a>
-            </div>
-          </div>
-        </div>
-
-        {/* Newsletter CTA */}
-        <div className="bg-gradient-to-r from-[#0a1a0f]/50 to-[#1a2e1a]/50 border border-[#e8c547]/20 rounded-2xl p-6 sm:p-8 mb-12 backdrop-blur-sm">
-          <div className="text-center">
-            <div className="flex items-center justify-center space-x-3 mb-4">
-              <i className="fas fa-dragon text-2xl text-[#e8c547]"></i>
-              <h4 className="text-xl font-bold text-[#e8c547]">Join the Dragon's Domain</h4>
-            </div>
-            <p className="text-gray-300 mb-6 max-w-2xl mx-auto">
-              Get exclusive insights on AI, blockchain, and full-stack development. Weekly updates, no spam.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link
-                href="/newsletter"
-                className="px-6 py-3 bg-gradient-to-r from-[#e8c547] to-[#d4b445] text-[#0e1b12] rounded-lg font-medium hover:from-[#d4b445] hover:to-[#c4a435] transition-all duration-300 flex items-center space-x-2 group"
-              >
-                <i className="fas fa-paper-plane group-hover:translate-x-1 transition-transform duration-300"></i>
-                <span>Subscribe Now</span>
-              </Link>
-              <div className="flex items-center space-x-4 text-sm text-gray-400">
-                <div className="flex items-center space-x-1">
-                  <i className="fas fa-check text-[#4ade80]"></i>
-                  <span>Weekly Updates</span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <i className="fas fa-shield-alt text-[#4ade80]"></i>
-                  <span>No Spam</span>
-                </div>
-              </div>
             </div>
           </div>
         </div>
