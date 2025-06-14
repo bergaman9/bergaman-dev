@@ -5,8 +5,8 @@ export const blogPosts = [
     description: "Insights into electricity's role in modern life.",
     excerpt: "Electricity is one of the fundamental pillars of modern civilization. From powering our homes to enabling complex computer systems, electricity drives almost every aspect of our lives.",
     category: 'technology',
-    image: '/images/teknominator.png', // Using existing tech image
-    readTime: 5,
+    image: '/images/movies/teknominator.png', // Using existing tech image
+    readTime: '5 min read',
     content: `Electricity is one of the fundamental pillars of modern civilization. From the moment light bulbs were first introduced to society, electricity has evolved into an irreplaceable resource. Today, it is the driving force behind almost every aspect of our lives.
 
     Whether it's powering our homes, running factories, or enabling the complex systems behind our computers, electricity is at the heart of it all. The modern world, especially the global business and finance industries, heavily depends on electricity. Financial transactions are processed, markets are analyzed, and data is securely stored — all thanks to the reliable flow of electricity.
@@ -22,8 +22,8 @@ export const blogPosts = [
     description: "Exploring technological advancements and their impacts.",
     excerpt: "In the rapidly evolving digital age, the challenges we face are more complex than ever. Technology has fundamentally transformed how we live, work, and interact with each other.",
     category: 'ai',
-    image: '/images/generative-ai.png', // Using existing AI image
-    readTime: 8,
+    image: '/images/projects/generative-ai.png', // Using existing AI image
+    readTime: '8 min read',
     content: `In the rapidly evolving digital age, the challenges we face are more complex than ever. Technology has fundamentally transformed the way we live, work, and interact with each other. While these advancements have brought incredible convenience, they have also introduced new dilemmas regarding privacy, security, and the impact on human relationships. As we become increasingly connected through digital platforms, the very essence of human interaction is shifting. Social media, online communities, and virtual spaces offer a sense of connection, yet they often come at the cost of deep, meaningful relationships. The digital age, while offering unprecedented access to information, has also given rise to new forms of isolation, as people engage in increasingly superficial interactions. This disconnection is compounded by the constant bombardment of information, making it difficult for individuals to filter what is truly valuable or meaningful.
 
     As technology advances, the balance between convenience and ethics becomes more difficult to maintain. The rise of Artificial Intelligence (AI) and machine learning has opened new frontiers in various sectors, from healthcare to finance, but it has also raised concerns about privacy, data security, and the loss of control. Algorithms, which are now responsible for decision-making in many aspects of our lives, are often opaque, and the data used to train these systems may be biased or inaccurate. Furthermore, as we become more reliant on these technologies, we risk losing our ability to think critically and solve problems independently, relying instead on automated systems to make decisions for us.
@@ -42,7 +42,7 @@ export const blogPosts = [
     excerpt: "In a world that is constantly evolving, the ability to learn is not just an advantage—it is a necessity. Learning for survival extends far beyond traditional education.",
     category: 'tutorial',
     image: null, // Will use generator
-    readTime: 7,
+    readTime: '7 min read',
     content: `In a world that is constantly evolving, the ability to learn is not just an advantage—it is a necessity. Learning for survival extends far beyond the confines of traditional education; it encapsulates the relentless pursuit of growth, adaptation, and innovation that is essential to navigating the complexities of life. This journey of learning involves understanding not only how to survive, but how to thrive in an ever-changing world.
 
     Human nature has always been driven by a deep-seated curiosity and a thirst for knowledge. Our innate desire to learn, explore, and understand the world around us is the foundation of our survival. From the earliest moments of our existence, humans have sought to improve their circumstances—whether through mastering the environment, creating tools, or evolving social systems. This curiosity and drive are as vital today as they were thousands of years ago. The challenge now is to continue nurturing that curiosity as we face new problems, technologies, and societal shifts.
@@ -65,7 +65,7 @@ export const blogPosts = [
     excerpt: "Video games have been a part of my life for as long as I can remember. From early NES days to modern RPGs, gaming has always been a source of joy, challenge, and inspiration.",
     category: 'programming',
     image: null, // Will use generator
-    readTime: 6,
+    readTime: '6 min read',
     content: `Video games have been a part of my life for as long as I can remember. From the early days of playing Super Mario Bros. on the NES to the immersive worlds of modern RPGs, gaming has always been a source of joy, challenge, and inspiration. While some may view video games as a frivolous pastime, I see them as a valuable form of entertainment and a powerful tool for personal growth.
 
     One of the most compelling aspects of video games is their ability to transport us to new worlds and experiences. Whether it's exploring the vast landscapes of Skyrim, solving puzzles in Portal, or battling foes in Dark Souls, games offer a level of immersion that few other mediums can match. The sense of agency and control that games provide allows us to become the heroes of our own stories, shaping the outcome of our adventures through our choices and actions.
@@ -92,8 +92,8 @@ export const blogPosts = [
     description: "A guide to modern web development practices and technologies.",
     excerpt: "Modern web development has evolved dramatically with new frameworks, tools, and best practices. Learn how to build scalable, performant web applications.",
     category: 'web-development',
-    image: '/images/contro-dashboard.png', // Using existing web app image
-    readTime: 10,
+    image: '/images/projects/contro-dashboard.png', // Using existing web app image
+    readTime: '10 min read',
     content: `Modern web development has transformed dramatically over the past decade. With the rise of JavaScript frameworks, cloud computing, and mobile-first design, developers now have unprecedented tools and capabilities at their disposal. Building modern web applications requires understanding not just the technical aspects, but also user experience, performance optimization, and scalability considerations.
 
     The foundation of any modern web application starts with choosing the right technology stack. React, Vue.js, and Angular have become the dominant frontend frameworks, each offering unique advantages. React's component-based architecture and vast ecosystem make it ideal for complex applications, while Vue.js provides a gentler learning curve and excellent documentation. Angular offers a comprehensive framework with built-in features for enterprise applications.

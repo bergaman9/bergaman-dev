@@ -1,44 +1,38 @@
 "use client";
 
-import Head from 'next/head';
-import Image from 'next/image';
-import Link from "next/link";
-import Header from './components/Header';
-import Footer from './components/Footer';
-import ImageModal from './components/ImageModal';
-import dynamic from 'next/dynamic';
 import { useState, useEffect } from 'react';
-import { blogPosts } from "../data/blogPosts"; // Import blog posts
+import Link from 'next/link';
+import Image from 'next/image';
+import ImageModal from './components/ImageModal';
 import { useAdminMode } from '../hooks/useAdminMode';
 
-const CircularProgressbar = dynamic(() => import('react-circular-progressbar').then(mod => mod.CircularProgressbar), { ssr: false });
-import 'react-circular-progressbar/dist/styles.css';
-
 export default function Home() {
-  const [currentPage, setCurrentPage] = useState(1);
-  const postsPerPage = 3;
-  const [modalImage, setModalImage] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [blogPosts, setBlogPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [modalImage, setModalImage] = useState(null);
   const { isAdminMode, exitEditMode } = useAdminMode();
 
-  const projectImages = [
-    { src: "/images/contro.png", alt: "Contro Bot - Discord Bot Project" },
-    { src: "/images/ligroup.png", alt: "Ligroup - Full Stack Web Application" },
-    { src: "/images/generative-ai.png", alt: "RVC & Stable Diffusion AI Projects" },
-    { src: "/images/iaq.jpg", alt: "Indoor Air Quality IoT Project" }
+  // Featured projects data
+  const featuredProjects = [
+    {
+      id: 1,
+      title: "Contro Bot",
+      description: "Comprehensive Discord bot developed during the pandemic with advanced features",
+      image: "/images/projects/contro.png",
+      tech: ["Python", "Discord.py", "SQLite"],
+      github: "https://github.com/bergaman9/contro-bot",
+      demo: null
+    },
+    {
+      id: 2,
+      title: "Indoor Air Quality IoT Project",
+      description: "GUI application with wireless data transfer and real-time monitoring using Arduino",
+      image: "/images/projects/iaq.jpg",
+      tech: ["Arduino", "C++", "IoT", "Sensors"],
+      github: "https://github.com/bergaman9/arduino-projects",
+      demo: null
+    }
   ];
-
-  const openModal = (imageSrc, imageAlt, imageIndex = 0) => {
-    setModalImage({ src: imageSrc, alt: imageAlt });
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setModalImage(null);
-  };
 
   // Skills data
   const skills = [
@@ -74,294 +68,301 @@ export default function Home() {
       }
     } catch (error) {
       console.error('Error fetching blog posts:', error);
-      // Fallback to empty array if API fails
       setBlogPosts([]);
     } finally {
       setLoading(false);
     }
   };
 
-  // Sort blog posts by date (newest to oldest)
-  const sortedBlogPosts = blogPosts.sort((a, b) => new Date(b.date) - new Date(a.date));
+  const openModal = (imageSrc, imageAlt) => {
+    setModalImage({ src: imageSrc, alt: imageAlt });
+  };
 
-  // Get current posts
-  const indexOfLastPost = currentPage * postsPerPage;
-  const indexOfFirstPost = indexOfLastPost - postsPerPage;
-  const currentPosts = sortedBlogPosts.slice(indexOfFirstPost, indexOfLastPost);
-
-  // Change page
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const closeModal = () => {
+    setModalImage(null);
+  };
 
   return (
-    <div className="min-h-screen text-[#d1d5db] page-container">
-      <Head>
-        <title>Bergaman - AI & Blockchain Developer | Full Stack Development</title>
-        <meta name="description" content="Welcome to Bergaman's portfolio. Expert in AI, blockchain, and full-stack development. Specializing in Python, JavaScript, Discord bots, IoT projects, and cutting-edge technology solutions." />
-        <meta name="keywords" content="Bergaman, AI developer, blockchain developer, full stack developer, Python, JavaScript, Discord bot, IoT, portfolio" />
-        <meta property="og:title" content="Bergaman - AI & Blockchain Developer" />
-        <meta property="og:description" content="Expert in AI, blockchain, and full-stack development. Specializing in cutting-edge technology solutions." />
-        <meta property="og:url" content="https://bergaman.dev" />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Bergaman - AI & Blockchain Developer" />
-        <meta name="twitter:description" content="Expert in AI, blockchain, and full-stack development." />
-        <link rel="canonical" href="https://bergaman.dev" />
-      </Head>
-
-      <Header />
-
-      <main className="page-content py-8">
-        <div className="fade-in">
-          <Image
-            className="rounded-full border-4 border-[#e8c547] mt-10 shadow-[0_0_20px_5px_rgba(232,197,71,0.5)] hover:scale-105 transition-transform duration-300 mx-auto"
-            src="/images/profile.png"
-            alt="Profile Picture"
-            width={150}
-            height={150}
-          />
-          
-                  {/* Simple Introduction Text */}
-        <p className="text-center text-lg leading-relaxed text-[#d1d5db] max-w-3xl mx-auto mt-6 mb-8">
-          Hey, I'm <span className="text-[#e8c547] font-semibold">Omer</span>! The dragon spirit behind <span className="text-[#e8c547] font-semibold">Bergaman</span> - blending futuristic technology with a military edge, specializing in artificial intelligence, blockchain, and full-stack development.
-        </p>
-
-        {/* Stats Section */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-4 rounded-lg text-center hover:border-[#e8c547]/50 hover:shadow-lg hover:shadow-[#e8c547]/20 transition-all duration-300">
-            <div className="text-2xl font-bold text-[#e8c547] mb-1">
-              <i className="fas fa-heart text-red-500 mr-2"></i>
-              1,247
-            </div>
-            <div className="text-sm text-gray-400">Total Likes</div>
+    <div className="page-container">
+      {/* Admin Edit Mode Bar */}
+      {isAdminMode && (
+        <div className="fixed top-0 left-0 right-0 bg-[#e8c547] text-[#0e1b12] px-4 py-2 z-50 flex items-center justify-between">
+          <div className="flex items-center">
+            <i className="fas fa-edit mr-2"></i>
+            <span className="font-medium">Admin Edit Mode Active</span>
           </div>
-          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-4 rounded-lg text-center hover:border-[#e8c547]/50 hover:shadow-lg hover:shadow-[#e8c547]/20 transition-all duration-300">
-            <div className="text-2xl font-bold text-[#e8c547] mb-1">
-              <i className="fas fa-code mr-2"></i>
-              {blogPosts.length}
-            </div>
-            <div className="text-sm text-gray-400">Blog Posts</div>
-          </div>
-          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-4 rounded-lg text-center hover:border-[#e8c547]/50 hover:shadow-lg hover:shadow-[#e8c547]/20 transition-all duration-300">
-            <div className="text-2xl font-bold text-[#e8c547] mb-1">
-              <i className="fas fa-project-diagram mr-2"></i>
-              8+
-            </div>
-            <div className="text-sm text-gray-400">Projects</div>
-          </div>
-          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-4 rounded-lg text-center hover:border-[#e8c547]/50 hover:shadow-lg hover:shadow-[#e8c547]/20 transition-all duration-300">
-            <div className="text-2xl font-bold text-[#e8c547] mb-1">
-              <i className="fas fa-calendar mr-2"></i>
-              3+
-            </div>
-            <div className="text-sm text-gray-400">Years Coding</div>
-          </div>
+          <button
+            onClick={exitEditMode}
+            className="bg-[#0e1b12] text-[#e8c547] px-3 py-1 rounded hover:bg-[#1a2a1a] transition-colors"
+          >
+            <i className="fas fa-times mr-1"></i>
+            Exit
+          </button>
         </div>
-      </div>
+      )}
 
-        <div className="flex flex-col gap-8 w-full">
-          <section className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg transition-all duration-300 hover:border-[#e8c547]/30 hover:shadow-lg hover:shadow-[#e8c547]/10 hover:bg-[#2e3d29]/40 hover:scale-[1.01] slide-in-left">
-            <h2 className="text-lg font-semibold text-[#e8c547] border-b border-[#3e503e] pb-3 bg-gradient-to-r from-[#e8c547] to-[#d4b445] bg-clip-text text-transparent">Blog</h2>
-            <div className="mt-4 space-y-2">
-              {loading ? (
-                <div className="text-center py-8">
-                  <i className="fas fa-spinner fa-spin text-4xl text-[#e8c547] mb-4"></i>
-                  <p className="text-gray-400">Loading blog posts...</p>
-                </div>
-              ) : blogPosts.length === 0 ? (
-                <div className="text-center py-8">
-                  <i className="fas fa-file-alt text-4xl text-gray-400 mb-4"></i>
-                  <p className="text-gray-400">No blog posts available yet.</p>
-                  {isAdminMode && (
-                    <Link
-                      href="/admin/posts/new"
-                      className="mt-4 inline-block bg-[#e8c547] text-[#0e1b12] px-4 py-2 rounded hover:bg-[#d4b445] transition-colors"
-                    >
-                      <i className="fas fa-plus mr-2"></i>
-                      Add First Post
-                    </Link>
-                  )}
-                </div>
-              ) : (
-                currentPosts.map((post, index) => (
-                  <Link key={index} href={`/blog/${post.slug}`} className="flex justify-between items-center border border-[#3e503e] px-4 py-2 rounded-lg bg-[#0e1b12] text-sm hover:border-[#e8c547]/50 transition-colors duration-300 group cursor-pointer">
-                    <span className="text-[#e8c547] group-hover:text-[#d4b445] transition-colors duration-300 truncate">
-                      {post.title}
-                    </span>
-                    <span className="text-xs text-gray-400 ml-4 flex-shrink-0">{post.date}</span>
-                  </Link>
-                ))
+      <div className={`page-content ${isAdminMode ? 'pt-16' : ''}`}>
+        {/* Hero Section */}
+        <section className="text-center py-20 fade-in">
+          <div className="mb-8">
+            <Image
+              src="/images/profile/profile.png"
+              alt="Bergaman Profile"
+              width={150}
+              height={150}
+              className="rounded-full mx-auto mb-6 cursor-pointer hover:scale-105 transition-transform duration-300"
+              onClick={() => openModal("/images/profile/profile.png", "Bergaman Profile")}
+            />
+          </div>
+          <h1 className="text-5xl md:text-6xl font-bold gradient-text mb-6 leading-tight">
+            The Dragon's Domain
+          </h1>
+          <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto">
+            Crafting technology inspired by the strength and wisdom of a dragon
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link
+              href="/portfolio"
+              className="px-8 py-4 text-lg font-medium bg-[#e8c547] text-[#0e1b12] rounded-lg hover:bg-[#d4b445] transition-colors duration-300"
+            >
+              <i className="fas fa-briefcase mr-2"></i>
+              View Portfolio
+            </Link>
+            <Link
+              href="/blog"
+              className="px-8 py-4 text-lg font-medium border border-[#3e503e] rounded-lg hover:border-[#e8c547] transition-colors duration-300"
+            >
+              <i className="fas fa-blog mr-2"></i>
+              Read Blog
+            </Link>
+          </div>
+        </section>
+
+        {/* Blog Posts Section */}
+        <section className="py-16 slide-in-left">
+          <div className="flex justify-between items-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold gradient-text leading-tight">
+              <i className="fas fa-blog mr-3"></i>
+              Latest Blog Posts
+            </h2>
+            <Link
+              href="/blog"
+              className="text-[#e8c547] hover:text-[#d4b445] transition-colors duration-300"
+            >
+              View All →
+            </Link>
+          </div>
+          
+          {loading ? (
+            <div className="text-center py-8">
+              <i className="fas fa-spinner fa-spin text-4xl text-[#e8c547] mb-4"></i>
+              <p className="text-gray-400">Loading blog posts...</p>
+            </div>
+          ) : blogPosts.length === 0 ? (
+            <div className="text-center py-8">
+              <i className="fas fa-file-alt text-4xl text-gray-400 mb-4"></i>
+              <p className="text-gray-400">No blog posts available yet.</p>
+              {isAdminMode && (
+                <Link
+                  href="/admin/posts/new"
+                  className="mt-4 inline-block bg-[#e8c547] text-[#0e1b12] px-4 py-2 rounded hover:bg-[#d4b445] transition-colors"
+                >
+                  <i className="fas fa-plus mr-2"></i>
+                  Add First Post
+                </Link>
               )}
             </div>
-            <div className="flex justify-center mt-4">
-              {Array.from({ length: Math.ceil(blogPosts.length / postsPerPage) }, (_, index) => (
-                <button
-                  key={index}
-                  onClick={() => paginate(index + 1)}
-                  className={`px-3 py-1 mx-1 rounded transition-all duration-300 ${currentPage === index + 1 ? 'bg-[#e8c547] text-[#0e1b12]' : 'bg-[#0e1b12] text-[#e8c547] border border-[#e8c547] hover:border-[#e8c547]/80'}`}
-                >
-                  {index + 1}
-                </button>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {blogPosts.map((post) => (
+                <div key={post._id} className="relative">
+                  {isAdminMode && (
+                    <div className="absolute top-2 right-2 z-10 flex gap-2">
+                      <Link
+                        href={`/admin/posts/${post._id}/edit`}
+                        className="bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 transition-colors"
+                        title="Edit Post"
+                      >
+                        <i className="fas fa-edit text-sm"></i>
+                      </Link>
+                    </div>
+                  )}
+                  <Link
+                    href={`/blog/${post.slug}`}
+                    className="glass p-6 rounded-lg hover-lift block"
+                  >
+                    {post.image && (
+                      <div className="mb-4">
+                        <Image
+                          src={post.image}
+                          alt={post.title}
+                          width={400}
+                          height={200}
+                          className="w-full h-48 object-cover rounded-lg cursor-pointer"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            openModal(post.image, post.title);
+                          }}
+                        />
+                      </div>
+                    )}
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="px-2 py-1 bg-[#e8c547]/20 text-[#e8c547] text-xs rounded-full">
+                        {post.category}
+                      </span>
+                      <span className="text-gray-400 text-sm">
+                        {new Date(post.createdAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <h3 className="text-xl font-semibold text-[#e8c547] mb-3">
+                      {post.title}
+                    </h3>
+                    <p className="text-gray-300 mb-4 line-clamp-3">
+                      {post.description}
+                    </p>
+                    <div className="flex items-center justify-between text-sm text-gray-400">
+                      <span>
+                        <i className="fas fa-clock mr-1"></i>
+                        {post.readTime || '6 min read'}
+                      </span>
+                      <div className="flex items-center space-x-3">
+                        <span>
+                          <i className="fas fa-eye mr-1"></i>
+                          {post.views || 0}
+                        </span>
+                        <span>
+                          <i className="fas fa-heart mr-1"></i>
+                          {post.likes || 0}
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                </div>
               ))}
             </div>
-          </section>
+          )}
+        </section>
 
-          <section className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg w-full transition-all duration-300 hover:border-[#e8c547]/30 hover:shadow-lg hover:shadow-[#e8c547]/10 hover:bg-[#2e3d29]/40 hover:scale-[1.01] slide-in-right">
-            <h2 className="text-xl font-semibold text-[#e8c547] border-b border-[#3e503e] pb-3 bg-gradient-to-r from-[#e8c547] to-[#d4b445] bg-clip-text text-transparent">Featured Projects</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6">
-              <div className="border border-[#3e503e] p-4 rounded-lg text-center bg-[#0e1b12] text-[#e8c547] hover:border-[#e8c547]/50 transition-colors duration-300 group">
-                <img 
-                  src="/images/contro.png" 
-                  alt="Contro Bot" 
-                  className="w-full h-32 object-cover rounded-lg mb-2 group-hover:scale-105 transition-transform duration-300 cursor-pointer" 
-                  onClick={() => openModal("/images/contro.png", "Contro Bot - Discord Bot Project", 0)}
-                />
-                <h3 className="font-bold gradient-text">Contro Bot</h3>
-                <p className="text-sm text-gray-300">It is a comprehensive Discord bot that I started to develop and made improvements to during the pandemic period.</p>
+        {/* Featured Projects Section */}
+        <section className="py-16 slide-in-right">
+          <h2 className="text-3xl md:text-4xl font-bold gradient-text mb-12 leading-tight">
+            <i className="fas fa-star mr-3"></i>
+            Featured Projects
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {featuredProjects.map((project) => (
+              <div key={project.id} className="glass p-6 rounded-lg hover-lift">
+                <div className="mb-4">
+                  <Image
+                    src={project.image}
+                    alt={project.title}
+                    width={400}
+                    height={200}
+                    className="w-full h-48 object-cover rounded-lg cursor-pointer"
+                    onClick={() => openModal(project.image, project.title)}
+                  />
+                </div>
+                <h3 className="text-xl font-semibold text-[#e8c547] mb-3">
+                  {project.title}
+                </h3>
+                <p className="text-gray-300 mb-4">
+                  {project.description}
+                </p>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {project.tech.map((tech, index) => (
+                    <span
+                      key={index}
+                      className="px-2 py-1 bg-[#3e503e]/50 text-gray-300 text-xs rounded"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+                <div className="flex gap-3">
+                  <a
+                    href={project.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 text-center py-2 bg-[#e8c547]/20 text-[#e8c547] rounded hover:bg-[#e8c547]/30 transition-colors duration-300"
+                  >
+                    <i className="fab fa-github mr-2"></i>
+                    GitHub
+                  </a>
+                  {project.demo ? (
+                    <a
+                      href={project.demo}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 text-center py-2 bg-blue-600/20 text-blue-400 rounded hover:bg-blue-600/30 transition-colors duration-300"
+                    >
+                      <i className="fas fa-external-link-alt mr-2"></i>
+                      Demo
+                    </a>
+                  ) : (
+                    <div className="flex-1 text-center py-2 bg-gray-600/20 text-gray-400 rounded cursor-not-allowed">
+                      <i className="fas fa-ban mr-2"></i>
+                      Demo N/A
+                    </div>
+                  )}
+                </div>
               </div>
-              <div className="border border-[#3e503e] p-4 rounded-lg text-center bg-[#0e1b12] text-[#e8c547] hover:border-[#e8c547]/50 transition-colors duration-300 group">
-                <img 
-                  src="/images/ligroup.png" 
-                  alt="Ligroup" 
-                  className="w-full h-32 object-cover rounded-lg mb-2 group-hover:scale-105 transition-transform duration-300 cursor-pointer" 
-                  onClick={() => openModal("/images/ligroup.png", "Ligroup - Full Stack Web Application", 1)}
-                />
-                <h3 className="font-bold gradient-text">Ligroup</h3>
-                <p className="text-sm text-gray-300">This is the first project where I stepped into full stack web development, thinking that this job cannot be done with just bots.</p>
-              </div>
-              <div className="border border-[#3e503e] p-4 rounded-lg text-center bg-[#0e1b12] text-[#e8c547] hover:border-[#e8c547]/50 transition-colors duration-300 group">
-                <img 
-                  src="/images/generative-ai.png" 
-                  alt="RVC & Stable Diffusion Projects" 
-                  className="w-full h-32 object-cover rounded-lg mb-2 group-hover:scale-105 transition-transform duration-300 cursor-pointer" 
-                  onClick={() => openModal("/images/generative-ai.png", "RVC & Stable Diffusion AI Projects", 2)}
-                />
-                <h3 className="font-bold gradient-text">RVC & Stable Diffusion Projects</h3>
-                <p className="text-sm text-gray-300">I developed experimental projects during the times when generative artificial intelligence was becoming popular.</p>
-              </div>
-              <div className="border border-[#3e503e] p-4 rounded-lg text-center bg-[#0e1b12] text-[#e8c547] hover:border-[#e8c547]/50 transition-colors duration-300 group">
-                <img 
-                  src="/images/iaq.jpg" 
-                  alt="Indoor Air Quality IoT Project" 
-                  className="w-full h-32 object-cover rounded-lg mb-2 group-hover:scale-105 transition-transform duration-300 cursor-pointer" 
-                  onClick={() => openModal("/images/iaq.jpg", "Indoor Air Quality IoT Project", 3)}
-                />
-                <h3 className="font-bold gradient-text">Indoor Air Quality IoT Project</h3>
-                <p className="text-sm text-gray-300">I made a GUI application that enables wireless data transfer and real-time monitoring of data using Arduino Uno R4 WiFi.</p>
-              </div>
-            </div>
-          </section>
+            ))}
+          </div>
+        </section>
 
-          <section className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg transition-all duration-300 hover:border-[#e8c547]/30 hover:shadow-lg hover:shadow-[#e8c547]/10 hover:bg-[#2e3d29]/40 hover:scale-[1.01] slide-in-left">
-            <h2 className="text-xl font-semibold text-[#e8c547] border-b border-[#3e503e] pb-3 bg-gradient-to-r from-[#e8c547] to-[#d4b445] bg-clip-text text-transparent">Interests</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-6 text-sm">
-              <div className="border border-[#3e503e] p-4 rounded-lg text-center bg-[#0e1b12] text-[#e8c547] hover:border-[#e8c547]/50 hover:scale-105 transition-all duration-300">AI</div>
-              <div className="border border-[#3e503e] p-4 rounded-lg text-center bg-[#0e1b12] text-[#e8c547] hover:border-[#e8c547]/50 hover:scale-105 transition-all duration-300">Embedded Systems</div>
-              <div className="border border-[#3e503e] p-4 rounded-lg text-center bg-[#0e1b12] text-[#e8c547] hover:border-[#e8c547]/50 hover:scale-105 transition-all duration-300">Full Stack Development</div>
-              <div className="border border-[#3e503e] p-4 rounded-lg text-center bg-[#0e1b12] text-[#e8c547] hover:border-[#e8c547]/50 hover:scale-105 transition-all duration-300">Cybersecurity</div>
-              <div className="border border-[#3e503e] p-4 rounded-lg text-center bg-[#0e1b12] text-[#e8c547] hover:border-[#e8c547]/50 hover:scale-105 transition-all duration-300">Robotics</div>
-              <div className="border border-[#3e503e] p-4 rounded-lg text-center bg-[#0e1b12] text-[#e8c547] hover:border-[#e8c547]/50 hover:scale-105 transition-all duration-300">Blockchain</div>
-            </div>
-          </section>
+        {/* Skills Section */}
+        <section className="py-16 fade-in">
+          <h2 className="text-3xl md:text-4xl font-bold gradient-text mb-12 leading-tight">
+            <i className="fas fa-code mr-3"></i>
+            Technical Skills
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {skills.map((skill, index) => (
+              <div key={index} className="glass p-6 rounded-lg">
+                <div className="flex justify-between items-center mb-3">
+                  <h3 className="text-lg font-semibold text-[#e8c547]">
+                    {skill.name}
+                  </h3>
+                  <span className="text-gray-400">{skill.level}%</span>
+                </div>
+                <div className="w-full bg-[#3e503e] rounded-full h-2">
+                  <div
+                    className="bg-gradient-to-r from-[#e8c547] to-[#d4b445] h-2 rounded-full transition-all duration-1000"
+                    style={{ width: `${skill.level}%` }}
+                  ></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
 
-          <section className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg transition-all duration-300 hover:border-[#e8c547]/30 hover:shadow-lg hover:shadow-[#e8c547]/10 hover:bg-[#2e3d29]/40 hover:scale-[1.01] slide-in-right">
-            <h2 className="text-xl font-semibold text-[#e8c547] border-b border-[#3e503e] pb-3 bg-gradient-to-r from-[#e8c547] to-[#d4b445] bg-clip-text text-transparent">Skills</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6">
-              <div className="border border-[#3e503e] p-4 rounded-lg text-center bg-[#0e1b12] text-[#e8c547] flex flex-col items-center hover:border-[#e8c547]/50 transition-colors duration-300">
-                <h3 className="font-bold text-[#e8c547] mb-2 text-sm">Python</h3>
-                <div className="w-16 h-16 hover:scale-105 transition-transform duration-300">
-                  <CircularProgressbar value={80} text={`${80}%`} styles={{
-                    path: { stroke: `#e8c547`, strokeLinecap: 'round', transition: 'stroke-dashoffset 0.5s ease 0s' },
-                    text: { fill: '#e8c547', fontSize: '20px' },
-                    trail: { stroke: '#3e503e' }
-                  }} />
-                </div>
+        {/* Interests Section */}
+        <section className="py-16 slide-in-left">
+          <h2 className="text-3xl md:text-4xl font-bold gradient-text mb-12 leading-tight">
+            <i className="fas fa-heart mr-3"></i>
+            Interests & Passions
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {interests.map((interest, index) => (
+              <div key={index} className="glass p-6 rounded-lg text-center hover-lift">
+                <i className={`${interest.icon} text-3xl text-[#e8c547] mb-4`}></i>
+                <h3 className="text-lg font-semibold text-gray-300">
+                  {interest.name}
+                </h3>
               </div>
-              <div className="border border-[#3e503e] p-4 rounded-lg text-center bg-[#0e1b12] text-[#e8c547] flex flex-col items-center hover:border-[#e8c547]/50 transition-colors duration-300">
-                <h3 className="font-bold text-[#e8c547] mb-2 text-sm">JavaScript</h3>
-                <div className="w-16 h-16 hover:scale-105 transition-transform duration-300">
-                  <CircularProgressbar value={70} text={`${70}%`} styles={{
-                    path: { stroke: `#e8c547`, strokeLinecap: 'round', transition: 'stroke-dashoffset 0.5s ease 0s' },
-                    text: { fill: '#e8c547', fontSize: '20px' },
-                    trail: { stroke: '#3e503e' }
-                  }} />
-                </div>
-              </div>
-              <div className="border border-[#3e503e] p-4 rounded-lg text-center bg-[#0e1b12] text-[#e8c547] flex flex-col items-center hover:border-[#e8c547]/50 transition-colors duration-300">
-                <h3 className="font-bold text-[#e8c547] mb-2 text-sm">C#</h3>
-                <div className="w-16 h-16 hover:scale-105 transition-transform duration-300">
-                  <CircularProgressbar value={60} text={`${60}%`} styles={{
-                    path: { stroke: `#e8c547`, strokeLinecap: 'round', transition: 'stroke-dashoffset 0.5s ease 0s' },
-                    text: { fill: '#e8c547', fontSize: '20px' },
-                    trail: { stroke: '#3e503e' }
-                  }} />
-                </div>
-              </div>
-              <div className="border border-[#3e503e] p-4 rounded-lg text-center bg-[#0e1b12] text-[#e8c547] flex flex-col items-center hover:border-[#e8c547]/50 transition-colors duration-300">
-                <h3 className="font-bold text-[#e8c547] mb-2 text-sm">HTML & CSS</h3>
-                <div className="w-16 h-16 hover:scale-105 transition-transform duration-300">
-                  <CircularProgressbar value={90} text={`${90}%`} styles={{
-                    path: { stroke: `#e8c547`, strokeLinecap: 'round', transition: 'stroke-dashoffset 0.5s ease 0s' },
-                    text: { fill: '#e8c547', fontSize: '20px' },
-                    trail: { stroke: '#3e503e' }
-                  }} />
-                </div>
-              </div>
-              <div className="border border-[#3e503e] p-4 rounded-lg text-center bg-[#0e1b12] text-[#e8c547] flex flex-col items-center hover:border-[#e8c547]/50 transition-colors duration-300">
-                <h3 className="font-bold text-[#e8c547] mb-2 text-sm">React</h3>
-                <div className="w-16 h-16 hover:scale-105 transition-transform duration-300">
-                  <CircularProgressbar value={75} text={`${75}%`} styles={{
-                    path: { stroke: `#e8c547`, strokeLinecap: 'round', transition: 'stroke-dashoffset 0.5s ease 0s' },
-                    text: { fill: '#e8c547', fontSize: '20px' },
-                    trail: { stroke: '#3e503e' }
-                  }} />
-                </div>
-              </div>
-              <div className="border border-[#3e503e] p-4 rounded-lg text-center bg-[#0e1b12] text-[#e8c547] flex flex-col items-center hover:border-[#e8c547]/50 transition-colors duration-300">
-                <h3 className="font-bold text-[#e8c547] mb-2 text-sm">Node.js</h3>
-                <div className="w-16 h-16 hover:scale-105 transition-transform duration-300">
-                  <CircularProgressbar value={65} text={`${65}%`} styles={{
-                    path: { stroke: `#e8c547`, strokeLinecap: 'round', transition: 'stroke-dashoffset 0.5s ease 0s' },
-                    text: { fill: '#e8c547', fontSize: '20px' },
-                    trail: { stroke: '#3e503e' }
-                  }} />
-                </div>
-              </div>
-              <div className="border border-[#3e503e] p-4 rounded-lg text-center bg-[#0e1b12] text-[#e8c547] flex flex-col items-center hover:border-[#e8c547]/50 transition-colors duration-300">
-                <h3 className="font-bold text-[#e8c547] mb-2 text-sm">SQL</h3>
-                <div className="w-16 h-16 hover:scale-105 transition-transform duration-300">
-                  <CircularProgressbar value={70} text={`${70}%`} styles={{
-                    path: { stroke: `#e8c547`, strokeLinecap: 'round', transition: 'stroke-dashoffset 0.5s ease 0s' },
-                    text: { fill: '#e8c547', fontSize: '20px' },
-                    trail: { stroke: '#3e503e' }
-                  }} />
-                </div>
-              </div>
-              <div className="border border-[#3e503e] p-4 rounded-lg text-center bg-[#0e1b12] text-[#e8c547] flex flex-col items-center hover:border-[#e8c547]/50 transition-colors duration-300">
-                <h3 className="font-bold text-[#e8c547] mb-2 text-sm">Git</h3>
-                <div className="w-16 h-16 hover:scale-105 transition-transform duration-300">
-                  <CircularProgressbar value={85} text={`${85}%`} styles={{
-                    path: { stroke: `#e8c547`, strokeLinecap: 'round', transition: 'stroke-dashoffset 0.5s ease 0s' },
-                    text: { fill: '#e8c547', fontSize: '20px' },
-                    trail: { stroke: '#3e503e' }
-                  }} />
-                </div>
-              </div>
-            </div>
-          </section>
-        </div>
-      </main>
-
-      <Footer />
+            ))}
+          </div>
+        </section>
+      </div>
 
       {/* Image Modal */}
-      <ImageModal
-        src={modalImage?.src}
-        alt={modalImage?.alt}
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        allImages={projectImages}
-        currentIndex={projectImages.findIndex(img => img.src === modalImage?.src)}
-      />
+      {modalImage && (
+        <ImageModal
+          src={modalImage.src}
+          alt={modalImage.alt}
+          onClose={closeModal}
+        />
+      )}
     </div>
   );
 }

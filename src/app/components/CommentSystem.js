@@ -25,29 +25,60 @@ export default function CommentSystem({ postSlug }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
 
-  // Load comments from localStorage on component mount
+  // Load comments from database on component mount
   useEffect(() => {
-    const savedComments = localStorage.getItem(`comments_${postSlug}`);
-    if (savedComments) {
+    const fetchComments = async () => {
       try {
-        setComments(JSON.parse(savedComments));
+        const response = await fetch(`/api/comments?postSlug=${postSlug}`);
+        if (response.ok) {
+          const data = await response.json();
+          setComments(data.comments);
+        }
       } catch (error) {
-        console.error('Error parsing comments:', error);
-        localStorage.removeItem(`comments_${postSlug}`);
+        console.error('Error fetching comments:', error);
       }
-    }
+    };
 
-    // Check if user has already commented on this post
+    fetchComments();
+
+    // Check if user has already commented on this post (still use localStorage for this)
     const userCommented = localStorage.getItem(`user_commented_${postSlug}`);
     if (userCommented) {
       setHasCommented(true);
     }
   }, [postSlug]);
 
-  // Save comments to localStorage
-  const saveComments = (updatedComments) => {
-    localStorage.setItem(`comments_${postSlug}`, JSON.stringify(updatedComments));
-    setComments(updatedComments);
+  // Save comment to database
+  const saveComment = async (commentData) => {
+    try {
+      const response = await fetch('/api/comments', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          postSlug,
+          ...commentData
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        // Refresh comments list
+        const refreshResponse = await fetch(`/api/comments?postSlug=${postSlug}`);
+        if (refreshResponse.ok) {
+          const refreshData = await refreshResponse.json();
+          setComments(refreshData.comments);
+        }
+        return true;
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to save comment');
+      }
+    } catch (error) {
+      console.error('Error saving comment:', error);
+      throw error;
+    }
   };
 
   // Validate form
@@ -77,7 +108,7 @@ export default function CommentSystem({ postSlug }) {
   };
 
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (hasCommented) {
@@ -91,34 +122,29 @@ export default function CommentSystem({ postSlug }) {
 
     setIsSubmitting(true);
 
-    // Sanitize inputs
-    const sanitizedComment = {
-      id: Date.now(),
-      name: sanitizeInput(newComment.name.trim()),
-      email: sanitizeInput(newComment.email.trim()),
-      message: sanitizeInput(newComment.message.trim()),
-      timestamp: new Date().toISOString(),
-      date: new Date().toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      })
-    };
+    try {
+      // Prepare comment data (no need to sanitize here as API will handle it)
+      const commentData = {
+        name: newComment.name.trim(),
+        email: newComment.email.trim(),
+        message: newComment.message.trim()
+      };
 
-    // Add comment to list
-    const updatedComments = [...comments, sanitizedComment];
-    saveComments(updatedComments);
+      // Save comment to database
+      await saveComment(commentData);
 
-    // Mark user as having commented
-    localStorage.setItem(`user_commented_${postSlug}`, 'true');
-    setHasCommented(true);
+      // Mark user as having commented
+      localStorage.setItem(`user_commented_${postSlug}`, 'true');
+      setHasCommented(true);
 
-    // Reset form
-    setNewComment({ name: '', email: '', message: '' });
-    setErrors({});
-    setIsSubmitting(false);
+      // Reset form
+      setNewComment({ name: '', email: '', message: '' });
+      setErrors({});
+    } catch (error) {
+      alert('Failed to post comment. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // Handle input changes
@@ -139,7 +165,7 @@ export default function CommentSystem({ postSlug }) {
   };
 
   return (
-    <div className="mt-12 bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg transition-all duration-300 hover:border-[#e8c547]/30 hover:shadow-lg hover:shadow-[#e8c547]/10 hover:bg-[#2e3d29]/40 hover:scale-[1.01]">
+    <div className="mt-12 mb-8 bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg transition-all duration-300 hover:border-[#e8c547]/30 hover:bg-[#2e3d29]/40">
       <h3 className="text-2xl font-bold bg-gradient-to-r from-[#e8c547] to-[#d4b445] bg-clip-text text-transparent mb-6 flex items-center">
         <i className="fas fa-comments mr-3 text-[#e8c547]"></i>
         Comments ({comments.length})
@@ -153,7 +179,7 @@ export default function CommentSystem({ postSlug }) {
           </p>
         ) : (
           comments.map((comment) => (
-            <div key={comment.id} className="bg-[#0e1b12] border border-[#3e503e] rounded-lg p-4">
+            <div key={comment._id} className="bg-[#0e1b12] border border-[#3e503e] rounded-lg p-4">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center space-x-2">
                   <div className="w-8 h-8 bg-gradient-to-r from-[#e8c547] to-[#d4b445] rounded-full flex items-center justify-center">
@@ -161,11 +187,19 @@ export default function CommentSystem({ postSlug }) {
                       {comment.name.charAt(0).toUpperCase()}
                     </span>
                   </div>
-                  <span className="font-semibold text-[#e8c547]" dangerouslySetInnerHTML={{ __html: comment.name }}></span>
+                  <span className="font-semibold text-[#e8c547]">{comment.name}</span>
                 </div>
-                <span className="text-xs text-gray-400">{comment.date}</span>
+                <span className="text-xs text-gray-400">
+                  {new Date(comment.createdAt).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
+                </span>
               </div>
-              <p className="text-gray-300 leading-relaxed" dangerouslySetInnerHTML={{ __html: comment.message }}></p>
+              <p className="text-gray-300 leading-relaxed">{comment.message}</p>
             </div>
           ))
         )}

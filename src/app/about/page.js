@@ -1,8 +1,6 @@
 "use client";
 
 import Head from 'next/head';
-import Header from "../components/Header";
-import Footer from "../components/Footer";
 import ImageModal from "../components/ImageModal";
 import Image from 'next/image';
 import { useState } from 'react';
@@ -147,8 +145,6 @@ export default function About() {
         <link rel="canonical" href="https://bergaman.dev/about" />
       </Head>
 
-      <Header />
-
       <main className="page-content py-8">
         
         {/* Hero Section */}
@@ -156,15 +152,15 @@ export default function About() {
           <div className="relative mb-8">
             <Image
               className="rounded-full border-4 border-[#e8c547] shadow-lg shadow-[#e8c547]/25 hover-scale mx-auto cursor-pointer"
-              src="/images/profile.png"
+              src="/images/profile/profile.png"
               alt="Bergaman Profile Picture"
               width={200}
               height={200}
               priority
-              onClick={() => openModal("/images/profile.png", "Bergaman Profile Picture")}
+              onClick={() => openModal("/images/profile/profile.png", "Bergaman Profile Picture")}
             />
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold gradient-text mb-4">
+          <h1 className="text-4xl md:text-5xl font-bold gradient-text mb-4 leading-tight">
             About Me
           </h1>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
@@ -291,8 +287,6 @@ export default function About() {
 
 
       </main>
-
-      <Footer />
 
       {/* Image Modal */}
       <ImageModal

@@ -1,8 +1,6 @@
 "use client";
 
 import Head from 'next/head';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
 import Image from 'next/image';
 import PlaceholderImage from '../components/PlaceholderImage';
 import ImageModal from '../components/ImageModal';
@@ -14,7 +12,7 @@ export default function Portfolio() {
       id: 1,
       title: "Contro Bot",
       description: "A comprehensive Discord bot developed during the pandemic period with advanced moderation, music, and utility features.",
-      image: "/images/contro.png",
+      image: "/images/projects/contro.png",
       technologies: ["Python", "Discord.py", "SQLite", "Heroku"],
       status: "Active",
       category: "Bot Development",
@@ -33,7 +31,7 @@ export default function Portfolio() {
       id: 2,
       title: "Ligroup",
       description: "My first full-stack web development project, marking the transition from bot development to comprehensive web solutions.",
-      image: "/images/ligroup.png",
+      image: "/images/projects/ligroup.png",
       technologies: ["React", "Node.js", "MongoDB", "Express"],
       status: "Completed",
       category: "Full Stack Web",
@@ -52,7 +50,7 @@ export default function Portfolio() {
       id: 3,
       title: "RVC & Stable Diffusion Projects",
       description: "Experimental AI projects exploring voice conversion and image generation during the rise of generative AI.",
-      image: "/images/generative-ai.png",
+      image: "/images/projects/generative-ai.png",
       technologies: ["Python", "PyTorch", "Stable Diffusion", "RVC"],
       status: "Experimental",
       category: "AI/ML",
@@ -71,7 +69,7 @@ export default function Portfolio() {
       id: 4,
       title: "Indoor Air Quality IoT Project",
       description: "IoT solution using Arduino Uno R4 WiFi for wireless data transfer and real-time air quality monitoring.",
-      image: "/images/iaq.jpg",
+      image: "/images/projects/iaq.jpg",
       technologies: ["Arduino", "C++", "WiFi", "Sensors", "GUI"],
       status: "Completed",
       category: "IoT/Embedded",
@@ -206,13 +204,11 @@ export default function Portfolio() {
         <link rel="canonical" href="https://bergaman.dev/portfolio" />
       </Head>
 
-      <Header />
-
       <main className="page-content py-8">
         
         {/* Page Header */}
         <section className="text-center mb-12 fade-in">
-          <h1 className="text-4xl md:text-5xl font-bold gradient-text mb-4">
+          <h1 className="text-4xl md:text-5xl font-bold gradient-text mb-4 leading-tight">
             My Portfolio
           </h1>
           <p className="text-lg text-gray-300 max-w-3xl mx-auto">
@@ -233,7 +229,7 @@ export default function Portfolio() {
                   placeholder="Search projects..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] placeholder-gray-400 focus:border-[#e8c547]/50 focus:outline-none transition-colors duration-300"
+                  className="w-full pl-10 pr-4 py-4 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] placeholder-gray-400 focus:border-[#e8c547]/50 focus:outline-none transition-colors duration-300 text-base"
                 />
               </div>
 
@@ -373,8 +369,6 @@ export default function Portfolio() {
 
 
       </main>
-
-      <Footer />
 
       {/* Image Modal */}
       <ImageModal

@@ -2,8 +2,6 @@
 
 import Head from 'next/head';
 import Image from 'next/image';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
 import ImageModal from '../components/ImageModal';
 import { useState } from 'react';
 
@@ -12,18 +10,26 @@ const suggestions = {
     {
       title: "The Witcher 3: Wild Hunt",
       description: "An epic open-world RPG with incredible storytelling and immersive gameplay.",
-      image: "/images/witcher3.png",
+      image: "/images/games/witcher3.png",
       genre: "RPG",
       rating: 9.5,
-      platform: "PC, PS4, Xbox, Switch"
+      platform: "PC, PlayStation, Xbox, Switch"
     },
     {
       title: "Cyberpunk 2077",
       description: "A futuristic open-world action RPG set in Night City.",
-      image: "/images/cyberpunk2077.png",
+      image: "/images/games/cyberpunk2077.png",
       genre: "Action RPG",
       rating: 8.5,
-      platform: "PC, PS5, Xbox"
+      platform: "PC, PlayStation, Xbox"
+    },
+    {
+      title: "Elden Ring",
+      description: "A challenging action RPG from FromSoftware with an open world.",
+      image: "/images/games/eldenring.jpg",
+      genre: "Action RPG",
+      rating: 9.7,
+      platform: "PC, PlayStation, Xbox"
     },
     {
       title: "Red Dead Redemption 2",
@@ -31,22 +37,14 @@ const suggestions = {
       image: "/images/rdr2.jpg",
       genre: "Action-Adventure",
       rating: 9.8,
-      platform: "PC, PS4, Xbox"
-    },
-    {
-      title: "Elden Ring",
-      description: "A challenging action RPG from FromSoftware with an open world.",
-      image: "/images/eldenring.jpg",
-      genre: "Action RPG",
-      rating: 9.7,
-      platform: "PC, PS5, Xbox"
+      platform: "PC, PlayStation, Xbox"
     }
   ],
   movies: [
     {
       title: "The Terminator",
       description: "A sci-fi action film about a cyborg assassin sent back in time.",
-      image: "/images/terminator.png",
+      image: "/images/movies/terminator.png",
       genre: "Sci-Fi Action",
       year: 1984,
       director: "James Cameron",
@@ -55,7 +53,7 @@ const suggestions = {
     {
       title: "Drive",
       description: "A neo-noir crime drama about a getaway driver in Los Angeles.",
-      image: "/images/drive.png",
+      image: "/images/movies/drive.png",
       genre: "Neo-Noir Crime",
       year: 2011,
       director: "Nicolas Winding Refn",
@@ -102,7 +100,7 @@ const suggestions = {
     {
       title: "1984",
       description: "George Orwell's dystopian novel about totalitarianism and surveillance.",
-      image: "/images/1984.png",
+      image: "/images/books/1984.png",
       author: "George Orwell",
       genre: "Dystopian Fiction",
       year: 1949,
@@ -111,7 +109,7 @@ const suggestions = {
     {
       title: "Sapiens",
       description: "Yuval Noah Harari's exploration of human history and civilization.",
-      image: "/images/sapiens.png",
+      image: "/images/books/sapiens.png",
       author: "Yuval Noah Harari",
       genre: "History",
       year: 2011,
@@ -120,20 +118,11 @@ const suggestions = {
     {
       title: "Ikigai",
       description: "The Japanese secret to a long and happy life by Héctor García and Francesc Miralles.",
-      image: "/images/ikigai.png",
+      image: "/images/books/ikigai.png",
       author: "Héctor García, Francesc Miralles",
       genre: "Self-Help",
       year: 2016,
       rating: 8.5
-    },
-    {
-      title: "Timekeepers",
-      description: "Simon Garfield's fascinating exploration of humanity's relationship with time.",
-      image: "/images/timekeepers.png",
-      author: "Simon Garfield",
-      genre: "History",
-      year: 2016,
-      rating: 8.3
     },
     {
       title: "Dune",
@@ -211,102 +200,125 @@ export default function Suggestions() {
   };
 
   const getDisplayItems = (items, category) => {
-    return showAll[category] ? items : items.slice(0, 4);
+    if (showAll[category]) {
+      return items;
+    }
+    return items.slice(0, 4);
+  };
+
+  const renderStars = (rating) => {
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 !== 0;
+    const stars = [];
+
+    for (let i = 0; i < fullStars; i++) {
+      stars.push(<i key={i} className="fas fa-star text-[#e8c547]"></i>);
+    }
+
+    if (hasHalfStar) {
+      stars.push(<i key="half" className="fas fa-star-half-alt text-[#e8c547]"></i>);
+    }
+
+    const emptyStars = 5 - Math.ceil(rating);
+    for (let i = 0; i < emptyStars; i++) {
+      stars.push(<i key={`empty-${i}`} className="far fa-star text-gray-400"></i>);
+    }
+
+    return stars;
   };
 
   return (
-    <div className="flex flex-col items-center min-h-screen text-[#d1d5db] page-container">
+    <div className="page-container">
       <Head>
-        <title>Suggestions - Video Games, Movies & Books | Bergaman</title>
-        <meta name="description" content="Discover Bergaman's curated recommendations for video games, movies, and books. Explore entertainment suggestions across different genres." />
-        <meta name="keywords" content="video games, movies, books, recommendations, entertainment, suggestions" />
-        <meta property="og:title" content="Suggestions - Video Games, Movies & Books | Bergaman" />
+        <title>Suggestions - Bergaman | Curated Recommendations</title>
+        <meta name="description" content="Discover Bergaman's curated recommendations for video games, movies, and books. Explore handpicked content across entertainment and literature." />
+        <meta name="keywords" content="recommendations, video games, movies, books, entertainment, bergaman suggestions" />
+        <meta property="og:title" content="Suggestions - Bergaman | Curated Recommendations" />
         <meta property="og:description" content="Discover Bergaman's curated recommendations for video games, movies, and books." />
         <meta property="og:url" content="https://bergaman.dev/suggestions" />
         <meta property="og:type" content="website" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Suggestions - Video Games, Movies & Books | Bergaman" />
+        <meta name="twitter:title" content="Suggestions - Bergaman | Curated Recommendations" />
         <meta name="twitter:description" content="Discover Bergaman's curated recommendations for video games, movies, and books." />
         <link rel="canonical" href="https://bergaman.dev/suggestions" />
       </Head>
 
-      <Header />
-
       <main className="page-content py-8">
         
         {/* Page Header */}
-        <div className="text-center mb-12 fade-in">
-          <h1 className="text-4xl md:text-5xl font-bold gradient-text mb-4">
-            My Suggestions
+        <section className="text-center mb-12 fade-in">
+          <h1 className="text-4xl md:text-5xl font-bold gradient-text mb-4 leading-tight">
+            <i className="fas fa-star mr-3"></i>
+            Suggestions
           </h1>
           <p className="text-lg text-gray-300 max-w-3xl mx-auto">
-            Discover my curated recommendations across video games, movies, and books. 
-            These are personally tested and highly recommended entertainment options.
+            Curated recommendations from the dragon's collection
           </p>
-        </div>
+        </section>
 
         {/* Tab Navigation */}
-        <div className="flex flex-wrap justify-center gap-4 mb-8 slide-in-left">
-          <button
-            onClick={() => setActiveTab('games')}
-            className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all duration-300 hover-scale ${
-              activeTab === 'games'
-                ? 'bg-[#e8c547] text-[#0e1b12] shadow-lg shadow-[#e8c547]/25'
-                : 'bg-[#0e1b12] text-[#e8c547] border border-[#3e503e] hover:border-[#e8c547]/50'
-            }`}
-          >
-            <i className="fas fa-gamepad"></i>
-            Video Games
-          </button>
-          <button
-            onClick={() => setActiveTab('movies')}
-            className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all duration-300 hover-scale ${
-              activeTab === 'movies'
-                ? 'bg-[#e8c547] text-[#0e1b12] shadow-lg shadow-[#e8c547]/25'
-                : 'bg-[#0e1b12] text-[#e8c547] border border-[#3e503e] hover:border-[#e8c547]/50'
-            }`}
-          >
-            <i className="fas fa-film"></i>
-            Movies
-          </button>
-          <button
-            onClick={() => setActiveTab('books')}
-            className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all duration-300 hover-scale ${
-              activeTab === 'books'
-                ? 'bg-[#e8c547] text-[#0e1b12] shadow-lg shadow-[#e8c547]/25'
-                : 'bg-[#0e1b12] text-[#e8c547] border border-[#3e503e] hover:border-[#e8c547]/50'
-            }`}
-          >
-            <i className="fas fa-book"></i>
-            Books
-          </button>
-        </div>
+        <section className="mb-8 slide-in-left">
+          <div className="flex justify-center">
+            <div className="flex bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 rounded-lg p-2">
+              <button
+                onClick={() => setActiveTab('games')}
+                className={`flex items-center px-6 py-3 rounded-lg font-medium transition-all duration-300 ${
+                  activeTab === 'games'
+                    ? 'bg-[#e8c547] text-[#0e1b12]'
+                    : 'text-[#d1d5db] hover:text-[#e8c547] hover:bg-[#3e503e]/30'
+                }`}
+              >
+                <i className="fas fa-gamepad mr-2"></i>
+                Video Games
+              </button>
+              <button
+                onClick={() => setActiveTab('movies')}
+                className={`flex items-center px-6 py-3 rounded-lg font-medium transition-all duration-300 ${
+                  activeTab === 'movies'
+                    ? 'bg-[#e8c547] text-[#0e1b12]'
+                    : 'text-[#d1d5db] hover:text-[#e8c547] hover:bg-[#3e503e]/30'
+                }`}
+              >
+                <i className="fas fa-film mr-2"></i>
+                Movies
+              </button>
+              <button
+                onClick={() => setActiveTab('books')}
+                className={`flex items-center px-6 py-3 rounded-lg font-medium transition-all duration-300 ${
+                  activeTab === 'books'
+                    ? 'bg-[#e8c547] text-[#0e1b12]'
+                    : 'text-[#d1d5db] hover:text-[#e8c547] hover:bg-[#3e503e]/30'
+                }`}
+              >
+                <i className="fas fa-book mr-2"></i>
+                Books
+              </button>
+            </div>
+          </div>
+        </section>
 
-        {/* Video Games Tab */}
+        {/* Games Section */}
         {activeTab === 'games' && (
-          <div className="w-full fade-in">
-            <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-8 rounded-lg transition-all duration-300 hover:border-[#e8c547]/30 hover:shadow-lg hover:shadow-[#e8c547]/10 hover:bg-[#2e3d29]/40 hover:scale-[1.01]">
+          <section className="slide-in-right">
+            <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg transition-all duration-300 hover:border-[#e8c547]/30 hover:bg-[#2e3d29]/40">
               <h2 className="text-2xl font-bold gradient-text mb-6 flex items-center">
                 <i className="fas fa-gamepad mr-3"></i>
                 Video Games
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {getDisplayItems(suggestions.games, 'games').map((game, index) => (
-                  <div
-                    key={index}
-                    className="border border-[#3e503e] rounded-lg bg-[#0e1b12] overflow-hidden hover:border-[#e8c547]/50 transition-all duration-300 group card-hover"
-                  >
-                    <div className="relative h-48 overflow-hidden cursor-pointer" onClick={() => openModal(game.image, game.title)}>
+                  <div key={index} className="bg-[#0e1b12] border border-[#3e503e] rounded-lg overflow-hidden hover:border-[#e8c547]/50 transition-all duration-300">
+                    <div className="relative h-48 cursor-pointer" onClick={() => openModal(game.image, game.title)}>
                       <Image
                         src={game.image}
                         alt={game.title}
                         fill
-                        className="object-cover group-hover:scale-110 transition-transform duration-300"
+                        className="object-cover hover:scale-105 transition-transform duration-300"
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                       />
                     </div>
                     <div className="p-4">
-                      <h3 className="font-bold gradient-text mb-2">{game.title}</h3>
+                      <h3 className="font-bold text-[#e8c547] mb-2">{game.title}</h3>
                       <p className="text-sm text-gray-300 mb-3">{game.description}</p>
                       <div className="space-y-2 text-xs">
                         <div className="flex justify-between">
@@ -314,15 +326,15 @@ export default function Suggestions() {
                           <span className="text-[#e8c547]">{game.genre}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Rating:</span>
-                          <span className="text-[#e8c547] flex items-center">
-                            <i className="fas fa-star mr-1"></i>
-                            {game.rating}/10
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
                           <span className="text-gray-400">Platform:</span>
                           <span className="text-[#e8c547]">{game.platform}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-gray-400">Rating:</span>
+                          <div className="flex items-center space-x-1">
+                            {renderStars(game.rating / 2)}
+                            <span className="text-[#e8c547] ml-2">{game.rating}/10</span>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -333,41 +345,38 @@ export default function Suggestions() {
                 <div className="text-center mt-6">
                   <button
                     onClick={() => toggleShowAll('games')}
-                    className="btn-cyber px-6 py-2 rounded-lg hover-scale"
+                    className="bg-[#e8c547] text-[#0e1b12] px-6 py-3 rounded-lg font-medium hover:bg-[#d4b445] transition-colors duration-300"
                   >
-                    <span>{showAll.games ? 'Show Less' : 'Show More Games'}</span>
+                    {showAll.games ? 'Show Less Games' : 'Show More Games'}
                   </button>
                 </div>
               )}
             </div>
-          </div>
+          </section>
         )}
 
-        {/* Movies Tab */}
+        {/* Movies Section */}
         {activeTab === 'movies' && (
-          <div className="w-full fade-in">
-            <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-8 rounded-lg transition-all duration-300 hover:border-[#e8c547]/30 hover:shadow-lg hover:shadow-[#e8c547]/10 hover:bg-[#2e3d29]/40 hover:scale-[1.01]">
+          <section className="slide-in-right">
+            <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg transition-all duration-300 hover:border-[#e8c547]/30 hover:bg-[#2e3d29]/40">
               <h2 className="text-2xl font-bold gradient-text mb-6 flex items-center">
                 <i className="fas fa-film mr-3"></i>
                 Movies
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {getDisplayItems(suggestions.movies, 'movies').map((movie, index) => (
-                  <div
-                    key={index}
-                    className="border border-[#3e503e] rounded-lg bg-[#0e1b12] overflow-hidden hover:border-[#e8c547]/50 transition-all duration-300 group card-hover"
-                  >
-                    <div className="relative h-48 overflow-hidden cursor-pointer" onClick={() => openModal(movie.image, movie.title)}>
+                  <div key={index} className="bg-[#0e1b12] border border-[#3e503e] rounded-lg overflow-hidden hover:border-[#e8c547]/50 transition-all duration-300">
+                    <div className="relative h-48 cursor-pointer" onClick={() => openModal(movie.image, movie.title)}>
                       <Image
                         src={movie.image}
                         alt={movie.title}
                         fill
-                        className="object-cover group-hover:scale-110 transition-transform duration-300"
+                        className="object-cover hover:scale-105 transition-transform duration-300"
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                       />
                     </div>
                     <div className="p-4">
-                      <h3 className="font-bold gradient-text mb-2">{movie.title}</h3>
+                      <h3 className="font-bold text-[#e8c547] mb-2">{movie.title}</h3>
                       <p className="text-sm text-gray-300 mb-3">{movie.description}</p>
                       <div className="space-y-2 text-xs">
                         <div className="flex justify-between">
@@ -375,19 +384,19 @@ export default function Suggestions() {
                           <span className="text-[#e8c547]">{movie.genre}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Year:</span>
-                          <span className="text-[#e8c547]">{movie.year}</span>
-                        </div>
-                        <div className="flex justify-between">
                           <span className="text-gray-400">Director:</span>
                           <span className="text-[#e8c547]">{movie.director}</span>
                         </div>
                         <div className="flex justify-between">
+                          <span className="text-gray-400">Year:</span>
+                          <span className="text-[#e8c547]">{movie.year}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
                           <span className="text-gray-400">Rating:</span>
-                          <span className="text-[#e8c547] flex items-center">
-                            <i className="fas fa-star mr-1"></i>
-                            {movie.rating}/10
-                          </span>
+                          <div className="flex items-center space-x-1">
+                            {renderStars(movie.rating / 2)}
+                            <span className="text-[#e8c547] ml-2">{movie.rating}/10</span>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -398,92 +407,88 @@ export default function Suggestions() {
                 <div className="text-center mt-6">
                   <button
                     onClick={() => toggleShowAll('movies')}
-                    className="btn-cyber px-6 py-2 rounded-lg hover-scale"
+                    className="bg-[#e8c547] text-[#0e1b12] px-6 py-3 rounded-lg font-medium hover:bg-[#d4b445] transition-colors duration-300"
                   >
-                    <span>{showAll.movies ? 'Show Less' : 'Show More Movies'}</span>
+                    {showAll.movies ? 'Show Less Movies' : 'Show More Movies'}
                   </button>
                 </div>
               )}
             </div>
-          </div>
+          </section>
         )}
 
-        {/* Books Tab */}
+        {/* Books Section */}
         {activeTab === 'books' && (
-          <div className="w-full fade-in">
-            <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-8 rounded-lg transition-all duration-300 hover:border-[#e8c547]/30 hover:shadow-lg hover:shadow-[#e8c547]/10 hover:bg-[#2e3d29]/40 hover:scale-[1.01]">
+          <section className="slide-in-right">
+            <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg transition-all duration-300 hover:border-[#e8c547]/30 hover:bg-[#2e3d29]/40">
               <h2 className="text-2xl font-bold gradient-text mb-6 flex items-center">
                 <i className="fas fa-book mr-3"></i>
                 Books
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
-                {getDisplayItems(suggestions.books, 'books').map((book, index) => (
-                  <div
-                    key={index}
-                    className="border border-[#3e503e] rounded-lg bg-[#0e1b12] overflow-hidden hover:border-[#e8c547]/50 transition-all duration-300 group card-hover"
-                  >
-                    <div className="relative h-64 overflow-hidden cursor-pointer" onClick={() => openModal(book.image, book.title)}>
-                      <Image
-                        src={book.image}
-                        alt={book.title}
-                        fill
-                        className="object-cover group-hover:scale-110 transition-transform duration-300"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 16vw"
-                      />
-                    </div>
-                    <div className="p-4">
-                      <h3 className="font-bold gradient-text mb-2 text-sm">{book.title}</h3>
-                      <p className="text-xs text-gray-300 mb-3">{book.description}</p>
-                      <div className="space-y-1 text-xs">
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Author:</span>
-                          <span className="text-[#e8c547] text-right">{book.author}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Genre:</span>
-                          <span className="text-[#e8c547]">{book.genre}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Year:</span>
-                          <span className="text-[#e8c547]">{book.year}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Rating:</span>
-                          <span className="text-[#e8c547] flex items-center">
-                            <i className="fas fa-star mr-1"></i>
-                            {book.rating}/10
-                          </span>
+                              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
+                  {getDisplayItems(suggestions.books, 'books').map((book, index) => (
+                    <div key={index} className="bg-[#0e1b12] border border-[#3e503e] rounded-lg overflow-hidden hover:border-[#e8c547]/50 transition-all duration-300">
+                      <div className="relative h-64 cursor-pointer" onClick={() => openModal(book.image, book.title)}>
+                        <Image
+                          src={book.image}
+                          alt={book.title}
+                          fill
+                          className="object-cover hover:scale-105 transition-transform duration-300"
+                          sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 16vw"
+                        />
+                      </div>
+                      <div className="p-3">
+                        <h3 className="font-bold text-[#e8c547] mb-2 text-sm leading-tight">{book.title}</h3>
+                        <div className="space-y-1 text-xs">
+                          <div className="flex flex-col">
+                            <span className="text-gray-400">Author:</span>
+                            <span className="text-[#e8c547] text-xs leading-tight">{book.author}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-400">Genre:</span>
+                            <span className="text-[#e8c547]">{book.genre}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-400">Year:</span>
+                            <span className="text-[#e8c547]">{book.year}</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-gray-400">Rating:</span>
+                            <div className="flex items-center space-x-1">
+                              {renderStars(book.rating / 2)}
+                              <span className="text-[#e8c547] ml-1">{book.rating}/10</span>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
               </div>
-              {suggestions.books.length > 6 && (
+              {suggestions.books.length > 4 && (
                 <div className="text-center mt-6">
                   <button
                     onClick={() => toggleShowAll('books')}
-                    className="btn-cyber px-6 py-2 rounded-lg hover-scale"
+                    className="bg-[#e8c547] text-[#0e1b12] px-6 py-3 rounded-lg font-medium hover:bg-[#d4b445] transition-colors duration-300"
                   >
-                    <span>{showAll.books ? 'Show Less' : 'Show More Books'}</span>
+                    {showAll.books ? 'Show Less Books' : 'Show More Books'}
                   </button>
                 </div>
               )}
             </div>
-          </div>
+          </section>
         )}
 
       </main>
 
-      <Footer />
-
       {/* Image Modal */}
-      <ImageModal
-        src={modalImage?.src}
-        alt={modalImage?.alt}
-        isOpen={isModalOpen}
-        onClose={closeModal}
-      />
+      {modalImage && (
+        <ImageModal
+          src={modalImage.src}
+          alt={modalImage.alt}
+          isOpen={isModalOpen}
+          onClose={closeModal}
+        />
+      )}
     </div>
   );
 }

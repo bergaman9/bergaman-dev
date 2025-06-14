@@ -3,6 +3,8 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { Analytics } from '@vercel/analytics/next';
 import { SITE_CONFIG, SEO_DEFAULTS } from '../lib/constants';
+import Header from './components/Header';
+import Footer from './components/Footer';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,6 +30,11 @@ export const metadata = {
   authors: [{ name: SITE_CONFIG.author.name, url: SITE_CONFIG.url }],
   creator: SITE_CONFIG.name,
   publisher: SITE_CONFIG.name,
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
+  },
   robots: {
     index: true,
     follow: true,
@@ -81,8 +88,12 @@ export default function RootLayout({ children }) {
           referrerPolicy="no-referrer"
         />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} ${inter.className} antialiased`}>
-        {children}
+      <body className={`${geistSans.variable} ${geistMono.variable} ${inter.className} antialiased min-h-screen text-[#d1d5db] flex flex-col`}>
+        <Header />
+        <main className="flex-1">
+          {children}
+        </main>
+        <Footer />
         <Analytics />
         
         {/* Structured Data */}
@@ -94,7 +105,7 @@ export default function RootLayout({ children }) {
               "@type": "Person",
               "name": SITE_CONFIG.author.name,
               "url": SITE_CONFIG.url,
-              "image": `${SITE_CONFIG.url}/images/profile.png`,
+              "image": `${SITE_CONFIG.url}/images/profile/profile.png`,
               "sameAs": [
                 SITE_CONFIG.author.github,
                 SITE_CONFIG.author.twitter,

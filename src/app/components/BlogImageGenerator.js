@@ -124,7 +124,7 @@ const BlogImageGenerator = ({ title, category, width = 400, height = 250, classN
     <canvas
       ref={canvasRef}
       className={`rounded-lg ${className}`}
-      style={{ maxWidth: '100%', height: 'auto' }}
+      style={{ width: '100%', height: 'auto', display: 'block' }}
     />
   );
 };

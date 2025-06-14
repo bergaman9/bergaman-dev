@@ -1,13 +1,11 @@
 "use client";
 
 import Head from 'next/head';
-import Header from "../components/Header";
-import Footer from "../components/Footer";
 import Link from "next/link";
 import BlogImageGenerator from "../components/BlogImageGenerator";
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import ImageModal from '../../components/ImageModal';
+import ImageModal from '../components/ImageModal';
 import { useAdminMode } from '../../hooks/useAdminMode';
 
 export default function Blog() {
@@ -89,13 +87,11 @@ export default function Blog() {
         <link rel="canonical" href="https://bergaman.dev/blog" />
       </Head>
 
-      <Header />
-
       <main className={`page-content py-8 flex-1 ${isAdminMode ? 'pt-16' : ''}`}>
         
         {/* Page Header */}
         <section className="text-center mb-12 fade-in">
-          <h1 className="text-4xl md:text-5xl font-bold gradient-text mb-4">
+          <h1 className="text-4xl md:text-5xl font-bold gradient-text mb-4 leading-tight">
             <i className="fas fa-blog mr-3"></i>
             Blog
           </h1>
@@ -117,7 +113,7 @@ export default function Blog() {
                   placeholder="Search posts..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] placeholder-gray-400 focus:border-[#e8c547]/50 focus:outline-none transition-colors duration-300"
+                  className="w-full pl-10 pr-4 py-4 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] placeholder-gray-400 focus:border-[#e8c547]/50 focus:outline-none transition-colors duration-300 text-base"
                 />
               </div>
 
@@ -248,7 +244,7 @@ export default function Blog() {
                   <div className="flex items-center justify-between text-sm text-gray-400">
                     <span>
                       <i className="fas fa-clock mr-1"></i>
-                      {post.readTime}
+                      {post.readTime || '6 min read'}
                     </span>
                     <div className="flex items-center space-x-3">
                       <span>
@@ -269,8 +265,6 @@ export default function Blog() {
         </section>
 
       </main>
-
-      <Footer />
 
       {/* Image Modal */}
       {modalImage && (

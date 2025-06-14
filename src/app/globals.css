@@ -13,6 +13,23 @@
     background-attachment: fixed;
     color: #d1d5db;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+  }
+
+  /* Fix text clipping issues */
+  h1, h2, h3, h4, h5, h6 {
+    line-height: 1.3;
+    padding-bottom: 0.1em;
+  }
+
+  p, span, div {
+    line-height: 1.6;
+  }
+
+  /* Ensure proper spacing for descenders */
+  .gradient-text {
+    padding-bottom: 0.1em;
+    margin-bottom: 0.1em;
   }
 
   /* Circuit board animation */

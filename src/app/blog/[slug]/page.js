@@ -167,10 +167,13 @@ export default function BlogPost() {
               {new Date(post.createdAt).toLocaleDateString()}
             </span>
             <span className="text-gray-400">•</span>
-            <span className="text-gray-400">{post.readTime}</span>
+            <span className="text-gray-400">
+              <i className="fas fa-clock mr-1"></i>
+              {post.readTime || '6 min read'}
+            </span>
           </div>
           
-          <h1 className="text-4xl md:text-5xl font-bold gradient-text mb-6">
+          <h1 className="text-4xl md:text-5xl font-bold gradient-text mb-6 leading-tight">
             {post.title}
           </h1>
           
@@ -190,12 +193,13 @@ export default function BlogPost() {
                 onClick={() => openModal(post.image, post.title)}
               />
             ) : (
-              <div className="cursor-pointer" onClick={() => {}}>
+              <div className="cursor-pointer w-full" onClick={() => {}}>
                 <BlogImageGenerator 
                   title={post.title} 
                   category={post.category} 
                   width={800} 
                   height={400} 
+                  className="w-full"
                 />
               </div>
             )}
