@@ -2,26 +2,259 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* Circuit Board Background Animation */
+@layer base {
+  body {
+    background: #0e1b12;
+    background-image: 
+      radial-gradient(circle at 20% 80%, rgba(232, 197, 71, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(232, 197, 71, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 40% 40%, rgba(46, 61, 41, 0.3) 0%, transparent 50%);
+    background-attachment: fixed;
+    color: #d1d5db;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  /* Circuit board animation */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+      linear-gradient(90deg, rgba(232, 197, 71, 0.03) 1px, transparent 1px),
+      linear-gradient(rgba(232, 197, 71, 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+    animation: circuit-move 20s linear infinite;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  @keyframes circuit-move {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(50px, 50px); }
   }
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  .gradient-text {
+    @apply bg-gradient-to-r from-[#e8c547] to-[#d4b445] bg-clip-text text-transparent;
+  }
+
+
+
+  .hover-lift {
+    @apply transition-transform duration-300 hover:-translate-y-1;
+  }
+
+  .hover-glow {
+    @apply transition-shadow duration-300 hover:shadow-lg hover:shadow-[#e8c547]/25;
+  }
+
+  .hover-scale {
+    @apply transition-transform duration-300 hover:scale-105;
+  }
+
+  .btn-cyber {
+    @apply bg-gradient-to-r from-[#e8c547] to-[#d4b445] text-[#0e1b12] font-semibold;
+    @apply hover:from-[#d4b445] hover:to-[#c4a43d] transition-all duration-300;
+    @apply shadow-lg shadow-[#e8c547]/25 hover:shadow-xl hover:shadow-[#e8c547]/40;
+    @apply hover:scale-105 transform;
+  }
+
+  .card-hover {
+    @apply transition-all duration-300 hover:border-[#e8c547]/50 hover:shadow-lg hover:shadow-[#e8c547]/10;
+  }
+
+  .page-container {
+    @apply pt-20;
+  }
+
+  .page-content {
+    @apply max-w-6xl mx-auto px-6 sm:px-8 md:px-8;
+  }
+
+  /* Animation classes */
+  .fade-in {
+    @apply animate-fade-in;
+  }
+
+  .slide-in-left {
+    @apply animate-slide-in-left;
+  }
+
+  .slide-in-right {
+    @apply animate-slide-in-right;
+  }
 }
 
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes slide-in-left {
+    from { opacity: 0; transform: translateX(-50px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  @keyframes slide-in-right {
+    from { opacity: 0; transform: translateX(50px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.6s ease-out;
+  }
+
+  .animate-slide-in-left {
+    animation: slide-in-left 0.6s ease-out;
+  }
+
+  .animate-slide-in-right {
+    animation: slide-in-right 0.6s ease-out;
+  }
+
+  /* Gradient Text */
+  .gradient-text {
+    @apply bg-gradient-to-r from-[#e8c547] to-[#d4b445] bg-clip-text text-transparent;
+  }
+
+  /* Glass Morphism */
+  .glass {
+    @apply bg-[#2e3d29]/30 backdrop-blur-sm border border-[#3e503e]/50;
+  }
+
+  /* Hover Effects */
+  .hover-lift {
+    @apply transition-transform duration-300 hover:scale-105;
+  }
+
+  .hover-glow {
+    @apply transition-shadow duration-300 hover:shadow-lg hover:shadow-[#e8c547]/25;
+  }
+
+  .hover-scale {
+    @apply transition-transform duration-300 hover:scale-110;
+  }
+
+  /* Circuit Node Effect */
+  .circuit-node {
+    @apply relative;
+  }
+
+  .circuit-node::before {
+    content: '';
+    @apply absolute -inset-1 bg-gradient-to-r from-[#e8c547]/20 to-[#d4b445]/20 rounded-lg opacity-0 transition-opacity duration-300;
+  }
+
+  .circuit-node:hover::before {
+    @apply opacity-100;
+  }
+
+
+
+  /* Card Hover Effect */
+  .card-hover {
+    @apply transition-all duration-300 hover:border-[#e8c547]/50 hover:shadow-lg hover:shadow-[#e8c547]/10 hover:-translate-y-1;
+  }
+
+  /* Page Layout Standardization */
+  .page-container {
+    @apply pt-20 min-h-screen; /* 80px - Fixed header height */
+  }
+
+  .page-content {
+    @apply max-w-5xl mx-auto px-4 sm:px-6 md:px-8;
+  }
+
+  /* Scrollbar Styling */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    @apply w-2;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-[#2e3d29]/30;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-[#e8c547]/50 rounded-full;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    @apply bg-[#e8c547]/70;
+  }
+
+  /* Loading Animation */
+  .loading-pulse {
+    animation: loading-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes loading-pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+
+  /* Fade In Animation */
+  .fade-in {
+    animation: fade-in 0.6s ease-out forwards;
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Slide In Animation */
+  .slide-in-left {
+    animation: slide-in-left 0.6s ease-out forwards;
+  }
+
+  @keyframes slide-in-left {
+    from {
+      opacity: 0;
+      transform: translateX(-30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .slide-in-right {
+    animation: slide-in-right 0.6s ease-out forwards;
+  }
+
+  @keyframes slide-in-right {
+    from {
+      opacity: 0;
+      transform: translateX(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
   }
 }

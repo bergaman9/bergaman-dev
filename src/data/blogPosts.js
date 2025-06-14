@@ -3,6 +3,10 @@ export const blogPosts = [
     slug: 'the-importance-of-electricity',
     title: 'The Importance of Electricity',
     description: "Insights into electricity's role in modern life.",
+    excerpt: "Electricity is one of the fundamental pillars of modern civilization. From powering our homes to enabling complex computer systems, electricity drives almost every aspect of our lives.",
+    category: 'technology',
+    image: '/images/teknominator.png', // Using existing tech image
+    readTime: 5,
     content: `Electricity is one of the fundamental pillars of modern civilization. From the moment light bulbs were first introduced to society, electricity has evolved into an irreplaceable resource. Today, it is the driving force behind almost every aspect of our lives.
 
     Whether it's powering our homes, running factories, or enabling the complex systems behind our computers, electricity is at the heart of it all. The modern world, especially the global business and finance industries, heavily depends on electricity. Financial transactions are processed, markets are analyzed, and data is securely stored — all thanks to the reliable flow of electricity.
@@ -16,6 +20,10 @@ export const blogPosts = [
     slug: 'modern-challenges-in-the-digital-age',
     title: 'Modern Challenges in the Digital Age',
     description: "Exploring technological advancements and their impacts.",
+    excerpt: "In the rapidly evolving digital age, the challenges we face are more complex than ever. Technology has fundamentally transformed how we live, work, and interact with each other.",
+    category: 'ai',
+    image: '/images/generative-ai.png', // Using existing AI image
+    readTime: 8,
     content: `In the rapidly evolving digital age, the challenges we face are more complex than ever. Technology has fundamentally transformed the way we live, work, and interact with each other. While these advancements have brought incredible convenience, they have also introduced new dilemmas regarding privacy, security, and the impact on human relationships. As we become increasingly connected through digital platforms, the very essence of human interaction is shifting. Social media, online communities, and virtual spaces offer a sense of connection, yet they often come at the cost of deep, meaningful relationships. The digital age, while offering unprecedented access to information, has also given rise to new forms of isolation, as people engage in increasingly superficial interactions. This disconnection is compounded by the constant bombardment of information, making it difficult for individuals to filter what is truly valuable or meaningful.
 
     As technology advances, the balance between convenience and ethics becomes more difficult to maintain. The rise of Artificial Intelligence (AI) and machine learning has opened new frontiers in various sectors, from healthcare to finance, but it has also raised concerns about privacy, data security, and the loss of control. Algorithms, which are now responsible for decision-making in many aspects of our lives, are often opaque, and the data used to train these systems may be biased or inaccurate. Furthermore, as we become more reliant on these technologies, we risk losing our ability to think critically and solve problems independently, relying instead on automated systems to make decisions for us.
@@ -31,34 +39,42 @@ export const blogPosts = [
     slug: 'learning-for-survival',
     title: 'Learning for Survival',
     description: "Strategies for continuous learning and adaptation.",
+    excerpt: "In a world that is constantly evolving, the ability to learn is not just an advantage—it is a necessity. Learning for survival extends far beyond traditional education.",
+    category: 'tutorial',
+    image: null, // Will use generator
+    readTime: 7,
     content: `In a world that is constantly evolving, the ability to learn is not just an advantage—it is a necessity. Learning for survival extends far beyond the confines of traditional education; it encapsulates the relentless pursuit of growth, adaptation, and innovation that is essential to navigating the complexities of life. This journey of learning involves understanding not only how to survive, but how to thrive in an ever-changing world.
 
     Human nature has always been driven by a deep-seated curiosity and a thirst for knowledge. Our innate desire to learn, explore, and understand the world around us is the foundation of our survival. From the earliest moments of our existence, humans have sought to improve their circumstances—whether through mastering the environment, creating tools, or evolving social systems. This curiosity and drive are as vital today as they were thousands of years ago. The challenge now is to continue nurturing that curiosity as we face new problems, technologies, and societal shifts.
 
-    The modern world demands constant adaptation. Skills that were once sufficient may quickly become outdated as industries evolve and new technologies emerge. Lifelong learning has become a vital aspect of success, particularly in today’s fast-paced, technology-driven society. It is no longer just about formal education; it is about a mindset that embraces growth at every stage of life. Learning for survival is about seeking knowledge in every area, from personal well-being to professional development, from understanding health and fitness to staying current with technological advancements.
+    The modern world demands constant adaptation. Skills that were once sufficient may quickly become outdated as industries evolve and new technologies emerge. Lifelong learning has become a vital aspect of success, particularly in today's fast-paced, technology-driven society. It is no longer just about formal education; it is about a mindset that embraces growth at every stage of life. Learning for survival is about seeking knowledge in every area, from personal well-being to professional development, from understanding health and fitness to staying current with technological advancements.
 
-    Survival is no longer only about securing food, shelter, and protection. It also involves staying mentally, emotionally, and physically fit. In fact, health has become one of the most critical aspects of survival today. The quest for a long, healthy life is no longer just about avoiding disease; it’s about maintaining a balanced, fulfilling existence. Prioritizing health, both mental and physical, allows us to take on the world with clarity and resilience. As we move through life, we must ensure that our minds remain agile and that our bodies are capable of withstanding the challenges we face.
+    Survival is no longer only about securing food, shelter, and protection. It also involves staying mentally, emotionally, and physically fit. In fact, health has become one of the most critical aspects of survival today. The quest for a long, healthy life is no longer just about avoiding disease; it's about maintaining a balanced, fulfilling existence. Prioritizing health, both mental and physical, allows us to take on the world with clarity and resilience. As we move through life, we must ensure that our minds remain agile and that our bodies are capable of withstanding the challenges we face.
 
-    Beyond health, there’s a deeper pursuit that transcends money: the desire to create value. Money, while important, is not the end goal; it is the tool that helps us achieve greater objectives. The true reward lies in the ability to produce value—whether it’s through innovative ideas, meaningful work, or the impact we have on others. The satisfaction that comes from contributing something valuable to the world is far more enduring than the temporary satisfaction of wealth alone.
+    Beyond health, there's a deeper pursuit that transcends money: the desire to create value. Money, while important, is not the end goal; it is the tool that helps us achieve greater objectives. The true reward lies in the ability to produce value—whether it's through innovative ideas, meaningful work, or the impact we have on others. The satisfaction that comes from contributing something valuable to the world is far more enduring than the temporary satisfaction of wealth alone.
 
     What truly drives us in this life is the pursuit of meaning. That meaning often comes from the process of creating, improving, and adapting. The joy of learning, the fulfillment of solving a problem, and the rewards of personal growth are the real treasures of life. They provide a deeper sense of purpose, a lasting form of wealth that cannot be bought or sold. This journey of continuous learning, adapting, and growing is what ensures we are truly alive—not just surviving, but thriving.
 
-    Ultimately, learning for survival is not about simply getting by—it’s about building a life that is rich in purpose, health, and value. It’s about understanding that survival is more than just existing; it’s about creating a life that nourishes the body, enriches the mind, and contributes to the world around us. In the grand scheme of things, the real measure of success is not how much money we accumulate, but how much positive impact we leave behind. By learning, adapting, and growing throughout our lives, we not only survive—we flourish.`,
+    Ultimately, learning for survival is not about simply getting by—it's about building a life that is rich in purpose, health, and value. It's about understanding that survival is more than just existing; it's about creating a life that nourishes the body, enriches the mind, and contributes to the world around us. In the grand scheme of things, the real measure of success is not how much money we accumulate, but how much positive impact we leave behind. By learning, adapting, and growing throughout our lives, we not only survive—we flourish.`,
     date: "2024-10-15"
   },
   {
     slug: 'why-i-love-video-games',
     title: 'Why I Love Video Games',
     description: "Exploring the joys and benefits of gaming.",
+    excerpt: "Video games have been a part of my life for as long as I can remember. From early NES days to modern RPGs, gaming has always been a source of joy, challenge, and inspiration.",
+    category: 'programming',
+    image: null, // Will use generator
+    readTime: 6,
     content: `Video games have been a part of my life for as long as I can remember. From the early days of playing Super Mario Bros. on the NES to the immersive worlds of modern RPGs, gaming has always been a source of joy, challenge, and inspiration. While some may view video games as a frivolous pastime, I see them as a valuable form of entertainment and a powerful tool for personal growth.
 
-    One of the most compelling aspects of video games is their ability to transport us to new worlds and experiences. Whether it’s exploring the vast landscapes of Skyrim, solving puzzles in Portal, or battling foes in Dark Souls, games offer a level of immersion that few other mediums can match. The sense of agency and control that games provide allows us to become the heroes of our own stories, shaping the outcome of our adventures through our choices and actions.
+    One of the most compelling aspects of video games is their ability to transport us to new worlds and experiences. Whether it's exploring the vast landscapes of Skyrim, solving puzzles in Portal, or battling foes in Dark Souls, games offer a level of immersion that few other mediums can match. The sense of agency and control that games provide allows us to become the heroes of our own stories, shaping the outcome of our adventures through our choices and actions.
 
     Video games are also a powerful form of escapism. In a world filled with stress, uncertainty, and chaos, games offer a respite from reality, allowing us to unwind, relax, and recharge. The ability to step into the shoes of a character and embark on epic quests, solve intricate mysteries, or engage in thrilling battles provides a sense of freedom and agency that can be difficult to find in our everyday lives.
 
     Beyond their entertainment value, video games also offer numerous cognitive benefits. Many games require problem-solving, critical thinking, and strategic planning, helping to sharpen our minds and improve our mental acuity. Games that involve complex narratives, such as RPGs and adventure games, can also enhance our empathy, creativity, and emotional intelligence by immersing us in rich, interactive stories.
 
-    Video games are also a powerful social tool. Multiplayer games allow us to connect with friends, family, and strangers from around the world, fostering a sense of community and camaraderie. Whether it’s teaming up to defeat a boss, competing in
+    Video games are also a powerful social tool. Multiplayer games allow us to connect with friends, family, and strangers from around the world, fostering a sense of community and camaraderie. Whether it's teaming up to defeat a boss, competing in
 
     eSports tournaments, or simply chatting with fellow players, games provide a platform for social interaction and collaboration that transcends geographical boundaries.
 
@@ -69,5 +85,30 @@ export const blogPosts = [
     For me, video games are more than just a hobby—they are a passion, a form of self-expression, and a source of joy. They have shaped my worldview, inspired my creativity, and connected me with a global community of like-minded individuals. As I continue to explore the vast and ever-evolving landscape of gaming, I look forward to the adventures, challenges, and friendships that lie ahead.`,
 
     date: "2025-03-12"
+  },
+  {
+    slug: 'building-modern-web-applications',
+    title: 'Building Modern Web Applications',
+    description: "A guide to modern web development practices and technologies.",
+    excerpt: "Modern web development has evolved dramatically with new frameworks, tools, and best practices. Learn how to build scalable, performant web applications.",
+    category: 'web-development',
+    image: '/images/contro-dashboard.png', // Using existing web app image
+    readTime: 10,
+    content: `Modern web development has transformed dramatically over the past decade. With the rise of JavaScript frameworks, cloud computing, and mobile-first design, developers now have unprecedented tools and capabilities at their disposal. Building modern web applications requires understanding not just the technical aspects, but also user experience, performance optimization, and scalability considerations.
+
+    The foundation of any modern web application starts with choosing the right technology stack. React, Vue.js, and Angular have become the dominant frontend frameworks, each offering unique advantages. React's component-based architecture and vast ecosystem make it ideal for complex applications, while Vue.js provides a gentler learning curve and excellent documentation. Angular offers a comprehensive framework with built-in features for enterprise applications.
+
+    On the backend, Node.js has revolutionized server-side development by allowing JavaScript developers to work across the full stack. Combined with frameworks like Express.js or Next.js for full-stack applications, developers can build powerful APIs and server-side rendered applications with ease. The rise of serverless computing has further simplified deployment and scaling, allowing developers to focus on code rather than infrastructure.
+
+    Database selection has also evolved, with NoSQL databases like MongoDB offering flexibility for rapidly changing requirements, while traditional SQL databases remain crucial for applications requiring ACID compliance and complex relationships. The emergence of cloud databases and Database-as-a-Service solutions has made it easier than ever to get started with robust data storage.
+
+    Performance optimization has become increasingly important as users expect fast, responsive applications. Techniques like code splitting, lazy loading, and progressive web app features can dramatically improve user experience. Tools like Webpack, Vite, and Parcel have made it easier to optimize bundle sizes and implement these performance enhancements.
+
+    Security considerations are paramount in modern web development. Implementing proper authentication, authorization, input validation, and protection against common vulnerabilities like XSS and CSRF attacks is essential. Tools and services like Auth0, Firebase Authentication, and OAuth providers have simplified secure user management.
+
+    The development workflow has also been revolutionized by tools like Git for version control, CI/CD pipelines for automated testing and deployment, and containerization with Docker for consistent environments across development, testing, and production.
+
+    As we look to the future, emerging technologies like WebAssembly, Progressive Web Apps, and AI integration are opening new possibilities for web applications. The key to success in modern web development is staying curious, continuously learning, and focusing on creating value for users while maintaining clean, maintainable code.`,
+    date: "2024-09-10"
   }
 ];

@@ -1,74 +1,137 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
+import { useState } from "react";
 
-export default function Header({ showHomeLink = false }) {
-  const [isMenuOpen, setIsMenuOpen] = useState(false); // Menü açma/kapama durumu
+export default function Header() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
 
   return (
-    <header className="w-full max-w-3xl mx-auto flex justify-between items-center pb-6 border-b border-[#2a2e43] px-4 mt-12 relative">
-      {/* Div ile Bergaman ve Hamburger İkonunu Aynı Hizada Yapma */}
-      <div className="flex justify-between items-center w-full">
-        <Link href="/" className="text-3xl font-extrabold text-[#e8c547] hover:text-[#c0a036] transition-colors">
-          Bergaman
-        </Link>
+    <header className="fixed top-0 left-0 right-0 z-50 bg-[#2e3d29]/30 backdrop-blur-md border-b border-[#3e503e]/30">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-8 py-4">
+        <div className="flex justify-between items-center">
+          {/* Logo */}
+          <Link href="/" className="text-2xl font-bold gradient-text hover:scale-105 transition-transform duration-300">
+            Bergaman
+          </Link>
 
-        {/* Hamburger Icon (Mobile) Sağda */}
-        <button 
-          className="sm:hidden text-[#e8c547] hover:text-[#c0a036] transition-colors absolute top-4 right-4 z-10 w-8 h-8"
-          onClick={toggleMenu}
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M4 6h16M4 12h16M4 18h16"></path>
-          </svg>
-        </button>
-      </div>
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex space-x-8">
+            <Link href="/" className="text-[#d1d5db] hover:text-[#e8c547] transition-colors duration-300 hover:scale-105 transform flex items-center space-x-2">
+              <i className="fas fa-home"></i>
+              <span>Home</span>
+            </Link>
+            <Link href="/about" className="text-[#d1d5db] hover:text-[#e8c547] transition-colors duration-300 hover:scale-105 transform flex items-center space-x-2">
+              <i className="fas fa-user"></i>
+              <span>About</span>
+            </Link>
+            <Link href="/portfolio" className="text-[#d1d5db] hover:text-[#e8c547] transition-colors duration-300 hover:scale-105 transform flex items-center space-x-2">
+              <i className="fas fa-briefcase"></i>
+              <span>Portfolio</span>
+            </Link>
+            <Link href="/suggestions" className="text-[#d1d5db] hover:text-[#e8c547] transition-colors duration-300 hover:scale-105 transform flex items-center space-x-2">
+              <i className="fas fa-lightbulb"></i>
+              <span>Suggestions</span>
+            </Link>
+            <Link href="/blog" className="text-[#d1d5db] hover:text-[#e8c547] transition-colors duration-300 hover:scale-105 transform flex items-center space-x-2">
+              <i className="fas fa-blog"></i>
+              <span>Blog</span>
+            </Link>
+          </nav>
 
-      {/* Mobile Menu (for smaller screens) */}
-      <div 
-        className={`sm:hidden ${isMenuOpen ? 'block' : 'hidden'} absolute top-16 left-0 right-0 bg-[#2a3b22] p-6 bg-opacity-80`}>
-        <nav className="flex flex-col items-center gap-4 text-lg">
-          <Link href="/" className="text-[#e8c547] hover:text-[#00c8ff] transition-colors py-2">
-            Home
-          </Link>
-          <Link href="/about" className="text-[#e8c547] hover:text-[#00c8ff] transition-colors py-2">
-            About
-          </Link>
-          <Link href="/portfolio" className="text-[#e8c547] hover:text-[#00c8ff] transition-colors py-2">
-            Portfolio
-          </Link>
-          <Link href="/suggestions" className="text-[#e8c547] hover:text-[#00c8ff] transition-colors py-2">
-            Suggestions
-          </Link>
-          <Link href="/blog" className="text-[#e8c547] hover:text-[#00c8ff] transition-colors py-2">
-            Blog
-          </Link>
-        </nav>
-      </div>
 
-      {/* Desktop Menu (for larger screens) */}
-      <nav className="hidden sm:flex gap-6 text-lg">
-        {showHomeLink && (
-          <Link href="/" className="text-[#e8c547] hover:text-[#00c8ff] transition-colors">
-            Home
-          </Link>
+
+          {/* Mobile Menu Button */}
+          <button
+            onClick={toggleMenu}
+            className="md:hidden text-[#d1d5db] hover:text-[#e8c547] transition-colors duration-300"
+            aria-label="Toggle menu"
+          >
+            <i className={`fas ${isMenuOpen ? 'fa-times' : 'fa-bars'} text-xl`}></i>
+          </button>
+        </div>
+
+        {/* Mobile Navigation */}
+        {isMenuOpen && (
+          <nav className="md:hidden mt-4 pb-4 border-t border-[#3e503e] pt-4">
+                         <div className="flex flex-col space-y-4">
+               <Link 
+                 href="/" 
+                 className="text-[#d1d5db] hover:text-[#e8c547] transition-colors duration-300 flex items-center space-x-2"
+                 onClick={() => setIsMenuOpen(false)}
+               >
+                 <i className="fas fa-home"></i>
+                 <span>Home</span>
+               </Link>
+               <Link 
+                 href="/about" 
+                 className="text-[#d1d5db] hover:text-[#e8c547] transition-colors duration-300 flex items-center space-x-2"
+                 onClick={() => setIsMenuOpen(false)}
+               >
+                 <i className="fas fa-user"></i>
+                 <span>About</span>
+               </Link>
+               <Link 
+                 href="/portfolio" 
+                 className="text-[#d1d5db] hover:text-[#e8c547] transition-colors duration-300 flex items-center space-x-2"
+                 onClick={() => setIsMenuOpen(false)}
+               >
+                 <i className="fas fa-briefcase"></i>
+                 <span>Portfolio</span>
+               </Link>
+               <Link 
+                 href="/suggestions" 
+                 className="text-[#d1d5db] hover:text-[#e8c547] transition-colors duration-300 flex items-center space-x-2"
+                 onClick={() => setIsMenuOpen(false)}
+               >
+                 <i className="fas fa-lightbulb"></i>
+                 <span>Suggestions</span>
+               </Link>
+               <Link 
+                 href="/blog" 
+                 className="text-[#d1d5db] hover:text-[#e8c547] transition-colors duration-300 flex items-center space-x-2"
+                 onClick={() => setIsMenuOpen(false)}
+               >
+                 <i className="fas fa-blog"></i>
+                 <span>Blog</span>
+               </Link>
+              
+                             {/* Mobile Social Links */}
+               <div className="flex space-x-6 pt-4 border-t border-[#3e503e]">
+                 <a
+                   href="https://github.com/bergaman9"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   className="text-[#d1d5db] hover:text-[#e8c547] transition-colors duration-300"
+                   aria-label="GitHub"
+                 >
+                   <i className="fab fa-github text-xl"></i>
+                 </a>
+                 <a
+                   href="https://linkedin.com/in/bergaman"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   className="text-[#d1d5db] hover:text-[#e8c547] transition-colors duration-300"
+                   aria-label="LinkedIn"
+                 >
+                   <i className="fab fa-linkedin text-xl"></i>
+                 </a>
+                 <a
+                   href="mailto:contact@bergaman.dev"
+                   className="text-[#d1d5db] hover:text-[#e8c547] transition-colors duration-300"
+                   aria-label="Email"
+                 >
+                   <i className="fas fa-envelope text-xl"></i>
+                 </a>
+               </div>
+            </div>
+          </nav>
         )}
-        <Link href="/about" className="text-[#e8c547] hover:text-[#00c8ff] transition-colors">
-          About
-        </Link>
-        <Link href="/portfolio" className="text-[#e8c547] hover:text-[#00c8ff] transition-colors">
-          Portfolio
-        </Link>
-        <Link href="/suggestions" className="text-[#e8c547] hover:text-[#00c8ff] transition-colors">
-          Suggestions
-        </Link>
-        <Link href="/blog" className="text-[#e8c547] hover:text-[#00c8ff] transition-colors">
-          Blog
-        </Link>
-      </nav>
+      </div>
     </header>
   );
 }

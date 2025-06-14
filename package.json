@@ -1,18 +1,48 @@
 {
   "name": "bergaman-dev",
-  "version": "0.1.0",
+  "version": "2.0.0",
+  "description": "🐉 The Dragon's Domain - A cutting-edge portfolio website with MongoDB backend, admin panel, and real-time content management",
   "private": true,
+  "author": {
+    "name": "Ömer (Bergaman)",
+    "email": "contact@bergaman.dev",
+    "url": "https://bergaman.dev"
+  },
+  "homepage": "https://bergaman.dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bergaman9/bergaman-dev.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bergaman9/bergaman-dev/issues"
+  },
+  "keywords": [
+    "portfolio",
+    "nextjs",
+    "mongodb",
+    "admin-panel",
+    "blog",
+    "cms",
+    "dragon",
+    "bergaman",
+    "fullstack",
+    "typescript",
+    "tailwindcss"
+  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "postbuild": "next-sitemap"
+    "postbuild": "next-sitemap",
+    "semantic-release": "semantic-release"
   },
   "dependencies": {
     "@vercel/analytics": "^1.5.0",
     "cross-env": "^7.0.3",
     "csstype": "^3.1.3",
+    "mongodb": "^6.17.0",
+    "mongoose": "^8.15.2",
     "next": "^15.0.3",
     "next-sitemap": "^4.2.3",
     "react": "^18",
@@ -22,7 +52,15 @@
     "react-simple-image-viewer": "^1.2.2"
   },
   "devDependencies": {
+    "@semantic-release/changelog": "^6.0.0",
+    "@semantic-release/git": "^10.0.0",
     "postcss": "^8",
+    "semantic-release": "^19.0.0",
     "tailwindcss": "^3.4.1"
-  }
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "license": "MIT"
 }
