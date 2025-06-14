@@ -74,7 +74,8 @@ export async function POST(request, { params }) {
         const mailOptions = {
           from: process.env.EMAIL_USER,
           to: contact.email,
-          subject: `Re: Your conversation with Bergaman - New Reply from The Dragon's Domain`,
+          replyTo: process.env.EMAIL_USER, // Admin replies should come back to admin
+          subject: `Re: Your conversation with Bergaman - New Reply from The Dragon's Domain [ID:${id}]`,
           html: `
             <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; background: linear-gradient(135deg, #0e1b12 0%, #1a2e1a 100%); color: #d1d5db; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
               

@@ -57,11 +57,14 @@ const BlogImageGenerator = ({ title, category, width = 400, height = 250, classN
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas || !title) return;
 
     const ctx = canvas.getContext('2d');
-    const colors = categoryColors[category] || categoryColors.default;
-    const icon = categoryIcons[category] || categoryIcons.default;
+    
+    // Ensure category is defined and use default if not
+    const safeCategory = category || 'default';
+    const colors = categoryColors[safeCategory] || categoryColors.default;
+    const icon = categoryIcons[safeCategory] || categoryIcons.default;
 
     // Set canvas size
     canvas.width = width;
@@ -126,7 +129,7 @@ const BlogImageGenerator = ({ title, category, width = 400, height = 250, classN
     ctx.textAlign = 'center';
     
     // Word wrap for title
-    const words = title.split(' ');
+    const words = (title || 'Untitled').split(' ');
     const maxWidth = width * 0.85;
     let line = '';
     let y = height * 0.65;
@@ -151,7 +154,7 @@ const BlogImageGenerator = ({ title, category, width = 400, height = 250, classN
     ctx.fillStyle = colors.accent;
     ctx.font = `${Math.min(width * 0.025, 12)}px Arial`;
     ctx.textAlign = 'center';
-    const categoryText = category.toUpperCase().replace('-', ' ');
+    const categoryText = (safeCategory || 'default').toUpperCase().replace('-', ' ');
     const badgeWidth = ctx.measureText(categoryText).width + 20;
     const badgeHeight = 20;
     const badgeX = width / 2 - badgeWidth / 2;
