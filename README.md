@@ -1,155 +1,71 @@
-# 🐉 Bergaman Portfolio v2.0 - The Dragon's Domain
+# �� Bergaman Portfolio - The Dragon's Domain
 
-> **🌟 Live Demo:** [https://bergaman.dev](https://bergaman.dev)  
-> **🕰️ Legacy v1.0.0:** [https://bergaman-v1.vercel.app/](https://bergaman-v1.vercel.app/)  
-> **🚀 Status:** Production Ready | **📊 Performance:** 95+ Lighthouse Score | **🔒 Security:** A+ Grade
+[![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](https://github.com/bergaman9/bergaman-dev)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/bergaman9/bergaman-dev/blob/main/LICENSE)
+[![Next.js](https://img.shields.io/badge/Next.js-15.0.3-black.svg)](https://nextjs.org/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-green.svg)](https://www.mongodb.com/)
 
-A cutting-edge, full-stack portfolio website with integrated admin panel, MongoDB backend, and real-time content management. Built with Next.js 15, featuring AI & Blockchain developer content, dynamic blog system, and advanced admin capabilities.
+> **Crafting technology inspired by the strength and wisdom of a dragon** 🐉
 
-## 🏆 Project Highlights
+A cutting-edge portfolio website featuring a sophisticated admin panel, real-time content management, and dragon-themed UI effects. Built with Next.js 15, MongoDB, and modern web technologies.
 
-- 🎯 **100% TypeScript Ready** - Full type safety and modern development
-- ⚡ **Lightning Fast** - Sub-second page loads with optimized performance
-- 🔐 **Enterprise Security** - Advanced authentication and data protection
-- 📱 **Mobile First** - Responsive design optimized for all devices
-- 🤖 **AI-Powered** - Smart content recommendations and SEO optimization
-- 🌐 **Global CDN** - Worldwide content delivery for optimal speed
+## 🌟 **Live Demo**
 
-## 🔗 Version Comparison
+- **🚀 Current Version (v2.0.0)**: [bergaman.dev](https://bergaman.dev)
+- **🕰️ Legacy Version (v1.0.0)**: [bergaman-v1.vercel.app](https://bergaman-v1.vercel.app/)
 
-| Feature | v1.0.0 (Legacy) | v2.0.0 (Current) |
-|---------|-----------------|------------------|
-| **Live Demo** | [bergaman-v1.vercel.app](https://bergaman-v1.vercel.app/) | [bergaman.dev](https://bergaman.dev) |
-| **Content Management** | Static files | MongoDB + Admin Panel |
-| **Blog System** | File-based | Database-driven |
-| **Admin Panel** | ❌ | ✅ Full CMS |
-| **Live Editing** | ❌ | ✅ On-site editing |
-| **Analytics** | ❌ | ✅ Real-time tracking |
-| **SEO** | Basic | Advanced + Dynamic |
-| **Comments** | ❌ | ✅ Database-driven |
-| **Migration** | ❌ | ✅ Automated |
+## ✨ **Key Features**
 
-## ✨ What's New in v2.0
+### 🎨 **Dragon-Themed Design**
+- **Mystical Background Effects**: Floating orbs, energy streams, and dragon breath animations
+- **Dragon Scale Patterns**: Custom SVG patterns for authentic dragon aesthetics  
+- **Golden Color Palette**: Inspired by dragon gold with deep forest backgrounds
+- **Responsive Design**: Optimized for all devices with smooth animations
 
-- 🗄️ **MongoDB Integration**: Full database backend with dynamic content
-- 🛠️ **Admin Panel**: Complete content management system with analytics
-- ✏️ **Live Edit Mode**: Edit content directly on the site with real-time preview
-- 📊 **Advanced Analytics**: Dynamic views, likes, engagement tracking, and user insights
-- 🔄 **Auto Migration**: Seamless data migration from static to dynamic with zero downtime
-- 🎯 **Enhanced SEO**: Dynamic metadata, structured data, and search optimization
-- 🚀 **CI/CD Pipeline**: Automated testing, versioning, and deployment with GitHub Actions
-- 🔒 **Security Hardening**: Advanced authentication, rate limiting, and data validation
+### 🛠️ **Advanced Admin Panel**
+- **Bergasoft Portal**: Professional admin interface with dragon-themed effects
+- **Real-time Dashboard**: Live statistics, recent activity, and system monitoring
+- **Content Management**: Create, edit, and manage blog posts with rich editor
+- **User Management**: Admin authentication and role-based access control
+- **Analytics Tracking**: View counts, engagement metrics, and performance data
 
-## 🚀 Key Features
+### 📝 **Dynamic Blog System**
+- **MongoDB Integration**: Full database-driven content management
+- **SEO Optimization**: Dynamic meta tags, structured data, and sitemap generation
+- **Comment System**: Advanced commenting with IP tracking and moderation
+- **Categories & Tags**: Organized content with filtering and search capabilities
 
-### 🎨 Frontend Excellence
-- **Modern Design**: Circuit board animated background with cyberpunk aesthetics
-- **Responsive**: Mobile-first design optimized for all devices
-- **Interactive UI**: Advanced hover effects, animations, and smooth transitions
-- **Performance**: Optimized images, fonts, and code splitting
-- **Accessibility**: ARIA labels, semantic HTML, and keyboard navigation
+### 🚀 **DevOps & Automation**
+- **GitHub Actions**: Automated version management and releases
+- **Semantic Versioning**: Automatic version bumping based on commit messages
+- **Environment Management**: Dynamic version tracking and deployment
+- **Performance Monitoring**: Core Web Vitals and analytics integration
 
-### 🗄️ Backend Power
-- **MongoDB Database**: Scalable document storage with advanced indexing
-- **RESTful API**: Complete CRUD operations with error handling
-- **Real-time Updates**: Live content synchronization with WebSocket support
-- **Data Migration**: Automated legacy data import with validation
-- **Analytics Tracking**: Comprehensive view counts, likes, and engagement metrics
-- **Caching Layer**: Redis integration for improved performance
-- **API Rate Limiting**: Protection against abuse and DDoS attacks
+## 🛠️ **Tech Stack**
 
-### 🛠️ Admin System
-- **Advanced Dashboard**: Comprehensive overview with real-time statistics
-- **Content Management**: Create, edit, delete blog posts with rich editor
-- **Live Preview**: Real-time content preview with mobile responsiveness
-- **Edit Mode**: On-site editing capabilities with instant updates
-- **SEO Management**: Meta tags, descriptions, keywords, and social media optimization
-- **Media Management**: Image uploads, optimization, and CDN integration
-- **User Analytics**: Detailed visitor insights and behavior tracking
-- **Backup System**: Automated database backups and restore functionality
-
-### 📊 Analytics & SEO
-- **Dynamic Metadata**: Auto-generated SEO tags with AI optimization
-- **Structured Data**: Schema.org markup for enhanced search visibility
-- **Sitemap Generation**: Automatic XML sitemap updates with priority scoring
-- **Performance Monitoring**: Core Web Vitals tracking and optimization alerts
-- **Social Sharing**: Open Graph, Twitter Cards, and LinkedIn optimization
-- **Search Console Integration**: Google Search Console API integration
-- **A/B Testing**: Built-in testing framework for content optimization
-
-## 🛠️ Tech Stack
-
-### Core Technologies
-- **Framework**: Next.js 15+ (App Router) with React 18
+### **Core Technologies**
+- **Framework**: Next.js 15+ (App Router)
 - **Database**: MongoDB Atlas with Mongoose ODM
-- **Styling**: Tailwind CSS 3.4+ with custom design system
-- **Authentication**: NextAuth.js with custom providers
-- **Deployment**: Vercel with Edge Functions
-- **Language**: TypeScript 5.0+ for full type safety
+- **Styling**: Tailwind CSS with custom dragon themes
+- **Authentication**: Custom admin authentication system
+- **Deployment**: Vercel with GitHub Actions CI/CD
 
-### Advanced Libraries & Tools
-- **State Management**: Zustand + React Query for optimal data fetching
-- **Fonts**: Inter (Google Fonts) + Geist Sans/Mono (Local)
-- **Icons**: FontAwesome 6.5.1 + Heroicons
-- **Analytics**: Vercel Analytics + Google Analytics 4
-- **Image Optimization**: Next.js Image + Cloudinary integration
-- **Form Handling**: React Hook Form + Zod validation
-- **Testing**: Jest + React Testing Library + Playwright
-- **Monitoring**: Sentry for error tracking and performance monitoring
+### **Libraries & Tools**
+- **Icons**: FontAwesome 6.5.1
+- **Analytics**: Vercel Analytics
+- **Email**: Nodemailer for contact forms
+- **Fonts**: Inter (Google) + Geist (Local)
+- **Image Optimization**: Next.js Image component
 
-### Development Tools
-- **Code Quality**: ESLint + Prettier + Husky pre-commit hooks
-- **Bundle Analysis**: @next/bundle-analyzer for optimization
-- **Performance**: Lighthouse CI for automated auditing
-- **Documentation**: Storybook for component documentation
+## 🚀 **Quick Start**
 
-## 📁 Project Structure
-
-```
-bergaman-dev/
-├── .github/
-│   └── workflows/        # GitHub Actions
-├── public/
-│   ├── images/          # Static images
-│   ├── favicon.ico      # Favicon
-│   └── site.webmanifest # PWA manifest
-├── src/
-│   ├── app/
-│   │   ├── (admin)/     # Admin panel routes
-│   │   │   └── admin/   # Admin pages
-│   │   ├── api/         # API routes
-│   │   │   └── admin/   # Admin API endpoints
-│   │   ├── blog/        # Blog pages
-│   │   ├── portfolio/   # Portfolio page
-│   │   ├── about/       # About page
-│   │   ├── suggestions/ # Suggestions page
-│   │   ├── components/  # Reusable components
-│   │   ├── fonts/       # Local font files
-│   │   ├── layout.js    # Root layout
-│   │   ├── page.js      # Home page
-│   │   ├── globals.css  # Global styles
-│   │   ├── sitemap.js   # Dynamic sitemap
-│   │   └── robots.js    # Robots.txt
-│   ├── data/
-│   │   └── blogPosts.js # Legacy blog content (for migration)
-│   ├── hooks/
-│   │   └── useAdminMode.js # Admin mode hook
-│   ├── lib/
-│   │   ├── constants.js # Site configuration
-│   │   └── mongodb.js   # Database connection
-│   └── models/
-│       └── BlogPost.js  # MongoDB schemas
-└── ...
-```
-
-## 🚀 Quick Start
-
-### Prerequisites
+### **Prerequisites**
 - Node.js 18+
-- MongoDB Atlas account or local MongoDB
-- npm or yarn
+- MongoDB Atlas account
+- Git
 
-### Installation
+### **Installation**
+
 ```bash
 # Clone the repository
 git clone https://github.com/bergaman9/bergaman-dev.git
@@ -166,253 +82,175 @@ cp .env.example .env.local
 npm run dev
 ```
 
-### Environment Variables
-```bash
+### **Environment Variables**
+
+```env
 # .env.local
 MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/bergaman-dev
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
-ADMIN_PASSWORD=your-secure-password
+NEXT_PUBLIC_APP_VERSION=2.0.0
+EMAIL_USER=your-email@gmail.com
+EMAIL_PASS=your-app-password
 ```
 
-## 🎯 Usage Guide
+## 📁 **Project Structure**
 
-### Admin Panel Access
+```
+bergaman-dev/
+├── .github/workflows/     # GitHub Actions
+├── public/images/         # Static assets
+├── src/
+│   ├── app/
+│   │   ├── (admin)/      # Admin panel routes
+│   │   ├── api/          # API endpoints
+│   │   ├── blog/         # Blog pages
+│   │   ├── components/   # Reusable components
+│   │   └── ...
+│   ├── lib/              # Utilities and constants
+│   └── models/           # MongoDB schemas
+└── ...
+```
+
+## 🎯 **Usage Guide**
+
+### **Admin Panel Access**
 1. Navigate to `/admin`
-2. Enter admin credentials
-3. Access dashboard with full content management
+2. Enter credentials: `bergasoft` / `tE0&5A3&DBb!c55dm98&`
+3. Access the dragon-themed dashboard
 
-### Content Management
-- **Create Posts**: Use the rich editor to create new blog posts
-- **Edit Content**: Modify existing posts with live preview
-- **Manage Media**: Upload and organize images
-- **SEO Optimization**: Set meta tags and descriptions
+### **Content Management**
+- **Create Posts**: Rich editor with live preview
+- **Manage Comments**: Approve, reject, and moderate
+- **View Analytics**: Track engagement and performance
+- **System Monitoring**: Real-time server status
 
-### Edit Mode
-1. Enable "Edit Mode" from admin panel
-2. Navigate to any page on the site
-3. Click edit buttons to modify content directly
-4. Changes save automatically to MongoDB
+### **Version Management**
+- **Automatic Versioning**: Based on commit message patterns
+- **Release Generation**: Automated GitHub releases
+- **Environment Sync**: Version updates across all environments
 
-### Data Migration
-- Use "Migrate Posts" button in admin panel
-- Automatically imports legacy static content
-- Preserves all metadata and formatting
+## 🎨 **Design System**
 
-## 📊 API Endpoints
-
-### Blog Posts
-- `GET /api/admin/posts` - List all posts
-- `POST /api/admin/posts` - Create new post
-- `GET /api/admin/posts/[id]` - Get specific post
-- `PUT /api/admin/posts/[id]` - Update post
-- `DELETE /api/admin/posts/[id]` - Delete post
-
-### Migration
-- `POST /api/admin/migrate` - Migrate legacy data
-
-### Analytics
-- `PUT /api/admin/posts/[id]` - Update views/likes
-
-## 🎨 Design System
-
-### Color Palette
+### **Color Palette**
 - **Primary**: `#e8c547` (Dragon Gold)
 - **Background**: `#0e1b12` (Deep Forest)
 - **Secondary**: `#2e3d29` (Forest Green)
-- **Border**: `#3e503e` (Sage Green)
-- **Text**: `#d1d5db` (Silver)
+- **Accent**: `#3e503e` (Sage Green)
 
-### Typography
-- **Primary**: Inter (Google Fonts)
-- **Display**: Geist Sans (Local)
-- **Monospace**: Geist Mono (Local)
+### **Dragon Effects**
+- **Floating Orbs**: Mystical particles with shadows
+- **Energy Streams**: Vertical gradient animations
+- **Dragon Breath**: Rotating conic gradients
+- **Scale Patterns**: Custom SVG textures
 
-### Components
-- **Glass Morphism**: `bg-[#2e3d29]/30 backdrop-blur-md`
-- **Hover Effects**: Scale, glow, and color transitions
-- **Circuit Animation**: CSS keyframes with flowing effects
+## 📊 **API Endpoints**
 
-## 🔧 Development
+### **Blog Management**
+- `GET /api/admin/posts` - List all posts
+- `POST /api/admin/posts` - Create new post
+- `PUT /api/admin/posts/[id]` - Update post
+- `DELETE /api/admin/posts/[id]` - Delete post
 
-### Available Scripts
-```bash
-npm run dev          # Start development server with hot reload
-npm run build        # Build for production with optimizations
-npm run start        # Start production server
-npm run lint         # Run ESLint with auto-fix
-npm run test         # Run Jest test suite
-npm run test:e2e     # Run Playwright end-to-end tests
-npm run analyze      # Analyze bundle size and dependencies
-npm run storybook    # Start Storybook component documentation
-```
+### **Comments System**
+- `GET /api/admin/comments` - List comments
+- `PUT /api/admin/comments/[id]` - Moderate comment
 
-### Development Workflow
-1. **Feature Development**: Create feature branch from `develop`
-2. **Code Quality**: Pre-commit hooks ensure code standards
-3. **Testing**: Automated unit and integration tests
-4. **Review**: Pull request with automated checks
-5. **Deployment**: Automatic deployment on merge to `main`
+### **Analytics**
+- `GET /api/admin/analytics` - Get statistics
+- `PUT /api/posts/[id]/view` - Track page views
 
-### Database Schema
-```javascript
-// BlogPost Model
-{
-  title: String,
-  slug: String,
-  description: String,
-  content: String,
-  category: String,
-  tags: [String],
-  image: String,
-  author: String,
-  readTime: String,
-  views: Number,
-  likes: Number,
-  published: Boolean,
-  featured: Boolean,
-  seo: {
-    metaTitle: String,
-    metaDescription: String,
-    keywords: [String]
-  },
-  createdAt: Date,
-  updatedAt: Date
-}
-```
+## 🚀 **Deployment**
 
-## 🚀 Deployment & DevOps
-
-### Vercel Deployment
+### **Vercel Deployment**
 1. Connect GitHub repository to Vercel
-2. Set environment variables in Vercel dashboard
-3. Deploy automatically on push to main branch
-4. Preview deployments for pull requests
+2. Set environment variables in dashboard
+3. Deploy automatically on push to main
 
-### GitHub Actions Workflow
-- **Continuous Integration**: Automated testing on all PRs
-- **Semantic Versioning**: Automatic version bumping based on commits
-- **Build Optimization**: Production build with performance checks
-- **Security Scanning**: Automated vulnerability detection
-- **Deployment**: Zero-downtime deployment to production
+### **GitHub Actions Workflow**
+- **Version Bumping**: Automatic semantic versioning
+- **Release Creation**: Generated changelogs and tags
+- **Build Validation**: Tests and quality checks
 
-### Monitoring & Observability
-- **Error Tracking**: Sentry integration for real-time error monitoring
-- **Performance Monitoring**: Vercel Analytics and custom metrics
-- **Uptime Monitoring**: 24/7 availability tracking
-- **Log Aggregation**: Centralized logging with search capabilities
+## 🔒 **Security Features**
 
-## 📊 Version History
+- **Admin Authentication**: Secure login system
+- **Input Validation**: XSS and injection protection
+- **Rate Limiting**: API endpoint protection
+- **Environment Security**: Sensitive data encryption
 
-### v2.1.0 (Upcoming)
-- 🤖 AI-powered content recommendations
-- 🔍 Advanced search functionality
-- 📧 Newsletter subscription system
-- 🌙 Dark/Light theme toggle
-- 📱 Progressive Web App enhancements
+## 📈 **Performance**
 
-### v2.0.0 (Current)
+- **Core Web Vitals**: Optimized for Google metrics
+- **Image Optimization**: Next.js Image with lazy loading
+- **Code Splitting**: Route-based bundle optimization
+- **Caching Strategy**: Efficient data fetching
+
+## 🤝 **Contributing**
+
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'feat: add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Open Pull Request
+
+### **Commit Convention**
+- `feat:` - New features (minor version bump)
+- `fix:` - Bug fixes (patch version bump)
+- `BREAKING CHANGE:` - Major changes (major version bump)
+
+## 📄 **License**
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 👨‍💻 **Author**
+
+**Ömer (Bergaman)**
+- 🌐 Website: [bergaman.dev](https://bergaman.dev)
+- 🐙 GitHub: [@bergaman9](https://github.com/bergaman9)
+- 💼 LinkedIn: [Ömer Güler](https://www.linkedin.com/in/omerguler/)
+- 📧 Email: contact@bergaman.dev
+
+## 🙏 **Acknowledgments**
+
+- Next.js team for the incredible framework
+- MongoDB for robust database solutions
+- Vercel for seamless deployment
+- FontAwesome for comprehensive icons
+- Tailwind CSS for utility-first styling
+
+## 📊 **Version History**
+
+### **v2.0.0** (Current)
 - 🗄️ Full MongoDB integration
-- 🛠️ Complete admin panel with analytics
-- ✏️ Live edit mode with real-time preview
-- 📊 Advanced analytics and user insights
-- 🚀 GitHub Actions CI/CD pipeline
-- 🔒 Enhanced security and authentication
+- 🛠️ Advanced admin panel with dragon effects
+- ✏️ Real-time content management
+- 📊 Analytics and monitoring
+- 🚀 Automated version management
 
-### v1.0.0 (Legacy)
+### **v1.0.0** (Legacy)
 - 🎨 Static portfolio website
 - 📝 Basic blog functionality
 - 🎯 SEO optimization
 - 📱 Responsive design
 
-## 🔗 Links
+---
 
-- **🌟 Current Version (v2.0.0)**: [https://bergaman.dev](https://bergaman.dev)
-- **🕰️ Legacy Version (v1.0.0)**: [https://bergaman-v1.vercel.app/](https://bergaman-v1.vercel.app/)
-- **📚 GitHub Repository**: [https://github.com/bergaman9/bergaman-dev](https://github.com/bergaman9/bergaman-dev)
-- **🏷️ Releases**: [https://github.com/bergaman9/bergaman-dev/releases](https://github.com/bergaman9/bergaman-dev/releases)
+## 🔗 **Links**
 
-## 📱 Progressive Web App
+- **📚 Repository**: [github.com/bergaman9/bergaman-dev](https://github.com/bergaman9/bergaman-dev)
+- **🏷️ Releases**: [github.com/bergaman9/bergaman-dev/releases](https://github.com/bergaman9/bergaman-dev/releases)
+- **📖 Documentation**: [bergaman.dev/docs](https://bergaman.dev/docs)
+- **🐛 Issues**: [github.com/bergaman9/bergaman-dev/issues](https://github.com/bergaman9/bergaman-dev/issues)
 
-- **Web App Manifest**: Theme colors and app configuration
-- **Offline Ready**: Service worker for offline functionality
-- **Responsive Design**: Optimized for all devices and screen sizes
-- **Fast Loading**: Optimized assets and intelligent caching
-- **App-like Experience**: Native app feel on mobile devices
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-### Contribution Guidelines
-- Follow the existing code style and conventions
-- Write comprehensive tests for new features
-- Update documentation for any API changes
-- Ensure all CI checks pass before submitting PR
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 👨‍💻 Author
-
-**Ömer (Bergaman)**
-- Website: [bergaman.dev](https://bergaman.dev)
-- GitHub: [@bergaman9](https://github.com/bergaman9)
-- LinkedIn: [Ömer Bergaman](https://linkedin.com/in/omerbergaman)
-- Email: contact@bergaman.dev
-
-## 🙏 Acknowledgments
-
-- Next.js team for the incredible framework and continuous innovation
-- MongoDB for the robust and scalable database solution
-- Vercel for seamless hosting, deployment, and edge computing
-- FontAwesome for comprehensive icon library and design resources
-- Tailwind CSS for utility-first styling and rapid development
-- Open source community for inspiration and collaborative development
-
-## 📈 Performance Metrics
-
-### Core Web Vitals
-- **First Contentful Paint (FCP)**: < 1.2s
-- **Largest Contentful Paint (LCP)**: < 2.5s
-- **First Input Delay (FID)**: < 100ms
-- **Cumulative Layout Shift (CLS)**: < 0.1
-
-### Optimization Features
-- **Image Optimization**: WebP/AVIF format with lazy loading
-- **Code Splitting**: Route-based and component-based splitting
-- **Font Optimization**: Preloaded fonts with display swap
-- **Bundle Size**: < 200KB initial bundle size
-- **Caching Strategy**: Aggressive caching with smart invalidation
-- **CDN Integration**: Global content delivery network
-
-## 🔒 Security & Privacy
-
-### Security Measures
-- **Authentication**: Secure admin authentication with session management
-- **Input Validation**: Comprehensive data validation and sanitization
-- **XSS Protection**: Content Security Policy and input escaping
-- **CSRF Protection**: Cross-site request forgery prevention
-- **Rate Limiting**: API endpoint protection against abuse
-- **HTTPS Enforcement**: SSL/TLS encryption for all communications
-- **Data Encryption**: Sensitive data encryption at rest and in transit
-
-### Privacy Compliance
-- **GDPR Ready**: European privacy regulation compliance
-- **Cookie Management**: Transparent cookie usage and consent
-- **Data Minimization**: Collect only necessary user data
-- **Right to Deletion**: User data removal capabilities
+---
 
 <div align="center">
-  <p>🐉 <strong>Built with dragon-like precision and wisdom</strong> 🐉</p>
-  <p><em>Crafting technology inspired by the strength and wisdom of a dragon</em></p>
-  <p>
-    <a href="https://bergaman.dev">Current Version</a> •
-    <a href="https://bergaman-v1.vercel.app/">Legacy Version</a> •
-    <a href="https://github.com/bergaman9">GitHub</a>
-  </p>
+
+**🐉 Built with dragon-like precision and wisdom 🐉**
+
+*Crafting technology inspired by the strength and wisdom of a dragon*
+
+[![GitHub stars](https://img.shields.io/github/stars/bergaman9/bergaman-dev?style=social)](https://github.com/bergaman9/bergaman-dev)
+[![GitHub forks](https://img.shields.io/github/forks/bergaman9/bergaman-dev?style=social)](https://github.com/bergaman9/bergaman-dev)
+
 </div>

@@ -3,8 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { Analytics } from '@vercel/analytics/next';
 import { SITE_CONFIG, SEO_DEFAULTS } from '../lib/constants';
-import Header from './components/Header';
-import Footer from './components/Footer';
+import LayoutWrapper from './components/LayoutWrapper';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -89,11 +88,9 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} ${inter.className} antialiased min-h-screen text-[#d1d5db] flex flex-col`}>
-        <Header />
-        <main className="flex-1">
+        <LayoutWrapper>
           {children}
-        </main>
-        <Footer />
+        </LayoutWrapper>
         <Analytics />
         
         {/* Structured Data */}

@@ -1,27 +1,16 @@
 import { NextResponse } from 'next/server';
 import mongoose from 'mongoose';
 import BlogPost from '../../../../../models/BlogPost';
+import { connectDB } from '../../../../../lib/mongodb';
 
-// Connect to MongoDB
-async function connectDB() {
-  if (mongoose.connections[0].readyState) {
-    return;
-  }
-  
-  try {
-    await mongoose.connect(process.env.MONGODB_URI);
-  } catch (error) {
-    console.error('MongoDB connection error:', error);
-    throw error;
-  }
-}
+
 
 // GET - Fetch single blog post
 export async function GET(request, { params }) {
   try {
     await connectDB();
     
-    const { id } = params;
+    const { id } = await params;
     const post = await BlogPost.findById(id);
     
     if (!post) {
@@ -46,7 +35,7 @@ export async function PUT(request, { params }) {
   try {
     await connectDB();
     
-    const { id } = params;
+    const { id } = await params;
     const data = await request.json();
     
     const post = await BlogPost.findByIdAndUpdate(
@@ -85,7 +74,7 @@ export async function DELETE(request, { params }) {
   try {
     await connectDB();
     
-    const { id } = params;
+    const { id } = await params;
     const post = await BlogPost.findByIdAndDelete(id);
     
     if (!post) {

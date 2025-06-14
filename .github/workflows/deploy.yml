@@ -6,12 +6,6 @@ on:
   pull_request:
     branches: [ main ]
 
-permissions:
-  contents: write
-  issues: write
-  pull-requests: write
-  id-token: write
-
 jobs:
   test:
     name: 🧪 Test & Lint
@@ -38,7 +32,7 @@ jobs:
       env:
         MONGODB_URI: ${{ secrets.MONGODB_URI }}
         NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
-        ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+        NEXT_PUBLIC_APP_VERSION: ${{ github.ref_name }}-${{ github.sha }}
 
   version:
     name: 🏷️ Auto Version
@@ -69,20 +63,15 @@ jobs:
       id: semantic
       uses: cycjimmy/semantic-release-action@v4
       with:
-        semantic_version: 24
+        semantic_version: 19
         extra_plugins: |
           @semantic-release/changelog@6.0.0
           @semantic-release/git@10.0.0
-          @semantic-release/commit-analyzer@13.0.1
-          @semantic-release/release-notes-generator@14.0.3
-          @semantic-release/npm@12.0.1
-          @semantic-release/github@11.0.3
-          conventional-changelog-conventionalcommits@8.0.0
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   deploy:
-    name: 🚀 Deploy to Vercel
+    name: 🚀 Deploy to Production
     runs-on: ubuntu-latest
     needs: [test, version]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
@@ -98,24 +87,26 @@ jobs:
         vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
         vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
         vercel-args: '--prod'
-        
-    - name: 📊 Update deployment status
-      if: needs.version.outputs.new_release_published == 'true'
+      env:
+        MONGODB_URI: ${{ secrets.MONGODB_URI }}
+        NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
+        NEXT_PUBLIC_APP_VERSION: ${{ needs.version.outputs.new_release_version || github.ref_name }}
+
+    - name: 📊 Update Deployment Status
+      if: always()
       run: |
-        echo "🎉 Successfully deployed version ${{ needs.version.outputs.new_release_version }}"
-        echo "🌐 Live at: https://bergaman.dev"
+        echo "🎉 Deployment completed!"
+        echo "📦 Version: ${{ needs.version.outputs.new_release_version || 'development' }}"
+        echo "🌐 URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}"
 
   notify:
     name: 📢 Notify Success
     runs-on: ubuntu-latest
     needs: [test, version, deploy]
-    if: always() && needs.version.outputs.new_release_published == 'true'
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push' && needs.version.outputs.new_release_published == 'true'
     
     steps:
     - name: 🎉 Success Notification
       run: |
-        echo "🐉 Dragon's Domain v${{ needs.version.outputs.new_release_version }} is live!"
-        echo "✅ Tests passed"
-        echo "🏷️ Version tagged"
-        echo "🚀 Deployed successfully"
-        echo "🌐 Available at: https://bergaman.dev" 
+        echo "✅ Successfully deployed version ${{ needs.version.outputs.new_release_version }}"
+        echo "🌐 Live at: https://bergaman.dev" 

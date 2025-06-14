@@ -51,35 +51,47 @@ export default function PlaceholderImage({
     const ctx = canvas.getContext('2d');
     const colors = categoryColors[category] || categoryColors.default;
     
-    // Set canvas size
-    canvas.width = width;
-    canvas.height = height;
+    // Get the actual display size
+    const rect = canvas.getBoundingClientRect();
+    const displayWidth = rect.width;
+    const displayHeight = rect.height;
+    
+    // Set canvas size to match display size for crisp rendering
+    canvas.width = displayWidth * window.devicePixelRatio;
+    canvas.height = displayHeight * window.devicePixelRatio;
+    
+    // Scale the context to match device pixel ratio
+    ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+    
+    // Use display dimensions for drawing
+    const drawWidth = displayWidth;
+    const drawHeight = displayHeight;
 
     // Create gradient background
-    const gradient = ctx.createLinearGradient(0, 0, width, height);
+    const gradient = ctx.createLinearGradient(0, 0, drawWidth, drawHeight);
     gradient.addColorStop(0, colors.primary);
     gradient.addColorStop(1, colors.secondary);
     
     ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, width, height);
+    ctx.fillRect(0, 0, drawWidth, drawHeight);
 
     // Add circuit pattern overlay
     ctx.strokeStyle = colors.accent + '20';
     ctx.lineWidth = 1;
     
     // Draw grid pattern
-    const gridSize = 20;
-    for (let x = 0; x <= width; x += gridSize) {
+    const gridSize = Math.max(20, Math.min(drawWidth, drawHeight) / 15);
+    for (let x = 0; x <= drawWidth; x += gridSize) {
       ctx.beginPath();
       ctx.moveTo(x, 0);
-      ctx.lineTo(x, height);
+      ctx.lineTo(x, drawHeight);
       ctx.stroke();
     }
     
-    for (let y = 0; y <= height; y += gridSize) {
+    for (let y = 0; y <= drawHeight; y += gridSize) {
       ctx.beginPath();
       ctx.moveTo(0, y);
-      ctx.lineTo(width, y);
+      ctx.lineTo(drawWidth, y);
       ctx.stroke();
     }
 
@@ -88,11 +100,12 @@ export default function PlaceholderImage({
     ctx.lineWidth = 2;
     
     // Draw some random circuit paths
-    for (let i = 0; i < 5; i++) {
-      const startX = Math.random() * width;
-      const startY = Math.random() * height;
-      const endX = Math.random() * width;
-      const endY = Math.random() * height;
+    const numPaths = Math.max(3, Math.floor((drawWidth * drawHeight) / 10000));
+    for (let i = 0; i < numPaths; i++) {
+      const startX = Math.random() * drawWidth;
+      const startY = Math.random() * drawHeight;
+      const endX = Math.random() * drawWidth;
+      const endY = Math.random() * drawHeight;
       
       ctx.beginPath();
       ctx.moveTo(startX, startY);
@@ -109,72 +122,78 @@ export default function PlaceholderImage({
       ctx.fill();
     }
 
-    // Add category icon (using simple shapes instead of emoji)
+    // Add category icon
     ctx.fillStyle = colors.accent;
     ctx.strokeStyle = colors.accent;
     ctx.lineWidth = 3;
     
     // Draw a simple tech icon based on category
-    const centerX = width / 2;
-    const centerY = height / 2 - 20;
+    const centerX = drawWidth / 2;
+    const centerY = drawHeight / 2 - drawHeight * 0.1;
+    const iconSize = Math.min(drawWidth, drawHeight) * 0.15;
     
     if (category.includes('web') || category.includes('development')) {
       // Draw a simple monitor/screen icon
-      ctx.strokeRect(centerX - 20, centerY - 15, 40, 25);
-      ctx.fillRect(centerX - 2, centerY + 12, 4, 8);
-      ctx.fillRect(centerX - 10, centerY + 18, 20, 3);
+      ctx.strokeRect(centerX - iconSize, centerY - iconSize * 0.6, iconSize * 2, iconSize * 1.2);
+      ctx.fillRect(centerX - iconSize * 0.1, centerY + iconSize * 0.7, iconSize * 0.2, iconSize * 0.4);
+      ctx.fillRect(centerX - iconSize * 0.5, centerY + iconSize * 1.0, iconSize, iconSize * 0.15);
     } else if (category.includes('bot')) {
       // Draw a simple robot head
-      ctx.strokeRect(centerX - 15, centerY - 15, 30, 25);
-      ctx.fillRect(centerX - 8, centerY - 8, 4, 4);
-      ctx.fillRect(centerX + 4, centerY - 8, 4, 4);
-      ctx.strokeRect(centerX - 10, centerY + 2, 20, 6);
+      ctx.strokeRect(centerX - iconSize * 0.75, centerY - iconSize * 0.75, iconSize * 1.5, iconSize * 1.25);
+      ctx.fillRect(centerX - iconSize * 0.4, centerY - iconSize * 0.4, iconSize * 0.2, iconSize * 0.2);
+      ctx.fillRect(centerX + iconSize * 0.2, centerY - iconSize * 0.4, iconSize * 0.2, iconSize * 0.2);
+      ctx.strokeRect(centerX - iconSize * 0.5, centerY + iconSize * 0.1, iconSize, iconSize * 0.3);
     } else if (category.includes('ai') || category.includes('ml')) {
       // Draw a simple brain/neural network
       ctx.beginPath();
-      ctx.arc(centerX, centerY, 18, 0, 2 * Math.PI);
+      ctx.arc(centerX, centerY, iconSize * 0.9, 0, 2 * Math.PI);
       ctx.stroke();
       // Add some internal lines
       ctx.beginPath();
-      ctx.moveTo(centerX - 10, centerY - 5);
-      ctx.lineTo(centerX + 10, centerY + 5);
-      ctx.moveTo(centerX - 10, centerY + 5);
-      ctx.lineTo(centerX + 10, centerY - 5);
+      ctx.moveTo(centerX - iconSize * 0.5, centerY - iconSize * 0.25);
+      ctx.lineTo(centerX + iconSize * 0.5, centerY + iconSize * 0.25);
+      ctx.moveTo(centerX - iconSize * 0.5, centerY + iconSize * 0.25);
+      ctx.lineTo(centerX + iconSize * 0.5, centerY - iconSize * 0.25);
       ctx.stroke();
     } else if (category.includes('iot') || category.includes('embedded')) {
       // Draw a simple chip/circuit
-      ctx.strokeRect(centerX - 12, centerY - 12, 24, 24);
+      ctx.strokeRect(centerX - iconSize * 0.6, centerY - iconSize * 0.6, iconSize * 1.2, iconSize * 1.2);
       // Add pins
       for (let i = 0; i < 3; i++) {
-        ctx.fillRect(centerX - 15, centerY - 6 + i * 6, 3, 2);
-        ctx.fillRect(centerX + 12, centerY - 6 + i * 6, 3, 2);
+        ctx.fillRect(centerX - iconSize * 0.75, centerY - iconSize * 0.3 + i * iconSize * 0.3, iconSize * 0.15, iconSize * 0.1);
+        ctx.fillRect(centerX + iconSize * 0.6, centerY - iconSize * 0.3 + i * iconSize * 0.3, iconSize * 0.15, iconSize * 0.1);
       }
     } else {
       // Default: simple code brackets
-      ctx.font = 'bold 32px monospace';
+      const fontSize = Math.max(16, iconSize * 0.8);
+      ctx.font = `bold ${fontSize}px monospace`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText('{ }', centerX, centerY);
     }
 
     // Add text
-    ctx.font = 'bold 16px Arial';
+    const fontSize = Math.max(12, Math.min(drawWidth, drawHeight) / 20);
+    ctx.font = `bold ${fontSize}px Arial`;
     ctx.fillStyle = '#ffffff';
     ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
     ctx.shadowBlur = 4;
     ctx.shadowOffsetX = 2;
     ctx.shadowOffsetY = 2;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
     
     // Split text into multiple lines if needed
     const words = text.split(' ');
     const lines = [];
     let currentLine = '';
+    const maxWidth = drawWidth - 40;
     
     for (const word of words) {
       const testLine = currentLine + (currentLine ? ' ' : '') + word;
       const metrics = ctx.measureText(testLine);
       
-      if (metrics.width > width - 40 && currentLine) {
+      if (metrics.width > maxWidth && currentLine) {
         lines.push(currentLine);
         currentLine = word;
       } else {
@@ -184,20 +203,23 @@ export default function PlaceholderImage({
     lines.push(currentLine);
     
     // Draw text lines
-    const lineHeight = 20;
-    const startY = height / 2 + 30 - (lines.length * lineHeight) / 2;
+    const lineHeight = fontSize * 1.2;
+    const textStartY = drawHeight / 2 + drawHeight * 0.2;
     
     lines.forEach((line, index) => {
-      ctx.fillText(line, width / 2, startY + index * lineHeight);
+      const y = textStartY + (index - (lines.length - 1) / 2) * lineHeight;
+      ctx.fillText(line, centerX, y);
     });
 
   }, [width, height, text, category]);
 
   return (
-    <canvas 
-      ref={canvasRef}
-      className={`rounded-lg ${className}`}
-      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-    />
+    <div className={`relative ${className}`} style={{ width: '100%', height: '100%' }}>
+      <canvas 
+        ref={canvasRef}
+        className="absolute inset-0 w-full h-full rounded-lg"
+        style={{ width: '100%', height: '100%' }}
+      />
+    </div>
   );
 } 

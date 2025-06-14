@@ -16,7 +16,7 @@ export default function AdminContent() {
     adminEmail: 'admin@bergaman.dev',
     socialLinks: {
       github: 'https://github.com/bergaman9',
-      linkedin: 'https://linkedin.com/in/bergaman',
+      linkedin: 'https://www.linkedin.com/in/omerguler/',
       email: 'contact@bergaman.dev',
       discord: 'https://discord.gg/bergaman'
     }

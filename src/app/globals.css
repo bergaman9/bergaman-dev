@@ -60,29 +60,10 @@
     @apply bg-gradient-to-r from-[#e8c547] to-[#d4b445] bg-clip-text text-transparent;
   }
 
-
-
-  .hover-lift {
-    @apply transition-transform duration-300 hover:-translate-y-1;
-  }
-
-  .hover-glow {
-    @apply transition-shadow duration-300 hover:shadow-lg hover:shadow-[#e8c547]/25;
-  }
-
-  .hover-scale {
-    @apply transition-transform duration-300 hover:scale-105;
-  }
-
   .btn-cyber {
-    @apply bg-gradient-to-r from-[#e8c547] to-[#d4b445] text-[#0e1b12] font-semibold;
-    @apply hover:from-[#d4b445] hover:to-[#c4a43d] transition-all duration-300;
-    @apply shadow-lg shadow-[#e8c547]/25 hover:shadow-xl hover:shadow-[#e8c547]/40;
-    @apply hover:scale-105 transform;
-  }
-
-  .card-hover {
-    @apply transition-all duration-300 hover:border-[#e8c547]/50 hover:shadow-lg hover:shadow-[#e8c547]/10;
+    @apply bg-gradient-to-r from-slate-600 to-slate-700 text-white font-semibold;
+    @apply transition-all duration-300;
+    @apply shadow-lg shadow-slate-500/25;
   }
 
   .page-container {
@@ -145,19 +126,6 @@
     @apply bg-[#2e3d29]/30 backdrop-blur-sm border border-[#3e503e]/50;
   }
 
-  /* Hover Effects */
-  .hover-lift {
-    @apply transition-transform duration-300 hover:scale-105;
-  }
-
-  .hover-glow {
-    @apply transition-shadow duration-300 hover:shadow-lg hover:shadow-[#e8c547]/25;
-  }
-
-  .hover-scale {
-    @apply transition-transform duration-300 hover:scale-110;
-  }
-
   /* Circuit Node Effect */
   .circuit-node {
     @apply relative;
@@ -165,18 +133,11 @@
 
   .circuit-node::before {
     content: '';
-    @apply absolute -inset-1 bg-gradient-to-r from-[#e8c547]/20 to-[#d4b445]/20 rounded-lg opacity-0 transition-opacity duration-300;
+    @apply absolute -inset-1 bg-gradient-to-r from-slate-500/20 to-slate-600/20 rounded-lg opacity-0 transition-opacity duration-300;
   }
 
   .circuit-node:hover::before {
     @apply opacity-100;
-  }
-
-
-
-  /* Card Hover Effect */
-  .card-hover {
-    @apply transition-all duration-300 hover:border-[#e8c547]/50 hover:shadow-lg hover:shadow-[#e8c547]/10 hover:-translate-y-1;
   }
 
   /* Page Layout Standardization */
@@ -186,6 +147,15 @@
 
   .page-content {
     @apply max-w-5xl mx-auto px-4 sm:px-6 md:px-8;
+  }
+
+  /* Admin Layout Standardization */
+  .admin-container {
+    @apply min-h-screen;
+  }
+
+  .admin-content {
+    @apply max-w-6xl mx-auto px-4 sm:px-6 lg:px-8;
   }
 
   /* Scrollbar Styling */
@@ -273,5 +243,27 @@
       opacity: 1;
       transform: translateX(0);
     }
+  }
+
+  /* Line Clamp Utilities */
+  .line-clamp-1 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+  }
+
+  .line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .line-clamp-3 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
   }
 }

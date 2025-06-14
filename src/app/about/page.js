@@ -8,33 +8,43 @@ import { useState } from 'react';
 // Skill Categories Data
 const skillCategories = [
   {
-    title: "Frontend Development",
-    icon: "fas fa-laptop-code",
+    title: "Programming Languages",
+    icon: "fas fa-code",
     skills: [
-      { name: "React/Next.js", level: 90 },
-      { name: "JavaScript/TypeScript", level: 85 },
-      { name: "HTML/CSS", level: 95 },
-      { name: "Tailwind CSS", level: 88 }
+      { name: "Python", level: 80 },
+      { name: "JavaScript", level: 70 },
+      { name: "C#", level: 60 },
+      { name: "HTML & CSS", level: 90 }
     ]
   },
   {
-    title: "Backend & Desktop",
-    icon: "fas fa-server",
+    title: "Frameworks & Libraries",
+    icon: "fas fa-layer-group",
     skills: [
-      { name: "Node.js", level: 80 },
-      { name: "Python", level: 90 },
-      { name: "C# / WPF", level: 85 },
-      { name: "Database Design", level: 75 }
+      { name: "React", level: 75 },
+      { name: "Node.js", level: 65 },
+      { name: "Next.js", level: 70 },
+      { name: "Tailwind CSS", level: 85 }
     ]
   },
   {
-    title: "AI & Development Tools",
-    icon: "fas fa-brain",
+    title: "Database & Tools",
+    icon: "fas fa-database",
     skills: [
-      { name: "AI-Powered Development", level: 85 },
-      { name: "VS Code / Cursor", level: 95 },
-      { name: "Machine Learning", level: 70 },
-      { name: "Blockchain", level: 65 }
+      { name: "SQL", level: 70 },
+      { name: "Git", level: 85 },
+      { name: "MongoDB", level: 65 },
+      { name: "VS Code", level: 90 }
+    ]
+  },
+  {
+    title: "Technical Skills",
+    icon: "fas fa-cogs",
+    skills: [
+      { name: "Problem Solving", level: 90 },
+      { name: "System Design", level: 75 },
+      { name: "Technical Analysis", level: 80 },
+      { name: "Project Management", level: 70 }
     ]
   },
   {
@@ -44,74 +54,104 @@ const skillCategories = [
       { name: "Arduino/ESP32", level: 80 },
       { name: "Circuit Design", level: 75 },
       { name: "Soldering", level: 85 },
-      { name: "IoT Systems", level: 78 }
+      { name: "IoT Systems", level: 75 }
+    ]
+  },
+  {
+    title: "Languages",
+    icon: "fas fa-language",
+    skills: [
+      { name: "Turkish (Native)", level: 100 },
+      { name: "English", level: 85 },
+      { name: "German", level: 70 },
+      { name: "Technical Communication", level: 85 }
     ]
   }
 ];
 
-// Experience Data
+// Experience Data - Updated with correct information
 const experiences = [
   {
-    title: "AI-Powered Software Developer",
-    company: "Bergasoft & Personal Projects",
-    period: "2023 - Present",
-    description: "Developing AI-powered software solutions using modern development tools like VS Code and Cursor. Currently working on Bergasoft updates and MyToolSuite - a comprehensive C# WPF application.",
-    technologies: ["C#", "WPF", "AI Tools", "VS Code", "Cursor"]
+    title: "Electrical Electronics Engineer",
+    company: "Bergasoft (Personal Project)",
+    period: "2024 - Present",
+    description: "Developing innovative software solutions and technical applications as a personal project. Focus on AI-powered tools, web development, and system optimization.",
+    technologies: ["C#", "Python", "AI Tools", "Web Development", "System Design"]
   },
   {
-    title: "Full Stack Developer",
-    company: "Freelance",
-    period: "2022 - Present",
-    description: "Developing modern web applications and Discord bots for various clients. Specializing in React, Next.js, and Python-based solutions with AI integration.",
-    technologies: ["React", "Next.js", "Python", "Discord.py", "AI APIs"]
+    title: "Freelancer",
+    company: "Bionluk",
+    period: "Aug 2022 - Nov 2024",
+    description: "Provided graphic design and software development services as a freelancer. Worked on various projects including web development, Discord bots, and design solutions.",
+    technologies: ["Graphic Design", "Web Development", "Python", "Discord.py", "React"]
   },
   {
-    title: "IoT & Hardware Developer",
-    company: "Personal Projects",
-    period: "2021 - Present",
-    description: "Creating innovative IoT solutions using Arduino and ESP32. Focus on sensor integration, data logging, automation systems, and electric vehicle projects.",
-    technologies: ["Arduino", "ESP32", "C++", "IoT", "Sensors", "EV Tech"]
+    title: "Intern",
+    company: "Çevre Şehircilik ve İklim Değişikliği Bakanlığı",
+    period: "Jun 2023 - Jul 2023",
+    description: "Completed internship at the Ministry of Environment, Urbanization and Climate Change in Yalova, Turkey. Gained experience in environmental engineering and government sector operations.",
+    technologies: ["Environmental Engineering", "Government Systems", "Technical Documentation"]
   },
   {
-    title: "Electrical Engineering Student",
-    company: "University",
-    period: "2019 - 2023",
-    description: "Studied Electrical and Electronics Engineering with focus on mathematics, circuit design, and problem-solving. Transitioned to software development during studies.",
-    technologies: ["Mathematics", "Circuit Design", "Problem Solving", "Engineering"]
+    title: "Intern",
+    company: "Birfen Elektrik&Elektronik",
+    period: "Aug 2022 - Sep 2022",
+    description: "Electrical and electronics engineering internship in Yalova, Turkey. Hands-on experience with electrical systems and electronic components.",
+    technologies: ["Electrical Systems", "Electronics", "Circuit Analysis", "Technical Troubleshooting"]
   }
 ];
 
-// Interests Data
+// Education Data
+const education = [
+  {
+    title: "Bachelor's Degree",
+    institution: "Istinye University",
+    field: "Electrical and Electronics Engineering",
+    period: "Sep 2019 - Jun 2024",
+    description: "Completed Bachelor's degree in Electrical and Electronics Engineering. Strong foundation in mathematics, circuit design, and engineering principles. Transitioned focus to software development during studies.",
+    achievements: ["Strong Mathematical Foundation", "Circuit Design", "Problem Solving", "Engineering Principles"]
+  },
+  {
+    title: "High School Diploma",
+    institution: "İstanbul Anadolu Lisesi",
+    field: "High School Education",
+    period: "Sep 2018 - Jun 2019",
+    description: "Graduated with high honors (96.32 GPA). Strong academic performance in mathematics and sciences.",
+    achievements: ["Grade: 96.32", "Mathematics Excellence", "Science Focus"]
+  }
+];
+
+// Interests Data - Updated with personal hobbies
 const interests = [
   {
-    title: "Artificial Intelligence",
-    description: "Exploring machine learning, deep learning, and AI applications in real-world scenarios.",
-    icon: "fas fa-robot"
+    title: "AI & Machine Learning",
+    description: "Exploring artificial intelligence applications and machine learning algorithms for innovative solutions.",
+    icon: "fas fa-brain"
   },
   {
-    title: "Web Development",
-    description: "Building modern, responsive web applications with cutting-edge technologies.",
-    icon: "fas fa-globe"
-  },
-  {
-    title: "IoT & Embedded",
-    description: "Creating smart devices and automation systems with Arduino and Raspberry Pi.",
+    title: "Embedded Systems",
+    description: "Working with Arduino, ESP32, and IoT devices to create smart automation solutions.",
     icon: "fas fa-microchip"
   },
   {
-    title: "Gaming",
-    description: "Passionate gamer who enjoys exploring virtual worlds and game development concepts.",
-    icon: "fas fa-gamepad"
+    title: "Full Stack Development",
+    description: "Building modern web applications with React, Next.js, and backend technologies.",
+    icon: "fas fa-laptop-code"
   },
   {
-    title: "Photography",
-    description: "Capturing moments and exploring the world through the lens of creativity.",
-    icon: "fas fa-camera"
+    title: "Cybersecurity",
+    description: "Understanding security principles and implementing secure coding practices.",
+    icon: "fas fa-shield-alt"
   },
   {
-    title: "Music",
-    description: "Enjoying various music genres and exploring the intersection of technology and music.",
-    icon: "fas fa-music"
+    title: "Robotics",
+    description: "Combining hardware and software to create intelligent robotic systems.",
+    icon: "fas fa-robot"
+  },
+  {
+    title: "Blockchain",
+    description: "Exploring decentralized technologies and cryptocurrency development.",
+    icon: "fas fa-link"
   }
 ];
 
@@ -132,16 +172,16 @@ export default function About() {
   return (
     <div className="min-h-screen text-[#d1d5db] page-container">
       <Head>
-        <title>About Me - Bergaman | Full Stack Developer & Tech Enthusiast</title>
-        <meta name="description" content="Learn more about Bergaman - a passionate full stack developer specializing in modern web technologies, AI integration, and innovative digital solutions." />
-        <meta name="keywords" content="about bergaman, full stack developer, web developer, AI developer, tech enthusiast, biography" />
-        <meta property="og:title" content="About Me - Bergaman | Full Stack Developer" />
-        <meta property="og:description" content="Learn more about Bergaman - a passionate full stack developer specializing in modern web technologies." />
+        <title>About Me - Ömer | Electrical Electronics Engineer & Full Stack Developer</title>
+        <meta name="description" content="Learn more about Ömer - Electrical Electronics Engineer specializing in AI-powered solutions, full-stack development, and technical projects based in İstanbul, Turkey." />
+        <meta name="keywords" content="ömer, bergaman, electrical electronics engineer, full stack developer, istanbul, turkey, AI developer, tech enthusiast" />
+        <meta property="og:title" content="About Me - Ömer | Electrical Electronics Engineer" />
+        <meta property="og:description" content="Electrical Electronics Engineer specializing in AI-powered solutions and full-stack development." />
         <meta property="og:url" content="https://bergaman.dev/about" />
         <meta property="og:type" content="profile" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="About Me - Bergaman | Full Stack Developer" />
-        <meta name="twitter:description" content="Learn more about Bergaman - a passionate full stack developer specializing in modern web technologies." />
+        <meta name="twitter:title" content="About Me - Ömer | Electrical Electronics Engineer" />
+        <meta name="twitter:description" content="Electrical Electronics Engineer specializing in AI-powered solutions and full-stack development." />
         <link rel="canonical" href="https://bergaman.dev/about" />
       </Head>
 
@@ -151,20 +191,20 @@ export default function About() {
         <section className="text-center mb-16 fade-in">
           <div className="relative mb-8">
             <Image
-              className="rounded-full border-4 border-[#e8c547] shadow-lg shadow-[#e8c547]/25 hover-scale mx-auto cursor-pointer"
+              className="rounded-full border-4 border-[#e8c547] shadow-lg shadow-[#e8c547]/25 mx-auto"
               src="/images/profile/profile.png"
               alt="Bergaman Profile Picture"
               width={200}
               height={200}
               priority
-              onClick={() => openModal("/images/profile/profile.png", "Bergaman Profile Picture")}
             />
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold gradient-text mb-4 leading-tight">
+          <h1 className="text-4xl md:text-5xl font-bold gradient-text mb-4 leading-tight flex items-center justify-center gap-3">
+            <i className="fas fa-user-circle text-[#e8c547]"></i>
             About Me
           </h1>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Passionate Full Stack Developer & Tech Enthusiast
+            Electrical Electronics Engineer & Full Stack Developer
           </p>
         </section>
 
@@ -176,82 +216,99 @@ export default function About() {
             </h2>
             <div className="space-y-6 text-lg text-gray-300 leading-relaxed">
               <p>
-                Hi, I'm <span className="text-[#e8c547] font-semibold">Omer</span>! My journey in the tech world began with a passion for video games, which sparked my curiosity about computers. This early interest led me to pursue a degree in <span className="text-[#e8c547] font-semibold">Electrical and Electronics Engineering</span>. However, during my studies, I realized that the future and opportunities were shifting toward software. So, I took the initiative to teach myself programming and started developing my skills in the field of software engineering.
+                Hi, I'm <span className="text-[#e8c547] font-semibold">Ömer</span>! I'm an <span className="text-[#e8c547] font-semibold">Electrical Electronics Engineer</span> based in <span className="text-[#e8c547] font-semibold">İstanbul, Turkey</span>. My journey in the tech world began with a passion for video games, which sparked my curiosity about computers. This early interest led me to pursue a degree in <span className="text-[#e8c547] font-semibold">Electrical and Electronics Engineering at Istinye University</span> (2019-2024).
               </p>
+              
               <p>
-                Today, I specialize in <span className="text-[#e8c547] font-semibold">full-stack development, artificial intelligence, and blockchain technologies</span>. I'm a constant learner, always exploring new domains and seeking innovative ways to apply my knowledge. My journey is one of continual improvement, always challenging myself with new, impactful projects to work on.
+                However, during my studies, I realized that the future and opportunities were shifting toward software. So, I took the initiative to teach myself programming and started developing my skills in the field of software engineering. Today, I specialize in <span className="text-[#e8c547] font-semibold">full-stack development, artificial intelligence, and blockchain technologies</span>.
               </p>
+              
               <p>
-                In addition to my technical skills, I have a strong foundation in <span className="text-[#e8c547] font-semibold">mathematics</span> that helps me solve complex problems effectively. I also enjoy working with my hands, honing skills like <span className="text-[#e8c547] font-semibold">soldering and mechanical repairs</span>, and have a growing interest in the <span className="text-[#e8c547] font-semibold">Internet of Things (IoT) and electric vehicles</span>. I am always eager to learn and improve, not just in my technical skills but in my personal growth as well.
+                I'm a constant learner, always exploring new domains and seeking innovative ways to apply my knowledge. My journey is one of continual improvement, always challenging myself with new, impactful projects to work on. In addition to my technical skills, I have a <span className="text-[#e8c547] font-semibold">strong foundation in mathematics</span> that helps me solve complex problems effectively.
               </p>
+              
               <p>
-                Outside of tech, I enjoy a variety of hobbies including <span className="text-[#e8c547] font-semibold">fitness, gaming, movies, and connecting with nature</span>. I'm also an active community leader on Discord, where I engage in discussions related to gaming and engineering, eager to share insights and collaborate with others.
+                I also enjoy working with my hands, honing skills like soldering and mechanical repairs, and have a growing interest in the <span className="text-[#e8c547] font-semibold">Internet of Things (IoT) and electric vehicles</span>. I am always eager to learn and improve, not just in my technical skills but in my personal growth as well.
               </p>
+              
               <p>
-                I'm excited to contribute to the ever-evolving world of technology, building the future while adapting to the continuous advancements in the digital world. I develop <span className="text-[#e8c547] font-semibold">AI-powered software solutions</span> and am currently working on exciting projects like <span className="text-[#e8c547] font-semibold">Bergasoft updates</span> and <span className="text-[#e8c547] font-semibold">MyToolSuite</span> - a comprehensive C# WPF application.
+                I'm excited to contribute to the ever-evolving world of technology, building the future while adapting to the continuous advancements in the digital world.
               </p>
+              
+              <div className="mt-8 p-6 bg-[#e8c547]/10 border-l-4 border-[#e8c547] rounded-r-lg">
+                <p className="text-[#e8c547] font-semibold italic text-center">
+                  "Crafting technology inspired by the strength and wisdom of a dragon."
+                </p>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* Skills & Expertise */}
+        {/* Skills Section */}
         <section className="mb-16 slide-in-right">
-          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-8 rounded-lg">
-            <h2 className="text-3xl font-bold gradient-text mb-8">
-              Skills & Expertise
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {skillCategories.map((category, index) => (
-                <div key={index} className="space-y-4">
-                  <h3 className="text-xl font-semibold text-[#e8c547] flex items-center">
-                    <i className={`${category.icon} mr-2`}></i>
-                    {category.title}
-                  </h3>
-                  <div className="space-y-3">
-                    {category.skills.map((skill, skillIndex) => (
-                      <div key={skillIndex} className="space-y-2">
-                        <div className="flex justify-between items-center">
-                          <span className="text-gray-300">{skill.name}</span>
-                          <span className="text-[#e8c547] text-sm">{skill.level}%</span>
-                        </div>
-                        <div className="w-full bg-[#0e1b12] rounded-full h-2">
-                          <div
-                            className="bg-gradient-to-r from-[#e8c547] to-[#d4b445] h-2 rounded-full transition-all duration-1000"
-                            style={{ width: `${skill.level}%` }}
-                          ></div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+          <h2 className="text-3xl font-bold gradient-text mb-8 text-center">
+            Technical Skills
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {skillCategories.map((category, index) => (
+              <div key={index} className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg">
+                <div className="flex items-center mb-4">
+                  <i className={`${category.icon} text-[#e8c547] text-2xl mr-3`}></i>
+                  <h3 className="text-xl font-semibold text-[#e8c547]">{category.title}</h3>
                 </div>
-              ))}
-            </div>
+                <div className="space-y-3">
+                  {category.skills.map((skill, skillIndex) => (
+                    <div key={skillIndex}>
+                      <div className="flex justify-between mb-1">
+                        <span className="text-gray-300">{skill.name}</span>
+                        <span className="text-[#e8c547] font-semibold">{skill.level}%</span>
+                      </div>
+                      <div className="w-full bg-[#0e1b12] rounded-full h-2">
+                        <div 
+                          className="bg-gradient-to-r from-[#e8c547] to-[#f4d76b] h-2 rounded-full transition-all duration-1000 ease-out"
+                          style={{ width: `${skill.level}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
         </section>
 
-        {/* Experience Timeline */}
-        <section className="mb-16 fade-in">
-          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-8 rounded-lg">
-            <h2 className="text-3xl font-bold gradient-text mb-8">
-              Experience & Journey
-            </h2>
-            <div className="space-y-8">
+        {/* Experience Section - Timeline Design */}
+        <section className="mb-16 slide-in-left">
+          <h2 className="text-3xl font-bold gradient-text mb-8 text-center flex items-center justify-center gap-3">
+            <i className="fas fa-briefcase text-[#e8c547]"></i>
+            Professional Experience
+          </h2>
+          <div className="relative max-w-4xl mx-auto">
+            {/* Timeline Line */}
+            <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-[#e8c547] to-[#d4b445]"></div>
+            
+            <div className="space-y-12">
               {experiences.map((exp, index) => (
-                <div key={index} className="relative pl-8 border-l-2 border-[#3e503e]">
-                  <div className="absolute -left-2 top-0 w-4 h-4 bg-[#e8c547] rounded-full"></div>
-                  <div className="space-y-2">
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                      <h3 className="text-xl font-semibold gradient-text">{exp.title}</h3>
-                      <span className="text-sm text-gray-400">{exp.period}</span>
+                <div key={index} className="relative flex items-start">
+                  {/* Timeline Dot */}
+                  <div className="absolute left-6 w-4 h-4 bg-[#e8c547] rounded-full border-4 border-[#0e1b12] z-10 shadow-lg shadow-[#e8c547]/25"></div>
+                  
+                  {/* Content */}
+                  <div className="ml-20 bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg w-full">
+                    <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-4">
+                      <div className="flex-1">
+                        <h3 className="text-xl font-semibold text-[#e8c547] mb-2">{exp.title}</h3>
+                        <p className="text-gray-300 font-medium text-lg mb-1">{exp.company}</p>
+                        <span className="text-gray-400 text-sm bg-[#e8c547]/10 px-3 py-1 rounded-full inline-block">
+                          <i className="fas fa-calendar-alt mr-2"></i>
+                          {exp.period}
+                        </span>
+                      </div>
                     </div>
-                    <p className="text-[#e8c547] font-medium">{exp.company}</p>
-                    <p className="text-gray-300">{exp.description}</p>
-                    <div className="flex flex-wrap gap-2 mt-3">
+                    <p className="text-gray-300 mb-4 leading-relaxed">{exp.description}</p>
+                    <div className="flex flex-wrap gap-2">
                       {exp.technologies.map((tech, techIndex) => (
-                        <span
-                          key={techIndex}
-                          className="px-3 py-1 bg-[#0e1b12] border border-[#3e503e] rounded-full text-xs text-[#e8c547]"
-                        >
+                        <span key={techIndex} className="px-3 py-1 bg-[#e8c547]/20 text-[#e8c547] text-sm rounded-full border border-[#e8c547]/30">
                           {tech}
                         </span>
                       ))}
@@ -263,37 +320,103 @@ export default function About() {
           </div>
         </section>
 
-        {/* Interests & Hobbies */}
-        <section className="mb-16 slide-in-left">
-          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-8 rounded-lg">
-            <h2 className="text-3xl font-bold gradient-text mb-8">
-              Interests & Hobbies
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {interests.map((interest, index) => (
-                <div
-                  key={index}
-                  className="border border-[#3e503e] p-6 rounded-lg bg-[#0e1b12] text-center card-hover group"
-                >
-                  <i className={`${interest.icon} text-4xl text-[#e8c547] mb-4 group-hover:scale-110 transition-transform duration-300`}></i>
-                  <h3 className="text-lg font-semibold gradient-text mb-2">{interest.title}</h3>
-                  <p className="text-gray-300 text-sm">{interest.description}</p>
+        {/* Education Section - Timeline Design */}
+        <section className="mb-16 slide-in-right">
+          <h2 className="text-3xl font-bold gradient-text mb-8 text-center flex items-center justify-center gap-3">
+            <i className="fas fa-graduation-cap text-cyan-400"></i>
+            Education
+          </h2>
+          <div className="relative max-w-4xl mx-auto">
+            {/* Timeline Line */}
+            <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-cyan-400 to-blue-500"></div>
+            
+            <div className="space-y-12">
+              {education.map((edu, index) => (
+                <div key={index} className="relative flex items-start">
+                  {/* Timeline Dot */}
+                  <div className="absolute left-6 w-4 h-4 bg-cyan-400 rounded-full border-4 border-[#0e1b12] z-10 shadow-lg shadow-cyan-400/25"></div>
+                  
+                  {/* Content */}
+                  <div className="ml-20 bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg w-full">
+                    <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-4">
+                      <div className="flex-1">
+                        <h3 className="text-xl font-semibold text-cyan-400 mb-2">{edu.title}</h3>
+                        <p className="text-gray-300 font-medium text-lg mb-1">{edu.institution}</p>
+                        <p className="text-gray-400 mb-2">{edu.field}</p>
+                        <span className="text-gray-400 text-sm bg-cyan-400/10 px-3 py-1 rounded-full inline-block">
+                          <i className="fas fa-calendar-alt mr-2"></i>
+                          {edu.period}
+                        </span>
+                      </div>
+                    </div>
+                    <p className="text-gray-300 mb-4 leading-relaxed">{edu.description}</p>
+                    <div className="flex flex-wrap gap-2">
+                      {edu.achievements.map((achievement, achIndex) => (
+                        <span key={achIndex} className="px-3 py-1 bg-cyan-400/20 text-cyan-300 text-sm rounded-full border border-cyan-400/30">
+                          {achievement}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
+        {/* Interests Section */}
+        <section className="mb-16 slide-in-left">
+          <h2 className="text-3xl font-bold gradient-text mb-8 text-center">
+            Technical Interests
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {interests.map((interest, index) => (
+              <div key={index} className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg text-center">
+                <i className={`${interest.icon} text-[#e8c547] text-4xl mb-4 block`}></i>
+                <h3 className="text-xl font-semibold text-[#e8c547] mb-3">{interest.title}</h3>
+                <p className="text-gray-300 leading-relaxed">{interest.description}</p>
+              </div>
+            ))}
+          </div>
+        </section>
 
+        {/* Call to Action */}
+        <section className="text-center fade-in">
+          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-8 rounded-lg">
+            <h2 className="text-3xl font-bold gradient-text mb-4">
+              Let's Connect!
+            </h2>
+            <p className="text-gray-300 mb-6 max-w-2xl mx-auto">
+              I'm always excited to discuss new opportunities, collaborate on interesting projects, 
+              or simply chat about technology and innovation. Feel free to reach out!
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <a 
+                href="/contact" 
+                className="bg-[#e8c547] text-[#0e1b12] px-8 py-3 rounded-lg font-semibold transition-all duration-300 hover:bg-[#d4b445] hover:scale-105"
+              >
+                <i className="fas fa-envelope mr-2"></i>
+                Get In Touch
+              </a>
+              <a 
+                href="/portfolio" 
+                className="border border-[#e8c547] text-[#e8c547] px-8 py-3 rounded-lg font-semibold transition-all duration-300 hover:bg-[#e8c547]/10 hover:scale-105 flex items-center justify-center gap-2"
+              >
+                <i className="fas fa-briefcase"></i>
+                My Portfolio
+              </a>
+            </div>
+          </div>
+        </section>
 
       </main>
 
       {/* Image Modal */}
-      <ImageModal
-        src={modalImage?.src}
-        alt={modalImage?.alt}
+      <ImageModal 
         isOpen={isModalOpen}
         onClose={closeModal}
+        imageSrc={modalImage?.src}
+        imageAlt={modalImage?.alt}
       />
     </div>
   );

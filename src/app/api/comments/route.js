@@ -1,14 +1,10 @@
 import { NextResponse } from 'next/server';
-import connectDB from '../../../lib/mongoose';
+import { connectDB } from '../../../lib/mongodb';
 import Comment from '../../../models/Comment';
+import { getUserInfo } from '../../../lib/userInfo';
 
 export async function GET(request) {
   try {
-    // Skip database operations during build
-    if (process.env.NODE_ENV === 'production' && !process.env.MONGODB_URI) {
-      return NextResponse.json({ comments: [] });
-    }
-    
     await connectDB();
     
     const { searchParams } = new URL(request.url);
@@ -18,7 +14,7 @@ export async function GET(request) {
       return NextResponse.json({ error: 'Post slug is required' }, { status: 400 });
     }
     
-    const comments = await Comment.find({ postSlug }).sort({ createdAt: -1 });
+    const comments = await Comment.find({ postSlug, approved: true }).sort({ createdAt: -1 });
     
     return NextResponse.json({ comments });
   } catch (error) {
@@ -29,11 +25,6 @@ export async function GET(request) {
 
 export async function POST(request) {
   try {
-    // Skip database operations during build
-    if (process.env.NODE_ENV === 'production' && !process.env.MONGODB_URI) {
-      return NextResponse.json({ error: 'Database not available' }, { status: 503 });
-    }
-    
     await connectDB();
     
     const { postSlug, name, email, message } = await request.json();
@@ -57,27 +48,39 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Invalid email format' }, { status: 400 });
     }
     
-    // Create new comment
+    // Get user info (IP, browser, location, etc.)
+    const userInfo = await getUserInfo(request);
+    
+    // Create new comment with user info
     const comment = new Comment({
       postSlug,
-      name: name.trim(),
-      email: email.trim().toLowerCase(),
-      message: message.trim(),
+      name,
+      email,
+      message,
+      ipAddress: userInfo.ipAddress,
+      userAgent: userInfo.userAgent,
+      browser: userInfo.browser,
+      os: userInfo.os,
+      device: userInfo.device,
+      location: userInfo.location,
+      referrer: userInfo.referrer
     });
     
     await comment.save();
     
-    return NextResponse.json({ 
-      message: 'Comment posted successfully',
-      comment: {
-        _id: comment._id,
-        name: comment.name,
-        message: comment.message,
-        createdAt: comment.createdAt
-      }
-    }, { status: 201 });
+    // Return comment without sensitive info
+    const publicComment = {
+      _id: comment._id,
+      postSlug: comment.postSlug,
+      name: comment.name,
+      message: comment.message,
+      approved: comment.approved,
+      createdAt: comment.createdAt
+    };
+    
+    return NextResponse.json({ comment: publicComment }, { status: 201 });
   } catch (error) {
-    console.error('Error posting comment:', error);
-    return NextResponse.json({ error: 'Failed to post comment' }, { status: 500 });
+    console.error('Error creating comment:', error);
+    return NextResponse.json({ error: 'Failed to create comment' }, { status: 500 });
   }
 } 

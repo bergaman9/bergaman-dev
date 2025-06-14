@@ -10,8 +10,7 @@ const BlogPostSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
-    trim: true,
-    index: true
+    trim: true
   },
   description: {
     type: String,
@@ -82,7 +81,7 @@ const BlogPostSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Create indexes (slug index is already defined in schema)
+// Create indexes (slug already has unique index from schema)
 BlogPostSchema.index({ category: 1 });
 BlogPostSchema.index({ published: 1 });
 BlogPostSchema.index({ createdAt: -1 });
