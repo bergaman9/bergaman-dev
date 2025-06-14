@@ -218,7 +218,7 @@ export default function Portfolio() {
 
         {/* Filter Controls */}
         <section className="mb-8 slide-in-left">
-          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg transition-all duration-300 hover:border-[#e8c547]/30 hover:shadow-lg hover:shadow-[#e8c547]/10 hover:bg-[#2e3d29]/40 hover:scale-[1.01]">
+          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg">
             <div className="flex flex-col md:flex-row gap-4">
               
               {/* Search Bar */}

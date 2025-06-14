@@ -300,7 +300,7 @@ export default function Suggestions() {
         {/* Games Section */}
         {activeTab === 'games' && (
           <section className="slide-in-right">
-            <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg transition-all duration-300 hover:border-[#e8c547]/30 hover:bg-[#2e3d29]/40">
+            <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg">
               <h2 className="text-2xl font-bold gradient-text mb-6 flex items-center">
                 <i className="fas fa-gamepad mr-3"></i>
                 Video Games
@@ -358,7 +358,7 @@ export default function Suggestions() {
         {/* Movies Section */}
         {activeTab === 'movies' && (
           <section className="slide-in-right">
-            <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg transition-all duration-300 hover:border-[#e8c547]/30 hover:bg-[#2e3d29]/40">
+            <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg">
               <h2 className="text-2xl font-bold gradient-text mb-6 flex items-center">
                 <i className="fas fa-film mr-3"></i>
                 Movies
@@ -420,7 +420,7 @@ export default function Suggestions() {
         {/* Books Section */}
         {activeTab === 'books' && (
           <section className="slide-in-right">
-            <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg transition-all duration-300 hover:border-[#e8c547]/30 hover:bg-[#2e3d29]/40">
+            <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg">
               <h2 className="text-2xl font-bold gradient-text mb-6 flex items-center">
                 <i className="fas fa-book mr-3"></i>
                 Books

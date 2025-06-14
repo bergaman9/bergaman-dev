@@ -170,7 +170,7 @@ export default function About() {
 
         {/* Introduction */}
         <section className="mb-16 slide-in-left">
-          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-8 rounded-lg transition-all duration-300 hover:border-[#e8c547]/30 hover:shadow-lg hover:shadow-[#e8c547]/10 hover:bg-[#2e3d29]/40 hover:scale-[1.01]">
+          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-8 rounded-lg">
             <h2 className="text-3xl font-bold gradient-text mb-6">
               Who Am I?
             </h2>
@@ -196,7 +196,7 @@ export default function About() {
 
         {/* Skills & Expertise */}
         <section className="mb-16 slide-in-right">
-          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-8 rounded-lg transition-all duration-300 hover:border-[#e8c547]/30 hover:shadow-lg hover:shadow-[#e8c547]/10 hover:bg-[#2e3d29]/40 hover:scale-[1.01]">
+          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-8 rounded-lg">
             <h2 className="text-3xl font-bold gradient-text mb-8">
               Skills & Expertise
             </h2>
@@ -231,7 +231,7 @@ export default function About() {
 
         {/* Experience Timeline */}
         <section className="mb-16 fade-in">
-          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-8 rounded-lg transition-all duration-300 hover:border-[#e8c547]/30 hover:shadow-lg hover:shadow-[#e8c547]/10 hover:bg-[#2e3d29]/40 hover:scale-[1.01]">
+          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-8 rounded-lg">
             <h2 className="text-3xl font-bold gradient-text mb-8">
               Experience & Journey
             </h2>
@@ -265,7 +265,7 @@ export default function About() {
 
         {/* Interests & Hobbies */}
         <section className="mb-16 slide-in-left">
-          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-8 rounded-lg transition-all duration-300 hover:border-[#e8c547]/30 hover:shadow-lg hover:shadow-[#e8c547]/10 hover:bg-[#2e3d29]/40 hover:scale-[1.01]">
+          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-8 rounded-lg">
             <h2 className="text-3xl font-bold gradient-text mb-8">
               Interests & Hobbies
             </h2>

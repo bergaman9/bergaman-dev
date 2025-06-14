@@ -231,6 +231,10 @@ export default function Home() {
                           {post.views || 0}
                         </span>
                         <span>
+                          <i className="fas fa-comments mr-1"></i>
+                          {post.comments?.length || 0}
+                        </span>
+                        <span>
                           <i className="fas fa-heart mr-1"></i>
                           {post.likes || 0}
                         </span>
