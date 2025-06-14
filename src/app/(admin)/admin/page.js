@@ -142,25 +142,27 @@ export default function AdminPage() {
     return (
       <>
         <Head>
-          <title>Admin Login - The Dragon's Domain</title>
+          <title>Admin Login - Bergaman Admin Panel</title>
         </Head>
-        <div className="min-h-screen bg-[#0e1b12] flex items-center justify-center px-4">
+        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center px-4">
           <div className="max-w-md w-full space-y-8">
             <div className="text-center">
               <div className="mb-6">
-                <i className="fas fa-dragon text-6xl text-[#e8c547] mb-4"></i>
+                <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <i className="fas fa-cog text-white text-3xl"></i>
+                </div>
               </div>
-              <h2 className="text-3xl font-bold gradient-text">
-                Admin Portal
+              <h2 className="text-3xl font-bold text-white mb-2">
+                Admin Panel
               </h2>
-              <p className="mt-2 text-gray-400">
-                Enter the Dragon's Domain
+              <p className="text-slate-400">
+                Content Management System
               </p>
             </div>
-            <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-8 rounded-lg">
+            <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 p-8 rounded-xl shadow-2xl">
               <form className="space-y-6" onSubmit={handleLogin}>
                 <div>
-                  <label htmlFor="username" className="block text-sm font-medium text-gray-300 mb-2">
+                  <label htmlFor="username" className="block text-sm font-medium text-slate-300 mb-2">
                     Username
                   </label>
                   <input
@@ -168,14 +170,14 @@ export default function AdminPage() {
                     name="username"
                     type="text"
                     required
-                    className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] placeholder-gray-400 focus:border-[#e8c547]/50 focus:outline-none transition-colors duration-300"
+                    className="w-full px-4 py-3 bg-slate-900/50 border border-slate-600 rounded-lg text-slate-100 placeholder-slate-400 focus:border-blue-500 focus:outline-none transition-colors duration-300"
                     placeholder="Enter username"
                     value={loginData.username}
                     onChange={handleInputChange}
                   />
                 </div>
                 <div>
-                  <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
+                  <label htmlFor="password" className="block text-sm font-medium text-slate-300 mb-2">
                     Password
                   </label>
                   <input
@@ -183,7 +185,7 @@ export default function AdminPage() {
                     name="password"
                     type="password"
                     required
-                    className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] placeholder-gray-400 focus:border-[#e8c547]/50 focus:outline-none transition-colors duration-300"
+                    className="w-full px-4 py-3 bg-slate-900/50 border border-slate-600 rounded-lg text-slate-100 placeholder-slate-400 focus:border-blue-500 focus:outline-none transition-colors duration-300"
                     placeholder="Enter password"
                     value={loginData.password}
                     onChange={handleInputChange}
@@ -199,10 +201,10 @@ export default function AdminPage() {
 
                 <button
                   type="submit"
-                  className="w-full bg-[#e8c547] hover:bg-[#d4b445] text-[#0e1b12] py-3 px-4 rounded-lg font-medium transition-all duration-300 hover:scale-105"
+                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-3 px-4 rounded-lg font-medium transition-all duration-300 hover:scale-105 shadow-lg"
                 >
                   <i className="fas fa-sign-in-alt mr-2"></i>
-                  Enter Portal
+                  Sign In
                 </button>
               </form>
             </div>

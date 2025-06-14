@@ -75,14 +75,14 @@
   }
 
   .btn-cyber {
-    @apply bg-gradient-to-r from-[#e8c547] to-[#d4b445] text-[#0e1b12] font-semibold;
-    @apply hover:from-[#d4b445] hover:to-[#c4a43d] transition-all duration-300;
-    @apply shadow-lg shadow-[#e8c547]/25 hover:shadow-xl hover:shadow-[#e8c547]/40;
+    @apply bg-gradient-to-r from-slate-600 to-slate-700 text-white font-semibold;
+    @apply hover:from-slate-700 hover:to-slate-800 transition-all duration-300;
+    @apply shadow-lg shadow-slate-500/25 hover:shadow-xl hover:shadow-slate-500/40;
     @apply hover:scale-105 transform;
   }
 
   .card-hover {
-    @apply transition-all duration-300 hover:border-[#e8c547]/50 hover:shadow-lg hover:shadow-[#e8c547]/10;
+    @apply transition-all duration-300 hover:border-slate-500/50 hover:shadow-lg hover:shadow-slate-500/10;
   }
 
   .page-container {
@@ -151,7 +151,7 @@
   }
 
   .hover-glow {
-    @apply transition-shadow duration-300 hover:shadow-lg hover:shadow-[#e8c547]/25;
+    @apply transition-shadow duration-300 hover:shadow-lg hover:shadow-slate-500/25;
   }
 
   .hover-scale {
@@ -165,7 +165,7 @@
 
   .circuit-node::before {
     content: '';
-    @apply absolute -inset-1 bg-gradient-to-r from-[#e8c547]/20 to-[#d4b445]/20 rounded-lg opacity-0 transition-opacity duration-300;
+    @apply absolute -inset-1 bg-gradient-to-r from-slate-500/20 to-slate-600/20 rounded-lg opacity-0 transition-opacity duration-300;
   }
 
   .circuit-node:hover::before {
@@ -176,7 +176,7 @@
 
   /* Card Hover Effect */
   .card-hover {
-    @apply transition-all duration-300 hover:border-[#e8c547]/50 hover:shadow-lg hover:shadow-[#e8c547]/10 hover:-translate-y-1;
+    @apply transition-all duration-300 hover:border-slate-500/50 hover:shadow-lg hover:shadow-slate-500/10 hover:-translate-y-1;
   }
 
   /* Page Layout Standardization */
