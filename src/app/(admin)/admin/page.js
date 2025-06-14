@@ -218,38 +218,32 @@ export default function AdminPage() {
   return (
     <>
       <Head>
-        <title>Admin Dashboard - The Dragon's Domain</title>
+        <title>Admin Dashboard - Bergaman Admin Panel</title>
       </Head>
-      <div className="min-h-screen bg-[#0e1b12] text-[#d1d5db]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* Header */}
-          <div className="flex justify-between items-center mb-8">
+      <div className="space-y-8">
+        {/* Welcome Header */}
+        <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 border border-slate-700/50 p-6 rounded-xl">
+          <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-4xl font-bold gradient-text mb-2">
-                <i className="fas fa-dragon mr-3"></i>
-                Dragon's Command Center
+              <h1 className="text-3xl font-bold text-white mb-2">
+                <i className="fas fa-tachometer-alt mr-3 text-blue-400"></i>
+                Dashboard
               </h1>
-              <p className="text-gray-400">
-                Welcome back, Bergaman! Manage your digital domain.
+              <p className="text-slate-300">
+                Welcome back, Bergaman! Manage your content and monitor your site.
               </p>
             </div>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-3">
               <button
                 onClick={handleMigration}
-                className="bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/50 text-blue-300 px-6 py-3 rounded-lg font-medium transition-all duration-300 hover:scale-105"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 shadow-lg"
               >
                 <i className="fas fa-database mr-2"></i>
                 Migrate Posts
               </button>
-              <button
-                onClick={handleLogout}
-                className="bg-red-600/20 hover:bg-red-600/30 border border-red-500/50 text-red-300 px-6 py-3 rounded-lg font-medium transition-all duration-300 hover:scale-105"
-              >
-                <i className="fas fa-sign-out-alt mr-2"></i>
-                Logout
-              </button>
             </div>
           </div>
+        </div>
 
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
