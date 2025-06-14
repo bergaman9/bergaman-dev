@@ -19,7 +19,7 @@ export default function Home() {
     {
       id: 1,
       title: "Contro Bot",
-      description: "A comprehensive Discord bot developed during the pandemic with advanced moderation, entertainment, and utility features. Built with Python and Discord.py.",
+      description: "A comprehensive Discord bot developed during the pandemic with advanced moderation, entertainment, and utility features.",
       image: "/images/projects/contro.png",
       tech: ["Python", "Discord.py", "SQLite", "Async Programming"],
       github: "https://github.com/bergaman9/contro-bot",
@@ -30,7 +30,7 @@ export default function Home() {
     {
       id: 2,
       title: "Ligroup",
-      description: "My first full-stack web development project - a social platform for group management and communication with real-time features.",
+      description: "My first full-stack web development project - a social platform for group management and communication.",
       image: "/images/projects/ligroup.png",
       tech: ["React", "Node.js", "MongoDB", "Express", "Socket.io"],
       github: "https://github.com/bergaman9/ligroup",
@@ -52,7 +52,7 @@ export default function Home() {
     {
       id: 4,
       title: "IoT Air Quality Monitor",
-      description: "Real-time indoor air quality monitoring system using Arduino Uno R4 WiFi with wireless data transmission and GUI application.",
+      description: "Real-time indoor air quality monitoring system using Arduino Uno R4 WiFi with wireless data transmission.",
       image: "/images/projects/iaq.jpg",
       tech: ["Arduino", "C++", "IoT", "Sensors", "WiFi"],
       github: "https://github.com/bergaman9/arduino-projects",
@@ -93,12 +93,12 @@ export default function Home() {
     }
   ];
 
-  // Interests data with descriptions
+  // Interests data
   const interests = [
     { 
       name: "Artificial Intelligence", 
       icon: "fas fa-robot",
-      description: "Exploring machine learning, neural networks, and AI applications"
+      description: "Machine learning, neural networks, and AI applications"
     },
     { 
       name: "Embedded Systems", 
@@ -124,38 +124,6 @@ export default function Home() {
       name: "Robotics", 
       icon: "fas fa-cogs",
       description: "Automation, control systems, and robotic applications"
-    }
-  ];
-
-  // Experience timeline
-  const experiences = [
-    {
-      year: "2024",
-      title: "Electrical & Electronics Engineering Student",
-      company: "University",
-      description: "Focusing on embedded systems, signal processing, and IoT applications",
-      type: "education"
-    },
-    {
-      year: "2023",
-      title: "AI & ML Explorer",
-      company: "Personal Projects",
-      description: "Developed various AI projects including voice conversion and image generation",
-      type: "project"
-    },
-    {
-      year: "2022",
-      title: "Full-Stack Developer",
-      company: "Freelance",
-      description: "Built web applications using modern technologies and frameworks",
-      type: "work"
-    },
-    {
-      year: "2020",
-      title: "Discord Bot Developer",
-      company: "Community Projects",
-      description: "Created and maintained Discord bots for various communities",
-      type: "project"
     }
   ];
 
@@ -212,7 +180,7 @@ export default function Home() {
           </div>
           <button
             onClick={exitEditMode}
-            className="bg-[#0e1b12] text-[#e8c547] px-3 py-1 rounded hover:bg-[#1a2a1a] transition-colors"
+            className="bg-[#0e1b12] text-[#e8c547] px-3 py-1 rounded transition-colors"
           >
             <i className="fas fa-times mr-1"></i>
             Exit
@@ -245,21 +213,21 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4">
             <Link
               href="/portfolio"
-              className="px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-medium bg-[#e8c547] text-[#0e1b12] rounded-lg hover:bg-[#d4b445] transition-colors duration-300"
+              className="px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-medium bg-[#e8c547] text-[#0e1b12] rounded-lg transition-colors duration-300"
             >
               <i className="fas fa-briefcase mr-2"></i>
               View Portfolio
             </Link>
             <Link
               href="/about"
-              className="px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-medium border border-[#3e503e] rounded-lg hover:border-[#e8c547] transition-colors duration-300"
+              className="px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-medium border border-[#3e503e] rounded-lg transition-colors duration-300"
             >
               <i className="fas fa-user mr-2"></i>
               About Me
             </Link>
             <Link
               href="/contact"
-              className="px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-medium border border-[#3e503e] rounded-lg hover:border-[#e8c547] transition-colors duration-300"
+              className="px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-medium border border-[#3e503e] rounded-lg transition-colors duration-300"
             >
               <i className="fas fa-envelope mr-2"></i>
               Get in Touch
@@ -267,75 +235,24 @@ export default function Home() {
           </div>
         </section>
 
-        {/* About Section */}
+        {/* About Section - Simplified */}
         <section className="py-12 sm:py-16 slide-in-up px-4 sm:px-6">
           <div className="text-center mb-8 sm:mb-12">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold gradient-text mb-4 sm:mb-6 leading-tight">
               <i className="fas fa-dragon mr-2 sm:mr-3"></i>
               About The Dragon
             </h2>
-            <p className="text-base sm:text-lg text-gray-300 max-w-4xl mx-auto leading-relaxed px-2">
+            <p className="text-base sm:text-lg text-gray-300 max-w-4xl mx-auto leading-relaxed px-2 mb-6">
               Welcome to my digital domain! I'm a passionate Electrical & Electronics Engineering student with a deep fascination for cutting-edge technology. 
               My journey spans from building comprehensive Discord bots to exploring the frontiers of artificial intelligence and embedded systems.
             </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 mb-8 sm:mb-12">
-            <div className="glass p-4 sm:p-6 rounded-lg text-center">
-              <i className="fas fa-microchip text-3xl sm:text-4xl text-[#e8c547] mb-3 sm:mb-4"></i>
-              <h3 className="text-lg sm:text-xl font-semibold text-[#e8c547] mb-2 sm:mb-3">Embedded Systems</h3>
-              <p className="text-sm sm:text-base text-gray-300">
-                Arduino, IoT devices, and hardware-software integration for real-world applications.
-              </p>
-            </div>
-            <div className="glass p-4 sm:p-6 rounded-lg text-center">
-              <i className="fas fa-code text-3xl sm:text-4xl text-[#e8c547] mb-3 sm:mb-4"></i>
-              <h3 className="text-lg sm:text-xl font-semibold text-[#e8c547] mb-2 sm:mb-3">Full-Stack Development</h3>
-              <p className="text-sm sm:text-base text-gray-300">
-                Modern web applications using React, Next.js, Node.js, and MongoDB.
-              </p>
-            </div>
-            <div className="glass p-4 sm:p-6 rounded-lg text-center">
-              <i className="fas fa-robot text-3xl sm:text-4xl text-[#e8c547] mb-3 sm:mb-4"></i>
-              <h3 className="text-lg sm:text-xl font-semibold text-[#e8c547] mb-2 sm:mb-3">Artificial Intelligence</h3>
-              <p className="text-sm sm:text-base text-gray-300">
-                Machine learning, neural networks, and AI applications in various domains.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* Experience Timeline */}
-        <section className="py-12 sm:py-16 slide-in-left px-4 sm:px-6">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold gradient-text mb-8 sm:mb-12 leading-tight">
-            <i className="fas fa-timeline mr-2 sm:mr-3"></i>
-            Journey Timeline
-          </h2>
-          <div className="max-w-4xl mx-auto">
-            <div className="relative">
-              {/* Timeline line */}
-              <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-[#e8c547]/30"></div>
-              
-              {experiences.map((exp, index) => (
-                <div key={index} className="relative flex items-start mb-8 sm:mb-12">
-                  {/* Timeline dot */}
-                  <div className={`absolute left-2 w-4 h-4 rounded-full border-2 border-[#e8c547] ${
-                    exp.type === 'education' ? 'bg-blue-500' :
-                    exp.type === 'work' ? 'bg-green-500' : 'bg-purple-500'
-                  }`}></div>
-                  
-                  {/* Content */}
-                  <div className="ml-12 glass p-4 sm:p-6 rounded-lg flex-1">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2">
-                      <h3 className="text-lg sm:text-xl font-semibold text-[#e8c547]">{exp.title}</h3>
-                      <span className="text-sm text-gray-400 bg-[#3e503e]/50 px-2 py-1 rounded">{exp.year}</span>
-                    </div>
-                    <p className="text-gray-400 text-sm mb-2">{exp.company}</p>
-                    <p className="text-gray-300 text-sm sm:text-base">{exp.description}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <Link
+              href="/about"
+              className="inline-flex items-center px-6 py-3 bg-[#e8c547]/20 text-[#e8c547] rounded-lg border border-[#e8c547]/30 transition-colors duration-300"
+            >
+              <i className="fas fa-arrow-right mr-2"></i>
+              Learn More About Me
+            </Link>
           </div>
         </section>
 
@@ -348,7 +265,7 @@ export default function Home() {
             </h2>
             <Link
               href="/blog"
-              className="text-[#e8c547] hover:text-[#d4b445] transition-colors duration-300 text-sm sm:text-base"
+              className="text-[#e8c547] transition-colors duration-300 text-sm sm:text-base"
             >
               View All Posts <i className="fas fa-arrow-right ml-1"></i>
             </Link>
@@ -422,7 +339,7 @@ export default function Home() {
             </h2>
             <Link
               href="/portfolio"
-              className="text-[#e8c547] hover:text-[#d4b445] transition-colors duration-300 text-sm sm:text-base"
+              className="text-[#e8c547] transition-colors duration-300 text-sm sm:text-base"
             >
               View All Projects <i className="fas fa-arrow-right ml-1"></i>
             </Link>
@@ -476,7 +393,7 @@ export default function Home() {
                     href={project.github}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 text-center py-2 bg-[#e8c547]/20 text-[#e8c547] rounded hover:bg-[#e8c547]/30 transition-colors duration-300 text-sm sm:text-base"
+                    className="flex-1 text-center py-2 bg-[#e8c547]/20 text-[#e8c547] rounded transition-colors duration-300 text-sm sm:text-base"
                   >
                     <i className="fab fa-github mr-2"></i>
                     GitHub
@@ -486,7 +403,7 @@ export default function Home() {
                       href={project.demo}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex-1 text-center py-2 bg-blue-600/20 text-blue-400 rounded hover:bg-blue-600/30 transition-colors duration-300 text-sm sm:text-base"
+                      className="flex-1 text-center py-2 bg-blue-600/20 text-blue-400 rounded transition-colors duration-300 text-sm sm:text-base"
                     >
                       <i className="fas fa-external-link-alt mr-2"></i>
                       Demo
@@ -549,7 +466,7 @@ export default function Home() {
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {interests.map((interest, index) => (
-              <div key={index} className="glass p-4 sm:p-6 rounded-lg text-center hover:scale-105 transition-transform duration-300">
+              <div key={index} className="glass p-4 sm:p-6 rounded-lg text-center transition-transform duration-300">
                 <i className={`${interest.icon} text-2xl sm:text-3xl text-[#e8c547] mb-3 sm:mb-4`}></i>
                 <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-[#e8c547] mb-2">
                   {interest.name}
@@ -579,14 +496,14 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center max-w-md mx-auto">
               <Link
                 href="/contact"
-                className="px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-medium bg-[#e8c547] text-[#0e1b12] rounded-lg hover:bg-[#d4b445] transition-colors duration-300"
+                className="px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-medium bg-[#e8c547] text-[#0e1b12] rounded-lg transition-colors duration-300"
               >
                 <i className="fas fa-envelope mr-2"></i>
                 Get in Touch
               </Link>
               <Link
                 href="/portfolio"
-                className="px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-medium border border-[#3e503e] rounded-lg hover:border-[#e8c547] transition-colors duration-300"
+                className="px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-medium border border-[#3e503e] rounded-lg transition-colors duration-300"
               >
                 <i className="fas fa-briefcase mr-2"></i>
                 View My Work

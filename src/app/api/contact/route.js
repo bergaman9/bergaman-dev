@@ -99,7 +99,7 @@ export async function POST(request) {
     // Email content
     const mailOptions = {
       from: process.env.EMAIL_USER,
-      to: 'omerguler53@gmail.com',
+      to: 'omerguler53@gmail.com', // Ana email adresiniz
       replyTo: email, // Set reply-to to the original sender
       subject: `🐉 New Contact Message from ${name} - Bergaman Portfolio [ID:${contactMessage._id}]`,
       html: `
