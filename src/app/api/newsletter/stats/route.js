@@ -1,5 +1,5 @@
-import connectDB from '../../../lib/mongoose';
-import Newsletter from '../../../models/Newsletter';
+import connectDB from '../../../../lib/mongoose';
+import Newsletter from '../../../../models/Newsletter';
 
 export async function GET() {
   try {

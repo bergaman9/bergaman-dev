@@ -1,22 +1,26 @@
 /**
  * Get the current application version
- * Priority: Environment variable > package.json > fallback
+ * Always returns consistent version to avoid hydration mismatch
  */
 export function getAppVersion() {
-  // First try to get from environment variable
-  if (typeof window !== 'undefined') {
-    // Client-side: use Next.js public environment variable
-    return process.env.NEXT_PUBLIC_APP_VERSION || 'v2.0.0';
-  } else {
-    // Server-side: try to read from package.json
+  // Always use environment variable first for consistency
+  const envVersion = process.env.NEXT_PUBLIC_APP_VERSION;
+  if (envVersion) {
+    return envVersion;
+  }
+
+  // Fallback: try to read from package.json only on server-side
+  if (typeof window === 'undefined') {
     try {
       const packageJson = require('../../package.json');
       return `v${packageJson.version}`;
     } catch (error) {
       console.warn('Could not read version from package.json:', error);
-      return process.env.NEXT_PUBLIC_APP_VERSION || 'v2.0.0';
     }
   }
+  
+  // Final fallback
+  return 'v2.0.0';
 }
 
 /**

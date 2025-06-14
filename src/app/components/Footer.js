@@ -1,12 +1,18 @@
 "use client";
 
+import { useState, useEffect } from 'react';
 import Link from "next/link";
 import { SITE_CONFIG, SOCIAL_LINKS } from '../../lib/constants';
 import { getAppVersion } from '../../lib/version';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
-  const appVersion = getAppVersion();
+  const [appVersion, setAppVersion] = useState('v2.0.0'); // Default fallback
+  
+  useEffect(() => {
+    // Set version on client-side to avoid hydration mismatch
+    setAppVersion(getAppVersion());
+  }, []);
 
   return (
     <footer className="w-full bg-gradient-to-t from-[#0e1b12] to-[#2e3d29]/20 border-t border-[#3e503e]/50 mt-auto">

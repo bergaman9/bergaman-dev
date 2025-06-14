@@ -2,9 +2,11 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import { getAppVersion } from '../../../lib/version';
 
 export default function AdminFooter() {
   const [currentTime, setCurrentTime] = useState('');
+  const [appVersion, setAppVersion] = useState('v2.0.0');
   const [systemStats, setSystemStats] = useState({
     uptime: '0h 0m',
     memory: '0%',
@@ -32,6 +34,7 @@ export default function AdminFooter() {
 
     updateTime();
     updateStats();
+    setAppVersion(getAppVersion());
     
     const timeInterval = setInterval(updateTime, 1000);
     const statsInterval = setInterval(updateStats, 30000);
@@ -111,7 +114,7 @@ export default function AdminFooter() {
             </h3>
             <div className="space-y-2 text-xs text-gray-400">
               <p>Bergaman - The Dragon's Domain</p>
-              <p>Version 2.0.1</p>
+              <p>Version {appVersion.replace('v', '')}</p>
               <p>Admin Control Panel</p>
               <div className="flex items-center space-x-2 pt-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
@@ -190,7 +193,7 @@ export default function AdminFooter() {
             {/* Version Badge */}
             <div className="flex items-center space-x-2 bg-[#0e1b12]/50 px-3 py-1 rounded-full">
               <i className="fas fa-code-branch text-[#e8c547] text-xs"></i>
-              <span className="text-xs text-gray-400">v2.0.1</span>
+              <span className="text-xs text-gray-400">{appVersion}</span>
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
             </div>
           </div>
