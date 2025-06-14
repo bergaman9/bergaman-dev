@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Head from 'next/head';
+import Header from '../../components/Header';
+import Footer from '../../components/Footer';
 
 export default function NewsletterUnsubscribe() {
   const searchParams = useSearchParams();
@@ -55,23 +57,16 @@ export default function NewsletterUnsubscribe() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#1a202c] via-[#2d3748] to-[#1a202c] text-[#e2e8f0]">
+    <div className="page-container">
       <Head>
         <title>Unsubscribe - Bergaman's Newsletter</title>
         <meta name="description" content="Unsubscribe from Bergaman's newsletter." />
       </Head>
 
-      {/* Clean Grid Background */}
-      <div className="fixed inset-0 z-0">
-        <div 
-          className="absolute inset-0 opacity-20" 
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%234a5568' fill-opacity='0.3'%3E%3Cpath d='M0 0h1v1H0V0zm20 0h1v1h-1V0zm0 20h1v1h-1v-1zM0 20h1v1H0v-1z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
-          }}
-        ></div>
-      </div>
-
-      <div className="relative z-10 container mx-auto px-4 py-12">
+      <Header />
+      
+      <div className="page-content pt-8">
+        <div className="container mx-auto px-4 py-12">
         <div className="max-w-md mx-auto">
           
           {/* Header */}
@@ -190,8 +185,11 @@ export default function NewsletterUnsubscribe() {
             </a>
           </div>
 
+          </div>
         </div>
       </div>
+      
+      <Footer />
     </div>
   );
 } 

@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import Head from 'next/head';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 
 export default function NewsletterSignup() {
   const [formData, setFormData] = useState({
@@ -75,34 +77,27 @@ export default function NewsletterSignup() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#1a202c] via-[#2d3748] to-[#1a202c] text-[#e2e8f0]">
+    <div className="page-container">
       <Head>
         <title>Newsletter Signup - Bergaman's Dragon Domain</title>
         <meta name="description" content="Subscribe to Bergaman's newsletter for AI, blockchain, and full-stack development insights." />
       </Head>
 
-      {/* Clean Grid Background */}
-      <div className="fixed inset-0 z-0">
-        <div 
-          className="absolute inset-0 opacity-20" 
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%234a5568' fill-opacity='0.3'%3E%3Cpath d='M0 0h1v1H0V0zm20 0h1v1h-1V0zm0 20h1v1h-1v-1zM0 20h1v1H0v-1z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
-          }}
-        ></div>
-      </div>
-
-      <div className="relative z-10 container mx-auto px-4 py-12">
+      <Header />
+      
+      <div className="page-content pt-8">
+        <div className="container mx-auto px-4 py-12">
         <div className="max-w-2xl mx-auto">
           
           {/* Header */}
           <div className="text-center mb-12">
             <div className="mb-6">
-              <div className="w-20 h-20 bg-gradient-to-br from-[#4f46e5] to-[#7c3aed] rounded-full flex items-center justify-center mx-auto mb-4">
-                <i className="fas fa-dragon text-3xl text-white"></i>
+              <div className="w-20 h-20 bg-gradient-to-br from-[#e8c547] to-[#d4b445] rounded-full flex items-center justify-center mx-auto mb-4">
+                <i className="fas fa-dragon text-3xl text-[#0e1b12]"></i>
               </div>
             </div>
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              <span className="bg-gradient-to-r from-[#4f46e5] to-[#7c3aed] bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-[#e8c547] to-[#f4d76b] bg-clip-text text-transparent">
                 Join the Dragon's Domain
               </span>
             </h1>
@@ -140,19 +135,19 @@ export default function NewsletterSignup() {
 
           {/* Signup Form */}
           {!success && (
-            <div className="bg-[#2d3748]/30 backdrop-blur-md border border-[#4a5568]/30 rounded-lg p-8">
+            <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 rounded-lg p-8">
               <form onSubmit={handleSubmit} className="space-y-6">
                 
                 {/* Email */}
                 <div>
-                  <label className="block text-sm font-medium text-[#e2e8f0] mb-2">
+                  <label className="block text-sm font-medium text-[#d1d5db] mb-2">
                     Email Address *
                   </label>
                   <input
                     type="email"
                     value={formData.email}
                     onChange={(e) => setFormData({...formData, email: e.target.value})}
-                    className="w-full px-4 py-3 bg-[#1a202c] border border-[#4a5568] rounded-lg text-[#e2e8f0] placeholder-gray-400 focus:border-[#4f46e5] focus:outline-none transition-colors"
+                    className="w-full px-4 py-3 bg-[#0a1a0f] border border-[#3e503e] rounded-lg text-[#d1d5db] placeholder-gray-400 focus:border-[#e8c547] focus:outline-none transition-colors"
                     placeholder="your@email.com"
                     required
                   />
@@ -160,21 +155,21 @@ export default function NewsletterSignup() {
 
                 {/* Name */}
                 <div>
-                  <label className="block text-sm font-medium text-[#e2e8f0] mb-2">
+                  <label className="block text-sm font-medium text-[#d1d5db] mb-2">
                     Name (Optional)
                   </label>
                   <input
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    className="w-full px-4 py-3 bg-[#1a202c] border border-[#4a5568] rounded-lg text-[#e2e8f0] placeholder-gray-400 focus:border-[#4f46e5] focus:outline-none transition-colors"
+                    className="w-full px-4 py-3 bg-[#0a1a0f] border border-[#3e503e] rounded-lg text-[#d1d5db] placeholder-gray-400 focus:border-[#e8c547] focus:outline-none transition-colors"
                     placeholder="Your name"
                   />
                 </div>
 
                 {/* Frequency */}
                 <div>
-                  <label className="block text-sm font-medium text-[#e2e8f0] mb-3">
+                  <label className="block text-sm font-medium text-[#d1d5db] mb-3">
                     Email Frequency
                   </label>
                   <div className="grid grid-cols-3 gap-3">
@@ -188,8 +183,8 @@ export default function NewsletterSignup() {
                         })}
                         className={`px-4 py-3 rounded-lg border transition-colors ${
                           formData.preferences.frequency === freq
-                            ? 'bg-[#4f46e5] border-[#4f46e5] text-white'
-                            : 'bg-[#1a202c] border-[#4a5568] text-gray-300 hover:border-[#4f46e5]'
+                            ? 'bg-[#e8c547] border-[#e8c547] text-[#0e1b12]'
+                            : 'bg-[#0a1a0f] border-[#3e503e] text-gray-300 hover:border-[#e8c547]'
                         }`}
                       >
                         {freq.charAt(0).toUpperCase() + freq.slice(1)}
@@ -200,7 +195,7 @@ export default function NewsletterSignup() {
 
                 {/* Categories */}
                 <div>
-                  <label className="block text-sm font-medium text-[#e2e8f0] mb-3">
+                  <label className="block text-sm font-medium text-[#d1d5db] mb-3">
                     Interests (Select all that apply)
                   </label>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -217,8 +212,8 @@ export default function NewsletterSignup() {
                         onClick={() => handleCategoryChange(category.id)}
                         className={`px-4 py-3 rounded-lg border transition-colors text-left ${
                           formData.preferences.categories.includes(category.id)
-                            ? 'bg-[#4f46e5] border-[#4f46e5] text-white'
-                            : 'bg-[#1a202c] border-[#4a5568] text-gray-300 hover:border-[#4f46e5]'
+                            ? 'bg-[#e8c547] border-[#e8c547] text-[#0e1b12]'
+                            : 'bg-[#0a1a0f] border-[#3e503e] text-gray-300 hover:border-[#e8c547]'
                         }`}
                       >
                         <div className="flex items-center space-x-2">
@@ -243,7 +238,7 @@ export default function NewsletterSignup() {
                 <button
                   type="submit"
                   disabled={loading || !formData.email.trim()}
-                  className="w-full px-6 py-4 bg-gradient-to-r from-[#4f46e5] to-[#7c3aed] text-white rounded-lg font-medium hover:from-[#4338ca] hover:to-[#6d28d9] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                  className="w-full px-6 py-4 bg-gradient-to-r from-[#e8c547] to-[#d4b445] text-[#0e1b12] rounded-lg font-medium hover:from-[#d4b445] hover:to-[#c4a435] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                 >
                   {loading ? (
                     <>
@@ -269,48 +264,48 @@ export default function NewsletterSignup() {
 
           {/* What You'll Get */}
           <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-[#2d3748]/20 border border-[#4a5568]/20 rounded-lg p-6">
+            <div className="bg-[#2e3d29]/20 border border-[#3e503e]/20 rounded-lg p-6">
               <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-[#4f46e5]/20 rounded-lg flex items-center justify-center mr-4">
-                  <i className="fas fa-robot text-[#4f46e5] text-xl"></i>
+                <div className="w-12 h-12 bg-[#e8c547]/20 rounded-lg flex items-center justify-center mr-4">
+                  <i className="fas fa-robot text-[#e8c547] text-xl"></i>
                 </div>
-                <h3 className="text-lg font-semibold text-[#e2e8f0]">AI & Machine Learning</h3>
+                <h3 className="text-lg font-semibold text-[#d1d5db]">AI & Machine Learning</h3>
               </div>
               <p className="text-gray-400">
                 Latest developments in AI, machine learning projects, and practical implementations.
               </p>
             </div>
 
-            <div className="bg-[#2d3748]/20 border border-[#4a5568]/20 rounded-lg p-6">
+            <div className="bg-[#2e3d29]/20 border border-[#3e503e]/20 rounded-lg p-6">
               <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-[#7c3aed]/20 rounded-lg flex items-center justify-center mr-4">
-                  <i className="fas fa-link text-[#7c3aed] text-xl"></i>
+                <div className="w-12 h-12 bg-[#e8c547]/20 rounded-lg flex items-center justify-center mr-4">
+                  <i className="fas fa-link text-[#e8c547] text-xl"></i>
                 </div>
-                <h3 className="text-lg font-semibold text-[#e2e8f0]">Blockchain Development</h3>
+                <h3 className="text-lg font-semibold text-[#d1d5db]">Blockchain Development</h3>
               </div>
               <p className="text-gray-400">
                 Smart contracts, DeFi protocols, and blockchain architecture insights.
               </p>
             </div>
 
-            <div className="bg-[#2d3748]/20 border border-[#4a5568]/20 rounded-lg p-6">
+            <div className="bg-[#2e3d29]/20 border border-[#3e503e]/20 rounded-lg p-6">
               <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-[#10b981]/20 rounded-lg flex items-center justify-center mr-4">
-                  <i className="fas fa-code text-[#10b981] text-xl"></i>
+                <div className="w-12 h-12 bg-[#e8c547]/20 rounded-lg flex items-center justify-center mr-4">
+                  <i className="fas fa-code text-[#e8c547] text-xl"></i>
                 </div>
-                <h3 className="text-lg font-semibold text-[#e2e8f0]">Full-Stack Development</h3>
+                <h3 className="text-lg font-semibold text-[#d1d5db]">Full-Stack Development</h3>
               </div>
               <p className="text-gray-400">
                 Modern web development, frameworks, tools, and best practices.
               </p>
             </div>
 
-            <div className="bg-[#2d3748]/20 border border-[#4a5568]/20 rounded-lg p-6">
+            <div className="bg-[#2e3d29]/20 border border-[#3e503e]/20 rounded-lg p-6">
               <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-[#f59e0b]/20 rounded-lg flex items-center justify-center mr-4">
-                  <i className="fas fa-rocket text-[#f59e0b] text-xl"></i>
+                <div className="w-12 h-12 bg-[#e8c547]/20 rounded-lg flex items-center justify-center mr-4">
+                  <i className="fas fa-rocket text-[#e8c547] text-xl"></i>
                 </div>
-                <h3 className="text-lg font-semibold text-[#e2e8f0]">Project Updates</h3>
+                <h3 className="text-lg font-semibold text-[#d1d5db]">Project Updates</h3>
               </div>
               <p className="text-gray-400">
                 Behind-the-scenes looks at ongoing projects and new releases.
@@ -321,12 +316,12 @@ export default function NewsletterSignup() {
           {/* Footer */}
           <div className="mt-12 text-center">
             <p className="text-gray-400 mb-4">
-              Join <span className="text-[#4f46e5] font-semibold">500+</span> developers already subscribed
+              Join <span className="text-[#e8c547] font-semibold">500+</span> developers already subscribed
             </p>
             <div className="flex justify-center space-x-6">
               <a 
                 href="https://bergaman.dev" 
-                className="text-gray-400 hover:text-[#4f46e5] transition-colors"
+                className="text-gray-400 hover:text-[#e8c547] transition-colors"
               >
                 <i className="fas fa-globe mr-2"></i>
                 Portfolio
@@ -335,14 +330,14 @@ export default function NewsletterSignup() {
                 href="https://github.com/bergaman9" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="text-gray-400 hover:text-[#4f46e5] transition-colors"
+                className="text-gray-400 hover:text-[#e8c547] transition-colors"
               >
                 <i className="fab fa-github mr-2"></i>
                 GitHub
               </a>
               <a 
                 href="mailto:omerguler53@gmail.com" 
-                className="text-gray-400 hover:text-[#4f46e5] transition-colors"
+                className="text-gray-400 hover:text-[#e8c547] transition-colors"
               >
                 <i className="fas fa-envelope mr-2"></i>
                 Contact
@@ -350,8 +345,11 @@ export default function NewsletterSignup() {
             </div>
           </div>
 
+          </div>
         </div>
       </div>
+      
+      <Footer />
     </div>
   );
 } 
