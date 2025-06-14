@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [2.1.2](https://github.com/bergaman9/bergaman-dev/compare/v2.1.1...v2.1.2) (2025-06-14)
+
+### 🐛 Bug Fixes
+
+* comprehensive solution for .env.local commit issue - Enhanced git configuration in GitHub Actions workflow - Added aggressive environment file cleanup - Configured git user and disabled ignored file warnings - Added force ignore patterns for environment files - Enhanced semantic release configuration with explicit git settings ([600945b](https://github.com/bergaman9/bergaman-dev/commit/600945b12e2550fe4d7500acb1feccab404ddcac))
+* prevent GitHub secret scanning alerts and update version references ([11cda55](https://github.com/bergaman9/bergaman-dev/commit/11cda55e2e6e19904b0a372c4dc5dc9356fa2502))
+
 ## [2.1.1](https://github.com/bergaman9/bergaman-dev/compare/v2.1.0...v2.1.1) (2025-06-14)
 
 ### 🐛 Bug Fixes
