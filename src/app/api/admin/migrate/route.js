@@ -2,28 +2,7 @@ import { NextResponse } from 'next/server';
 import mongoose from 'mongoose';
 import BlogPost from '../../../../models/BlogPost';
 import { blogPosts } from '../../../../data/blogPosts';
-
-// Connect to MongoDB with better error handling
-async function connectDB() {
-  if (mongoose.connections[0].readyState) {
-    return;
-  }
-  
-  try {
-    if (!process.env.MONGODB_URI) {
-      throw new Error('MONGODB_URI environment variable is not set');
-    }
-    
-    await mongoose.connect(process.env.MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    console.log('MongoDB connected for migration');
-  } catch (error) {
-    console.error('MongoDB connection error:', error);
-    throw new Error(`Database connection failed: ${error.message}`);
-  }
-}
+import { connectDB } from '../../../../lib/mongodb';
 
 export async function POST(request) {
   try {

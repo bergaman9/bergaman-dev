@@ -1,20 +1,9 @@
 import { NextResponse } from 'next/server';
 import mongoose from 'mongoose';
 import BlogPost from '../../../../../models/BlogPost';
+import { connectDB } from '../../../../../lib/mongodb';
 
-// Connect to MongoDB
-async function connectDB() {
-  if (mongoose.connections[0].readyState) {
-    return;
-  }
-  
-  try {
-    await mongoose.connect(process.env.MONGODB_URI);
-  } catch (error) {
-    console.error('MongoDB connection error:', error);
-    throw error;
-  }
-}
+
 
 // GET - Fetch single blog post
 export async function GET(request, { params }) {

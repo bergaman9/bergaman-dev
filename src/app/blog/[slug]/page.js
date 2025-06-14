@@ -199,7 +199,7 @@ export default function BlogPost() {
                   category={post.category} 
                   width={800} 
                   height={400} 
-                  className="w-full"
+                  className="w-full h-64 md:h-96"
                 />
               </div>
             )}

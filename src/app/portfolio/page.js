@@ -218,37 +218,37 @@ export default function Portfolio() {
 
         {/* Filter Controls */}
         <section className="mb-8 slide-in-left">
-          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg transition-all duration-300 hover:border-[#e8c547]/30 hover:shadow-lg hover:shadow-[#e8c547]/10 hover:bg-[#2e3d29]/40 hover:scale-[1.01]">
-            <div className="flex flex-col md:flex-row gap-4">
-              
-              {/* Search Bar */}
-              <div className="flex-1 relative">
-                <i className="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg">
+            
+            {/* Search Bar - Full Width */}
+            <div className="mb-4">
+              <div className="relative max-w-2xl mx-auto">
+                <i className="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                 <input
                   type="text"
-                  placeholder="Search projects..."
+                  placeholder="Search projects by name or description..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-4 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] placeholder-gray-400 focus:border-[#e8c547]/50 focus:outline-none transition-colors duration-300 text-base"
+                  className="w-full pl-12 pr-4 py-4 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] placeholder-gray-400 focus:border-[#e8c547]/50 focus:outline-none transition-colors duration-300 text-base"
                 />
               </div>
+            </div>
 
-              {/* Category Filter */}
-              <div className="flex flex-wrap gap-2">
-                {categories.map(category => (
-                  <button
-                    key={category}
-                    onClick={() => setSelectedCategory(category)}
-                    className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 hover-scale ${
-                      selectedCategory === category
-                        ? 'bg-[#e8c547] text-[#0e1b12] shadow-lg shadow-[#e8c547]/25'
-                        : 'bg-[#0e1b12] border border-[#3e503e] text-[#d1d5db] hover:border-[#e8c547]/50 hover:text-[#e8c547]'
-                    }`}
-                  >
-                    {category === 'all' ? 'All Projects' : category.charAt(0).toUpperCase() + category.slice(1)}
-                  </button>
-                ))}
-              </div>
+            {/* Category Filter */}
+            <div className="flex flex-wrap justify-center gap-2">
+              {categories.map(category => (
+                <button
+                  key={category}
+                  onClick={() => setSelectedCategory(category)}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors duration-300 ${
+                    selectedCategory === category
+                      ? 'bg-[#e8c547] text-[#0e1b12]'
+                      : 'bg-[#0e1b12] border border-[#3e503e] text-[#d1d5db] hover:border-[#e8c547]/50 hover:text-[#e8c547]'
+                  }`}
+                >
+                  {category === 'all' ? 'All Projects' : category.charAt(0).toUpperCase() + category.slice(1)}
+                </button>
+              ))}
             </div>
 
             {/* Results Info */}
@@ -275,7 +275,7 @@ export default function Portfolio() {
               {filteredProjects.map((project, index) => (
                 <div
                   key={index}
-                  className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 rounded-lg overflow-hidden transition-all duration-300 hover:border-[#e8c547]/30 hover:shadow-lg hover:shadow-[#e8c547]/10 hover:bg-[#2e3d29]/40 hover:scale-[1.01] group"
+                  className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 rounded-lg overflow-hidden"
                 >
                   {/* Project Image/Icon */}
                   <div className="relative h-48 bg-gradient-to-br from-[#2e3d29] to-[#0e1b12] flex items-center justify-center overflow-hidden cursor-pointer"
@@ -286,18 +286,18 @@ export default function Portfolio() {
                         height={192}
                         text={project.title}
                         category={project.category.toLowerCase().replace(/[^a-z0-9]/g, '-')}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                        className="w-full h-full object-cover"
                       />
                     ) : project.image ? (
                       <Image
                         src={project.image}
                         alt={project.title}
                         fill
-                        className="object-cover group-hover:scale-110 transition-transform duration-300"
+                        className="object-cover"
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       />
                     ) : (
-                      <i className={`${project.icon} text-4xl text-[#e8c547] group-hover:scale-110 transition-transform duration-300`}></i>
+                      <i className={`${project.icon} text-4xl text-[#e8c547]`}></i>
                     )}
                     
                     {/* Category Badge */}
@@ -310,7 +310,7 @@ export default function Portfolio() {
 
                   {/* Project Content */}
                   <div className="p-6">
-                    <h3 className="text-xl font-bold gradient-text mb-3 group-hover:text-[#e8c547] transition-colors duration-300">
+                    <h3 className="text-xl font-bold gradient-text mb-3">
                       {project.title}
                     </h3>
                     
@@ -336,7 +336,7 @@ export default function Portfolio() {
                         href={project.links.github}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-4 py-2 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-sm hover:border-[#e8c547]/50 hover:text-[#e8c547] transition-all duration-300 hover-scale"
+                        className="flex items-center gap-2 px-4 py-2 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-sm hover:border-[#e8c547]/50 hover:text-[#e8c547] transition-colors duration-300"
                       >
                         <i className="fab fa-github"></i>
                         Code
@@ -347,7 +347,7 @@ export default function Portfolio() {
                           href={project.links.demo}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-2 px-4 py-2 bg-[#e8c547] text-[#0e1b12] rounded-lg text-sm hover:bg-[#d4b445] transition-all duration-300 hover-scale"
+                          className="flex items-center gap-2 px-4 py-2 bg-[#e8c547] text-[#0e1b12] rounded-lg text-sm hover:bg-[#d4b445] transition-colors duration-300"
                         >
                           <i className="fas fa-external-link-alt"></i>
                           Demo

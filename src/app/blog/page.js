@@ -218,7 +218,8 @@ export default function Blog() {
                           title={post.title} 
                           category={post.category} 
                           width={400} 
-                          height={200} 
+                          height={200}
+                          className="w-full h-48"
                         />
                       </div>
                     )}

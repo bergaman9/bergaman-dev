@@ -7,12 +7,42 @@ const BlogImageGenerator = ({ title, category, width = 400, height = 250, classN
 
   // Category color mapping
   const categoryColors = {
-    'technology': ['#e8c547', '#d4b445'],
-    'ai': ['#8b5cf6', '#7c3aed'],
-    'web-development': ['#06b6d4', '#0891b2'],
-    'tutorial': ['#10b981', '#059669'],
-    'programming': ['#f59e0b', '#d97706'],
-    'default': ['#e8c547', '#d4b445']
+    'technology': {
+      primary: '#e8c547',
+      secondary: '#d4b445',
+      accent: '#f4d03f',
+      bg: 'rgba(232, 197, 71, 0.1)'
+    },
+    'ai': {
+      primary: '#8b5cf6',
+      secondary: '#7c3aed',
+      accent: '#a78bfa',
+      bg: 'rgba(139, 92, 246, 0.1)'
+    },
+    'web-development': {
+      primary: '#06b6d4',
+      secondary: '#0891b2',
+      accent: '#67e8f9',
+      bg: 'rgba(6, 182, 212, 0.1)'
+    },
+    'tutorial': {
+      primary: '#10b981',
+      secondary: '#059669',
+      accent: '#6ee7b7',
+      bg: 'rgba(16, 185, 129, 0.1)'
+    },
+    'programming': {
+      primary: '#f59e0b',
+      secondary: '#d97706',
+      accent: '#fbbf24',
+      bg: 'rgba(245, 158, 11, 0.1)'
+    },
+    'default': {
+      primary: '#e8c547',
+      secondary: '#d4b445',
+      accent: '#f4d03f',
+      bg: 'rgba(232, 197, 71, 0.1)'
+    }
   };
 
   // Category icons
@@ -39,60 +69,68 @@ const BlogImageGenerator = ({ title, category, width = 400, height = 250, classN
 
     // Create gradient background
     const gradient = ctx.createLinearGradient(0, 0, width, height);
-    gradient.addColorStop(0, colors[0]);
-    gradient.addColorStop(1, colors[1]);
+    gradient.addColorStop(0, colors.primary);
+    gradient.addColorStop(0.5, colors.secondary);
+    gradient.addColorStop(1, colors.primary);
 
     // Fill background
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, width, height);
 
+    // Add subtle pattern overlay
+    ctx.fillStyle = colors.bg;
+    for (let x = 0; x < width; x += 40) {
+      for (let y = 0; y < height; y += 40) {
+        ctx.fillRect(x, y, 20, 20);
+      }
+    }
+
     // Add circuit pattern overlay
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
     ctx.lineWidth = 1;
     
-    // Draw grid pattern
-    for (let x = 0; x < width; x += 50) {
+    // Draw diagonal lines
+    for (let i = -height; i < width; i += 60) {
       ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, height);
-      ctx.stroke();
-    }
-    
-    for (let y = 0; y < height; y += 50) {
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(width, y);
+      ctx.moveTo(i, 0);
+      ctx.lineTo(i + height, height);
       ctx.stroke();
     }
 
     // Add some circuit nodes
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
     for (let i = 0; i < 8; i++) {
       const x = Math.random() * width;
       const y = Math.random() * height;
       ctx.beginPath();
-      ctx.arc(x, y, 3, 0, 2 * Math.PI);
+      ctx.arc(x, y, 3, 0, Math.PI * 2);
       ctx.fill();
     }
 
+    // Add dark overlay for text readability
+    const textOverlay = ctx.createLinearGradient(0, height * 0.6, 0, height);
+    textOverlay.addColorStop(0, 'rgba(0, 0, 0, 0)');
+    textOverlay.addColorStop(1, 'rgba(0, 0, 0, 0.7)');
+    ctx.fillStyle = textOverlay;
+    ctx.fillRect(0, 0, width, height);
+
     // Add category icon
-    ctx.font = '48px Arial';
+    ctx.font = `${Math.min(width, height) * 0.15}px Arial`;
     ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
     ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-    ctx.fillText(icon, width / 2, height / 2 - 20);
+    ctx.fillText(icon, width / 2, height * 0.35);
 
     // Add title text
-    ctx.font = 'bold 16px Arial';
-    ctx.fillStyle = '#0e1b12';
+    ctx.fillStyle = '#ffffff';
+    ctx.font = `bold ${Math.min(width * 0.04, 18)}px Arial`;
     ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-
+    
     // Word wrap for title
     const words = title.split(' ');
-    const maxWidth = width - 40;
+    const maxWidth = width * 0.85;
     let line = '';
-    let y = height / 2 + 30;
+    let y = height * 0.65;
+    const lineHeight = Math.min(width * 0.05, 22);
 
     for (let n = 0; n < words.length; n++) {
       const testLine = line + words[n] + ' ';
@@ -102,7 +140,7 @@ const BlogImageGenerator = ({ title, category, width = 400, height = 250, classN
       if (testWidth > maxWidth && n > 0) {
         ctx.fillText(line, width / 2, y);
         line = words[n] + ' ';
-        y += 20;
+        y += lineHeight;
       } else {
         line = testLine;
       }
@@ -110,22 +148,34 @@ const BlogImageGenerator = ({ title, category, width = 400, height = 250, classN
     ctx.fillText(line, width / 2, y);
 
     // Add category badge
-    ctx.font = 'bold 12px Arial';
-    ctx.fillStyle = 'rgba(14, 27, 18, 0.8)';
-    ctx.fillRect(10, 10, 80, 25);
-    ctx.fillStyle = colors[0];
+    ctx.fillStyle = colors.accent;
+    ctx.font = `${Math.min(width * 0.025, 12)}px Arial`;
     ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(category.toUpperCase(), 50, 22.5);
+    const categoryText = category.toUpperCase().replace('-', ' ');
+    const badgeWidth = ctx.measureText(categoryText).width + 20;
+    const badgeHeight = 20;
+    const badgeX = width / 2 - badgeWidth / 2;
+    const badgeY = height * 0.85;
+    
+    // Badge background
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+    ctx.fillRect(badgeX, badgeY, badgeWidth, badgeHeight);
+    
+    // Badge text
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText(categoryText, width / 2, badgeY + 14);
 
   }, [title, category, width, height]);
 
   return (
-    <canvas
-      ref={canvasRef}
-      className={`rounded-lg ${className}`}
-      style={{ width: '100%', height: 'auto', display: 'block' }}
-    />
+    <div className={`relative ${className}`}>
+      <canvas
+        ref={canvasRef}
+        className="w-full h-full object-cover rounded-lg"
+        style={{ maxWidth: width, maxHeight: height }}
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-lg pointer-events-none" />
+    </div>
   );
 };
 

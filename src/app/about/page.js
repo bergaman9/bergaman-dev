@@ -81,22 +81,12 @@ const experiences = [
   }
 ];
 
-// Interests Data
+// Interests Data - Updated with personal hobbies
 const interests = [
   {
-    title: "Artificial Intelligence",
-    description: "Exploring machine learning, deep learning, and AI applications in real-world scenarios.",
-    icon: "fas fa-robot"
-  },
-  {
-    title: "Web Development",
-    description: "Building modern, responsive web applications with cutting-edge technologies.",
-    icon: "fas fa-globe"
-  },
-  {
-    title: "IoT & Embedded",
-    description: "Creating smart devices and automation systems with Arduino and Raspberry Pi.",
-    icon: "fas fa-microchip"
+    title: "Movies & TV Shows",
+    description: "Passionate about cinema, exploring different genres and storytelling techniques.",
+    icon: "fas fa-film"
   },
   {
     title: "Gaming",
@@ -104,14 +94,24 @@ const interests = [
     icon: "fas fa-gamepad"
   },
   {
-    title: "Photography",
-    description: "Capturing moments and exploring the world through the lens of creativity.",
-    icon: "fas fa-camera"
+    title: "Fitness & Health",
+    description: "Maintaining physical and mental well-being through regular exercise and healthy lifestyle.",
+    icon: "fas fa-dumbbell"
   },
   {
     title: "Music",
     description: "Enjoying various music genres and exploring the intersection of technology and music.",
     icon: "fas fa-music"
+  },
+  {
+    title: "Nature & Outdoors",
+    description: "Connecting with nature through hiking, outdoor activities, and environmental awareness.",
+    icon: "fas fa-tree"
+  },
+  {
+    title: "Reading & Learning",
+    description: "Continuous learning through books, articles, and exploring new concepts and ideas.",
+    icon: "fas fa-book"
   }
 ];
 
@@ -151,7 +151,7 @@ export default function About() {
         <section className="text-center mb-16 fade-in">
           <div className="relative mb-8">
             <Image
-              className="rounded-full border-4 border-[#e8c547] shadow-lg shadow-[#e8c547]/25 hover-scale mx-auto cursor-pointer"
+              className="rounded-full border-4 border-[#e8c547] shadow-lg shadow-[#e8c547]/25 mx-auto cursor-pointer"
               src="/images/profile/profile.png"
               alt="Bergaman Profile Picture"
               width={200}
@@ -170,7 +170,7 @@ export default function About() {
 
         {/* Introduction */}
         <section className="mb-16 slide-in-left">
-          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-8 rounded-lg transition-all duration-300 hover:border-[#e8c547]/30 hover:shadow-lg hover:shadow-[#e8c547]/10 hover:bg-[#2e3d29]/40 hover:scale-[1.01]">
+          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-8 rounded-lg">
             <h2 className="text-3xl font-bold gradient-text mb-6">
               Who Am I?
             </h2>
@@ -196,7 +196,7 @@ export default function About() {
 
         {/* Skills & Expertise */}
         <section className="mb-16 slide-in-right">
-          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-8 rounded-lg transition-all duration-300 hover:border-[#e8c547]/30 hover:shadow-lg hover:shadow-[#e8c547]/10 hover:bg-[#2e3d29]/40 hover:scale-[1.01]">
+          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-8 rounded-lg">
             <h2 className="text-3xl font-bold gradient-text mb-8">
               Skills & Expertise
             </h2>
@@ -231,7 +231,7 @@ export default function About() {
 
         {/* Experience Timeline */}
         <section className="mb-16 fade-in">
-          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-8 rounded-lg transition-all duration-300 hover:border-[#e8c547]/30 hover:shadow-lg hover:shadow-[#e8c547]/10 hover:bg-[#2e3d29]/40 hover:scale-[1.01]">
+          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-8 rounded-lg">
             <h2 className="text-3xl font-bold gradient-text mb-8">
               Experience & Journey
             </h2>
@@ -265,7 +265,7 @@ export default function About() {
 
         {/* Interests & Hobbies */}
         <section className="mb-16 slide-in-left">
-          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-8 rounded-lg transition-all duration-300 hover:border-[#e8c547]/30 hover:shadow-lg hover:shadow-[#e8c547]/10 hover:bg-[#2e3d29]/40 hover:scale-[1.01]">
+          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-8 rounded-lg">
             <h2 className="text-3xl font-bold gradient-text mb-8">
               Interests & Hobbies
             </h2>
@@ -273,9 +273,9 @@ export default function About() {
               {interests.map((interest, index) => (
                 <div
                   key={index}
-                  className="border border-[#3e503e] p-6 rounded-lg bg-[#0e1b12] text-center card-hover group"
+                  className="border border-[#3e503e] p-6 rounded-lg bg-[#0e1b12] text-center"
                 >
-                  <i className={`${interest.icon} text-4xl text-[#e8c547] mb-4 group-hover:scale-110 transition-transform duration-300`}></i>
+                  <i className={`${interest.icon} text-4xl text-[#e8c547] mb-4`}></i>
                   <h3 className="text-lg font-semibold gradient-text mb-2">{interest.title}</h3>
                   <p className="text-gray-300 text-sm">{interest.description}</p>
                 </div>
@@ -283,8 +283,6 @@ export default function About() {
             </div>
           </div>
         </section>
-
-
 
       </main>
 

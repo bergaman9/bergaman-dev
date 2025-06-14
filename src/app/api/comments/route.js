@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import connectDB from '../../../lib/mongodb';
+import { connectDB } from '../../../lib/mongodb';
 import Comment from '../../../models/Comment';
 
 export async function GET(request) {
@@ -50,24 +50,16 @@ export async function POST(request) {
     // Create new comment
     const comment = new Comment({
       postSlug,
-      name: name.trim(),
-      email: email.trim().toLowerCase(),
-      message: message.trim(),
+      name,
+      email,
+      message
     });
     
     await comment.save();
     
-    return NextResponse.json({ 
-      message: 'Comment posted successfully',
-      comment: {
-        _id: comment._id,
-        name: comment.name,
-        message: comment.message,
-        createdAt: comment.createdAt
-      }
-    }, { status: 201 });
+    return NextResponse.json({ comment }, { status: 201 });
   } catch (error) {
-    console.error('Error posting comment:', error);
-    return NextResponse.json({ error: 'Failed to post comment' }, { status: 500 });
+    console.error('Error creating comment:', error);
+    return NextResponse.json({ error: 'Failed to create comment' }, { status: 500 });
   }
 } 

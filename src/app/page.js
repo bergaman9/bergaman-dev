@@ -1,9 +1,11 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import Head from 'next/head';
 import Link from 'next/link';
 import Image from 'next/image';
 import ImageModal from './components/ImageModal';
+import BlogImageGenerator from './components/BlogImageGenerator';
 import { useAdminMode } from '../hooks/useAdminMode';
 
 export default function Home() {
@@ -84,6 +86,20 @@ export default function Home() {
 
   return (
     <div className="page-container">
+      <Head>
+        <title>Bergaman - The Dragon's Domain | Full-Stack Developer & AI Enthusiast</title>
+        <meta name="description" content="Welcome to Bergaman's digital domain. Explore cutting-edge web development, AI projects, and innovative solutions crafted with the strength and wisdom of a dragon." />
+        <meta name="keywords" content="bergaman, full-stack developer, AI, web development, portfolio, dragon domain, technology, programming" />
+        <meta property="og:title" content="Bergaman - The Dragon's Domain" />
+        <meta property="og:description" content="Crafting technology inspired by the strength and wisdom of a dragon" />
+        <meta property="og:url" content="https://bergaman.dev" />
+        <meta property="og:type" content="website" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Bergaman - The Dragon's Domain" />
+        <meta name="twitter:description" content="Crafting technology inspired by the strength and wisdom of a dragon" />
+        <link rel="canonical" href="https://bergaman.dev" />
+      </Head>
+
       {/* Admin Edit Mode Bar */}
       {isAdminMode && (
         <div className="fixed top-0 left-0 right-0 bg-[#e8c547] text-[#0e1b12] px-4 py-2 z-50 flex items-center justify-between">
@@ -115,9 +131,12 @@ export default function Home() {
             />
           </div>
           <h1 className="text-5xl md:text-6xl font-bold gradient-text mb-6 leading-tight">
-            The Dragon's Domain
+            Bergaman - The Dragon's Domain
           </h1>
-          <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto">
+          <p className="text-xl md:text-2xl text-gray-300 mb-4 max-w-3xl mx-auto">
+            Hey, I'm Ömer! The dragon spirit behind Bergaman - blending futuristic technology with a military edge, specializing in artificial intelligence, blockchain, and full-stack development.
+          </p>
+          <p className="text-lg text-gray-400 mb-8 max-w-2xl mx-auto">
             Crafting technology inspired by the strength and wisdom of a dragon
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -135,6 +154,46 @@ export default function Home() {
               <i className="fas fa-blog mr-2"></i>
               Read Blog
             </Link>
+          </div>
+        </section>
+
+        {/* About Section */}
+        <section className="py-16 slide-in-up">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold gradient-text mb-6 leading-tight">
+              <i className="fas fa-dragon mr-3"></i>
+              About The Dragon
+            </h2>
+            <p className="text-lg text-gray-300 max-w-4xl mx-auto leading-relaxed">
+              Welcome to my digital domain! I'm a passionate full-stack developer and AI enthusiast with a deep fascination for cutting-edge technology. 
+              My journey spans from building comprehensive Discord bots during the pandemic to exploring the frontiers of artificial intelligence and blockchain technology.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+            <div className="glass p-6 rounded-lg text-center">
+              <i className="fas fa-code text-4xl text-[#e8c547] mb-4"></i>
+              <h3 className="text-xl font-semibold text-[#e8c547] mb-3">Full-Stack Development</h3>
+              <p className="text-gray-300">
+                Crafting seamless web applications with React, Next.js, Node.js, and modern databases like MongoDB.
+              </p>
+            </div>
+            
+            <div className="glass p-6 rounded-lg text-center">
+              <i className="fas fa-robot text-4xl text-[#e8c547] mb-4"></i>
+              <h3 className="text-xl font-semibold text-[#e8c547] mb-3">AI & Machine Learning</h3>
+              <p className="text-gray-300">
+                Exploring the possibilities of artificial intelligence, from voice conversion to image generation and beyond.
+              </p>
+            </div>
+            
+            <div className="glass p-6 rounded-lg text-center">
+              <i className="fas fa-microchip text-4xl text-[#e8c547] mb-4"></i>
+              <h3 className="text-xl font-semibold text-[#e8c547] mb-3">IoT & Hardware</h3>
+              <p className="text-gray-300">
+                Building innovative IoT solutions with Arduino, sensors, and wireless communication for real-world applications.
+              </p>
+            </div>
           </div>
         </section>
 
@@ -191,8 +250,8 @@ export default function Home() {
                     href={`/blog/${post.slug}`}
                     className="glass p-6 rounded-lg hover-lift block"
                   >
-                    {post.image && (
-                      <div className="mb-4">
+                    <div className="mb-4">
+                      {post.image ? (
                         <Image
                           src={post.image}
                           alt={post.title}
@@ -204,8 +263,23 @@ export default function Home() {
                             openModal(post.image, post.title);
                           }}
                         />
-                      </div>
-                    )}
+                      ) : (
+                        <div 
+                          className="cursor-pointer"
+                          onClick={(e) => {
+                            e.preventDefault();
+                          }}
+                        >
+                          <BlogImageGenerator 
+                            title={post.title} 
+                            category={post.category} 
+                            width={400} 
+                            height={200}
+                            className="w-full h-48"
+                          />
+                        </div>
+                      )}
+                    </div>
                     <div className="flex items-center gap-2 mb-3">
                       <span className="px-2 py-1 bg-[#e8c547]/20 text-[#e8c547] text-xs rounded-full">
                         {post.category}
@@ -251,7 +325,7 @@ export default function Home() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {featuredProjects.map((project) => (
-              <div key={project.id} className="glass p-6 rounded-lg hover-lift">
+              <div key={project.id} className="glass p-6 rounded-lg">
                 <div className="mb-4">
                   <Image
                     src={project.image}
@@ -283,7 +357,7 @@ export default function Home() {
                     href={project.github}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 text-center py-2 bg-[#e8c547]/20 text-[#e8c547] rounded hover:bg-[#e8c547]/30 transition-colors duration-300"
+                    className="flex-1 text-center py-2 bg-[#e8c547]/20 text-[#e8c547] rounded transition-colors duration-300"
                   >
                     <i className="fab fa-github mr-2"></i>
                     GitHub
@@ -293,7 +367,7 @@ export default function Home() {
                       href={project.demo}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex-1 text-center py-2 bg-blue-600/20 text-blue-400 rounded hover:bg-blue-600/30 transition-colors duration-300"
+                      className="flex-1 text-center py-2 bg-blue-600/20 text-blue-400 rounded transition-colors duration-300"
                     >
                       <i className="fas fa-external-link-alt mr-2"></i>
                       Demo
@@ -344,7 +418,7 @@ export default function Home() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {interests.map((interest, index) => (
-              <div key={index} className="glass p-6 rounded-lg text-center hover-lift">
+              <div key={index} className="glass p-6 rounded-lg text-center">
                 <i className={`${interest.icon} text-3xl text-[#e8c547] mb-4`}></i>
                 <h3 className="text-lg font-semibold text-gray-300">
                   {interest.name}

@@ -5,7 +5,7 @@ export const blogPosts = [
     description: "Insights into electricity's role in modern life.",
     excerpt: "Electricity is one of the fundamental pillars of modern civilization. From powering our homes to enabling complex computer systems, electricity drives almost every aspect of our lives.",
     category: 'technology',
-    image: '/images/movies/teknominator.png', // Using existing tech image
+    image: '/images/posts/the-importance-of-electricity.png',
     readTime: '5 min read',
     content: `Electricity is one of the fundamental pillars of modern civilization. From the moment light bulbs were first introduced to society, electricity has evolved into an irreplaceable resource. Today, it is the driving force behind almost every aspect of our lives.
 
@@ -22,7 +22,7 @@ export const blogPosts = [
     description: "Exploring technological advancements and their impacts.",
     excerpt: "In the rapidly evolving digital age, the challenges we face are more complex than ever. Technology has fundamentally transformed how we live, work, and interact with each other.",
     category: 'ai',
-    image: '/images/projects/generative-ai.png', // Using existing AI image
+    image: '/images/posts/modern-challenges-in-the-digital-age.png',
     readTime: '8 min read',
     content: `In the rapidly evolving digital age, the challenges we face are more complex than ever. Technology has fundamentally transformed the way we live, work, and interact with each other. While these advancements have brought incredible convenience, they have also introduced new dilemmas regarding privacy, security, and the impact on human relationships. As we become increasingly connected through digital platforms, the very essence of human interaction is shifting. Social media, online communities, and virtual spaces offer a sense of connection, yet they often come at the cost of deep, meaningful relationships. The digital age, while offering unprecedented access to information, has also given rise to new forms of isolation, as people engage in increasingly superficial interactions. This disconnection is compounded by the constant bombardment of information, making it difficult for individuals to filter what is truly valuable or meaningful.
 
@@ -41,7 +41,7 @@ export const blogPosts = [
     description: "Strategies for continuous learning and adaptation.",
     excerpt: "In a world that is constantly evolving, the ability to learn is not just an advantage—it is a necessity. Learning for survival extends far beyond traditional education.",
     category: 'tutorial',
-    image: null, // Will use generator
+    image: '/images/posts/learning-for-survival.png',
     readTime: '7 min read',
     content: `In a world that is constantly evolving, the ability to learn is not just an advantage—it is a necessity. Learning for survival extends far beyond the confines of traditional education; it encapsulates the relentless pursuit of growth, adaptation, and innovation that is essential to navigating the complexities of life. This journey of learning involves understanding not only how to survive, but how to thrive in an ever-changing world.
 
@@ -74,41 +74,13 @@ export const blogPosts = [
 
     Beyond their entertainment value, video games also offer numerous cognitive benefits. Many games require problem-solving, critical thinking, and strategic planning, helping to sharpen our minds and improve our mental acuity. Games that involve complex narratives, such as RPGs and adventure games, can also enhance our empathy, creativity, and emotional intelligence by immersing us in rich, interactive stories.
 
-    Video games are also a powerful social tool. Multiplayer games allow us to connect with friends, family, and strangers from around the world, fostering a sense of community and camaraderie. Whether it's teaming up to defeat a boss, competing in
-
-    eSports tournaments, or simply chatting with fellow players, games provide a platform for social interaction and collaboration that transcends geographical boundaries.
+    Video games are also a powerful social tool. Multiplayer games allow us to connect with friends, family, and strangers from around the world, fostering a sense of community and camaraderie. Whether it's teaming up to defeat a boss, competing in eSports tournaments, or simply chatting with fellow players, games provide a platform for social interaction and collaboration that transcends geographical boundaries.
 
     As a creative medium, video games offer endless possibilities for self-expression and exploration. From designing custom levels in Super Mario Maker to creating intricate mods in Skyrim, games empower players to unleash their creativity and share their creations with others. The rise of indie games has further expanded the diversity and innovation within the industry, allowing developers to experiment with new ideas, art styles, and gameplay mechanics.
 
     While video games are not without their drawbacks, such as addiction, excessive screen time, and toxic online communities, the benefits they offer far outweigh the risks. When approached mindfully and in moderation, gaming can be a rewarding and enriching experience that enhances our lives in countless ways.
 
     For me, video games are more than just a hobby—they are a passion, a form of self-expression, and a source of joy. They have shaped my worldview, inspired my creativity, and connected me with a global community of like-minded individuals. As I continue to explore the vast and ever-evolving landscape of gaming, I look forward to the adventures, challenges, and friendships that lie ahead.`,
-
     date: "2025-03-12"
-  },
-  {
-    slug: 'building-modern-web-applications',
-    title: 'Building Modern Web Applications',
-    description: "A guide to modern web development practices and technologies.",
-    excerpt: "Modern web development has evolved dramatically with new frameworks, tools, and best practices. Learn how to build scalable, performant web applications.",
-    category: 'web-development',
-    image: '/images/projects/contro-dashboard.png', // Using existing web app image
-    readTime: '10 min read',
-    content: `Modern web development has transformed dramatically over the past decade. With the rise of JavaScript frameworks, cloud computing, and mobile-first design, developers now have unprecedented tools and capabilities at their disposal. Building modern web applications requires understanding not just the technical aspects, but also user experience, performance optimization, and scalability considerations.
-
-    The foundation of any modern web application starts with choosing the right technology stack. React, Vue.js, and Angular have become the dominant frontend frameworks, each offering unique advantages. React's component-based architecture and vast ecosystem make it ideal for complex applications, while Vue.js provides a gentler learning curve and excellent documentation. Angular offers a comprehensive framework with built-in features for enterprise applications.
-
-    On the backend, Node.js has revolutionized server-side development by allowing JavaScript developers to work across the full stack. Combined with frameworks like Express.js or Next.js for full-stack applications, developers can build powerful APIs and server-side rendered applications with ease. The rise of serverless computing has further simplified deployment and scaling, allowing developers to focus on code rather than infrastructure.
-
-    Database selection has also evolved, with NoSQL databases like MongoDB offering flexibility for rapidly changing requirements, while traditional SQL databases remain crucial for applications requiring ACID compliance and complex relationships. The emergence of cloud databases and Database-as-a-Service solutions has made it easier than ever to get started with robust data storage.
-
-    Performance optimization has become increasingly important as users expect fast, responsive applications. Techniques like code splitting, lazy loading, and progressive web app features can dramatically improve user experience. Tools like Webpack, Vite, and Parcel have made it easier to optimize bundle sizes and implement these performance enhancements.
-
-    Security considerations are paramount in modern web development. Implementing proper authentication, authorization, input validation, and protection against common vulnerabilities like XSS and CSRF attacks is essential. Tools and services like Auth0, Firebase Authentication, and OAuth providers have simplified secure user management.
-
-    The development workflow has also been revolutionized by tools like Git for version control, CI/CD pipelines for automated testing and deployment, and containerization with Docker for consistent environments across development, testing, and production.
-
-    As we look to the future, emerging technologies like WebAssembly, Progressive Web Apps, and AI integration are opening new possibilities for web applications. The key to success in modern web development is staying curious, continuously learning, and focusing on creating value for users while maintaining clean, maintainable code.`,
-    date: "2024-09-10"
   }
 ];
