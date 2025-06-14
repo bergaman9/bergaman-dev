@@ -460,6 +460,54 @@ export default function Home() {
             ))}
           </div>
         </section>
+
+        {/* Newsletter Section */}
+        <section className="py-16 fade-in">
+          <div className="glass p-8 rounded-lg text-center">
+            <div className="mb-6">
+              <i className="fas fa-dragon text-4xl text-[#e8c547] mb-4"></i>
+              <h2 className="text-3xl md:text-4xl font-bold gradient-text mb-4 leading-tight">
+                Join the Dragon's Domain
+              </h2>
+              <p className="text-lg text-gray-300 max-w-2xl mx-auto">
+                Get exclusive insights on AI, blockchain, and full-stack development. 
+                Join fellow developers in the dragon's lair for weekly technical updates and project showcases.
+              </p>
+            </div>
+            
+            <div className="flex justify-center space-x-6 mb-6 text-sm text-gray-400">
+              <div className="flex items-center">
+                <i className="fas fa-check text-green-400 mr-2"></i>
+                <span>Weekly Updates</span>
+              </div>
+              <div className="flex items-center">
+                <i className="fas fa-check text-green-400 mr-2"></i>
+                <span>No Spam</span>
+              </div>
+              <div className="flex items-center">
+                <i className="fas fa-check text-green-400 mr-2"></i>
+                <span>Unsubscribe Anytime</span>
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link
+                href="/newsletter"
+                className="px-8 py-4 text-lg font-medium bg-[#e8c547] text-[#0e1b12] rounded-lg hover:bg-[#d4b445] transition-colors duration-300"
+              >
+                <i className="fas fa-paper-plane mr-2"></i>
+                Subscribe to Newsletter
+              </Link>
+              <Link
+                href="/contact"
+                className="px-8 py-4 text-lg font-medium border border-[#3e503e] rounded-lg hover:border-[#e8c547] transition-colors duration-300"
+              >
+                <i className="fas fa-envelope mr-2"></i>
+                Get in Touch
+              </Link>
+            </div>
+          </div>
+        </section>
       </div>
 
       {/* Image Modal */}

@@ -30,21 +30,16 @@ export default function MaintenancePage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a1a0f] via-[#0e1b12] via-[#1a2e1a] to-[#0a1a0f] text-[#d1d5db] flex items-center justify-center relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-[#1a202c] via-[#2d3748] to-[#1a202c] text-[#e2e8f0] flex items-center justify-center relative">
       
-      {/* Animated Background Elements */}
+      {/* Clean Grid Background */}
       <div className="fixed inset-0 z-0">
-        {/* Dragon Aura */}
-        <div className="absolute top-20 left-20 w-[400px] h-[400px] bg-gradient-radial from-[#e8c547]/10 via-[#e8c547]/5 to-transparent rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 right-20 w-[300px] h-[300px] bg-gradient-radial from-[#2e3d29]/15 via-[#2e3d29]/8 to-transparent rounded-full blur-3xl animate-pulse delay-1000"></div>
-        
-        {/* Floating Orbs */}
-        <div className="absolute top-1/4 left-1/5 w-3 h-3 bg-[#e8c547]/40 rounded-full animate-bounce delay-300 shadow-lg shadow-[#e8c547]/30"></div>
-        <div className="absolute top-3/4 right-1/5 w-2 h-2 bg-[#e8c547]/50 rounded-full animate-bounce delay-700 shadow-lg shadow-[#e8c547]/30"></div>
-        <div className="absolute top-1/2 left-3/4 w-2.5 h-2.5 bg-[#e8c547]/35 rounded-full animate-bounce delay-1000 shadow-lg shadow-[#e8c547]/30"></div>
-        
-        {/* Dragon Breath Effect */}
-        <div className="absolute top-32 right-32 w-48 h-48 bg-gradient-conic from-[#e8c547]/8 via-transparent to-[#e8c547]/8 rounded-full blur-2xl animate-spin" style={{ animationDuration: '15s' }}></div>
+        <div 
+          className="absolute inset-0 opacity-20" 
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%234a5568' fill-opacity='0.3'%3E%3Cpath d='M0 0h1v1H0V0zm20 0h1v1h-1V0zm0 20h1v1h-1v-1zM0 20h1v1H0v-1z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+          }}
+        ></div>
       </div>
 
       {/* Main Content */}

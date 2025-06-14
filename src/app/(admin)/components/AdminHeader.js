@@ -24,12 +24,13 @@ export default function AdminHeader() {
     { href: '/admin/posts', icon: 'fas fa-file-alt', label: 'Posts' },
     { href: '/admin/comments', icon: 'fas fa-comments', label: 'Comments' },
     { href: '/admin/contacts', icon: 'fas fa-envelope', label: 'Contacts' },
+    { href: '/admin/newsletter', icon: 'fas fa-newspaper', label: 'Newsletter' },
     { href: '/admin/members', icon: 'fas fa-users', label: 'Members' },
     { href: '/admin/settings', icon: 'fas fa-cog', label: 'Settings' }
   ];
 
   return (
-    <header className="bg-gradient-to-r from-[#0a1a0f]/95 via-[#0e1b12]/95 via-[#1a2e1a]/95 to-[#0a1a0f]/95 border-b border-[#e8c547]/20 backdrop-blur-md sticky top-0 z-50">
+    <header className="bg-gradient-to-r from-[#1e1b4b]/95 via-[#312e81]/95 via-[#3730a3]/95 to-[#1e1b4b]/95 border-b border-[#4f46e5]/20 backdrop-blur-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           
@@ -42,9 +43,9 @@ export default function AdminHeader() {
               </div>
               <div>
                 <h1 className="text-xl font-bold bg-gradient-to-r from-[#e8c547] to-[#f4d76b] bg-clip-text text-transparent">
-                  Bergaman - The Dragon's Domain
+                  Bergaman Portal
                 </h1>
-                <p className="text-sm text-gray-400 -mt-1">Admin Portal</p>
+                <p className="text-sm text-gray-400 -mt-1">Admin Dashboard</p>
               </div>
             </Link>
           </div>
@@ -92,7 +93,7 @@ export default function AdminHeader() {
                 </div>
                 <div className="hidden sm:block text-left">
                   <p className="text-sm font-medium text-[#e8c547]">Bergaman</p>
-                  <p className="text-xs text-gray-400">Administrator</p>
+                  <p className="text-xs text-gray-400">AI & Blockchain Developer</p>
                 </div>
                 <i className={`fas fa-chevron-down text-xs text-gray-400 transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`}></i>
               </button>
@@ -103,7 +104,7 @@ export default function AdminHeader() {
                   <div className="py-3">
                     <div className="px-4 py-3 border-b border-[#3e503e]/30">
                       <p className="text-sm font-medium text-[#e8c547]">Bergaman</p>
-                      <p className="text-xs text-gray-400">Administrator</p>
+                      <p className="text-xs text-gray-400">AI & Blockchain Developer</p>
                     </div>
                     
                     <Link

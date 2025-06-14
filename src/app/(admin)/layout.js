@@ -21,36 +21,29 @@ export default function AdminLayout({ children }) {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a1a0f] via-[#0e1b12] via-[#1a2e1a] to-[#0a1a0f] text-[#d1d5db] flex flex-col relative">
+    <div className="min-h-screen bg-gradient-to-br from-[#1a1a2e] via-[#16213e] via-[#0f3460] to-[#1a1a2e] text-[#e2e8f0] flex flex-col relative">
       
-      {/* Professional Dragon Background */}
+      {/* Clean Professional Background */}
       <div className="fixed inset-0 z-0">
-        {/* Elegant Gradient Layers */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#0a1a0f] via-[#0e1b12] to-[#1a2e1a]"></div>
-        <div className="absolute inset-0 bg-gradient-to-tl from-[#1a2e1a]/50 via-transparent to-[#0e1b12]/50"></div>
-        <div className="absolute inset-0 bg-gradient-to-tr from-[#2e3d29]/20 via-transparent to-[#e8c547]/5"></div>
+        {/* Base Gradient Layers */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460]"></div>
+        <div className="absolute inset-0 bg-gradient-to-tl from-[#0f3460]/40 via-transparent to-[#16213e]/40"></div>
         
-        {/* Subtle Dragon Aura - Corner Accents */}
-        <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-radial from-[#e8c547]/8 via-[#e8c547]/3 to-transparent rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 right-0 w-80 h-80 bg-gradient-radial from-[#2e3d29]/12 via-[#2e3d29]/4 to-transparent rounded-full blur-3xl"></div>
+        {/* Subtle Corner Accents */}
+        <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-radial from-[#4f46e5]/8 via-[#4f46e5]/3 to-transparent rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 right-0 w-80 h-80 bg-gradient-radial from-[#7c3aed]/6 via-[#7c3aed]/2 to-transparent rounded-full blur-3xl"></div>
         
-        {/* Professional Grid Pattern */}
+        {/* Clean Grid Pattern */}
         <div 
-          className="absolute inset-0 opacity-10" 
+          className="absolute inset-0 opacity-5" 
           style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23e8c547' fill-opacity='0.1'%3E%3Cpath d='M0 0h1v1H0V0zm10 0h1v1h-1V0zm10 0h1v1h-1V0zm10 0h1v1h-1V0zm10 0h1v1h-1V0zm10 0h1v1h-1V0zm10 0h1v1h-1V0zm10 0h1v1h-1V0zm10 0h1v1h-1V0zm10 0h1v1h-1V0zM0 10h1v1H0v-1zm10 0h1v1h-1v-1zm10 0h1v1h-1v-1zm10 0h1v1h-1v-1zm10 0h1v1h-1v-1zm10 0h1v1h-1v-1zm10 0h1v1h-1v-1zm10 0h1v1h-1v-1zm10 0h1v1h-1v-1zm10 0h1v1h-1v-1z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%234f46e5' fill-opacity='0.4'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
           }}
         ></div>
         
-        {/* Diagonal Accent Lines */}
-        <div className="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-transparent via-[#e8c547]/8 to-transparent"></div>
-        <div className="absolute top-0 right-1/4 w-px h-full bg-gradient-to-b from-transparent via-[#e8c547]/6 to-transparent"></div>
-        <div className="absolute left-0 top-1/4 h-px w-full bg-gradient-to-r from-transparent via-[#e8c547]/4 to-transparent"></div>
-        
-        {/* Minimal Floating Elements */}
-        <div className="absolute top-1/3 left-1/6 w-2 h-2 bg-[#e8c547]/30 rounded-full animate-pulse delay-1000"></div>
-        <div className="absolute top-2/3 right-1/6 w-1.5 h-1.5 bg-[#e8c547]/25 rounded-full animate-pulse delay-2000"></div>
-        <div className="absolute bottom-1/3 left-2/3 w-2.5 h-2.5 bg-[#e8c547]/20 rounded-full animate-pulse delay-3000"></div>
+        {/* Subtle Accent Lines */}
+        <div className="absolute top-0 left-1/3 w-px h-full bg-gradient-to-b from-transparent via-[#4f46e5]/10 to-transparent"></div>
+        <div className="absolute top-0 right-1/3 w-px h-full bg-gradient-to-b from-transparent via-[#7c3aed]/8 to-transparent"></div>
       </div>
 
       {/* Content Wrapper */}

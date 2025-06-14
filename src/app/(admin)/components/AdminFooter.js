@@ -50,7 +50,7 @@ export default function AdminFooter() {
   ];
 
   return (
-    <footer className="bg-gradient-to-r from-[#0a1a0f]/95 via-[#0e1b12]/95 via-[#1a2e1a]/95 to-[#0a1a0f]/95 border-t border-[#e8c547]/20 backdrop-blur-md mt-auto w-full">
+    <footer className="bg-gradient-to-r from-[#1e1b4b]/95 via-[#312e81]/95 via-[#3730a3]/95 to-[#1e1b4b]/95 border-t border-[#4f46e5]/20 backdrop-blur-md mt-auto w-full">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         
         {/* Main Footer Content */}
