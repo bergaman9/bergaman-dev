@@ -144,25 +144,23 @@ export default function AdminPage() {
         <Head>
           <title>Admin Login - Bergaman Admin Panel</title>
         </Head>
-        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center px-4">
+        <div className="min-h-screen bg-[#0e1b12] flex items-center justify-center px-4">
           <div className="max-w-md w-full space-y-8">
             <div className="text-center">
               <div className="mb-6">
-                <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <i className="fas fa-cog text-white text-3xl"></i>
-                </div>
+                <i className="fas fa-dragon text-6xl text-[#e8c547] mb-4"></i>
               </div>
-              <h2 className="text-3xl font-bold text-white mb-2">
-                Admin Panel
+              <h2 className="text-3xl font-bold gradient-text">
+                Admin Portal
               </h2>
-              <p className="text-slate-400">
-                Content Management System
+              <p className="mt-2 text-gray-400">
+                Enter the Dragon's Domain
               </p>
             </div>
-            <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 p-8 rounded-xl shadow-2xl">
+            <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-8 rounded-lg">
               <form className="space-y-6" onSubmit={handleLogin}>
                 <div>
-                  <label htmlFor="username" className="block text-sm font-medium text-slate-300 mb-2">
+                  <label htmlFor="username" className="block text-sm font-medium text-gray-300 mb-2">
                     Username
                   </label>
                   <input
@@ -170,14 +168,14 @@ export default function AdminPage() {
                     name="username"
                     type="text"
                     required
-                    className="w-full px-4 py-3 bg-slate-900/50 border border-slate-600 rounded-lg text-slate-100 placeholder-slate-400 focus:border-blue-500 focus:outline-none transition-colors duration-300"
+                    className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] placeholder-gray-400 focus:border-[#e8c547]/50 focus:outline-none transition-colors duration-300"
                     placeholder="Enter username"
                     value={loginData.username}
                     onChange={handleInputChange}
                   />
                 </div>
                 <div>
-                  <label htmlFor="password" className="block text-sm font-medium text-slate-300 mb-2">
+                  <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
                     Password
                   </label>
                   <input
@@ -185,7 +183,7 @@ export default function AdminPage() {
                     name="password"
                     type="password"
                     required
-                    className="w-full px-4 py-3 bg-slate-900/50 border border-slate-600 rounded-lg text-slate-100 placeholder-slate-400 focus:border-blue-500 focus:outline-none transition-colors duration-300"
+                    className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] placeholder-gray-400 focus:border-[#e8c547]/50 focus:outline-none transition-colors duration-300"
                     placeholder="Enter password"
                     value={loginData.password}
                     onChange={handleInputChange}
@@ -201,10 +199,10 @@ export default function AdminPage() {
 
                 <button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-3 px-4 rounded-lg font-medium transition-all duration-300 hover:scale-105 shadow-lg"
+                  className="w-full bg-[#e8c547] hover:bg-[#d4b445] text-[#0e1b12] py-3 px-4 rounded-lg font-medium transition-all duration-300 hover:scale-105"
                 >
                   <i className="fas fa-sign-in-alt mr-2"></i>
-                  Sign In
+                  Enter Portal
                 </button>
               </form>
             </div>
@@ -222,196 +220,193 @@ export default function AdminPage() {
       </Head>
       <div className="space-y-8">
         {/* Welcome Header */}
-        <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 border border-slate-700/50 p-6 rounded-xl">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-3xl font-bold text-white mb-2">
-                <i className="fas fa-tachometer-alt mr-3 text-blue-400"></i>
-                Dashboard
-              </h1>
-              <p className="text-slate-300">
-                Welcome back, Bergaman! Manage your content and monitor your site.
-              </p>
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-4xl font-bold gradient-text mb-2">
+              <i className="fas fa-dragon mr-3"></i>
+              Dragon's Command Center
+            </h1>
+            <p className="text-gray-400">
+              Welcome back, Bergaman! Manage your digital domain.
+            </p>
+          </div>
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={handleMigration}
+              className="bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/50 text-blue-300 px-6 py-3 rounded-lg font-medium transition-all duration-300 hover:scale-105"
+            >
+              <i className="fas fa-database mr-2"></i>
+              Migrate Posts
+            </button>
+          </div>
+        </div>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg transition-all duration-300">
+            <div className="flex items-center">
+              <div className="p-3 bg-blue-600/20 rounded-lg">
+                <i className="fas fa-file-alt text-blue-400 text-xl"></i>
+              </div>
+              <div className="ml-4">
+                <p className="text-sm text-gray-400">Total Posts</p>
+                <p className="text-2xl font-bold text-[#e8c547]">{stats.totalPosts}</p>
+              </div>
             </div>
-            <div className="flex items-center space-x-3">
-              <button
-                onClick={handleMigration}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 shadow-lg"
-              >
-                <i className="fas fa-database mr-2"></i>
-                Migrate Posts
-              </button>
+          </div>
+
+          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg transition-all duration-300">
+            <div className="flex items-center">
+              <div className="p-3 bg-green-600/20 rounded-lg">
+                <i className="fas fa-eye text-green-400 text-xl"></i>
+              </div>
+              <div className="ml-4">
+                <p className="text-sm text-gray-400">Total Views</p>
+                <p className="text-2xl font-bold text-[#e8c547]">{stats.totalViews.toLocaleString()}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg transition-all duration-300">
+            <div className="flex items-center">
+              <div className="p-3 bg-red-600/20 rounded-lg">
+                <i className="fas fa-heart text-red-400 text-xl"></i>
+              </div>
+              <div className="ml-4">
+                <p className="text-sm text-gray-400">Total Likes</p>
+                <p className="text-2xl font-bold text-[#e8c547]">{stats.totalLikes}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg transition-all duration-300">
+            <div className="flex items-center">
+              <div className="p-3 bg-purple-600/20 rounded-lg">
+                <i className="fas fa-comments text-purple-400 text-xl"></i>
+              </div>
+              <div className="ml-4">
+                <p className="text-sm text-gray-400">Years Coding</p>
+                <p className="text-2xl font-bold text-[#e8c547]">{new Date().getFullYear() - 2022}</p>
+              </div>
             </div>
           </div>
         </div>
 
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg transition-all duration-300">
-              <div className="flex items-center">
-                <div className="p-3 bg-blue-600/20 rounded-lg">
-                  <i className="fas fa-file-alt text-blue-400 text-xl"></i>
-                </div>
-                <div className="ml-4">
-                  <p className="text-sm text-gray-400">Total Posts</p>
-                  <p className="text-2xl font-bold text-[#e8c547]">{stats.totalPosts}</p>
-                </div>
-              </div>
-            </div>
+        {/* Quick Actions */}
+        <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg mb-8">
+          <h2 className="text-xl font-bold gradient-text mb-6">
+            <i className="fas fa-bolt mr-2"></i>
+            Quick Actions
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Link
+              href="/admin/posts/new"
+              className="bg-green-600/20 hover:bg-green-600/30 border border-green-500/50 text-green-300 p-4 rounded-lg transition-all duration-300 hover:scale-105 block text-center"
+            >
+              <i className="fas fa-plus text-2xl mb-3 block"></i>
+              <h3 className="font-semibold mb-1">New Post</h3>
+              <p className="text-sm opacity-90">Create new blog post</p>
+            </Link>
 
-            <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg transition-all duration-300">
-              <div className="flex items-center">
-                <div className="p-3 bg-green-600/20 rounded-lg">
-                  <i className="fas fa-eye text-green-400 text-xl"></i>
-                </div>
-                <div className="ml-4">
-                  <p className="text-sm text-gray-400">Total Views</p>
-                  <p className="text-2xl font-bold text-[#e8c547]">{stats.totalViews.toLocaleString()}</p>
-                </div>
-              </div>
-            </div>
+            <Link
+              href="/admin/posts"
+              className="bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/50 text-blue-300 p-4 rounded-lg transition-all duration-300 hover:scale-105 block text-center"
+            >
+              <i className="fas fa-edit text-2xl mb-3 block"></i>
+              <h3 className="font-semibold mb-1">Manage Posts</h3>
+              <p className="text-sm opacity-90">Edit existing posts</p>
+            </Link>
 
-            <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg transition-all duration-300">
-              <div className="flex items-center">
-                <div className="p-3 bg-red-600/20 rounded-lg">
-                  <i className="fas fa-heart text-red-400 text-xl"></i>
-                </div>
-                <div className="ml-4">
-                  <p className="text-sm text-gray-400">Total Likes</p>
-                  <p className="text-2xl font-bold text-[#e8c547]">{stats.totalLikes}</p>
-                </div>
-              </div>
-            </div>
+            <Link
+              href="/admin/content"
+              className="bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/50 text-purple-300 p-4 rounded-lg transition-all duration-300 hover:scale-105 block text-center"
+            >
+              <i className="fas fa-cog text-2xl mb-3 block"></i>
+              <h3 className="font-semibold mb-1">Site Settings</h3>
+              <p className="text-sm opacity-90">Update site content</p>
+            </Link>
 
-            <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg transition-all duration-300">
-              <div className="flex items-center">
-                <div className="p-3 bg-purple-600/20 rounded-lg">
-                  <i className="fas fa-comments text-purple-400 text-xl"></i>
-                </div>
-                <div className="ml-4">
-                  <p className="text-sm text-gray-400">Years Coding</p>
-                  <p className="text-2xl font-bold text-[#e8c547]">{new Date().getFullYear() - 2022}</p>
-                </div>
-              </div>
-            </div>
+            <Link
+              href="/"
+              target="_blank"
+              className="bg-gray-600/20 hover:bg-gray-600/30 border border-gray-500/50 text-gray-300 p-4 rounded-lg transition-all duration-300 hover:scale-105 block text-center"
+            >
+              <i className="fas fa-external-link-alt text-2xl mb-3 block"></i>
+              <h3 className="font-semibold mb-1">View Site</h3>
+              <p className="text-sm opacity-90">Visit public website</p>
+            </Link>
           </div>
+        </div>
 
-          {/* Quick Actions */}
-          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg mb-8">
-            <h2 className="text-xl font-bold gradient-text mb-6">
-              <i className="fas fa-bolt mr-2"></i>
-              Quick Actions
+        {/* Recent Posts */}
+        <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-bold gradient-text">
+              <i className="fas fa-clock mr-2"></i>
+              Recent Posts
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Link
+              href="/admin/posts"
+              className="text-[#e8c547] hover:text-[#d4b445] transition-colors duration-300"
+            >
+              View All →
+            </Link>
+          </div>
+          
+          {recentPosts.length === 0 ? (
+            <div className="text-center py-8 text-gray-400">
+              <i className="fas fa-file-alt text-4xl mb-4 block"></i>
+              <p>No posts found. Create your first post!</p>
               <Link
                 href="/admin/posts/new"
-                className="bg-green-600/20 hover:bg-green-600/30 border border-green-500/50 text-green-300 p-4 rounded-lg transition-all duration-300 hover:scale-105 block text-center"
+                className="inline-block mt-4 bg-[#e8c547] hover:bg-[#d4b445] text-[#0e1b12] px-6 py-2 rounded-lg font-medium transition-all duration-300"
               >
-                <i className="fas fa-plus text-2xl mb-3 block"></i>
-                <h3 className="font-semibold mb-1">New Post</h3>
-                <p className="text-sm opacity-90">Create new blog post</p>
-              </Link>
-
-              <Link
-                href="/admin/posts"
-                className="bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/50 text-blue-300 p-4 rounded-lg transition-all duration-300 hover:scale-105 block text-center"
-              >
-                <i className="fas fa-edit text-2xl mb-3 block"></i>
-                <h3 className="font-semibold mb-1">Manage Posts</h3>
-                <p className="text-sm opacity-90">Edit existing posts</p>
-              </Link>
-
-              <Link
-                href="/admin/content"
-                className="bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/50 text-purple-300 p-4 rounded-lg transition-all duration-300 hover:scale-105 block text-center"
-              >
-                <i className="fas fa-cog text-2xl mb-3 block"></i>
-                <h3 className="font-semibold mb-1">Site Settings</h3>
-                <p className="text-sm opacity-90">Update site content</p>
-              </Link>
-
-              <Link
-                href="/"
-                target="_blank"
-                className="bg-gray-600/20 hover:bg-gray-600/30 border border-gray-500/50 text-gray-300 p-4 rounded-lg transition-all duration-300 hover:scale-105 block text-center"
-              >
-                <i className="fas fa-external-link-alt text-2xl mb-3 block"></i>
-                <h3 className="font-semibold mb-1">View Site</h3>
-                <p className="text-sm opacity-90">Visit public website</p>
+                Create Post
               </Link>
             </div>
-          </div>
-
-          {/* Recent Posts */}
-          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-bold gradient-text">
-                <i className="fas fa-clock mr-2"></i>
-                Recent Posts
-              </h2>
-              <Link
-                href="/admin/posts"
-                className="text-[#e8c547] hover:text-[#d4b445] transition-colors duration-300"
-              >
-                View All →
-              </Link>
-            </div>
-            
-            {recentPosts.length === 0 ? (
-              <div className="text-center py-8 text-gray-400">
-                <i className="fas fa-file-alt text-4xl mb-4 block"></i>
-                <p>No posts found. Create your first post!</p>
-                <Link
-                  href="/admin/posts/new"
-                  className="inline-block mt-4 bg-[#e8c547] hover:bg-[#d4b445] text-[#0e1b12] px-6 py-2 rounded-lg font-medium transition-all duration-300"
-                >
-                  Create Post
-                </Link>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {recentPosts.map((post) => (
-                  <div key={post._id} className="flex items-center justify-between p-4 bg-[#0e1b12] rounded-lg border border-[#3e503e]">
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-[#e8c547] mb-1">{post.title}</h3>
-                      <p className="text-sm text-gray-400 mb-2">{post.description?.substring(0, 100)}...</p>
-                      <div className="flex items-center text-xs text-gray-500 space-x-4">
-                        <span>
-                          <i className="fas fa-calendar mr-1"></i>
-                          {new Date(post.createdAt).toLocaleDateString()}
-                        </span>
-                        <span>
-                          <i className="fas fa-eye mr-1"></i>
-                          {post.views || 0} views
-                        </span>
-                        <span>
-                          <i className="fas fa-heart mr-1"></i>
-                          {post.likes || 0} likes
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-2 ml-4">
-                      <Link
-                        href={`/blog/${post.slug}`}
-                        target="_blank"
-                        className="text-gray-400 hover:text-[#e8c547] transition-colors duration-300 p-2"
-                        title="View Post"
-                      >
-                        <i className="fas fa-eye"></i>
-                      </Link>
-                      <Link
-                        href={`/admin/posts/edit/${post._id}`}
-                        className="text-gray-400 hover:text-[#e8c547] transition-colors duration-300 p-2"
-                        title="Edit Post"
-                      >
-                        <i className="fas fa-edit"></i>
-                      </Link>
+          ) : (
+            <div className="space-y-4">
+              {recentPosts.map((post) => (
+                <div key={post._id} className="flex items-center justify-between p-4 bg-[#0e1b12] rounded-lg border border-[#3e503e]">
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-[#e8c547] mb-1">{post.title}</h3>
+                    <p className="text-sm text-gray-400 mb-2">{post.description?.substring(0, 100)}...</p>
+                    <div className="flex items-center text-xs text-gray-500 space-x-4">
+                      <span>
+                        <i className="fas fa-calendar mr-1"></i>
+                        {new Date(post.createdAt).toLocaleDateString()}
+                      </span>
+                      <span>
+                        <i className="fas fa-eye mr-1"></i>
+                        {post.views || 0} views
+                      </span>
+                      <span>
+                        <i className="fas fa-heart mr-1"></i>
+                        {post.likes || 0} likes
+                      </span>
                     </div>
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
+                  <div className="flex items-center space-x-2 ml-4">
+                    <Link
+                      href={`/blog/${post.slug}`}
+                      target="_blank"
+                      className="text-gray-400 hover:text-[#e8c547] transition-colors duration-300 p-2"
+                      title="View Post"
+                    >
+                      <i className="fas fa-eye"></i>
+                    </Link>
+                    <Link
+                      href={`/admin/posts/edit/${post._id}`}
+                      className="text-gray-400 hover:text-[#e8c547] transition-colors duration-300 p-2"
+                      title="Edit Post"
+                    >
+                      <i className="fas fa-edit"></i>
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </>

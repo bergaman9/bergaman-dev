@@ -81,8 +81,7 @@ const BlogPostSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Create indexes
-BlogPostSchema.index({ slug: 1 });
+// Create indexes (slug already has unique index from schema)
 BlogPostSchema.index({ category: 1 });
 BlogPostSchema.index({ published: 1 });
 BlogPostSchema.index({ createdAt: -1 });
