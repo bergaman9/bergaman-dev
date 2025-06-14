@@ -6,6 +6,12 @@ on:
   pull_request:
     branches: [ main ]
 
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  id-token: write
+
 jobs:
   test:
     name: 🧪 Test & Lint
@@ -32,6 +38,7 @@ jobs:
       env:
         MONGODB_URI: ${{ secrets.MONGODB_URI }}
         NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
+        ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
 
   version:
     name: 🏷️ Auto Version
@@ -62,10 +69,14 @@ jobs:
       id: semantic
       uses: cycjimmy/semantic-release-action@v4
       with:
-        semantic_version: 19
+        semantic_version: 24
         extra_plugins: |
           @semantic-release/changelog@6.0.0
           @semantic-release/git@10.0.0
+          @semantic-release/commit-analyzer@13.0.1
+          @semantic-release/release-notes-generator@14.0.3
+          @semantic-release/npm@12.0.1
+          @semantic-release/github@11.0.3
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
