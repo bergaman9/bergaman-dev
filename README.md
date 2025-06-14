@@ -1,6 +1,23 @@
 # 🐉 Bergaman Portfolio v2.0 - The Dragon's Domain
 
+> **🌟 Live Demo:** [https://bergaman.dev](https://bergaman.dev)  
+> **🕰️ Legacy v1.0.0:** [https://bergaman-v1.vercel.app/](https://bergaman-v1.vercel.app/)
+
 A cutting-edge, full-stack portfolio website with integrated admin panel, MongoDB backend, and real-time content management. Built with Next.js 15, featuring AI & Blockchain developer content, dynamic blog system, and advanced admin capabilities.
+
+## 🔗 Version Comparison
+
+| Feature | v1.0.0 (Legacy) | v2.0.0 (Current) |
+|---------|-----------------|------------------|
+| **Live Demo** | [bergaman-v1.vercel.app](https://bergaman-v1.vercel.app/) | [bergaman.dev](https://bergaman.dev) |
+| **Content Management** | Static files | MongoDB + Admin Panel |
+| **Blog System** | File-based | Database-driven |
+| **Admin Panel** | ❌ | ✅ Full CMS |
+| **Live Editing** | ❌ | ✅ On-site editing |
+| **Analytics** | ❌ | ✅ Real-time tracking |
+| **SEO** | Basic | Advanced + Dynamic |
+| **Comments** | ❌ | ✅ Database-driven |
+| **Migration** | ❌ | ✅ Automated |
 
 ## ✨ What's New in v2.0
 
@@ -306,6 +323,21 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-🐉 **Built with dragon-like precision and wisdom** 🐉
+## 🔗 Links
 
-*Crafting technology inspired by the strength and wisdom of a dragon*
+- **🌟 Current Version (v2.0.0)**: [https://bergaman.dev](https://bergaman.dev)
+- **🕰️ Legacy Version (v1.0.0)**: [https://bergaman-v1.vercel.app/](https://bergaman-v1.vercel.app/)
+- **📚 GitHub Repository**: [https://github.com/bergaman9/bergaman-dev](https://github.com/bergaman9/bergaman-dev)
+- **🏷️ Releases**: [https://github.com/bergaman9/bergaman-dev/releases](https://github.com/bergaman9/bergaman-dev/releases)
+
+---
+
+<div align="center">
+  <p>🐉 <strong>Built with dragon-like precision and wisdom</strong> 🐉</p>
+  <p><em>Crafting technology inspired by the strength and wisdom of a dragon</em></p>
+  <p>
+    <a href="https://bergaman.dev">Current Version</a> •
+    <a href="https://bergaman-v1.vercel.app/">Legacy Version</a> •
+    <a href="https://github.com/bergaman9">GitHub</a>
+  </p>
+</div>
