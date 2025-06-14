@@ -108,7 +108,7 @@ export default function RootLayout({ children }) {
                 SITE_CONFIG.author.twitter,
                 SITE_CONFIG.author.discord
               ],
-              "jobTitle": "AI & Blockchain Developer",
+              "jobTitle": "Electrical & Electronics Engineer",
               "worksFor": {
                 "@type": "Organization",
                 "name": "Freelance"

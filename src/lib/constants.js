@@ -1,8 +1,8 @@
 // Site Configuration
 export const SITE_CONFIG = {
   name: 'Bergaman',
-  title: 'Bergaman - AI & Blockchain Developer | The Dragon\'s Domain',
-  description: 'Passionate AI & Blockchain Developer specializing in modern web technologies, artificial intelligence, and innovative digital solutions. Crafting technology inspired by the strength and wisdom of a dragon.',
+  title: 'Bergaman - The Dragon\'s Domain',
+  description: 'Passionate Electrical & Electronics Engineer specializing in modern web technologies, innovative digital solutions, and technical projects. Crafting technology inspired by the strength and wisdom of a dragon.',
   url: process.env.NEXT_PUBLIC_SITE_URL || 'https://bergaman.dev',
   author: {
     name: 'Ömer (Bergaman)',
@@ -12,14 +12,13 @@ export const SITE_CONFIG = {
     discord: 'https://discord.gg/bergaman'
   },
   keywords: [
-    'AI Developer',
-    'Blockchain Developer',
+    'Electrical Engineer',
+    'Electronics Engineer',
     'Full Stack Developer',
     'Next.js',
     'React',
     'Python',
     'Discord Bot',
-    'Machine Learning',
     'Web Development',
     'Bergaman',
     'Dragon Developer'

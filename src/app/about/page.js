@@ -172,16 +172,16 @@ export default function About() {
   return (
     <div className="min-h-screen text-[#d1d5db] page-container">
       <Head>
-        <title>About Me - Ömer | Electrical Electronics Engineer & Full Stack Developer</title>
-        <meta name="description" content="Learn more about Ömer - Electrical Electronics Engineer specializing in AI-powered solutions, full-stack development, and technical projects based in İstanbul, Turkey." />
-        <meta name="keywords" content="ömer, bergaman, electrical electronics engineer, full stack developer, istanbul, turkey, AI developer, tech enthusiast" />
-        <meta property="og:title" content="About Me - Ömer | Electrical Electronics Engineer" />
-        <meta property="og:description" content="Electrical Electronics Engineer specializing in AI-powered solutions and full-stack development." />
+        <title>About Me - Bergaman | Electrical & Electronics Engineer & Full Stack Developer</title>
+        <meta name="description" content="Learn more about Bergaman - Electrical & Electronics Engineer specializing in innovative solutions, full-stack development, and technical projects based in İstanbul, Turkey." />
+        <meta name="keywords" content="bergaman, electrical electronics engineer, full stack developer, istanbul, turkey, tech enthusiast, dragon domain" />
+        <meta property="og:title" content="About Me - Bergaman | Electrical & Electronics Engineer" />
+        <meta property="og:description" content="Electrical & Electronics Engineer specializing in innovative solutions and full-stack development." />
         <meta property="og:url" content="https://bergaman.dev/about" />
         <meta property="og:type" content="profile" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="About Me - Ömer | Electrical Electronics Engineer" />
-        <meta name="twitter:description" content="Electrical Electronics Engineer specializing in AI-powered solutions and full-stack development." />
+        <meta name="twitter:title" content="About Me - Bergaman | Electrical & Electronics Engineer" />
+        <meta name="twitter:description" content="Electrical & Electronics Engineer specializing in innovative solutions and full-stack development." />
         <link rel="canonical" href="https://bergaman.dev/about" />
       </Head>
 
@@ -204,7 +204,7 @@ export default function About() {
             About Me
           </h1>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Electrical Electronics Engineer & Full Stack Developer
+            Electrical & Electronics Engineer & Full Stack Developer
           </p>
         </section>
 
@@ -216,7 +216,7 @@ export default function About() {
             </h2>
             <div className="space-y-6 text-lg text-gray-300 leading-relaxed">
               <p>
-                Hi, I'm <span className="text-[#e8c547] font-semibold">Ömer</span>! I'm an <span className="text-[#e8c547] font-semibold">Electrical Electronics Engineer</span> based in <span className="text-[#e8c547] font-semibold">İstanbul, Turkey</span>. My journey in the tech world began with a passion for video games, which sparked my curiosity about computers. This early interest led me to pursue a degree in <span className="text-[#e8c547] font-semibold">Electrical and Electronics Engineering at Istinye University</span> (2019-2024).
+                Hi, I'm <span className="text-[#e8c547] font-semibold">Ömer (Bergaman)</span>! I'm an <span className="text-[#e8c547] font-semibold">Electrical & Electronics Engineer</span> based in <span className="text-[#e8c547] font-semibold">İstanbul, Turkey</span>. My journey in the tech world began with a passion for video games, which sparked my curiosity about computers. This early interest led me to pursue a degree in <span className="text-[#e8c547] font-semibold">Electrical and Electronics Engineering at Istinye University</span> (2019-2024).
               </p>
               
               <p>

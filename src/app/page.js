@@ -111,16 +111,16 @@ export default function Home() {
   return (
     <div className="page-container">
       <Head>
-        <title>Ömer Güler - Bergaman | Electrical Electronics Engineer & Full-Stack Developer</title>
-        <meta name="description" content="Welcome to Ömer Güler's digital domain. Electrical Electronics Engineer based in İstanbul, Turkey. Explore cutting-edge technical solutions, AI projects, and innovative full-stack development." />
-        <meta name="keywords" content="ömer güler, bergaman, electrical electronics engineer, istanbul, turkey, full-stack developer, AI, web development, portfolio" />
-        <meta property="og:title" content="Ömer Güler - Bergaman | Electrical Electronics Engineer" />
-        <meta property="og:description" content="Electrical Electronics Engineer - Crafting innovative technical solutions and AI-powered applications" />
+        <title>Bergaman - The Dragon's Domain | Electrical & Electronics Engineer</title>
+        <meta name="description" content="Welcome to Bergaman's digital domain. Electrical & Electronics Engineer based in İstanbul, Turkey. Explore cutting-edge technical solutions and innovative full-stack development." />
+        <meta name="keywords" content="bergaman, electrical electronics engineer, istanbul, turkey, full-stack developer, web development, portfolio, dragon domain" />
+        <meta property="og:title" content="Bergaman - The Dragon's Domain | Electrical & Electronics Engineer" />
+        <meta property="og:description" content="Electrical & Electronics Engineer - Crafting innovative technical solutions and web applications" />
         <meta property="og:url" content="https://bergaman.dev" />
         <meta property="og:type" content="website" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Ömer Güler - Bergaman | Electrical Electronics Engineer" />
-        <meta name="twitter:description" content="Electrical Electronics Engineer - Crafting innovative technical solutions and AI-powered applications" />
+        <meta name="twitter:title" content="Bergaman - The Dragon's Domain | Electrical & Electronics Engineer" />
+        <meta name="twitter:description" content="Electrical & Electronics Engineer - Crafting innovative technical solutions and web applications" />
         <link rel="canonical" href="https://bergaman.dev" />
       </Head>
 

@@ -141,8 +141,8 @@ export async function POST(request) {
               <p style="margin: 0; font-size: 12px; color: #94a3b8;">
                 You're receiving this because you subscribed to Bergaman's newsletter.
               </p>
-              <p style="margin: 5px 0 0 0; font-size: 11px; color: #64748b;">
-                AI & Blockchain Developer | Full Stack Engineer | The Dragon's Domain
+              <p style="margin: 10px 0 0 0; font-size: 11px; color: #64748b;">
+                Electrical & Electronics Engineer | Full Stack Engineer | The Dragon's Domain
               </p>
             </div>
           </div>
