@@ -1,9 +1,7 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Head from 'next/head';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
 
 export default function NewsletterSignup() {
   const [formData, setFormData] = useState({
@@ -17,6 +15,23 @@ export default function NewsletterSignup() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
+  const [subscriberCount, setSubscriberCount] = useState(500);
+
+  useEffect(() => {
+    fetchSubscriberCount();
+  }, []);
+
+  const fetchSubscriberCount = async () => {
+    try {
+      const response = await fetch('/api/newsletter/stats');
+      const data = await response.json();
+      if (data.success) {
+        setSubscriberCount(data.stats.totalSubscribers);
+      }
+    } catch (error) {
+      console.error('Error fetching subscriber count:', error);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -82,8 +97,6 @@ export default function NewsletterSignup() {
         <title>Newsletter Signup - Bergaman's Dragon Domain</title>
         <meta name="description" content="Subscribe to Bergaman's newsletter for AI, blockchain, and full-stack development insights." />
       </Head>
-
-      <Header />
       
       <div className="page-content pt-8">
         <div className="container mx-auto px-4 py-12">
@@ -316,7 +329,7 @@ export default function NewsletterSignup() {
           {/* Footer */}
           <div className="mt-12 text-center">
             <p className="text-gray-400 mb-4">
-              Join <span className="text-[#e8c547] font-semibold">500+</span> developers already subscribed
+              Join <span className="text-[#e8c547] font-semibold">{subscriberCount}+</span> developers already subscribed
             </p>
             <div className="flex justify-center space-x-6">
               <a 
@@ -348,8 +361,6 @@ export default function NewsletterSignup() {
           </div>
         </div>
       </div>
-      
-      <Footer />
     </div>
   );
 } 

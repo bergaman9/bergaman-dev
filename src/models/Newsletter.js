@@ -52,8 +52,7 @@ const NewsletterSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Index for better query performance
-NewsletterSchema.index({ email: 1 });
+// Index for better query performance (email already has unique index)
 NewsletterSchema.index({ status: 1, subscribedAt: -1 });
 
 export default mongoose.models.Newsletter || mongoose.model('Newsletter', NewsletterSchema); 

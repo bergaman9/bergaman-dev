@@ -82,9 +82,9 @@ export async function POST(request) {
 
     // Send welcome email (optional)
     try {
-      const nodemailer = require('nodemailer');
-      
-      const transporter = nodemailer.createTransporter({
+            const nodemailer = require('nodemailer');
+
+      const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
           user: process.env.EMAIL_USER,

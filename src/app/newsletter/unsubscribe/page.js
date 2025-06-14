@@ -1,12 +1,10 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Head from 'next/head';
-import Header from '../../components/Header';
-import Footer from '../../components/Footer';
 
-export default function NewsletterUnsubscribe() {
+function UnsubscribeContent() {
   const searchParams = useSearchParams();
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
@@ -56,14 +54,12 @@ export default function NewsletterUnsubscribe() {
     }
   };
 
-  return (
+      return (
     <div className="page-container">
       <Head>
         <title>Unsubscribe - Bergaman's Newsletter</title>
         <meta name="description" content="Unsubscribe from Bergaman's newsletter." />
       </Head>
-
-      <Header />
       
       <div className="page-content pt-8">
         <div className="container mx-auto px-4 py-12">
@@ -189,7 +185,25 @@ export default function NewsletterUnsubscribe() {
         </div>
       </div>
       
-      <Footer />
     </div>
+  );
+}
+
+export default function NewsletterUnsubscribe() {
+  return (
+    <Suspense fallback={
+      <div className="page-container">
+        <div className="page-content pt-8">
+          <div className="container mx-auto px-4 py-12">
+            <div className="max-w-md mx-auto text-center">
+              <i className="fas fa-spinner fa-spin text-4xl text-[#e8c547] mb-4"></i>
+              <p className="text-gray-400">Loading...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    }>
+      <UnsubscribeContent />
+    </Suspense>
   );
 } 
