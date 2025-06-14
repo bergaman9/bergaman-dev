@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [2.2.0](https://github.com/bergaman9/bergaman-dev/compare/v2.1.2...v2.2.0) (2025-06-14)
+
+### 🚀 Features
+
+* update professional title and site branding - Changed from AI & Blockchain Developer to Electrical & Electronics Engineer - Updated page title to Bergaman - The Dragon's Domain - Standardized title format across all pages and components - Updated meta descriptions and keywords - Enhanced brand consistency throughout the application ([a1bad83](https://github.com/bergaman9/bergaman-dev/commit/a1bad838953f768a5bd4c57502f9ce8fae73b146))
+
 ## [2.1.2](https://github.com/bergaman9/bergaman-dev/compare/v2.1.1...v2.1.2) (2025-06-14)
 
 ### 🐛 Bug Fixes
