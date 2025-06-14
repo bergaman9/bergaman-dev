@@ -6,7 +6,7 @@ import { getAppVersion } from '../../../lib/version';
 
 export default function AdminFooter() {
   const [currentTime, setCurrentTime] = useState('');
-  const [appVersion, setAppVersion] = useState('v2.0.0');
+  const [appVersion, setAppVersion] = useState('v2.1.1');
   const [systemStats, setSystemStats] = useState({
     uptime: '0h 0m',
     memory: '0%',

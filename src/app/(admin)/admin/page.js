@@ -24,7 +24,7 @@ export default function AdminPage() {
   const [systemInfo, setSystemInfo] = useState({
     uptime: '0 days',
     lastBackup: 'Never',
-    version: '2.0.0'
+    version: '2.1.1'
   });
 
   useEffect(() => {

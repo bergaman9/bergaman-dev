@@ -1,17 +1,17 @@
-# �� Bergaman Portfolio - The Dragon's Domain
+# 🐉 Bergaman Portfolio - The Dragon's Domain
 
-[![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](https://github.com/bergaman9/bergaman-dev)
+[![Version](https://img.shields.io/badge/version-2.1.1-blue.svg)](https://github.com/bergaman9/bergaman-dev)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/bergaman9/bergaman-dev/blob/main/LICENSE)
 [![Next.js](https://img.shields.io/badge/Next.js-15.0.3-black.svg)](https://nextjs.org/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-green.svg)](https://www.mongodb.com/)
 
 > **Crafting technology inspired by the strength and wisdom of a dragon** 🐉
 
-A cutting-edge portfolio website featuring a sophisticated admin panel, real-time content management, and dragon-themed UI effects. Built with Next.js 15, MongoDB, and modern web technologies.
+A cutting-edge portfolio website featuring a sophisticated admin panel, real-time content management, newsletter system, and dragon-themed UI effects. Built with Next.js 15, MongoDB, and modern web technologies.
 
 ## 🌟 **Live Demo**
 
-- **🚀 Current Version (v2.0.0)**: [bergaman.dev](https://bergaman.dev)
+- **🚀 Current Version (v2.1.1)**: [bergaman.dev](https://bergaman.dev)
 - **🕰️ Legacy Version (v1.0.0)**: [bergaman-v1.vercel.app](https://bergaman-v1.vercel.app/)
 
 ## ✨ **Key Features**
@@ -28,6 +28,7 @@ A cutting-edge portfolio website featuring a sophisticated admin panel, real-tim
 - **Content Management**: Create, edit, and manage blog posts with rich editor
 - **User Management**: Admin authentication and role-based access control
 - **Analytics Tracking**: View counts, engagement metrics, and performance data
+- **Newsletter Management**: Complete subscriber and campaign management system
 
 ### 📝 **Dynamic Blog System**
 - **MongoDB Integration**: Full database-driven content management
@@ -35,11 +36,21 @@ A cutting-edge portfolio website featuring a sophisticated admin panel, real-tim
 - **Comment System**: Advanced commenting with IP tracking and moderation
 - **Categories & Tags**: Organized content with filtering and search capabilities
 
+### 📧 **Newsletter System**
+- **Subscriber Management**: Complete newsletter signup and management system
+- **Campaign Creation**: Rich markdown-based email campaigns with templates
+- **Audience Targeting**: Segment subscribers by preferences and activity
+- **Real-time Statistics**: Track subscriber counts, open rates, and engagement
+- **Unsubscribe Management**: One-click unsubscribe with preference center
+- **Email Templates**: Professional dragon-themed email designs
+- **Batch Sending**: Efficient email delivery with rate limiting
+
 ### 🚀 **DevOps & Automation**
 - **GitHub Actions**: Automated version management and releases
 - **Semantic Versioning**: Automatic version bumping based on commit messages
 - **Environment Management**: Dynamic version tracking and deployment
 - **Performance Monitoring**: Core Web Vitals and analytics integration
+- **Dependabot Integration**: Automated security updates and dependency management
 
 ## 🛠️ **Tech Stack**
 
@@ -53,9 +64,11 @@ A cutting-edge portfolio website featuring a sophisticated admin panel, real-tim
 ### **Libraries & Tools**
 - **Icons**: FontAwesome 6.5.1
 - **Analytics**: Vercel Analytics
-- **Email**: Nodemailer for contact forms
+- **Email**: Nodemailer for contact forms and newsletters
 - **Fonts**: Inter (Google) + Geist (Local)
 - **Image Optimization**: Next.js Image component
+- **Markdown**: Marked for rich content rendering
+- **Security**: bcryptjs for password hashing
 
 ## 🚀 **Quick Start**
 
@@ -63,6 +76,7 @@ A cutting-edge portfolio website featuring a sophisticated admin panel, real-tim
 - Node.js 18+
 - MongoDB Atlas account
 - Git
+- Gmail account (for email functionality)
 
 ### **Installation**
 
@@ -76,7 +90,7 @@ npm install
 
 # Set up environment variables
 cp .env.example .env.local
-# Edit .env.local with your MongoDB connection string
+# Edit .env.local with your configuration
 
 # Start development server
 npm run dev
@@ -87,27 +101,35 @@ npm run dev
 ```env
 # .env.local
 MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/bergaman-dev
+NEXTAUTH_SECRET=your-secret-key
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
-NEXT_PUBLIC_APP_VERSION=2.0.0
+NEXT_PUBLIC_APP_VERSION=2.1.1
 EMAIL_USER=your-email@gmail.com
 EMAIL_PASS=your-app-password
+VERCEL_TOKEN=your-vercel-token (optional)
+VERCEL_ORG_ID=your-org-id (optional)
+VERCEL_PROJECT_ID=your-project-id (optional)
 ```
+
+> **⚠️ Security Note**: The `.env.example` file uses placeholder values to prevent GitHub's secret scanning alerts. Always replace these with your actual credentials in your local `.env.local` file.
 
 ## 📁 **Project Structure**
 
 ```
 bergaman-dev/
-├── .github/workflows/     # GitHub Actions
+├── .github/workflows/     # GitHub Actions & Dependabot
 ├── public/images/         # Static assets
 ├── src/
 │   ├── app/
 │   │   ├── (admin)/      # Admin panel routes
 │   │   ├── api/          # API endpoints
 │   │   ├── blog/         # Blog pages
+│   │   ├── newsletter/   # Newsletter pages
 │   │   ├── components/   # Reusable components
 │   │   └── ...
 │   ├── lib/              # Utilities and constants
-│   └── models/           # MongoDB schemas
+│   ├── models/           # MongoDB schemas
+│   └── data/             # Static data files
 └── ...
 ```
 
@@ -123,6 +145,12 @@ bergaman-dev/
 - **Manage Comments**: Approve, reject, and moderate
 - **View Analytics**: Track engagement and performance
 - **System Monitoring**: Real-time server status
+
+### **Newsletter Management**
+- **Subscriber Overview**: View all subscribers with status tracking
+- **Campaign Creation**: Create rich markdown-based email campaigns
+- **Audience Targeting**: Send to active subscribers or specific segments
+- **Performance Tracking**: Monitor open rates and engagement metrics
 
 ### **Version Management**
 - **Automatic Versioning**: Based on commit message patterns
@@ -155,6 +183,15 @@ bergaman-dev/
 - `GET /api/admin/comments` - List comments
 - `PUT /api/admin/comments/[id]` - Moderate comment
 
+### **Newsletter System**
+- `POST /api/newsletter/subscribe` - Subscribe to newsletter
+- `POST /api/newsletter/unsubscribe` - Unsubscribe from newsletter
+- `GET /api/newsletter/stats` - Get subscriber statistics
+- `GET /api/admin/newsletter/subscribers` - List all subscribers
+- `GET /api/admin/newsletter/campaigns` - List all campaigns
+- `POST /api/admin/newsletter/campaigns` - Create new campaign
+- `POST /api/admin/newsletter/campaigns/[id]/send` - Send campaign
+
 ### **Analytics**
 - `GET /api/admin/analytics` - Get statistics
 - `PUT /api/posts/[id]/view` - Track page views
@@ -170,13 +207,26 @@ bergaman-dev/
 - **Version Bumping**: Automatic semantic versioning
 - **Release Creation**: Generated changelogs and tags
 - **Build Validation**: Tests and quality checks
+- **Dependency Updates**: Automated security patches
+
+### **Required GitHub Secrets**
+```
+MONGODB_URI - MongoDB Atlas connection string
+NEXTAUTH_SECRET - Authentication secret key
+EMAIL_USER - Gmail address for email functionality
+EMAIL_PASS - Gmail app password
+VERCEL_TOKEN - Vercel deployment token
+VERCEL_ORG_ID - Vercel organization ID
+VERCEL_PROJECT_ID - Vercel project ID
+```
 
 ## 🔒 **Security Features**
 
-- **Admin Authentication**: Secure login system
+- **Admin Authentication**: Secure login system with bcrypt
 - **Input Validation**: XSS and injection protection
 - **Rate Limiting**: API endpoint protection
 - **Environment Security**: Sensitive data encryption
+- **Newsletter Security**: Email validation and unsubscribe protection
 
 ## 📈 **Performance**
 
@@ -184,6 +234,7 @@ bergaman-dev/
 - **Image Optimization**: Next.js Image with lazy loading
 - **Code Splitting**: Route-based bundle optimization
 - **Caching Strategy**: Efficient data fetching
+- **Email Delivery**: Batch processing with rate limiting
 
 ## 🤝 **Contributing**
 
@@ -220,7 +271,16 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📊 **Version History**
 
-### **v2.0.0** (Current)
+### **v2.1.1** (Current)
+- 📧 Complete newsletter system with subscriber management
+- 📨 Email campaign creation and sending functionality
+- 📊 Real-time newsletter statistics and analytics
+- 🔧 Enhanced GitHub Actions with Dependabot integration
+- 🐛 Fixed hydration errors and build issues
+- 🎨 Improved admin panel with green dragon theme
+- 🔒 Enhanced security with better error handling
+
+### **v2.0.0** (Previous)
 - 🗄️ Full MongoDB integration
 - 🛠️ Advanced admin panel with dragon effects
 - ✏️ Real-time content management
@@ -241,6 +301,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **🏷️ Releases**: [github.com/bergaman9/bergaman-dev/releases](https://github.com/bergaman9/bergaman-dev/releases)
 - **📖 Documentation**: [bergaman.dev/docs](https://bergaman.dev/docs)
 - **🐛 Issues**: [github.com/bergaman9/bergaman-dev/issues](https://github.com/bergaman9/bergaman-dev/issues)
+- **📧 Newsletter**: [bergaman.dev/newsletter](https://bergaman.dev/newsletter)
 
 ---
 
