@@ -63,7 +63,7 @@ const skillCategories = [
     skills: [
       { name: "Turkish (Native)", level: 100 },
       { name: "English", level: 85 },
-      { name: "German", level: 70 },
+      { name: "German (A1-A2)", level: 25 },
       { name: "Technical Communication", level: 85 }
     ]
   }
@@ -72,32 +72,36 @@ const skillCategories = [
 // Experience Data - Updated with correct information
 const experiences = [
   {
-    title: "Electrical Electronics Engineer",
-    company: "Bergasoft (Personal Project)",
-    period: "2024 - Present",
-    description: "Developing innovative software solutions and technical applications as a personal project. Focus on AI-powered tools, web development, and system optimization.",
-    technologies: ["C#", "Python", "AI Tools", "Web Development", "System Design"]
+    title: "Bergasoft Projects",
+    company: "Personal Software Development",
+    period: "2024 - Present (Until August 2025)",
+    description: "Developing innovative software solutions and technology projects as personal hobby/research initiatives. Focus on AI-powered applications, web development, and emerging technologies. Building knowledge and experience through hands-on projects.",
+    technologies: ["Python", "C#", "React", "Next.js", "AI Tools", "Web Development"],
+    type: "personal"
   },
   {
-    title: "Freelancer",
-    company: "Bionluk",
+    title: "Freelance Developer",
+    company: "Bionluk Platform",
     period: "Aug 2022 - Nov 2024",
-    description: "Provided graphic design and software development services as a freelancer. Worked on various projects including web development, Discord bots, and design solutions.",
-    technologies: ["Graphic Design", "Web Development", "Python", "Discord.py", "React"]
+    description: "Provided graphic design and software development services as a freelancer. Worked on various client projects including web development, Discord bots, and design solutions.",
+    technologies: ["Graphic Design", "Web Development", "Python", "Discord.py", "React"],
+    type: "freelance"
   },
   {
-    title: "Intern",
-    company: "Çevre Şehircilik ve İklim Değişikliği Bakanlığı",
+    title: "Engineering Intern",
+    company: "Ministry of Environment, Urbanization and Climate Change",
     period: "Jun 2023 - Jul 2023",
-    description: "Completed internship at the Ministry of Environment, Urbanization and Climate Change in Yalova, Turkey. Gained experience in environmental engineering and government sector operations.",
-    technologies: ["Environmental Engineering", "Government Systems", "Technical Documentation"]
+    description: "Completed mandatory engineering internship in Yalova, Turkey. Gained insights into government sector operations and environmental engineering practices.",
+    technologies: ["Environmental Engineering", "Government Systems", "Technical Documentation"],
+    type: "internship"
   },
   {
-    title: "Intern",
+    title: "Electronics Intern", 
     company: "Birfen Elektrik&Elektronik",
     period: "Aug 2022 - Sep 2022",
-    description: "Electrical and electronics engineering internship in Yalova, Turkey. Hands-on experience with electrical systems and electronic components.",
-    technologies: ["Electrical Systems", "Electronics", "Circuit Analysis", "Technical Troubleshooting"]
+    description: "Hands-on electrical and electronics engineering internship in Yalova, Turkey. Practical experience with electrical systems and electronic components.",
+    technologies: ["Electrical Systems", "Electronics", "Circuit Analysis", "Technical Troubleshooting"],
+    type: "internship"
   }
 ];
 
@@ -114,7 +118,7 @@ const education = [
   {
     title: "High School Diploma",
     institution: "İstanbul Anadolu Lisesi",
-    field: "High School Education",
+    field: "Science Track",
     period: "Sep 2018 - Jun 2019",
     description: "Graduated with high honors (96.32 GPA). Strong academic performance in mathematics and sciences.",
     achievements: ["Grade: 96.32", "Mathematics Excellence", "Science Focus"]
@@ -323,27 +327,27 @@ export default function About() {
         {/* Education Section - Timeline Design */}
         <section className="mb-16 slide-in-right">
           <h2 className="text-3xl font-bold gradient-text mb-8 text-center flex items-center justify-center gap-3">
-            <i className="fas fa-graduation-cap text-cyan-400"></i>
+            <i className="fas fa-graduation-cap text-[#e8c547]"></i>
             Education
           </h2>
           <div className="relative max-w-4xl mx-auto">
             {/* Timeline Line */}
-            <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-cyan-400 to-blue-500"></div>
+            <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-[#e8c547] to-[#d4b445]"></div>
             
             <div className="space-y-12">
               {education.map((edu, index) => (
                 <div key={index} className="relative flex items-start">
                   {/* Timeline Dot */}
-                  <div className="absolute left-6 w-4 h-4 bg-cyan-400 rounded-full border-4 border-[#0e1b12] z-10 shadow-lg shadow-cyan-400/25"></div>
+                  <div className="absolute left-6 w-4 h-4 bg-[#e8c547] rounded-full border-4 border-[#0e1b12] z-10 shadow-lg shadow-[#e8c547]/25"></div>
                   
                   {/* Content */}
                   <div className="ml-20 bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg w-full">
                     <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-4">
                       <div className="flex-1">
-                        <h3 className="text-xl font-semibold text-cyan-400 mb-2">{edu.title}</h3>
+                        <h3 className="text-xl font-semibold text-[#e8c547] mb-2">{edu.title}</h3>
                         <p className="text-gray-300 font-medium text-lg mb-1">{edu.institution}</p>
                         <p className="text-gray-400 mb-2">{edu.field}</p>
-                        <span className="text-gray-400 text-sm bg-cyan-400/10 px-3 py-1 rounded-full inline-block">
+                        <span className="text-gray-400 text-sm bg-[#e8c547]/10 px-3 py-1 rounded-full inline-block">
                           <i className="fas fa-calendar-alt mr-2"></i>
                           {edu.period}
                         </span>
@@ -352,7 +356,7 @@ export default function About() {
                     <p className="text-gray-300 mb-4 leading-relaxed">{edu.description}</p>
                     <div className="flex flex-wrap gap-2">
                       {edu.achievements.map((achievement, achIndex) => (
-                        <span key={achIndex} className="px-3 py-1 bg-cyan-400/20 text-cyan-300 text-sm rounded-full border border-cyan-400/30">
+                        <span key={achIndex} className="px-3 py-1 bg-[#e8c547]/20 text-[#e8c547] text-sm rounded-full border border-[#e8c547]/30">
                           {achievement}
                         </span>
                       ))}

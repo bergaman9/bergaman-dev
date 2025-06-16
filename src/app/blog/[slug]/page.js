@@ -222,41 +222,10 @@ export default function BlogPost() {
               </div>
             )}
           </div>
-
-          {/* Post Meta */}
-          <div className="flex items-center justify-between py-4 border-t border-b border-[#3e503e]">
-            <div className="flex items-center space-x-6 text-sm text-gray-400">
-              <span>
-                <i className="fas fa-user mr-1"></i>
-                {post.author || 'Bergaman'}
-              </span>
-              <span>
-                <i className="fas fa-eye mr-1"></i>
-                {post.views || 0} views
-              </span>
-              <span>
-                <i className="fas fa-comments mr-1"></i>
-                {commentCount} comments
-              </span>
-            </div>
-            
-            <button
-              onClick={handleLike}
-              disabled={hasLiked}
-              className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-300 ${
-                hasLiked
-                  ? 'bg-red-600/20 text-red-400 cursor-not-allowed'
-                  : 'bg-red-600/10 text-red-400 hover:bg-red-600/20 hover:scale-105'
-              }`}
-            >
-              <i className={`fas fa-heart ${hasLiked ? 'text-red-500' : ''}`}></i>
-              <span>{likes || post.likes || 0}</span>
-            </button>
-          </div>
         </header>
 
         {/* Article Content */}
-        <article className="prose prose-lg prose-invert max-w-none mb-12">
+        <article className="prose prose-lg prose-invert max-w-none mb-8">
           <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-8 rounded-lg">
             {post.content ? (
               <div className="whitespace-pre-wrap text-gray-300 leading-relaxed">
@@ -277,6 +246,37 @@ export default function BlogPost() {
             )}
           </div>
         </article>
+
+        {/* Post Meta - Moved here */}
+        <div className="flex items-center justify-between py-4 border-t border-b border-[#3e503e] mb-8">
+          <div className="flex items-center space-x-6 text-sm text-gray-400">
+            <span>
+              <i className="fas fa-user mr-1"></i>
+              {post.author || 'Bergaman'}
+            </span>
+            <span>
+              <i className="fas fa-eye mr-1"></i>
+              {post.views || 0} views
+            </span>
+            <span>
+              <i className="fas fa-comments mr-1"></i>
+              {commentCount} comments
+            </span>
+          </div>
+          
+          <button
+            onClick={handleLike}
+            disabled={hasLiked}
+            className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-300 ${
+              hasLiked
+                ? 'bg-red-600/20 text-red-400 cursor-not-allowed'
+                : 'bg-red-600/10 text-red-400 hover:bg-red-600/20 hover:scale-105'
+            }`}
+          >
+            <i className={`fas fa-heart ${hasLiked ? 'text-red-500' : ''}`}></i>
+            <span>{likes || post.likes || 0}</span>
+          </button>
+        </div>
 
         {/* Tags */}
         {post.tags && post.tags.length > 0 && (

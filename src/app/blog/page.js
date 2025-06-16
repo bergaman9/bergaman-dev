@@ -253,6 +253,10 @@ export default function Blog() {
                           <i className="fas fa-heart mr-1"></i>
                           {post.likes || 0}
                         </span>
+                        <span>
+                          <i className="fas fa-comments mr-1"></i>
+                          {post.commentCount || 0}
+                        </span>
                       </div>
                     </div>
                   </Link>

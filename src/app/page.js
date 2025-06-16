@@ -204,11 +204,11 @@ export default function Home() {
             Bergaman - The Dragon's Domain
           </h1>
           <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-300 mb-3 sm:mb-4 max-w-4xl mx-auto px-4">
-            Electrical & Electronics Engineering Student | Full-Stack Developer | AI Enthusiast
+            Electrical & Electronics Engineer | Full-Stack Developer | AI Enthusiast
           </p>
           <p className="text-sm sm:text-base lg:text-lg text-gray-400 mb-6 sm:mb-8 max-w-3xl mx-auto px-4">
-            Crafting innovative technical solutions with the strength and wisdom of a dragon. 
-            Specializing in embedded systems, web development, and artificial intelligence.
+            Passionate about creating innovative solutions through software development and technology research. 
+            Exploring the intersections of web development, artificial intelligence, and embedded systems.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4">
             <Link
@@ -291,7 +291,11 @@ export default function Home() {
                           className="w-full h-40 sm:h-48 object-cover"
                         />
                       ) : (
-                        <BlogImageGenerator title={post.title} className="w-full h-40 sm:h-48" />
+                        <BlogImageGenerator 
+                          title={post.title} 
+                          category={post.category}
+                          className="w-full h-40 sm:h-48" 
+                        />
                       )}
                       <div className="absolute top-2 right-2">
                         <span className="bg-[#e8c547] text-[#0e1b12] px-2 py-1 rounded text-xs font-medium">
@@ -479,34 +483,30 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Call to Action Section */}
-        <section className="py-12 sm:py-16 fade-in px-4 sm:px-6">
-          <div className="glass p-6 sm:p-8 lg:p-12 rounded-lg text-center">
-            <div className="mb-6">
-              <i className="fas fa-dragon text-3xl sm:text-4xl text-[#e8c547] mb-4"></i>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold gradient-text mb-4 leading-tight">
-                Let's Build Something Amazing Together
-              </h2>
-              <p className="text-base sm:text-lg text-gray-300 max-w-3xl mx-auto px-2">
-                Ready to bring your ideas to life? Whether it's a web application, embedded system, or AI project, 
-                I'm here to help you create innovative solutions that make a difference.
-              </p>
-            </div>
-            
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center max-w-md mx-auto">
-              <Link
-                href="/contact"
-                className="px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-medium bg-[#e8c547] text-[#0e1b12] rounded-lg transition-colors duration-300"
+        {/* Call to Action */}
+        <section className="text-center fade-in py-12 sm:py-16">
+          <div className="glass p-8 sm:p-12 rounded-lg max-w-4xl mx-auto">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#e8c547] mb-4 sm:mb-6">
+              Let's Connect and Share Ideas
+            </h2>
+            <p className="text-base sm:text-lg text-gray-300 mb-6 sm:mb-8 max-w-2xl mx-auto leading-relaxed">
+              I'm always excited to discuss technology, share experiences, and learn from fellow developers. 
+              Whether you have questions about my projects, want to collaborate, or just want to chat about tech - feel free to reach out!
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+              <Link 
+                href="/contact" 
+                className="bg-[#e8c547] text-[#0e1b12] px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold transition-all duration-300 text-sm sm:text-base"
               >
                 <i className="fas fa-envelope mr-2"></i>
-                Get in Touch
+                Get In Touch
               </Link>
-              <Link
-                href="/portfolio"
-                className="px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-medium border border-[#3e503e] rounded-lg transition-colors duration-300"
+              <Link 
+                href="/about" 
+                className="border border-[#e8c547]/50 text-[#e8c547] px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold transition-all duration-300 text-sm sm:text-base"
               >
-                <i className="fas fa-briefcase mr-2"></i>
-                View My Work
+                <i className="fas fa-user mr-2"></i>
+                Learn More About Me
               </Link>
             </div>
           </div>

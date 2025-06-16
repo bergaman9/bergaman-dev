@@ -15,7 +15,7 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer className="w-full bg-gradient-to-t from-[#0a1a0f] via-[#0e1b12] to-[#1a2e1a]/20 border-t border-[#e8c547]/20 mt-auto relative overflow-hidden">
+    <footer className="w-full bg-gradient-to-t from-[#0a1a0f] via-[#0e1b12] to-[#1a2e1a]/20 border-t border-[#3e503e]/60 mt-auto relative overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-5">
         <div 
@@ -26,7 +26,7 @@ export default function Footer() {
         ></div>
       </div>
       
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 relative z-10">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 relative z-10">
         
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 mb-12">

@@ -196,9 +196,8 @@ export default function Contact() {
             
             {/* Let's Connect Card */}
             <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-8 rounded-lg slide-in-left">
-              <h2 className="text-2xl font-bold mb-6 flex items-center">
-                <span className="text-[#e8c547]">Let's</span>
-                <span className="text-cyan-400 ml-2">Connect</span>
+              <h2 className="text-2xl font-bold mb-6 text-[#e8c547]">
+                Let's Connect
               </h2>
               <p className="text-gray-300 mb-8 leading-relaxed">
                 Whether you have a question about my projects, want to discuss technology, share ideas, or just want to chat - I'd love to hear from you! Drop me a message and I'll get back to you as soon as possible.
@@ -218,22 +217,22 @@ export default function Contact() {
 
                 {/* Website */}
                 <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-cyan-400/20 rounded-lg flex items-center justify-center">
-                    <i className="fas fa-globe text-cyan-400"></i>
+                  <div className="w-12 h-12 bg-[#e8c547]/20 rounded-lg flex items-center justify-center">
+                    <i className="fas fa-globe text-[#e8c547]"></i>
                   </div>
                   <div>
-                    <h3 className="text-cyan-400 font-semibold">Portfolio</h3>
+                    <h3 className="text-[#e8c547] font-semibold">Portfolio</h3>
                     <p className="text-gray-300">bergaman.dev</p>
                   </div>
                 </div>
 
                 {/* Response Time */}
                 <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-green-400/20 rounded-lg flex items-center justify-center">
-                    <i className="fas fa-clock text-green-400"></i>
+                  <div className="w-12 h-12 bg-[#e8c547]/20 rounded-lg flex items-center justify-center">
+                    <i className="fas fa-clock text-[#e8c547]"></i>
                   </div>
                   <div>
-                    <h3 className="text-green-400 font-semibold">Response Time</h3>
+                    <h3 className="text-[#e8c547] font-semibold">Response Time</h3>
                     <p className="text-gray-300">Usually within 24 hours</p>
                   </div>
                 </div>
@@ -242,9 +241,8 @@ export default function Contact() {
 
             {/* Send Message Form */}
             <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-8 rounded-lg slide-in-right">
-              <h2 className="text-2xl font-bold mb-6 flex items-center">
-                <span className="text-[#e8c547]">Send me a</span>
-                <span className="text-cyan-400 ml-2">Message</span>
+              <h2 className="text-2xl font-bold mb-6 text-[#e8c547]">
+                Send me a Message
               </h2>
 
               {submitStatus === 'success' && (
@@ -342,14 +340,14 @@ export default function Contact() {
 
         {/* Additional Info */}
         <section className="mt-16 text-center fade-in">
-          <div className="bg-[#2e3d29]/20 backdrop-blur-md border border-[#3e503e]/20 p-6 rounded-lg max-w-4xl mx-auto">
+          <div className="bg-[#2e3d29]/20 backdrop-blur-md border border-[#3e503e]/20 p-6 rounded-lg max-w-6xl mx-auto">
             <h3 className="text-xl font-semibold text-[#e8c547] mb-4">
               <i className="fas fa-info-circle mr-2"></i>
               Additional Information
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-gray-400">
               <div>
-                <p><strong className="text-gray-300">Location:</strong> Ankara, Turkey</p>
+                <p><strong className="text-gray-300">Location:</strong> Istanbul, Turkey</p>
                 <p><strong className="text-gray-300">Timezone:</strong> GMT+3 (Turkey Time)</p>
               </div>
               <div>
