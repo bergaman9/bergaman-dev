@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { useAuth } from "./AuthContext";
-import { NAV_LINKS } from '@/lib/constants';
 import { getAppVersion } from '@/lib/version';
 
 export default function Header() {
@@ -124,7 +123,7 @@ export default function Header() {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex">
             <ul className="flex space-x-4">
-              {NAV_LINKS.map((link) => (
+              {publicNavLinks.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
@@ -207,7 +206,7 @@ export default function Header() {
       {isMenuOpen && (
         <div className="md:hidden bg-[#0e1b12]/95 backdrop-blur-md fixed inset-0 z-40 flex flex-col overflow-auto pt-16">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            {NAV_LINKS.map((link) => (
+            {publicNavLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
