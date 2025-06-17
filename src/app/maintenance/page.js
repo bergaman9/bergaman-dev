@@ -1,5 +1,8 @@
 "use client";
 
+// Force dynamic rendering to prevent initialization errors
+export const dynamic = 'force-dynamic';
+
 import { useEffect, useState } from 'react';
 
 export default function MaintenancePage() {
