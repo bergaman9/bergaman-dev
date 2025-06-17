@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [2.4.0](https://github.com/bergaman9/bergaman-dev/compare/v2.3.0...v2.4.0) (2025-06-14)
+
+### 🚀 Features
+
+* convert admin newsletter page to green theme ([20e49c4](https://github.com/bergaman9/bergaman-dev/commit/20e49c435c2740b41e75cd5d99e53605bc6459fc))
+* enhance test-webhook page and add Gmail forwarding support - Fix navbar overlap issue with proper padding - Add admin authentication check - Create Gmail webhook endpoint for forwarding - Implement email parsing with contact ID extraction - Add setup instructions for Gmail and Zapier integration ([5ff51be](https://github.com/bergaman9/bergaman-dev/commit/5ff51bef22581302b4caa1e0d32648a7d3ac2994))
+* implement email webhook system and fix BlogImageGenerator error - Fix BlogImageGenerator undefined category error with proper null checks - Create email webhook endpoint at /api/webhook/email for handling email replies - Add contact ID tracking in email subjects for better reply matching - Update contact form and admin reply emails with proper reply-to headers - Create test page at /test-webhook for webhook testing - Implement smart email parsing with fallback to email-based contact lookup - Add admin notifications for incoming email replies - Support both JSON and form-encoded webhook data formats ([302e438](https://github.com/bergaman9/bergaman-dev/commit/302e4388e402ce4dd876d7cc4f037e60da04cc3d))
+* remove newsletter sections and enhance homepage for portfolio site - Remove newsletter section from homepage and footer - Update version to v2.3.0 across all components - Enhance homepage with better portfolio-focused content - Update all version references to be dynamic from package.json - Remove newsletter links from admin footer quick actions - Improve mobile responsiveness and visual hierarchy ([776d952](https://github.com/bergaman9/bergaman-dev/commit/776d9528f7bc6b491a2efdaced4e8b787b3451fb))
+
 ## [2.3.0](https://github.com/bergaman9/bergaman-dev/compare/v2.2.0...v2.3.0) (2025-06-14)
 
 ### 🚀 Features
@@ -145,3 +154,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ---
 
 🐉 **Built with dragon-like precision and wisdom** 🐉
+
+## [Unreleased]
+
+### 🚀 Features
+
+* **Enhanced UI Components**: Added 15+ modal design variants including modern, elegant, glass, frosted, and more
+* **Admin Panel Improvements**: Updated admin panel with soft blurred green background and flowing gradients
+* **Consistent PageHeader**: Implemented PageHeader component across all admin pages and public pages
+* **Privacy Policy**: Added comprehensive privacy policy page with GDPR and CCPA compliance
+* **Portfolio Management**: Updated portfolio management to use the new Modal components
+* **Mobile Optimization**: Fixed width issues in admin pages for better mobile display
+* **Z-index Management**: Fixed modal display issues with proper z-index hierarchy

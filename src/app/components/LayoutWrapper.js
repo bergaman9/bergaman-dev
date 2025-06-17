@@ -3,18 +3,23 @@
 import { usePathname } from 'next/navigation';
 import Header from './Header';
 import Footer from './Footer';
+import { AuthProvider, useAuth } from './AuthContext';
 
-export default function LayoutWrapper({ children }) {
+function LayoutContent({ children }) {
   const pathname = usePathname();
+  const { isAuthenticated, isLoading } = useAuth();
   const isAdminRoute = pathname?.startsWith('/admin');
 
+  // For admin routes, hide header/footer for security reasons
   if (isAdminRoute) {
-    // For admin routes, just return children without header/footer
-    // The admin layout will handle its own header/footer
-    return children;
+    return (
+      <div className="min-h-screen bg-[#0e1b12]">
+        {children}
+      </div>
+    );
   }
 
-  // For normal routes, render with header and footer
+  // For normal routes, always render with header and footer
   return (
     <>
       <Header />
@@ -23,5 +28,15 @@ export default function LayoutWrapper({ children }) {
       </main>
       <Footer />
     </>
+  );
+}
+
+export default function LayoutWrapper({ children }) {
+  return (
+    <AuthProvider>
+      <LayoutContent>
+        {children}
+      </LayoutContent>
+    </AuthProvider>
   );
 } 

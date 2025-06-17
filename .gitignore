@@ -115,3 +115,7 @@ jspm_packages/
 
 # stores vscode versions used for testing vscode extensions
 .vscode-test
+
+# uploaded images
+/public/uploads/*
+!/public/uploads/.gitkeep

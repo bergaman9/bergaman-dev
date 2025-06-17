@@ -1,80 +1,83 @@
 "use client";
 
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import AdminHeader from './components/AdminHeader';
 import AdminFooter from './components/AdminFooter';
 
 export default function AdminLayout({ children }) {
+  const [activeTab, setActiveTab] = useState('dashboard');
+  
   useEffect(() => {
-    // Hide loading screen after component mounts
-    const timer = setTimeout(() => {
-      const loading = document.getElementById('admin-loading');
-      if (loading) {
-        loading.style.opacity = '0';
-        setTimeout(() => {
-          loading.style.display = 'none';
-        }, 500);
-      }
-    }, 1000);
-
-    return () => clearTimeout(timer);
+    const path = window.location.pathname;
+    
+    if (path.includes('/admin/posts')) {
+      setActiveTab('posts');
+    } else if (path.includes('/admin/portfolio')) {
+      setActiveTab('portfolio');
+    } else if (path.includes('/admin/recommendations')) {
+      setActiveTab('recommendations');
+    } else if (path.includes('/admin/newsletter')) {
+      setActiveTab('newsletter');
+    } else if (path.includes('/admin/comments')) {
+      setActiveTab('comments');
+    } else if (path.includes('/admin/contacts')) {
+      setActiveTab('contacts');
+    } else if (path.includes('/admin/members')) {
+      setActiveTab('members');
+    } else if (path.includes('/admin/settings')) {
+      setActiveTab('settings');
+    } else if (path.includes('/admin/profile')) {
+      setActiveTab('profile');
+    } else if (path.includes('/admin/media')) {
+      setActiveTab('media');
+    } else if (path.includes('/admin/categories')) {
+      setActiveTab('categories');
+    } else if (path.includes('/admin/tags')) {
+      setActiveTab('tags');
+    } else {
+      setActiveTab('dashboard');
+    }
   }, []);
-
+  
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a1a0f] via-[#0e1b12] via-[#1a2e1a] to-[#0a1a0f] text-[#d1d5db] flex flex-col relative">
-      
-      {/* Clean Professional Background */}
+    <div className="min-h-screen flex flex-col bg-[#0e1b12] text-white relative overflow-hidden">
+      {/* Admin Background with Modern Soft Gradient */}
       <div className="fixed inset-0 z-0">
-        {/* Base Gradient Layers */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#0a1a0f] via-[#0e1b12] to-[#1a2e1a]"></div>
-        <div className="absolute inset-0 bg-gradient-to-tl from-[#1a2e1a]/40 via-transparent to-[#0e1b12]/40"></div>
+        {/* Base Gradient Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0c1a11] via-[#132218] to-[#1a2e1a]"></div>
         
-        {/* Clean Grid Pattern */}
+        {/* Soft Flowing Gradients */}
+        <div className="absolute inset-0 opacity-40">
+          <div className="absolute top-0 left-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPgogIDxkZWZzPgogICAgPHJhZGlhbEdyYWRpZW50IGlkPSJncmFkMSIgY3g9IjIwJSIgY3k9IjMwJSIgcj0iMzAlIiBmeD0iMjAlIiBmeT0iMzAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzJlM2QyOTtzdG9wLW9wYWNpdHk6MC4yIiAvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMwZTFiMTI7c3RvcC1vcGFjaXR5OjAiIC8+CiAgICA8L3JhZGlhbEdyYWRpZW50PgogICAgPHJhZGlhbEdyYWRpZW50IGlkPSJncmFkMiIgY3g9IjcwJSIgY3k9IjcwJSIgcj0iNDAlIiBmeD0iNzAlIiBmeT0iNzAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzFlMzMyNDtzdG9wLW9wYWNpdHk6MC4yIiAvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMwZTFiMTI7c3RvcC1vcGFjaXR5OjAiIC8+CiAgICA8L3JhZGlhbEdyYWRpZW50PgogICAgPHJhZGlhbEdyYWRpZW50IGlkPSJncmFkMyIgY3g9IjQwJSIgY3k9IjYwJSIgcj0iMzUlIiBmeD0iNDAlIiBmeT0iNjAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzI1MzgyMDtzdG9wLW9wYWNpdHk6MC4xNSIgLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojMGUxYjEyO3N0b3Atb3BhY2l0eTowIiAvPgogICAgPC9yYWRpYWxHcmFkaWVudD4KICA8L2RlZnM+CiAgPHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmFkMSkiIC8+CiAgPHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmFkMikiIC8+CiAgPHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmFkMykiIC8+Cjwvc3ZnPg==')]"></div>
+        </div>
+        
+        {/* Subtle Organic Shapes */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-[10%] left-[5%] w-[40%] h-[30%] rounded-full bg-[#e8c547]/5 blur-[100px]"></div>
+          <div className="absolute bottom-[15%] right-[10%] w-[35%] h-[40%] rounded-full bg-[#2e3d29]/10 blur-[120px]"></div>
+          <div className="absolute top-[40%] right-[20%] w-[25%] h-[25%] rounded-full bg-[#e8c547]/5 blur-[80px]"></div>
+        </div>
+        
+        {/* Subtle Noise Texture */}
         <div 
-          className="absolute inset-0 opacity-10" 
+          className="absolute inset-0 opacity-[0.03] mix-blend-soft-light"
           style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23e8c547' fill-opacity='0.2'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+            backgroundSize: '200px 200px'
           }}
         ></div>
-        
-        {/* Subtle Accent Lines */}
-        <div className="absolute top-0 left-1/3 w-px h-full bg-gradient-to-b from-transparent via-[#e8c547]/10 to-transparent"></div>
-        <div className="absolute top-0 right-1/3 w-px h-full bg-gradient-to-b from-transparent via-[#e8c547]/8 to-transparent"></div>
       </div>
-
-      {/* Content Wrapper */}
-      <div className="relative z-10 flex flex-col min-h-screen">
-        {/* Loading Screen */}
-        <div id="admin-loading" className="fixed inset-0 bg-gradient-to-br from-[#0a1a0f] via-[#0e1b12] via-[#1a2e1a] to-[#0a1a0f] flex items-center justify-center z-50 transition-opacity duration-500">
-          <div className="text-center">
-            <div className="relative mb-8">
-              <div className="absolute inset-0 bg-[#e8c547]/30 rounded-full blur-3xl animate-pulse"></div>
-              <div className="absolute inset-0 bg-[#e8c547]/20 rounded-full blur-2xl animate-pulse delay-500"></div>
-              <i className="fas fa-dragon text-6xl text-[#e8c547] animate-pulse relative z-10 drop-shadow-2xl"></i>
-            </div>
-            <div className="text-[#d1d5db] text-lg font-medium mb-2">Loading Bergaman - The Dragon's Domain</div>
-            <div className="text-[#e8c547] text-sm font-medium mb-6">Admin Portal</div>
-            <div className="mt-4 flex justify-center">
-              <div className="w-8 h-8 border-2 border-[#e8c547]/30 border-t-[#e8c547] rounded-full animate-spin"></div>
-            </div>
-          </div>
+      
+      <AdminHeader activeTab={activeTab} />
+      
+      <main className="flex-grow relative z-10">
+        <div className="max-w-7xl mx-auto px-4 py-8 w-full">
+          {children}
         </div>
-
-        {/* Admin Header - Full Width */}
-        <AdminHeader />
-
-        {/* Admin Content - Constrained Width */}
-        <main className="flex-1 py-8 relative">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="min-h-[calc(100vh-200px)]">
-              {children}
-            </div>
-          </div>
-        </main>
-
-        {/* Admin Footer - Full Width */}
-        <AdminFooter />
-      </div>
+      </main>
+      
+      <AdminFooter />
     </div>
   );
 } 

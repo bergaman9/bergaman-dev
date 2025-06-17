@@ -1,8 +1,8 @@
 # 🐉 Bergaman Portfolio - The Dragon's Domain
 
-[![Version](https://img.shields.io/badge/version-2.1.1-blue.svg)](https://github.com/bergaman9/bergaman-dev)
+[![Version](https://img.shields.io/badge/version-2.4.0-blue.svg)](https://github.com/bergaman9/bergaman-dev)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/bergaman9/bergaman-dev/blob/main/LICENSE)
-[![Next.js](https://img.shields.io/badge/Next.js-15.0.3-black.svg)](https://nextjs.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-15.3.3-black.svg)](https://nextjs.org/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-green.svg)](https://www.mongodb.com/)
 
 > **Crafting technology inspired by the strength and wisdom of a dragon** 🐉
@@ -11,7 +11,7 @@ A cutting-edge portfolio website featuring a sophisticated admin panel, real-tim
 
 ## 🌟 **Live Demo**
 
-- **🚀 Current Version (v2.1.1)**: [bergaman.dev](https://bergaman.dev)
+- **🚀 Current Version (v2.4.0)**: [bergaman.dev](https://bergaman.dev)
 - **🕰️ Legacy Version (v1.0.0)**: [bergaman-v1.vercel.app](https://bergaman-v1.vercel.app/)
 
 ## ✨ **Key Features**
@@ -29,6 +29,8 @@ A cutting-edge portfolio website featuring a sophisticated admin panel, real-tim
 - **User Management**: Admin authentication and role-based access control
 - **Analytics Tracking**: View counts, engagement metrics, and performance data
 - **Newsletter Management**: Complete subscriber and campaign management system
+- **Enhanced UI Components**: Reusable components with multiple design variants
+- **Consistent Layout**: PageHeader components across all admin pages
 
 ### 📝 **Dynamic Blog System**
 - **MongoDB Integration**: Full database-driven content management
@@ -51,6 +53,13 @@ A cutting-edge portfolio website featuring a sophisticated admin panel, real-tim
 - **Environment Management**: Dynamic version tracking and deployment
 - **Performance Monitoring**: Core Web Vitals and analytics integration
 - **Dependabot Integration**: Automated security updates and dependency management
+
+### 🧩 **UI Component Library**
+- **Modal System**: 15+ design variants including modern, elegant, glass, and more
+- **Button Components**: Consistent button styling with multiple variants
+- **PageHeader**: Flexible page headers with actions, stats, and filters
+- **Form Elements**: Styled inputs, selects, and form controls
+- **Card Components**: Versatile card layouts for content display
 
 ## 🛠️ **Tech Stack**
 

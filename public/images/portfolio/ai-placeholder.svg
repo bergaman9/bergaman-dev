@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300">
+  <rect width="400" height="300" fill="#0a1a0f" />
+  <path d="M200,150 L200,150" stroke="#e8c547" stroke-width="2" opacity="0.1">
+    <animate attributeName="d" dur="10s" repeatCount="indefinite" 
+      values="M200,150 L200,150;
+              M100,50 C150,150 250,150 300,75;
+              M50,100 C150,50 250,250 350,100;
+              M100,50 C150,150 250,150 300,75;
+              M200,150 L200,150" />
+  </path>
+  <g fill="#e8c547" transform="translate(150, 100)">
+    <circle cx="50" cy="50" r="40" opacity="0.3" />
+    <circle cx="50" cy="50" r="30" opacity="0.5" />
+    <circle cx="50" cy="50" r="20" opacity="0.7" />
+    <path d="M30,50 L70,50 M50,30 L50,70" stroke="#e8c547" stroke-width="3" />
+    <path d="M20,20 L30,30 M80,20 L70,30 M20,80 L30,70 M80,80 L70,70" stroke="#e8c547" stroke-width="2" />
+  </g>
+  <text x="200" y="210" font-family="Arial" font-size="16" fill="#e8c547" text-anchor="middle">AI & Machine Learning</text>
+</svg> 

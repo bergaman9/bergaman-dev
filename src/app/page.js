@@ -6,89 +6,53 @@ import Link from 'next/link';
 import Image from 'next/image';
 import ImageModal from './components/ImageModal';
 import BlogImageGenerator from './components/BlogImageGenerator';
+import FloatingSkills from './components/FloatingSkills';
 import { useAdminMode } from '../hooks/useAdminMode';
+import Card from './components/Card';
+import Button from './components/Button';
+import BlogPostCard from './components/BlogPostCard';
+import ProjectCard from './components/ProjectCard';
 
 export default function Home() {
   const [blogPosts, setBlogPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalImage, setModalImage] = useState(null);
   const { isAdminMode, exitEditMode } = useAdminMode();
-
-  // Featured projects data
-  const featuredProjects = [
-    {
-      id: 1,
-      title: "Contro Bot",
-      description: "A comprehensive Discord bot developed during the pandemic with advanced moderation, entertainment, and utility features.",
-      image: "/images/projects/contro.png",
-      tech: ["Python", "Discord.py", "SQLite", "Async Programming"],
-      github: "https://github.com/bergaman9/contro-bot",
-      demo: null,
-      date: "2020 - 2022",
-      status: "Completed"
-    },
-    {
-      id: 2,
-      title: "Ligroup",
-      description: "My first full-stack web development project - a social platform for group management and communication.",
-      image: "/images/projects/ligroup.png",
-      tech: ["React", "Node.js", "MongoDB", "Express", "Socket.io"],
-      github: "https://github.com/bergaman9/ligroup",
-      demo: null,
-      date: "2022",
-      status: "Completed"
-    },
-    {
-      id: 3,
-      title: "AI & ML Experiments",
-      description: "Collection of experimental projects exploring RVC voice conversion, Stable Diffusion image generation, and various machine learning models.",
-      image: "/images/projects/ai-projects.png",
-      tech: ["Python", "TensorFlow", "PyTorch", "RVC", "Stable Diffusion"],
-      github: "https://github.com/bergaman9/ai-projects",
-      demo: null,
-      date: "2023",
-      status: "Ongoing"
-    },
-    {
-      id: 4,
-      title: "IoT Air Quality Monitor",
-      description: "Real-time indoor air quality monitoring system using Arduino Uno R4 WiFi with wireless data transmission.",
-      image: "/images/projects/iaq.jpg",
-      tech: ["Arduino", "C++", "IoT", "Sensors", "WiFi"],
-      github: "https://github.com/bergaman9/arduino-projects",
-      demo: null,
-      date: "2024",
-      status: "Completed"
-    }
-  ];
+  const [recommendations, setRecommendations] = useState([]);
+  const [loadingRecommendations, setLoadingRecommendations] = useState(true);
+  const [featuredProjects, setFeaturedProjects] = useState([]);
+  const [loadingProjects, setLoadingProjects] = useState(true);
 
   // Skills data with categories
   const skillCategories = [
     {
       title: "Programming Languages",
+      icon: "fas fa-code",
       skills: [
-        { name: "Python", level: 85, icon: "fab fa-python" },
-        { name: "JavaScript", level: 80, icon: "fab fa-js-square" },
-        { name: "C#", level: 70, icon: "fas fa-code" },
-        { name: "C++", level: 65, icon: "fas fa-code" }
+        { name: "Python", level: 85 },
+        { name: "JavaScript", level: 80 },
+        { name: "C#", level: 70 },
+        { name: "C++", level: 65 }
       ]
     },
     {
       title: "Web Technologies",
+      icon: "fas fa-globe",
       skills: [
-        { name: "React", level: 85, icon: "fab fa-react" },
-        { name: "Next.js", level: 80, icon: "fas fa-layer-group" },
-        { name: "Node.js", level: 75, icon: "fab fa-node-js" },
-        { name: "HTML & CSS", level: 90, icon: "fab fa-html5" }
+        { name: "React", level: 85 },
+        { name: "Next.js", level: 80 },
+        { name: "Node.js", level: 75 },
+        { name: "HTML & CSS", level: 90 }
       ]
     },
     {
       title: "Tools & Databases",
+      icon: "fas fa-database",
       skills: [
-        { name: "MongoDB", level: 75, icon: "fas fa-database" },
-        { name: "Git", level: 85, icon: "fab fa-git-alt" },
-        { name: "Docker", level: 60, icon: "fab fa-docker" },
-        { name: "SQL", level: 70, icon: "fas fa-database" }
+        { name: "MongoDB", level: 75 },
+        { name: "Git", level: 85 },
+        { name: "Docker", level: 60 },
+        { name: "SQL", level: 70 }
       ]
     }
   ];
@@ -127,8 +91,34 @@ export default function Home() {
     }
   ];
 
+  // Format category name for display
+  const formatCategoryName = (category) => {
+    switch(category) {
+      case 'ai': return 'AI';
+      case 'web-development': return 'Web Development';
+      case 'technology': return 'Technology';
+      case 'tutorial': return 'Tutorial';
+      case 'programming': return 'Programming';
+      case 'blockchain': return 'Blockchain';
+      case 'mobile': return 'Mobile';
+      case 'design': return 'Design';
+      default: return category ? category.charAt(0).toUpperCase() + category.slice(1) : 'Tech';
+    }
+  };
+
+  // Format date for display
+  const formatDate = (date) => {
+    return new Date(date).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
   useEffect(() => {
     fetchBlogPosts();
+    fetchRecommendations();
+    fetchFeaturedProjects();
   }, []);
 
   const fetchBlogPosts = async () => {
@@ -137,13 +127,85 @@ export default function Home() {
       const data = await response.json();
       
       if (data.posts) {
-        setBlogPosts(data.posts);
+        // Fetch comment count for each post
+        const postsWithCommentCount = await Promise.all(
+          data.posts.map(async (post) => {
+            try {
+              const commentResponse = await fetch(`/api/comments?postSlug=${post.slug}`);
+              const commentData = await commentResponse.json();
+              return {
+                ...post,
+                commentCount: commentData.comments?.length || 0
+              };
+            } catch (error) {
+              console.error(`Error fetching comments for ${post.slug}:`, error);
+              return {
+                ...post,
+                commentCount: 0
+              };
+            }
+          })
+        );
+        
+        setBlogPosts(postsWithCommentCount);
       }
     } catch (error) {
       console.error('Error fetching blog posts:', error);
       setBlogPosts([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchRecommendations = async () => {
+    try {
+      setLoadingRecommendations(true);
+      const response = await fetch('/api/recommendations?featured=true&limit=4');
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      if (data.success && data.recommendations) {
+        setRecommendations(data.recommendations);
+      }
+    } catch (error) {
+      console.error('Error fetching recommendations:', error);
+      setRecommendations([]);
+    } finally {
+      setLoadingRecommendations(false);
+    }
+  };
+
+  const fetchFeaturedProjects = async () => {
+    try {
+      setLoadingProjects(true);
+      const response = await fetch('/api/portfolio?featured=true&limit=4', {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache'
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      if (data.success && data.portfolios) {
+        setFeaturedProjects(data.portfolios);
+      } else {
+        console.error('Failed to fetch projects:', data.error || 'Unknown error');
+        setFeaturedProjects([]);
+      }
+    } catch (error) {
+      console.error('Error fetching projects:', error);
+      setFeaturedProjects([]);
+    } finally {
+      setLoadingProjects(false);
     }
   };
 
@@ -156,364 +218,280 @@ export default function Home() {
   };
 
   return (
-    <div className="page-container">
+    <>
       <Head>
-        <title>Bergaman - The Dragon's Domain | Electrical & Electronics Engineer</title>
-        <meta name="description" content="Welcome to Bergaman's digital domain. Electrical & Electronics Engineer based in İstanbul, Turkey. Explore cutting-edge technical solutions and innovative full-stack development." />
-        <meta name="keywords" content="bergaman, electrical electronics engineer, istanbul, turkey, full-stack developer, web development, portfolio, dragon domain, ai, iot, embedded systems" />
-        <meta property="og:title" content="Bergaman - The Dragon's Domain | Electrical & Electronics Engineer" />
-        <meta property="og:description" content="Electrical & Electronics Engineer - Crafting innovative technical solutions and web applications" />
-        <meta property="og:url" content="https://bergaman.dev" />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Bergaman - The Dragon's Domain | Electrical & Electronics Engineer" />
-        <meta name="twitter:description" content="Electrical & Electronics Engineer - Crafting innovative technical solutions and web applications" />
-        <link rel="canonical" href="https://bergaman.dev" />
+        <title>Bergaman - The Dragon's Domain</title>
       </Head>
 
-      {/* Admin Edit Mode Bar */}
-      {isAdminMode && (
-        <div className="fixed top-0 left-0 right-0 bg-[#e8c547] text-[#0e1b12] px-4 py-2 z-50 flex items-center justify-between">
-          <div className="flex items-center">
-            <i className="fas fa-edit mr-2"></i>
-            <span className="font-medium">Admin Edit Mode Active</span>
-          </div>
-          <button
-            onClick={exitEditMode}
-            className="bg-[#0e1b12] text-[#e8c547] px-3 py-1 rounded transition-colors"
-          >
-            <i className="fas fa-times mr-1"></i>
-            Exit
-          </button>
-        </div>
-      )}
-
-      <div className={`page-content ${isAdminMode ? 'pt-16' : ''}`}>
-        {/* Hero Section */}
-        <section className="text-center py-12 sm:py-16 lg:py-20 fade-in px-4 sm:px-6">
-          <div className="mb-6 sm:mb-8">
-            <Image
-              src="/images/profile/profile.png"
-              alt="Bergaman Profile"
-              width={120}
-              height={120}
-              className="rounded-full mx-auto mb-4 sm:mb-6 w-24 h-24 sm:w-32 sm:h-32 lg:w-36 lg:h-36 border-4 border-[#e8c547]/20"
-            />
-          </div>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold gradient-text mb-4 sm:mb-6 leading-tight px-2">
-            Bergaman - The Dragon's Domain
-          </h1>
-          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-300 mb-3 sm:mb-4 max-w-4xl mx-auto px-4">
-            Electrical & Electronics Engineer | Full-Stack Developer | AI Enthusiast
-          </p>
-          <p className="text-sm sm:text-base lg:text-lg text-gray-400 mb-6 sm:mb-8 max-w-3xl mx-auto px-4">
-            Passionate about creating innovative solutions through software development and technology research. 
-            Exploring the intersections of web development, artificial intelligence, and embedded systems.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4">
-            <Link
-              href="/portfolio"
-              className="px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-medium bg-[#e8c547] text-[#0e1b12] rounded-lg transition-colors duration-300"
-            >
-              <i className="fas fa-briefcase mr-2"></i>
-              View Portfolio
-            </Link>
-            <Link
-              href="/about"
-              className="px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-medium border border-[#3e503e] rounded-lg transition-colors duration-300"
-            >
-              <i className="fas fa-user mr-2"></i>
-              About Me
-            </Link>
-            <Link
-              href="/contact"
-              className="px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-medium border border-[#3e503e] rounded-lg transition-colors duration-300"
-            >
-              <i className="fas fa-envelope mr-2"></i>
-              Get in Touch
-            </Link>
-          </div>
-        </section>
-
-        {/* About Section - Simplified */}
-        <section className="py-12 sm:py-16 slide-in-up px-4 sm:px-6">
-          <div className="text-center mb-8 sm:mb-12">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold gradient-text mb-4 sm:mb-6 leading-tight">
-              <i className="fas fa-dragon mr-2 sm:mr-3"></i>
-              About The Dragon
-            </h2>
-            <p className="text-base sm:text-lg text-gray-300 max-w-4xl mx-auto leading-relaxed px-2 mb-6">
-              Welcome to my digital domain! I'm a passionate Electrical & Electronics Engineering student with a deep fascination for cutting-edge technology. 
-              My journey spans from building comprehensive Discord bots to exploring the frontiers of artificial intelligence and embedded systems.
-            </p>
-            <Link
-              href="/about"
-              className="inline-flex items-center px-6 py-3 bg-[#e8c547]/20 text-[#e8c547] rounded-lg border border-[#e8c547]/30 transition-colors duration-300"
-            >
-              <i className="fas fa-arrow-right mr-2"></i>
-              Learn More About Me
-            </Link>
-          </div>
-        </section>
-
-        {/* Latest Blog Posts */}
-        <section className="py-12 sm:py-16 slide-in-up px-4 sm:px-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 sm:mb-12">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold gradient-text mb-4 sm:mb-0 leading-tight">
-              <i className="fas fa-blog mr-2 sm:mr-3"></i>
-              Latest Blog Posts
-            </h2>
-            <Link
-              href="/blog"
-              className="text-[#e8c547] transition-colors duration-300 text-sm sm:text-base"
-            >
-              View All Posts <i className="fas fa-arrow-right ml-1"></i>
-            </Link>
-          </div>
-
-          {loading ? (
-            <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#e8c547] mx-auto mb-4"></div>
-              <p className="text-gray-400">Loading blog posts...</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-              {blogPosts.map((post) => (
-                <div key={post._id} className="glass rounded-lg overflow-hidden">
-                  <Link href={`/blog/${post.slug}`}>
-                    <div className="relative">
-                      {post.featuredImage ? (
+      <main className="flex-grow">
+        <div className="bg-grid-pattern-dark">
+          <div className="page-container">
+            <div className="page-content">
+              {/* Hero Section */}
+              <section className="text-center py-16 md:py-24 fade-in">
+                {/* Profile Image with Enhanced Styling */}
+                <div className="relative mb-8 flex justify-center">
+                  <div className="relative inline-block">
+                    {/* Animated Background Glow */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#e8c547]/30 via-[#f4d76b]/20 to-[#e8c547]/30 rounded-full blur-2xl animate-pulse scale-110"></div>
+                    
+                    {/* Main Profile Image */}
+                    <div className="relative w-48 h-48 sm:w-56 sm:h-56 lg:w-64 lg:h-64 mx-auto">
+                      <div className="relative w-full h-full group">
                         <Image
-                          src={post.featuredImage}
-                          alt={post.title}
-                          width={400}
-                          height={200}
-                          className="w-full h-40 sm:h-48 object-cover"
+                          className="relative rounded-full border-4 border-[#e8c547] shadow-2xl shadow-[#e8c547]/25 mx-auto transition-transform duration-500 hover:scale-105"
+                          src="/images/profile/profile.png"
+                          alt="Bergaman - The Dragon's Domain"
+                          width={256}
+                          height={256}
+                          priority
                         />
-                      ) : (
-                        <BlogImageGenerator 
-                          title={post.title} 
-                          category={post.category}
-                          className="w-full h-40 sm:h-48" 
-                        />
-                      )}
-                      <div className="absolute top-2 right-2">
-                        <span className="bg-[#e8c547] text-[#0e1b12] px-2 py-1 rounded text-xs font-medium">
-                          {post.category || 'Tech'}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="p-4 sm:p-6">
-                      <h3 className="text-lg sm:text-xl font-semibold text-[#e8c547] mb-2 sm:mb-3 line-clamp-2">
-                        {post.title}
-                      </h3>
-                      <p className="text-gray-300 text-sm sm:text-base mb-3 sm:mb-4 line-clamp-3">
-                        {post.excerpt || post.content?.substring(0, 150) + '...'}
-                      </p>
-                      <div className="flex items-center justify-between text-xs sm:text-sm text-gray-400">
-                        <span>
-                          <i className="fas fa-calendar mr-1"></i>
-                          {new Date(post.publishedAt || post.createdAt).toLocaleDateString()}
-                        </span>
-                        <div className="flex items-center space-x-2 sm:space-x-3">
-                          <span>
-                            <i className="fas fa-eye mr-1"></i>
-                            {post.views || 0}
-                          </span>
-                          <span>
-                            <i className="fas fa-comments mr-1"></i>
-                            {post.comments?.length || 0}
-                          </span>
+                        
+                        {/* Dragon Icon Overlay */}
+                        <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-gradient-to-br from-[#e8c547] to-[#d4b445] rounded-full flex items-center justify-center shadow-lg border-2 border-[#0e1b12]">
+                          <i className="fas fa-dragon text-[#0e1b12] text-base animate-pulse"></i>
                         </div>
+
+                        {/* Floating Skills around profile */}
+                        <FloatingSkills />
                       </div>
                     </div>
-                  </Link>
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
-
-        {/* Featured Projects Section */}
-        <section className="py-12 sm:py-16 slide-in-right px-4 sm:px-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 sm:mb-12">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold gradient-text mb-4 sm:mb-0 leading-tight">
-              <i className="fas fa-star mr-2 sm:mr-3"></i>
-              Featured Projects
-            </h2>
-            <Link
-              href="/portfolio"
-              className="text-[#e8c547] transition-colors duration-300 text-sm sm:text-base"
-            >
-              View All Projects <i className="fas fa-arrow-right ml-1"></i>
-            </Link>
-          </div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
-            {featuredProjects.map((project) => (
-              <div key={project.id} className="glass p-4 sm:p-6 rounded-lg">
-                <div className="mb-3 sm:mb-4">
-                  <Image
-                    src={project.image}
-                    alt={project.title}
-                    width={400}
-                    height={200}
-                    className="w-full h-40 sm:h-48 object-cover rounded-lg cursor-pointer"
-                    onClick={() => openModal(project.image, project.title)}
-                  />
-                </div>
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 gap-2">
-                  <h3 className="text-lg sm:text-xl font-semibold text-[#e8c547]">
-                    {project.title}
-                  </h3>
-                  <div className="flex items-center gap-2">
-                    <span className="text-gray-400 text-xs sm:text-sm">
-                      <i className="fas fa-calendar mr-1"></i>
-                      {project.date}
-                    </span>
-                    <span className={`px-2 py-1 rounded text-xs ${
-                      project.status === 'Completed' ? 'bg-green-500/20 text-green-400' :
-                      project.status === 'Ongoing' ? 'bg-blue-500/20 text-blue-400' :
-                      'bg-gray-500/20 text-gray-400'
-                    }`}>
-                      {project.status}
-                    </span>
                   </div>
                 </div>
-                <p className="text-gray-300 mb-3 sm:mb-4 text-sm sm:text-base">
-                  {project.description}
-                </p>
-                <div className="flex flex-wrap gap-1 sm:gap-2 mb-3 sm:mb-4">
-                  {project.tech.map((tech, index) => (
-                    <span
-                      key={index}
-                      className="px-2 py-1 bg-[#3e503e]/50 text-gray-300 text-xs rounded"
-                    >
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-                <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-                  <a
-                    href={project.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex-1 text-center py-2 bg-[#e8c547]/20 text-[#e8c547] rounded transition-colors duration-300 text-sm sm:text-base"
-                  >
-                    <i className="fab fa-github mr-2"></i>
-                    GitHub
-                  </a>
-                  {project.demo ? (
-                    <a
-                      href={project.demo}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex-1 text-center py-2 bg-blue-600/20 text-blue-400 rounded transition-colors duration-300 text-sm sm:text-base"
-                    >
-                      <i className="fas fa-external-link-alt mr-2"></i>
-                      Demo
-                    </a>
-                  ) : (
-                    <div className="flex-1 text-center py-2 bg-gray-600/20 text-gray-400 rounded cursor-not-allowed text-sm sm:text-base">
-                      <i className="fas fa-ban mr-2"></i>
-                      Demo N/A
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
 
-        {/* Skills Section */}
-        <section className="py-12 sm:py-16 fade-in px-4 sm:px-6">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold gradient-text mb-8 sm:mb-12 leading-tight">
-            <i className="fas fa-code mr-2 sm:mr-3"></i>
-            Technical Skills
-          </h2>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
-            {skillCategories.map((category, categoryIndex) => (
-              <div key={categoryIndex} className="glass p-4 sm:p-6 rounded-lg">
-                <h3 className="text-lg sm:text-xl font-semibold text-[#e8c547] mb-4 sm:mb-6">
-                  {category.title}
-                </h3>
-                <div className="space-y-4">
-                  {category.skills.map((skill, index) => (
-                    <div key={index}>
-                      <div className="flex justify-between items-center mb-2">
-                        <div className="flex items-center">
-                          <i className={`${skill.icon} text-[#e8c547] mr-2`}></i>
-                          <span className="text-sm sm:text-base font-medium text-gray-300">
-                            {skill.name}
-                          </span>
+                <h1 className="text-4xl md:text-5xl font-bold gradient-text mb-4 leading-tight">
+                  Bergaman - The Dragon&apos;s Domain
+                </h1>
+                <p className="max-w-3xl mx-auto text-gray-300 mb-8">
+                  Electrical & Electronics Engineer | Full-Stack Developer | AI Enthusiast
+                </p>
+                <p className="text-gray-300 mb-8 max-w-3xl mx-auto">
+                  Crafting innovative technical solutions with the strength and wisdom of a dragon. 
+                  Specializing in embedded systems, web development, and artificial intelligence.
+                </p>
+                
+                {/* CTA Buttons */}
+                <div className="flex flex-wrap gap-4 justify-center">
+                  <Button href="/portfolio"><i className="fas fa-briefcase mr-2"></i>View Portfolio</Button>
+                  <Button href="/about" variant="secondary"><i className="fas fa-user mr-2"></i>About Me</Button>
+                  <Button href="/contact" variant="secondary"><i className="fas fa-envelope mr-2"></i>Get in Touch</Button>
+                </div>
+              </section>
+
+              {/* Latest Blog Posts */}
+              <section className="mb-16 slide-in-right">
+                <h2 className="text-3xl font-bold gradient-text mb-6 text-center">
+                  <i className="fas fa-blog mr-3"></i>
+                  Latest Blog Posts
+                </h2>
+                {loading ? (
+                  <div className="text-center py-8"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#e8c547] mx-auto mb-4"></div><p className="text-gray-400">Loading...</p></div>
+                ) : blogPosts && blogPosts.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {blogPosts.map((post) => (
+                      <div key={post._id} className="relative">
+                        {isAdminMode && (
+                          <div className="absolute top-2 right-2 z-10 flex gap-2">
+                            <Link
+                              href={`/admin/posts/${post._id}/edit`}
+                              className="bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 transition-colors"
+                              title="Edit Post"
+                            >
+                              <i className="fas fa-edit text-sm"></i>
+                            </Link>
+                          </div>
+                        )}
+                        <BlogPostCard
+                          post={post}
+                          formatDate={formatDate}
+                          formatCategoryName={formatCategoryName}
+                          openModal={openModal}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <p className="text-gray-400">No blog posts found.</p>
+                  </div>
+                )}
+                <div className="text-center mt-8">
+                  <Button href="/blog" variant="secondary">View All Posts<i className="fas fa-arrow-right ml-2"></i></Button>
+                </div>
+              </section>
+
+              {/* Featured Projects */}
+              <section className="mb-16 slide-in-left">
+                <h2 className="text-3xl font-bold gradient-text mb-8 text-center">
+                  <i className="fas fa-star mr-3"></i>
+                  Featured Projects
+                </h2>
+                {loadingProjects ? (
+                  <div className="text-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#e8c547] mx-auto mb-4"></div>
+                    <p className="text-gray-400">Loading projects...</p>
+                  </div>
+                ) : featuredProjects.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {featuredProjects.map((project) => (
+                      <ProjectCard key={project._id} project={project} />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <p className="text-gray-400">No featured projects found.</p>
+                  </div>
+                )}
+                <div className="text-center mt-8">
+                  <Button href="/portfolio">View All Projects<i className="fas fa-arrow-right ml-2"></i></Button>
+                </div>
+              </section>
+
+              {/* Recommendations Section */}
+              <section className="mb-16 slide-in-right">
+                <h2 className="text-3xl font-bold gradient-text mb-8 text-center">
+                  <i className="fas fa-thumbs-up mr-3"></i>
+                  My Recommendations
+                </h2>
+                
+                {loadingRecommendations ? (
+                  <div className="text-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#e8c547] mx-auto mb-4"></div>
+                    <p className="text-gray-400">Loading recommendations...</p>
+                  </div>
+                ) : recommendations.length > 0 ? (
+                  <>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                      {recommendations.slice(0, 4).map((rec) => (
+                        <Card key={rec._id || rec.id} className="h-full">
+                          <div className="relative h-48 bg-gradient-to-br from-[#2e3d29] to-[#0e1b12] flex items-center justify-center overflow-hidden mx-2 mt-2 rounded-lg">
+                            <Image 
+                              src={rec.image || `/images/portfolio/web-placeholder.svg`}
+                              alt={rec.title}
+                              fill
+                              className="object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
+                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            />
+                            <div className="absolute top-2 right-2">
+                              <div className="bg-[#e8c547] text-[#0e1b12] w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm">
+                                {rec.rating ? Number(rec.rating).toFixed(1) : "?"}
+                              </div>
+                            </div>
+                            <div className="absolute top-2 left-2">
+                              <span className="px-2 py-1 bg-[#0e1b12]/80 text-gray-300 rounded-full text-xs capitalize flex items-center gap-1">
+                                {rec.category === 'movie' && <i className="fas fa-film"></i>}
+                                {rec.category === 'game' && <i className="fas fa-gamepad"></i>}
+                                {rec.category === 'book' && <i className="fas fa-book"></i>}
+                                {rec.category === 'music' && <i className="fas fa-music"></i>}
+                                {rec.category === 'series' && <i className="fas fa-tv"></i>}
+                                {rec.category === 'link' && <i className="fas fa-link"></i>}
+                                {rec.category}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="p-3">
+                            <h3 className="text-lg font-bold gradient-text mb-2">{rec.title}</h3>
+                            <p className="text-gray-300 mb-3 text-sm line-clamp-2">{rec.description}</p>
+                            
+                            {rec.category === 'link' && rec.url && (
+                              <Button 
+                                href={rec.url}
+                                variant="secondary"
+                                size="sm"
+                                className="w-full"
+                              >
+                                <i className="fas fa-external-link-alt mr-1"></i>Visit
+                              </Button>
+                            )}
+                          </div>
+                        </Card>
+                      ))}
+                    </div>
+                    <div className="text-center mt-8">
+                      <Button href="/recommendations" variant="secondary">View All Recommendations<i className="fas fa-arrow-right ml-2"></i></Button>
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-center py-8">
+                    <p className="text-gray-400">No recommendations found.</p>
+                  </div>
+                )}
+              </section>
+
+              {/* Technical Skills */}
+              <section className="mb-16 slide-in-right">
+                <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-8 rounded-lg">
+                  <h2 className="text-3xl font-bold gradient-text mb-8 text-center">
+                    <i className="fas fa-code mr-3"></i>
+                    Technical Skills
+                  </h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {skillCategories.map((category, index) => (
+                      <div key={index} className="p-6">
+                        <div className="flex items-center mb-4">
+                          <i className={`${category.icon} text-[#e8c547] text-2xl mr-3`}></i>
+                          <h3 className="text-xl font-semibold text-[#e8c547]">{category.title}</h3>
                         </div>
-                        <span className="text-gray-400 text-sm">{skill.level}%</span>
+                        <div className="space-y-3">
+                          {category.skills.map((skill, skillIndex) => (
+                            <div key={skillIndex}>
+                              <div className="flex justify-between mb-1">
+                                <span className="text-gray-300">{skill.name}</span>
+                                <span className="text-[#e8c547] font-semibold">{skill.level}%</span>
+                              </div>
+                              <div className="w-full bg-[#0e1b12] rounded-full h-2">
+                                <div 
+                                  className="bg-gradient-to-r from-[#e8c547] to-[#f4d76b] h-2 rounded-full transition-all duration-1000 ease-out"
+                                  style={{ width: `${skill.level}%` }}
+                                ></div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                      <div className="w-full bg-[#3e503e] rounded-full h-2">
-                        <div
-                          className="bg-gradient-to-r from-[#e8c547] to-[#d4b445] h-2 rounded-full transition-all duration-1000"
-                          style={{ width: `${skill.level}%` }}
-                        ></div>
-                      </div>
+                    ))}
+                  </div>
+                </div>
+              </section>
+
+              {/* Interests & Passions */}
+              <section className="mb-16 slide-in-left">
+                <h2 className="text-3xl font-bold gradient-text mb-8 text-center">
+                  <i className="fas fa-heart mr-3"></i>
+                  Interests & Passions
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {interests.map((interest, index) => (
+                    <div key={index} className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg text-center hover:border-[#e8c547]/50 transition-all duration-300">
+                      <i className={`${interest.icon} text-[#e8c547] text-4xl mb-4 block`}></i>
+                      <h3 className="text-xl font-semibold text-[#e8c547] mb-3">{interest.name}</h3>
+                      <p className="text-gray-300 leading-relaxed">{interest.description}</p>
                     </div>
                   ))}
                 </div>
-              </div>
-            ))}
-          </div>
-        </section>
+              </section>
 
-        {/* Interests Section */}
-        <section className="py-12 sm:py-16 slide-in-left px-4 sm:px-6">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold gradient-text mb-8 sm:mb-12 leading-tight">
-            <i className="fas fa-heart mr-2 sm:mr-3"></i>
-            Interests & Passions
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            {interests.map((interest, index) => (
-              <div key={index} className="glass p-4 sm:p-6 rounded-lg text-center transition-transform duration-300">
-                <i className={`${interest.icon} text-2xl sm:text-3xl text-[#e8c547] mb-3 sm:mb-4`}></i>
-                <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-[#e8c547] mb-2">
-                  {interest.name}
-                </h3>
-                <p className="text-xs sm:text-sm text-gray-400">
-                  {interest.description}
-                </p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Call to Action */}
-        <section className="text-center fade-in py-12 sm:py-16">
-          <div className="glass p-8 sm:p-12 rounded-lg max-w-4xl mx-auto">
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#e8c547] mb-4 sm:mb-6">
-              Let's Connect and Share Ideas
-            </h2>
-            <p className="text-base sm:text-lg text-gray-300 mb-6 sm:mb-8 max-w-2xl mx-auto leading-relaxed">
-              I'm always excited to discuss technology, share experiences, and learn from fellow developers. 
-              Whether you have questions about my projects, want to collaborate, or just want to chat about tech - feel free to reach out!
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-              <Link 
-                href="/contact" 
-                className="bg-[#e8c547] text-[#0e1b12] px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold transition-all duration-300 text-sm sm:text-base"
-              >
-                <i className="fas fa-envelope mr-2"></i>
-                Get In Touch
-              </Link>
-              <Link 
-                href="/about" 
-                className="border border-[#e8c547]/50 text-[#e8c547] px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold transition-all duration-300 text-sm sm:text-base"
-              >
-                <i className="fas fa-user mr-2"></i>
-                Learn More About Me
-              </Link>
+              {/* Contact CTA */}
+              <section className="mb-16 slide-in-right">
+                <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-8 rounded-lg text-center">
+                  <h2 className="text-3xl font-bold gradient-text mb-4">
+                    <i className="fas fa-handshake mr-3"></i>
+                    Let's Connect
+                  </h2>
+                  <p className="text-gray-300 mb-6 max-w-2xl mx-auto">
+                    Have a question, idea, or just want to say hello? I'm always open to interesting conversations and new connections. Feel free to reach out through the contact form or social media.
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                    <Button href="/contact" size="lg"><i className="fas fa-envelope mr-2"></i>Contact Me</Button>
+                    <Button href="/about" variant="secondary" size="lg"><i className="fas fa-user mr-2"></i>More About Me</Button>
+                  </div>
+                </div>
+              </section>
             </div>
           </div>
-        </section>
-      </div>
+        </div>
+      </main>
 
-      {/* Image Modal */}
       {modalImage && (
         <ImageModal
           src={modalImage.src}
@@ -521,6 +499,6 @@ export default function Home() {
           onClose={closeModal}
         />
       )}
-    </div>
+    </>
   );
 }

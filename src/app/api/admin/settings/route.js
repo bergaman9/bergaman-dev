@@ -22,7 +22,22 @@ export async function GET() {
         allowContactForm: true,
         maintenanceMode: false,
         analyticsEnabled: true,
-        backupFrequency: 'weekly'
+        backupFrequency: 'weekly',
+        seoEnabled: true,
+        socialMediaEnabled: true,
+        newsletterEnabled: false,
+        darkModeEnabled: true,
+        compressionEnabled: true,
+        cacheEnabled: true,
+        // Blog Settings
+        blogPostsPerPage: 9,
+        blogShowExcerpts: true,
+        blogAllowGuestComments: true,
+        blogRequireApproval: true,
+        // Post Security Settings
+        allowPasswordProtected: true,
+        allowMemberOnly: true,
+        defaultPostVisibility: 'public'
       };
       return NextResponse.json(defaultSettings);
     }

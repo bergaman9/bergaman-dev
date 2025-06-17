@@ -72,6 +72,19 @@ const BlogPostSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  visibility: {
+    type: String,
+    enum: ['public', 'password', 'members', 'private'],
+    default: 'public'
+  },
+  password: {
+    type: String,
+    trim: true
+  },
+  memberOnly: {
+    type: Boolean,
+    default: false
+  },
   seo: {
     metaTitle: String,
     metaDescription: String,

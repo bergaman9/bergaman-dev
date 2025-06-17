@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
+import PageHeader from '../../../components/PageHeader';
 
 export default function AdminNewsletter() {
   const [activeTab, setActiveTab] = useState('subscribers');
@@ -181,69 +182,33 @@ export default function AdminNewsletter() {
         <title>Newsletter Management - Admin Panel</title>
       </Head>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-8">
-        
+      <main className="space-y-6">
         {/* Page Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-[#e8c547] mb-2">
-            <i className="fas fa-newspaper mr-3"></i>
-            Newsletter Management
-          </h1>
-          <p className="text-gray-400">
-            Manage subscribers and create newsletter campaigns
-          </p>
-        </div>
-
-        {/* Statistics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-[#0a1a0f]/50 backdrop-blur-md border border-[#3e503e]/50 p-6 rounded-lg">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-400">Total Subscribers</p>
-                <p className="text-2xl font-bold text-[#e8c547]">{statistics.totalSubscribers || 0}</p>
-              </div>
-              <div className="w-12 h-12 bg-[#e8c547]/20 rounded-lg flex items-center justify-center">
-                <i className="fas fa-users text-[#e8c547] text-xl"></i>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-[#0a1a0f]/50 backdrop-blur-md border border-[#3e503e]/50 p-6 rounded-lg">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-400">Active Subscribers</p>
-                <p className="text-2xl font-bold text-[#4ade80]">{statistics.activeSubscribers || 0}</p>
-              </div>
-              <div className="w-12 h-12 bg-[#4ade80]/20 rounded-lg flex items-center justify-center">
-                <i className="fas fa-user-check text-[#4ade80] text-xl"></i>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-[#0a1a0f]/50 backdrop-blur-md border border-[#3e503e]/50 p-6 rounded-lg">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-400">Campaigns Sent</p>
-                <p className="text-2xl font-bold text-[#22c55e]">{statistics.campaignsSent || 0}</p>
-              </div>
-              <div className="w-12 h-12 bg-[#22c55e]/20 rounded-lg flex items-center justify-center">
-                <i className="fas fa-paper-plane text-[#22c55e] text-xl"></i>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-[#0a1a0f]/50 backdrop-blur-md border border-[#3e503e]/50 p-6 rounded-lg">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-400">Open Rate</p>
-                <p className="text-2xl font-bold text-[#86efac]">{statistics.openRate || '0%'}</p>
-              </div>
-              <div className="w-12 h-12 bg-[#86efac]/20 rounded-lg flex items-center justify-center">
-                <i className="fas fa-envelope-open text-[#86efac] text-xl"></i>
-              </div>
-            </div>
-          </div>
-        </div>
+        <PageHeader
+          title="Newsletter Management"
+          subtitle="Manage subscribers and create newsletter campaigns"
+          icon="fas fa-envelope-open-text"
+          actions={[
+            {
+              label: 'Create Campaign',
+              variant: 'primary',
+              icon: 'fas fa-plus',
+              onClick: () => setShowCreateCampaign(true)
+            },
+            {
+              label: 'Refresh Data',
+              variant: 'secondary',
+              icon: 'fas fa-sync-alt',
+              onClick: fetchData
+            }
+          ]}
+          stats={[
+            { label: 'Total Subscribers', value: statistics.totalSubscribers || 0 },
+            { label: 'Active Subscribers', value: statistics.activeSubscribers || 0 },
+            { label: 'Campaigns Sent', value: statistics.campaignsSent || 0 },
+            { label: 'Open Rate', value: statistics.openRate || '0%' }
+          ]}
+        />
 
         {/* Tabs */}
         <div className="bg-[#0a1a0f]/30 backdrop-blur-md border border-[#3e503e]/50 rounded-lg">

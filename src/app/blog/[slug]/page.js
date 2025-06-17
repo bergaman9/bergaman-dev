@@ -7,6 +7,7 @@ import Image from 'next/image';
 import BlogImageGenerator from '../../components/BlogImageGenerator';
 import CommentSystem from '../../components/CommentSystem';
 import ImageModal from '../../components/ImageModal';
+import MarkdownRenderer from '../../components/MarkdownRenderer';
 
 export default function BlogPost() {
   const params = useParams();
@@ -17,6 +18,10 @@ export default function BlogPost() {
   const [hasLiked, setHasLiked] = useState(false);
   const [modalImage, setModalImage] = useState(null);
   const [commentCount, setCommentCount] = useState(0);
+  const [isPasswordProtected, setIsPasswordProtected] = useState(false);
+  const [passwordInput, setPasswordInput] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     if (params.slug) {
@@ -33,9 +38,40 @@ export default function BlogPost() {
       const data = await response.json();
       
       if (data.posts && data.posts.length > 0) {
-        setPost(data.posts[0]);
+        const fetchedPost = data.posts[0];
+        
+        // Check post visibility
+        if (fetchedPost.visibility === 'private') {
+          // Check if user is admin
+          const adminAuth = localStorage.getItem('adminAuth');
+          if (adminAuth !== 'true') {
+            setError('This post is private and only accessible to administrators.');
+            setLoading(false);
+            return;
+          }
+        } else if (fetchedPost.visibility === 'password') {
+          // Check if password is already provided
+          const savedPassword = sessionStorage.getItem(`post_password_${params.slug}`);
+          if (!savedPassword || savedPassword !== fetchedPost.password) {
+            setIsPasswordProtected(true);
+            setPost(fetchedPost);
+            setLoading(false);
+            return;
+          }
+        } else if (fetchedPost.visibility === 'members') {
+          // Check if user is a member (you can implement member authentication)
+          const memberAuth = localStorage.getItem('memberAuth');
+          if (!memberAuth) {
+            setError('This post is only accessible to registered members. Please log in to continue.');
+            setLoading(false);
+            return;
+          }
+        }
+
+        setPost(fetchedPost);
+        setIsAuthenticated(true);
         // Increment view count
-        incrementViews(data.posts[0]._id);
+        incrementViews(fetchedPost._id);
       } else {
         setError('Post not found');
       }
@@ -127,6 +163,42 @@ export default function BlogPost() {
     setCommentCount(count);
   };
 
+  const formatCategoryName = (category) => {
+    switch(category) {
+      case 'ai': return 'AI';
+      case 'web-development': return 'Web Development';
+      case 'technology': return 'Technology';
+      case 'tutorial': return 'Tutorial';
+      case 'programming': return 'Programming';
+      case 'blockchain': return 'Blockchain';
+      case 'mobile': return 'Mobile';
+      case 'design': return 'Design';
+      default: return category.charAt(0).toUpperCase() + category.slice(1);
+    }
+  };
+
+  const formatDate = (date) => {
+    return new Date(date).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  const handlePasswordSubmit = (e) => {
+    e.preventDefault();
+    if (passwordInput === post.password) {
+      sessionStorage.setItem(`post_password_${params.slug}`, passwordInput);
+      setIsPasswordProtected(false);
+      setIsAuthenticated(true);
+      setPasswordError('');
+      // Increment view count after successful password entry
+      incrementViews(post._id);
+    } else {
+      setPasswordError('Incorrect password. Please try again.');
+    }
+  };
+
   if (loading) {
     return (
       <div className="page-container">
@@ -161,6 +233,70 @@ export default function BlogPost() {
     );
   }
 
+  // Password Protection Screen
+  if (isPasswordProtected && post) {
+    return (
+      <div className="page-container">
+        <div className="page-content">
+          <div className="max-w-md mx-auto text-center py-16">
+            <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-8 rounded-lg">
+              <i className="fas fa-lock text-4xl text-[#e8c547] mb-6"></i>
+              <h1 className="text-2xl font-bold text-gray-300 mb-4">Protected Post</h1>
+              <p className="text-gray-400 mb-6">This post is password protected. Please enter the password to continue.</p>
+              
+              <form onSubmit={handlePasswordSubmit} className="space-y-4">
+                <div>
+                  <input
+                    type="password"
+                    value={passwordInput}
+                    onChange={(e) => setPasswordInput(e.target.value)}
+                    placeholder="Enter password"
+                    className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-white focus:border-[#e8c547] focus:outline-none"
+                    required
+                  />
+                  {passwordError && (
+                    <p className="text-red-400 text-sm mt-2">{passwordError}</p>
+                  )}
+                </div>
+                <button
+                  type="submit"
+                  className="w-full bg-[#e8c547] text-[#0e1b12] px-6 py-3 rounded-lg font-medium hover:bg-[#d4b445] transition-colors duration-300"
+                >
+                  <i className="fas fa-unlock mr-2"></i>
+                  Access Post
+                </button>
+              </form>
+              
+              <div className="mt-6">
+                <Link
+                  href="/blog"
+                  className="text-gray-400 hover:text-[#e8c547] transition-colors duration-300"
+                >
+                  <i className="fas fa-arrow-left mr-2"></i>
+                  Back to Blog
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Only render the full post if authenticated
+  if (!isAuthenticated) {
+    return (
+      <div className="page-container">
+        <div className="page-content">
+          <div className="text-center py-16">
+            <i className="fas fa-spinner fa-spin text-4xl text-[#e8c547] mb-4"></i>
+            <p className="text-gray-400">Checking access permissions...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="page-container">
       <div className="page-content">
@@ -179,15 +315,15 @@ export default function BlogPost() {
         <header className="mb-8">
           <div className="flex items-center gap-3 mb-4">
             <span className="px-3 py-1 bg-[#e8c547]/20 text-[#e8c547] text-sm rounded-full">
-              {post.category}
+              {formatCategoryName(post.category)}
             </span>
             <span className="text-gray-400">
-              {new Date(post.createdAt).toLocaleDateString()}
+              {formatDate(post.createdAt)}
             </span>
             <span className="text-gray-400">•</span>
             <span className="text-gray-400">
               <i className="fas fa-clock mr-1"></i>
-              {post.readTime ? `${post.readTime} minutes` : '5 minutes'}
+              {post.readTime ? post.readTime.replace(' read', '') : '5 min'}
             </span>
           </div>
           
@@ -225,21 +361,19 @@ export default function BlogPost() {
         </header>
 
         {/* Article Content */}
-        <article className="prose prose-lg prose-invert max-w-none mb-8">
-          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-8 rounded-lg">
+        <article className="mb-8 w-full overflow-hidden">
+          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-4 sm:p-6 lg:p-8 rounded-lg w-full overflow-hidden">
             {post.content ? (
-              <div className="whitespace-pre-wrap text-gray-300 leading-relaxed">
-                {post.content}
-              </div>
+              <MarkdownRenderer content={post.content} className="w-full max-w-full overflow-hidden" />
             ) : (
-              <div className="text-gray-300 leading-relaxed">
-                <p className="mb-4">
+              <div className="text-gray-300 leading-relaxed w-full overflow-hidden">
+                <p className="mb-4 break-words">
                   This is the full content of the blog post. The content can be edited in the admin panel.
                 </p>
-                <p className="mb-4">
+                <p className="mb-4 break-words">
                   {post.description}
                 </p>
-                <p>
+                <p className="break-words">
                   More detailed content would go here. You can add rich text, code examples, images, and more through the admin interface.
                 </p>
               </div>

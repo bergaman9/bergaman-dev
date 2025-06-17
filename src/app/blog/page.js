@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import ImageModal from '../components/ImageModal';
 import { useAdminMode } from '../../hooks/useAdminMode';
+import BlogPostCard from '../components/BlogPostCard';
 
 export default function Blog() {
   const [posts, setPosts] = useState([]);
@@ -14,39 +15,100 @@ export default function Blog() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [modalImage, setModalImage] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [postsPerPage, setPostsPerPage] = useState(9);
+  const [totalPosts, setTotalPosts] = useState(0);
+  const [settings, setSettings] = useState(null);
   const { isAdminMode, exitEditMode } = useAdminMode();
 
   const categories = ['all', 'technology', 'ai', 'web-development', 'tutorial', 'programming'];
 
   useEffect(() => {
-    fetchPosts();
+    fetchSettings();
   }, []);
+
+  useEffect(() => {
+    fetchPosts();
+  }, [currentPage, postsPerPage, searchTerm, selectedCategory]);
+
+  const fetchSettings = async () => {
+    try {
+      const response = await fetch('/api/admin/settings');
+      const data = await response.json();
+      setSettings(data);
+      setPostsPerPage(data.blogPostsPerPage || 9);
+    } catch (error) {
+      console.error('Error fetching settings:', error);
+    }
+  };
 
   const fetchPosts = async () => {
     try {
-      const response = await fetch('/api/admin/posts?published=true');
+      const params = new URLSearchParams({
+        published: 'true',
+        page: currentPage.toString(),
+        limit: postsPerPage.toString(),
+        ...(selectedCategory !== 'all' && { category: selectedCategory }),
+        ...(searchTerm && { search: searchTerm })
+      });
+
+      const response = await fetch(`/api/admin/posts?${params}`);
       const data = await response.json();
       
       if (data.posts) {
-        // Sort posts by creation date (newest first)
-        const sortedPosts = data.posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        setPosts(sortedPosts);
+        // Filter out non-public posts for regular visitors
+        const visiblePosts = data.posts.filter(post => {
+          if (isAdminMode) return true; // Admin can see all posts
+          return post.visibility === 'public' || !post.visibility;
+        });
+
+        // Fetch comment count for each post
+        const postsWithCommentCount = await Promise.all(
+          visiblePosts.map(async (post) => {
+            try {
+              const commentResponse = await fetch(`/api/comments?postSlug=${post.slug}`);
+              const commentData = await commentResponse.json();
+              return {
+                ...post,
+                commentCount: commentData.comments?.length || 0
+              };
+            } catch (error) {
+              console.error(`Error fetching comments for ${post.slug}:`, error);
+              return {
+                ...post,
+                commentCount: 0
+              };
+            }
+          })
+        );
+        
+        setPosts(postsWithCommentCount);
+        setTotalPosts(data.pagination?.total || visiblePosts.length);
       }
     } catch (error) {
       console.error('Error fetching posts:', error);
-      setPosts([]);
     } finally {
       setLoading(false);
     }
   };
 
-  // Filter posts based on search and category
-  const filteredPosts = posts.filter(post => {
-    const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         post.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'all' || post.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
+  // Filter posts based on search and category - removed since we're doing server-side filtering
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1); // Reset to first page when searching
+  };
+
+  const handleCategoryChange = (e) => {
+    setSelectedCategory(e.target.value);
+    setCurrentPage(1); // Reset to first page when changing category
+  };
+
+  const totalPages = Math.ceil(totalPosts / postsPerPage);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const openModal = (imageSrc, imageAlt) => {
     setModalImage({ src: imageSrc, alt: imageAlt });
@@ -56,8 +118,31 @@ export default function Blog() {
     setModalImage(null);
   };
 
+  const formatCategoryName = (category) => {
+    switch(category) {
+      case 'ai': return 'AI';
+      case 'web-development': return 'Web Development';
+      case 'technology': return 'Technology';
+      case 'tutorial': return 'Tutorial';
+      case 'programming': return 'Programming';
+      case 'blockchain': return 'Blockchain';
+      case 'mobile': return 'Mobile';
+      case 'design': return 'Design';
+      case 'all': return 'All Categories';
+      default: return category.charAt(0).toUpperCase() + category.slice(1);
+    }
+  };
+
+  const formatDate = (date) => {
+    return new Date(date).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
   return (
-    <div className="min-h-screen text-[#d1d5db] page-container flex flex-col">
+    <div className="page-container">
       {/* Admin Edit Mode Bar */}
       {isAdminMode && (
         <div className="fixed top-0 left-0 right-0 bg-[#e8c547] text-[#0e1b12] px-4 py-2 z-50 flex items-center justify-between">
@@ -89,21 +174,21 @@ export default function Blog() {
         <link rel="canonical" href="https://bergaman.dev/blog" />
       </Head>
 
-      <main className={`page-content py-8 flex-1 ${isAdminMode ? 'pt-16' : ''}`}>
+      <main className={`page-content ${isAdminMode ? 'pt-16' : ''}`}>
         
         {/* Page Header */}
-        <section className="text-center mb-12 fade-in">
-          <h1 className="text-4xl md:text-5xl font-bold gradient-text mb-4 leading-tight">
-            <i className="fas fa-blog mr-3"></i>
+        <div className="page-header fade-in">
+          <h1 className="page-title">
+            <i className="fas fa-blog page-title-icon"></i>
             Blog
           </h1>
-          <p className="text-lg text-gray-300 max-w-3xl mx-auto">
+          <p className="page-subtitle">
             Thoughts, tutorials, and insights from the dragon's lair
           </p>
-        </section>
+        </div>
 
         {/* Search and Filter */}
-        <section className="mb-8 slide-in-left">
+        <section className="content-section slide-in-left">
           <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg">
             <div className="flex flex-col md:flex-row gap-4">
               
@@ -114,49 +199,37 @@ export default function Blog() {
                   type="text"
                   placeholder="Search posts..."
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={handleSearchChange}
                   className="w-full pl-10 pr-4 py-4 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] placeholder-gray-400 focus:border-[#e8c547]/50 focus:outline-none transition-colors duration-300 text-base"
                 />
               </div>
 
               {/* Category Filter */}
-              <div className="relative">
+              <div className="md:w-64">
                 <select
                   value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] focus:border-[#e8c547]/50 focus:outline-none transition-colors duration-300 appearance-none cursor-pointer"
+                  onChange={handleCategoryChange}
+                  className="w-full px-4 py-4 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] focus:border-[#e8c547]/50 focus:outline-none transition-colors duration-300 text-base"
                 >
                   {categories.map(category => (
                     <option key={category} value={category}>
-                      {category === 'all' ? 'All Categories' : category.charAt(0).toUpperCase() + category.slice(1)}
+                      {formatCategoryName(category)}
                     </option>
                   ))}
                 </select>
-                <i className="fas fa-chevron-down absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"></i>
               </div>
-            </div>
-
-            {/* Results Info */}
-            <div className="mt-4 text-sm text-gray-400">
-              {filteredPosts.length === 0 ? (
-                <span>No articles found matching your criteria.</span>
-              ) : (
-                <span>
-                  Showing {filteredPosts.length} of {posts.length} posts
-                </span>
-              )}
             </div>
           </div>
         </section>
 
-        {/* Blog Posts Grid - Moodboard Layout */}
-        <section className="mb-12 slide-in-right">
+        {/* Blog Posts */}
+        <section className="section-spacing slide-in-right">
           {loading ? (
             <div className="text-center py-16">
               <i className="fas fa-spinner fa-spin text-4xl text-[#e8c547] mb-4"></i>
               <p className="text-gray-400">Loading blog posts...</p>
             </div>
-          ) : filteredPosts.length === 0 ? (
+          ) : posts.length === 0 ? (
             <div className="text-center py-16">
               <i className="fas fa-search text-4xl text-gray-400 mb-4"></i>
               <p className="text-gray-400">
@@ -177,94 +250,116 @@ export default function Blog() {
               )}
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredPosts.map((post, index) => (
+            <div className="card-grid card-grid-3">
+              {posts.map(post => (
                 <div key={post._id} className="relative">
+                  {isAdminMode && post.visibility !== 'public' && (
+                    <div 
+                      className="absolute top-2 left-2 z-10 bg-yellow-500 text-black text-xs font-bold px-2 py-1 rounded"
+                      title={post.visibility === 'private' ? 'Private post' : 'Unlisted post'}
+                    >
+                      {post.visibility === 'private' ? <i className="fas fa-lock"></i> : <i className="fas fa-eye-slash"></i>}
+                    </div>
+                  )}
                   {isAdminMode && (
                     <div className="absolute top-2 right-2 z-10 flex gap-2">
                       <Link
                         href={`/admin/posts/${post._id}/edit`}
-                        className="bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 transition-colors"
+                        className="bg-blue-600 text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-blue-700 transition-colors"
                         title="Edit Post"
                       >
                         <i className="fas fa-edit text-sm"></i>
                       </Link>
                     </div>
                   )}
-                  <Link
-                    href={`/blog/${post.slug}`}
-                    className="glass p-4 rounded-lg block group"
-                  >
-                    <div className="mb-4">
-                      {post.image ? (
-                        <Image
-                          src={post.image}
-                          alt={post.title}
-                          width={400}
-                          height={250}
-                          className="w-full h-48 object-cover rounded-lg cursor-pointer"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            openModal(post.image, post.title);
-                          }}
-                        />
-                      ) : (
-                        <div 
-                          className="cursor-pointer"
-                          onClick={(e) => {
-                            e.preventDefault();
-                          }}
-                        >
-                          <BlogImageGenerator 
-                            title={post.title} 
-                            category={post.category} 
-                            width={400} 
-                            height={250}
-                            className="w-full h-48 rounded-lg"
-                          />
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="px-2 py-1 bg-[#e8c547]/20 text-[#e8c547] text-xs rounded-full">
-                        {post.category}
-                      </span>
-                      <span className="text-gray-400 text-sm">
-                        {new Date(post.createdAt).toLocaleDateString()}
-                      </span>
-                    </div>
-                    <h3 className="text-lg font-semibold text-[#e8c547] mb-2 leading-tight">
-                      {post.title}
-                    </h3>
-                    <p className="text-gray-300 mb-3 text-sm line-clamp-3">
-                      {post.description}
-                    </p>
-                    <div className="flex items-center justify-between text-xs text-gray-400">
-                      <span>
-                        <i className="fas fa-clock mr-1"></i>
-                        {post.readTime || '6 min read'}
-                      </span>
-                      <div className="flex items-center space-x-3">
-                        <span>
-                          <i className="fas fa-eye mr-1"></i>
-                          {post.views || 0}
-                        </span>
-                        <span>
-                          <i className="fas fa-heart mr-1"></i>
-                          {post.likes || 0}
-                        </span>
-                        <span>
-                          <i className="fas fa-comments mr-1"></i>
-                          {post.commentCount || 0}
-                        </span>
-                      </div>
-                    </div>
-                  </Link>
+                  <BlogPostCard 
+                    post={post}
+                    formatDate={formatDate}
+                    formatCategoryName={formatCategoryName}
+                    openModal={openModal}
+                  />
                 </div>
               ))}
             </div>
           )}
         </section>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <section className="mb-8 fade-in">
+            <div className="flex justify-center items-center space-x-2">
+              {/* Previous Button */}
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className={`px-4 py-2 rounded-lg border transition-all duration-300 ${
+                  currentPage === 1
+                    ? 'border-[#3e503e] text-gray-500 cursor-not-allowed'
+                    : 'border-[#e8c547] text-[#e8c547] hover:bg-[#e8c547] hover:text-[#0e1b12]'
+                }`}
+              >
+                <i className="fas fa-chevron-left mr-2"></i>
+                Previous
+              </button>
+
+              {/* Page Numbers */}
+              <div className="flex space-x-1">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                  // Show first page, last page, current page, and pages around current
+                  const showPage = 
+                    page === 1 || 
+                    page === totalPages || 
+                    (page >= currentPage - 1 && page <= currentPage + 1);
+                  
+                  if (!showPage) {
+                    // Show ellipsis
+                    if (page === currentPage - 2 || page === currentPage + 2) {
+                      return (
+                        <span key={page} className="px-3 py-2 text-gray-400">
+                          ...
+                        </span>
+                      );
+                    }
+                    return null;
+                  }
+
+                  return (
+                    <button
+                      key={page}
+                      onClick={() => handlePageChange(page)}
+                      className={`px-4 py-2 rounded-lg border transition-all duration-300 ${
+                        currentPage === page
+                          ? 'bg-[#e8c547] text-[#0e1b12] border-[#e8c547]'
+                          : 'border-[#3e503e] text-gray-300 hover:border-[#e8c547] hover:text-[#e8c547]'
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Next Button */}
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className={`px-4 py-2 rounded-lg border transition-all duration-300 ${
+                  currentPage === totalPages
+                    ? 'border-[#3e503e] text-gray-500 cursor-not-allowed'
+                    : 'border-[#e8c547] text-[#e8c547] hover:bg-[#e8c547] hover:text-[#0e1b12]'
+                }`}
+              >
+                Next
+                <i className="fas fa-chevron-right ml-2"></i>
+              </button>
+            </div>
+
+            {/* Page Info */}
+            <div className="text-center mt-4 text-sm text-gray-400">
+              Page {currentPage} of {totalPages} • {totalPosts} total posts
+            </div>
+          </section>
+        )}
 
         {/* Newsletter Section */}
         <section className="mb-12 fade-in">

@@ -131,6 +131,13 @@ export default function Footer() {
                 <i className="fas fa-balance-scale text-sm group-hover:scale-110 transition-transform duration-300"></i>
                 <span className="text-sm group-hover:translate-x-1 transition-transform duration-300">MIT License</span>
               </a>
+              <Link
+                href="/privacy-policy"
+                className="group flex items-center justify-center sm:justify-start space-x-3 text-gray-400 hover:text-[#4ade80] transition-all duration-300"
+              >
+                <i className="fas fa-shield-alt text-sm group-hover:scale-110 transition-transform duration-300"></i>
+                <span className="text-sm group-hover:translate-x-1 transition-transform duration-300">Privacy Policy</span>
+              </Link>
               <a
                 href={SITE_CONFIG.previousVersions.v1.url}
                 target="_blank"
@@ -166,7 +173,6 @@ export default function Footer() {
               <div className="flex items-center space-x-2 bg-[#0e1b12]/50 px-4 py-2 rounded-full border border-[#3e503e]/30">
                 <i className="fas fa-code-branch text-[#e8c547] text-sm"></i>
                 <span className="text-sm text-gray-400">Version {appVersion}</span>
-                <div className="w-2 h-2 bg-[#4ade80] rounded-full animate-pulse"></div>
               </div>
 
               {/* Back to Top */}

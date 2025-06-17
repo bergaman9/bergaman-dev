@@ -30,8 +30,8 @@ export const metadata = {
   creator: SITE_CONFIG.name,
   publisher: SITE_CONFIG.name,
   icons: {
-    icon: '/favicon.ico',
-    shortcut: '/favicon.ico',
+    icon: '/bergaman-v2.4.0.ico',
+    shortcut: '/bergaman-v2.4.0.ico',
     apple: '/apple-touch-icon.png',
   },
   robots: {
@@ -70,7 +70,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/bergaman-v2.4.0.ico" />
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />

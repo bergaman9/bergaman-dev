@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Head from 'next/head';
+import PageHeader from '../../../components/PageHeader';
 
 export default function AdminPosts() {
   const [posts, setPosts] = useState([]);
@@ -16,6 +17,8 @@ export default function AdminPosts() {
     total: 0,
     pages: 0
   });
+  const [editingId, setEditingId] = useState(null);
+  const [newTitle, setNewTitle] = useState('');
 
   // Get unique categories from posts
   const categories = ['all', 'technology', 'ai', 'web-development', 'tutorial', 'programming'];
@@ -101,6 +104,134 @@ export default function AdminPosts() {
     setPagination(prev => ({ ...prev, page: 1 })); // Reset to first page
   };
 
+  const formatCategoryName = (category) => {
+    switch(category) {
+      case 'ai': return 'AI';
+      case 'web-development': return 'Web Development';
+      case 'technology': return 'Technology';
+      case 'tutorial': return 'Tutorial';
+      case 'programming': return 'Programming';
+      case 'blockchain': return 'Blockchain';
+      case 'mobile': return 'Mobile';
+      case 'design': return 'Design';
+      default: return category.charAt(0).toUpperCase() + category.slice(1);
+    }
+  };
+
+  const handleExportPosts = async () => {
+    try {
+      setLoading(true);
+      
+      // Fetch all posts for export
+      const response = await fetch('/api/admin/posts?limit=1000');
+      const data = await response.json();
+      
+      if (data.posts) {
+        // Create export data
+        const exportData = {
+          version: '1.0',
+          exportDate: new Date().toISOString(),
+          postsCount: data.posts.length,
+          posts: data.posts.map(post => ({
+            title: post.title,
+            slug: post.slug,
+            description: post.description,
+            content: post.content,
+            image: post.image,
+            category: post.category,
+            tags: post.tags,
+            status: post.status,
+            published: post.published,
+            createdAt: post.createdAt,
+            updatedAt: post.updatedAt
+          }))
+        };
+
+        // Create and download file
+        const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+          type: 'application/json'
+        });
+        
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `bergaman-posts-export-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+
+        alert(`Successfully exported ${data.posts.length} posts!`);
+      }
+    } catch (error) {
+      console.error('Error exporting posts:', error);
+      alert('Failed to export posts');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleImportPosts = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    try {
+      setLoading(true);
+      
+      const fileContent = await file.text();
+      const importData = JSON.parse(fileContent);
+      
+      // Validate import data
+      if (!importData.posts || !Array.isArray(importData.posts)) {
+        throw new Error('Invalid import file format');
+      }
+
+      // Import posts one by one
+      let importedCount = 0;
+      let errorCount = 0;
+
+      for (const postData of importData.posts) {
+        try {
+          const response = await fetch('/api/admin/posts', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              ...postData,
+              slug: postData.slug + (importedCount > 0 ? `-import-${Date.now()}` : ''), // Prevent duplicate slugs
+            }),
+          });
+
+          if (response.ok) {
+            importedCount++;
+          } else {
+            errorCount++;
+          }
+        } catch (error) {
+          console.error('Error importing post:', postData.title, error);
+          errorCount++;
+        }
+      }
+
+      // Refresh posts list
+      await fetchPosts();
+      
+      alert(
+        `Import completed!\n` +
+        `Successfully imported: ${importedCount} posts\n` +
+        `Failed: ${errorCount} posts`
+      );
+      
+    } catch (error) {
+      console.error('Error importing posts:', error);
+      alert('Failed to import posts. Please check the file format.');
+    } finally {
+      setLoading(false);
+      e.target.value = ''; // Reset file input
+    }
+  };
+
   return (
     <>
       <Head>
@@ -108,61 +239,62 @@ export default function AdminPosts() {
       </Head>
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-[#e8c547] to-[#f4d76b] bg-clip-text text-transparent">
-              Manage Posts
-            </h1>
-            <p className="text-gray-400 mt-2">Create, edit, and manage your blog posts</p>
-            {userRole === 'editor' && (
-              <p className="text-yellow-400 text-sm mt-1">
-                <i className="fas fa-info-circle mr-1"></i>
-                Editor Mode: You can create and edit posts, but cannot delete them
-              </p>
-            )}
-          </div>
-          <Link
-            href="/admin/posts/new"
-            className="bg-gradient-to-r from-[#e8c547] to-[#d4b445] text-[#0e1b12] px-6 py-3 rounded-lg font-semibold hover:from-[#d4b445] hover:to-[#c4a43d] transition-all duration-300 flex items-center space-x-2"
-          >
-            <i className="fas fa-plus"></i>
-            <span>New Post</span>
-          </Link>
-        </div>
+        <PageHeader
+          title="Manage Posts"
+          subtitle="Create, edit, and manage your blog posts"
+          icon="fas fa-newspaper"
+          actions={[
+            {
+              label: 'New Post',
+              variant: 'primary',
+              icon: 'fas fa-plus',
+              href: '/admin/posts/new'
+            },
+            {
+              label: 'Export',
+              variant: 'secondary',
+              icon: 'fas fa-file-export',
+              onClick: handleExportPosts
+            }
+          ]}
+          stats={[
+            { label: 'Total Posts', value: pagination.total },
+            { label: 'Published', value: posts.filter(post => post.status === 'published').length },
+            { label: 'Drafts', value: posts.filter(post => post.status === 'draft').length }
+          ]}
+        />
 
         {/* Search and Filter */}
-        <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1">
-              <label htmlFor="search" className="block text-sm font-medium text-gray-300 mb-2">
-                Search Posts
-              </label>
-              <input
-                type="text"
-                id="search"
-                value={searchTerm}
-                onChange={handleSearch}
-                placeholder="Search by title, description, or content..."
-                className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] placeholder-gray-400 focus:border-[#e8c547]/50 focus:outline-none transition-colors duration-300"
-              />
-            </div>
-            <div className="md:w-48">
-              <label htmlFor="category" className="block text-sm font-medium text-gray-300 mb-2">
-                Category
-              </label>
-              <select
-                id="category"
-                value={selectedCategory}
-                onChange={handleCategoryChange}
-                className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] focus:border-[#e8c547]/50 focus:outline-none transition-colors duration-300"
-              >
-                {categories.map(category => (
-                  <option key={category} value={category}>
-                    {category === 'all' ? 'All Categories' : category.charAt(0).toUpperCase() + category.slice(1)}
-                  </option>
-                ))}
-              </select>
-            </div>
+        <div className="flex flex-col md:flex-row gap-4 bg-[#1a2e1a]/30 backdrop-blur-sm rounded-xl p-4 border border-[#3e503e]/50">
+          <div className="flex-1">
+            <label htmlFor="search" className="block text-sm font-medium text-gray-300 mb-2">
+              Search Posts
+            </label>
+            <input
+              type="text"
+              id="search"
+              value={searchTerm}
+              onChange={handleSearch}
+              placeholder="Search by title, description, or content..."
+              className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] placeholder-gray-400 focus:border-[#e8c547]/50 focus:outline-none transition-colors duration-300"
+            />
+          </div>
+          <div className="md:w-48">
+            <label htmlFor="category" className="block text-sm font-medium text-gray-300 mb-2">
+              Category
+            </label>
+            <select
+              id="category"
+              value={selectedCategory}
+              onChange={handleCategoryChange}
+              className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] focus:border-[#e8c547]/50 focus:outline-none transition-colors duration-300"
+            >
+              {categories.map(category => (
+                <option key={category} value={category}>
+                  {category === 'all' ? 'All Categories' : formatCategoryName(category)}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 
@@ -214,7 +346,7 @@ export default function AdminPosts() {
                         </h3>
                         {post.category && (
                           <span className="px-2 py-1 bg-[#e8c547]/20 text-[#e8c547] text-xs rounded-full">
-                            {post.category}
+                            {formatCategoryName(post.category)}
                           </span>
                         )}
                         {post.featured && (
@@ -257,7 +389,7 @@ export default function AdminPosts() {
                         <i className="fas fa-eye"></i>
                       </Link>
                       <Link
-                        href={`/admin/posts/edit/${post._id}`}
+                        href={`/admin/posts/${post._id}/edit`}
                         className="p-2 text-gray-400 hover:text-blue-400 transition-colors duration-300"
                         title="Edit Post"
                       >
@@ -324,15 +456,30 @@ export default function AdminPosts() {
                 )}
               </div>
               <div className="flex items-center space-x-4">
-                <button className="text-gray-400 hover:text-[#e8c547] transition-colors duration-300">
+                <button 
+                  onClick={handleExportPosts}
+                  className="text-gray-400 hover:text-[#e8c547] transition-colors duration-300"
+                >
                   <i className="fas fa-download mr-2"></i>
                   Export
                 </button>
                 {userRole === 'admin' && (
-                  <button className="text-gray-400 hover:text-[#e8c547] transition-colors duration-300">
-                    <i className="fas fa-upload mr-2"></i>
-                    Import
-                  </button>
+                  <>
+                    <button 
+                      onClick={() => document.getElementById('importFileBottom').click()}
+                      className="text-gray-400 hover:text-[#e8c547] transition-colors duration-300"
+                    >
+                      <i className="fas fa-upload mr-2"></i>
+                      Import
+                    </button>
+                    <input
+                      id="importFileBottom"
+                      type="file"
+                      accept=".json"
+                      onChange={handleImportPosts}
+                      className="hidden"
+                    />
+                  </>
                 )}
               </div>
             </div>

@@ -1,42 +1,86 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 
-export default function AdminHeader() {
+export default function AdminHeader({ activeTab = 'dashboard' }) {
   const pathname = usePathname();
   const router = useRouter();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMoreDropdownOpen, setIsMoreDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+  const moreDropdownRef = useRef(null);
+  const mobileMenuRef = useRef(null);
+
+  // Auto-close dropdowns when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+      if (moreDropdownRef.current && !moreDropdownRef.current.contains(event.target)) {
+        setIsMoreDropdownOpen(false);
+      }
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target)) {
+        setIsMenuOpen(false);
+      }
+    }
+
+    if (isDropdownOpen || isMenuOpen || isMoreDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }
+  }, [isDropdownOpen, isMenuOpen, isMoreDropdownOpen]);
 
   const handleLogout = () => {
     localStorage.removeItem('adminAuth');
     localStorage.removeItem('adminEditMode');
+    setIsDropdownOpen(false);
+    setIsMenuOpen(false);
     router.push('/admin');
   };
 
   const isActive = (path) => {
-    return pathname === path;
+    if (path === '/admin' && activeTab === 'dashboard') return true;
+    if (path === '/admin/posts' && activeTab === 'posts') return true;
+    if (path === '/admin/newsletter' && activeTab === 'newsletter') return true;
+    if (path === '/admin/settings' && activeTab === 'settings') return true;
+    if (path === '/admin/comments' && activeTab === 'comments') return true;
+    if (path === '/admin/contacts' && activeTab === 'contacts') return true;
+    if (path === '/admin/media' && activeTab === 'media') return true;
+    if (path === '/admin/members' && activeTab === 'members') return true;
+    if (path === '/admin/portfolio' && activeTab === 'portfolio') return true;
+    if (path === '/admin/recommendations' && activeTab === 'recommendations') return true;
+    if (path === '/admin/profile' && activeTab === 'profile') return true;
+    if (path === '/admin/categories' && activeTab === 'categories') return true;
+    if (path === '/admin/tags' && activeTab === 'tags') return true;
+    return false;
   };
 
   // Primary navigation items (always visible)
   const primaryNavItems = [
     { href: '/admin', icon: 'fas fa-tachometer-alt', label: 'Dashboard' },
     { href: '/admin/posts', icon: 'fas fa-file-alt', label: 'Posts' },
-    { href: '/admin/newsletter', icon: 'fas fa-newspaper', label: 'Newsletter' }
+    { href: '/admin/newsletter', icon: 'fas fa-newspaper', label: 'Newsletter' },
+    { href: '/admin/settings', icon: 'fas fa-cog', label: 'Settings' }
   ];
 
   // Secondary navigation items (in dropdown)
   const secondaryNavItems = [
     { href: '/admin/comments', icon: 'fas fa-comments', label: 'Comments' },
     { href: '/admin/contacts', icon: 'fas fa-envelope', label: 'Contacts' },
+    { href: '/admin/media', icon: 'fas fa-images', label: 'Media' },
     { href: '/admin/members', icon: 'fas fa-users', label: 'Members' },
-    { href: '/admin/settings', icon: 'fas fa-cog', label: 'Settings' }
+    { href: '/admin/portfolio', icon: 'fas fa-briefcase', label: 'Portfolio' },
+    { href: '/admin/recommendations', icon: 'fas fa-lightbulb', label: 'Recommendations' }
   ];
 
   return (
-    <header className="bg-gradient-to-r from-[#0a1a0f]/95 via-[#0e1b12]/95 via-[#1a2e1a]/95 to-[#0a1a0f]/95 border-b border-[#e8c547]/20 backdrop-blur-md sticky top-0 z-50">
+    <header className="bg-gradient-to-r from-[#0a1a0f]/95 via-[#0e1b12]/95 via-[#1a2e1a]/95 to-[#0a1a0f]/95 border-b border-[#e8c547]/20 backdrop-blur-md sticky top-0 z-30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           
@@ -57,7 +101,7 @@ export default function AdminHeader() {
           </div>
 
           {/* Primary Navigation */}
-          <nav className="hidden lg:flex items-center space-x-1">
+          <nav className="hidden lg:flex items-center space-x-6">
             {primaryNavItems.map((item) => (
               <Link
                 key={item.href}
@@ -74,9 +118,12 @@ export default function AdminHeader() {
             ))}
             
             {/* More Menu Dropdown */}
-            <div className="relative">
+            <div className="relative" ref={moreDropdownRef}>
               <button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsMoreDropdownOpen(!isMoreDropdownOpen);
+                }}
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center space-x-2 ${
                   secondaryNavItems.some(item => isActive(item.href))
                     ? 'bg-[#e8c547]/20 text-[#e8c547] border border-[#e8c547]/30'
@@ -85,12 +132,15 @@ export default function AdminHeader() {
               >
                 <i className="fas fa-ellipsis-h text-sm"></i>
                 <span>More</span>
-                <i className={`fas fa-chevron-down text-xs transition-transform duration-300 ${isMenuOpen ? 'rotate-180' : ''}`}></i>
+                <i className={`fas fa-chevron-down text-xs transition-transform duration-300 ${isMoreDropdownOpen ? 'rotate-180' : ''}`}></i>
               </button>
 
               {/* More Menu Dropdown */}
-              {isMenuOpen && (
-                <div className="absolute left-0 mt-2 w-48 bg-[#1a2e1a] border border-[#3e503e]/30 rounded-lg shadow-xl backdrop-blur-md z-50">
+              {isMoreDropdownOpen && (
+                <div 
+                  className="absolute left-0 mt-2 w-48 bg-[#1a2e1a] border border-[#3e503e]/30 rounded-lg shadow-xl backdrop-blur-md z-50"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <div className="py-2">
                     {secondaryNavItems.map((item) => (
                       <Link
@@ -101,7 +151,7 @@ export default function AdminHeader() {
                             ? 'text-[#e8c547] bg-[#e8c547]/10'
                             : 'text-gray-300 hover:text-[#e8c547] hover:bg-[#e8c547]/10'
                         }`}
-                        onClick={() => setIsMenuOpen(false)}
+                        onClick={() => setIsMoreDropdownOpen(false)}
                       >
                         <i className={item.icon}></i>
                         <span>{item.label}</span>
@@ -114,7 +164,7 @@ export default function AdminHeader() {
           </nav>
 
           {/* User Menu */}
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-4">
             {/* Quick Actions */}
             <div className="hidden md:flex items-center space-x-2">
               <Link
@@ -128,7 +178,7 @@ export default function AdminHeader() {
             </div>
 
             {/* User Dropdown */}
-            <div className="relative">
+            <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 className="flex items-center space-x-2 p-2 rounded-lg bg-[#2e3d29]/30 border border-[#3e503e]/30 hover:border-[#e8c547]/30 transition-all duration-300"
@@ -138,7 +188,7 @@ export default function AdminHeader() {
                 </div>
                 <div className="hidden sm:block text-left">
                   <p className="text-xs font-medium text-[#e8c547]">Bergaman</p>
-                  <p className="text-xs text-gray-400">Electronics Engineer</p>
+                  <p className="text-xs text-gray-400">Administrator</p>
                 </div>
                 <i className={`fas fa-chevron-down text-xs text-gray-400 transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`}></i>
               </button>
@@ -149,17 +199,8 @@ export default function AdminHeader() {
                   <div className="py-2">
                     <div className="px-4 py-2 border-b border-[#3e503e]/30">
                       <p className="text-sm font-medium text-[#e8c547]">Bergaman</p>
-                      <p className="text-xs text-gray-400">Electronics Engineer</p>
+                      <p className="text-xs text-gray-400">Administrator</p>
                     </div>
-                    
-                    <Link
-                      href="/admin/settings"
-                      className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-300 hover:text-[#e8c547] hover:bg-[#e8c547]/10 transition-colors duration-300"
-                      onClick={() => setIsDropdownOpen(false)}
-                    >
-                      <i className="fas fa-cog"></i>
-                      <span>Settings</span>
-                    </Link>
                     
                     <Link
                       href="/admin/profile"
@@ -196,7 +237,7 @@ export default function AdminHeader() {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="lg:hidden border-t border-[#3e503e]/30 py-4">
+          <div ref={mobileMenuRef} className="lg:hidden border-t border-[#3e503e]/30 py-4">
             <div className="space-y-2">
               {[...primaryNavItems, ...secondaryNavItems].map((item) => (
                 <Link
@@ -217,17 +258,6 @@ export default function AdminHeader() {
           </div>
         )}
       </div>
-
-      {/* Close dropdowns when clicking outside */}
-      {(isDropdownOpen || isMenuOpen) && (
-        <div
-          className="fixed inset-0 z-40"
-          onClick={() => {
-            setIsDropdownOpen(false);
-            setIsMenuOpen(false);
-          }}
-        ></div>
-      )}
     </header>
   );
 } 

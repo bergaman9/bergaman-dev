@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
+import PageHeader from '../../../components/PageHeader';
 
 export default function AdminCommentsPage() {
   const [comments, setComments] = useState([]);
@@ -107,19 +108,11 @@ export default function AdminCommentsPage() {
       
       <div className="space-y-6">
         {/* Header */}
-        <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
-            <div>
-              <h1 className="text-3xl font-bold gradient-text mb-2">
-                <i className="fas fa-comments mr-3"></i>
-                Comments Management
-              </h1>
-              <p className="text-gray-400">
-                Manage blog post comments and user interactions
-              </p>
-            </div>
-            
-            {/* Filter */}
+        <PageHeader
+          title="Comments Management"
+          subtitle="Manage blog post comments and user interactions"
+          icon="fas fa-comments"
+          filter={
             <div className="flex items-center space-x-2">
               <label className="text-sm text-gray-400">Filter:</label>
               <select
@@ -132,51 +125,21 @@ export default function AdminCommentsPage() {
                 <option value="pending">Pending</option>
               </select>
             </div>
-          </div>
-        </div>
-
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-4 rounded-lg">
-            <div className="flex items-center">
-              <div className="p-2 bg-blue-600/20 rounded-lg">
-                <i className="fas fa-comments text-blue-400"></i>
-              </div>
-              <div className="ml-3">
-                <p className="text-sm text-gray-400">Total Comments</p>
-                <p className="text-xl font-bold text-[#e8c547]">{comments.length}</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-4 rounded-lg">
-            <div className="flex items-center">
-              <div className="p-2 bg-green-600/20 rounded-lg">
-                <i className="fas fa-check text-green-400"></i>
-              </div>
-              <div className="ml-3">
-                <p className="text-sm text-gray-400">Approved</p>
-                <p className="text-xl font-bold text-[#e8c547]">
-                  {comments.filter(c => c.approved).length}
-                </p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-4 rounded-lg">
-            <div className="flex items-center">
-              <div className="p-2 bg-yellow-600/20 rounded-lg">
-                <i className="fas fa-clock text-yellow-400"></i>
-              </div>
-              <div className="ml-3">
-                <p className="text-sm text-gray-400">Pending</p>
-                <p className="text-xl font-bold text-[#e8c547]">
-                  {comments.filter(c => !c.approved).length}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+          }
+          stats={[
+            { label: 'Total Comments', value: comments.length },
+            { label: 'Approved', value: comments.filter(c => c.approved).length },
+            { label: 'Pending', value: comments.filter(c => !c.approved).length }
+          ]}
+          actions={[
+            {
+              label: 'Refresh',
+              variant: 'secondary',
+              icon: 'fas fa-sync-alt',
+              onClick: fetchComments
+            }
+          ]}
+        />
 
         {/* Comments List */}
         <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 rounded-lg overflow-hidden">

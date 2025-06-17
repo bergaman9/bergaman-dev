@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Head from 'next/head';
+import ImageUpload from '@/components/ImageUpload';
+import MarkdownEditor from '@/components/MarkdownEditor';
 
 export default function NewPost() {
   const router = useRouter();
@@ -24,7 +26,9 @@ export default function NewPost() {
       metaTitle: '',
       metaDescription: '',
       keywords: ''
-    }
+    },
+    visibility: 'public',
+    password: ''
   });
 
   const categories = [
@@ -37,6 +41,60 @@ export default function NewPost() {
     'mobile',
     'design'
   ];
+
+  // Format category name for display
+  const formatCategoryName = (category) => {
+    switch(category) {
+      case 'ai': return 'AI';
+      case 'web-development': return 'Web Development';
+      case 'technology': return 'Technology';
+      case 'tutorial': return 'Tutorial';
+      case 'programming': return 'Programming';
+      case 'blockchain': return 'Blockchain';
+      case 'mobile': return 'Mobile';
+      case 'design': return 'Design';
+      default: return category.charAt(0).toUpperCase() + category.slice(1);
+    }
+  };
+
+  // Calculate read time based on content
+  const calculateReadTime = (content) => {
+    if (!content) return '5 min read';
+    const wordsPerMinute = 200; // Average reading speed
+    const wordCount = content.trim().split(/\s+/).length;
+    const minutes = Math.ceil(wordCount / wordsPerMinute);
+    return `${minutes} min read`;
+  };
+
+  // Generate SEO data from content
+  const generateSEO = (title, description, content) => {
+    const seo = {
+      metaTitle: title || '',
+      metaDescription: description || '',
+      keywords: ''
+    };
+
+    // Auto-generate meta title if not provided
+    if (title && !formData.seo.metaTitle) {
+      seo.metaTitle = title.length > 60 ? title.substring(0, 57) + '...' : title;
+    }
+
+    // Auto-generate meta description if not provided
+    if (description && !formData.seo.metaDescription) {
+      seo.metaDescription = description.length > 160 ? description.substring(0, 157) + '...' : description;
+    }
+
+    // Extract keywords from content and title
+    if ((title || content) && !formData.seo.keywords) {
+      const text = `${title} ${content}`.toLowerCase();
+      const commonWords = ['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'is', 'are', 'was', 'were', 'be', 'been', 'have', 'has', 'had', 'will', 'would', 'could', 'should', 'may', 'might', 'can', 'this', 'that', 'these', 'those'];
+      const words = text.match(/\b\w{4,}\b/g) || [];
+      const uniqueWords = [...new Set(words)].filter(word => !commonWords.includes(word));
+      seo.keywords = uniqueWords.slice(0, 10).join(', ');
+    }
+
+    return seo;
+  };
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -63,7 +121,82 @@ export default function NewPost() {
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/(^-|-$)/g, '');
-      setFormData(prev => ({ ...prev, slug }));
+      
+      // Auto-generate SEO data
+      const autoSEO = generateSEO(value, formData.description, formData.content);
+      
+      setFormData(prev => ({ 
+        ...prev, 
+        slug,
+        seo: {
+          ...prev.seo,
+          ...autoSEO
+        }
+      }));
+    }
+
+    // Auto-calculate read time when content changes
+    if (name === 'content' && value) {
+      const autoReadTime = calculateReadTime(value);
+      setFormData(prev => ({
+        ...prev,
+        readTime: autoReadTime
+      }));
+      
+      // Auto-generate SEO keywords from content
+      const autoSEO = generateSEO(formData.title, formData.description, value);
+      setFormData(prev => ({
+        ...prev,
+        seo: {
+          ...prev.seo,
+          keywords: autoSEO.keywords || prev.seo.keywords
+        }
+      }));
+    }
+
+    // Auto-generate meta description from description
+    if (name === 'description' && value) {
+      const autoSEO = generateSEO(formData.title, value, formData.content);
+      setFormData(prev => ({
+        ...prev,
+        seo: {
+          ...prev.seo,
+          metaDescription: autoSEO.metaDescription || prev.seo.metaDescription
+        }
+      }));
+    }
+  };
+
+  const handleImageUpload = (imageUrl) => {
+    setFormData(prev => ({
+      ...prev,
+      image: imageUrl || ''
+    }));
+  };
+
+  const handleContentChange = (content) => {
+    setFormData(prev => ({
+      ...prev,
+      content
+    }));
+    
+    // Auto-calculate read time when content changes
+    if (content) {
+      const autoReadTime = calculateReadTime(content);
+      setFormData(prev => ({
+        ...prev,
+        readTime: autoReadTime
+      }));
+      
+      // Auto-generate SEO keywords from content
+      const autoSEO = generateSEO(formData.title, formData.description, content);
+      setFormData(prev => ({
+        ...prev,
+        seo: {
+          ...prev.seo,
+          keywords: autoSEO.keywords || prev.seo.keywords
+        }
+      }));
     }
   };
 
@@ -183,7 +316,7 @@ export default function NewPost() {
                 >
                   {categories.map(category => (
                     <option key={category} value={category}>
-                      {category.charAt(0).toUpperCase() + category.slice(1)}
+                      {formatCategoryName(category)}
                     </option>
                   ))}
                 </select>
@@ -235,15 +368,17 @@ export default function NewPost() {
 
             <div className="mt-6">
               <label className="block text-sm font-medium text-gray-300 mb-2">
-                Featured Image URL
+                Featured Image
               </label>
+              <ImageUpload
+                onImageUpload={handleImageUpload}
+                currentImage={formData.image}
+                className="w-full"
+              />
               <input
-                type="url"
+                type="hidden"
                 name="image"
                 value={formData.image}
-                onChange={handleInputChange}
-                className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] focus:border-[#e8c547]/50 focus:outline-none transition-colors duration-300"
-                placeholder="https://example.com/image.jpg"
               />
             </div>
           </div>
@@ -272,16 +407,13 @@ export default function NewPost() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Content * (Markdown supported)
+                  Content * (Markdown Editor)
                 </label>
-                <textarea
-                  name="content"
+                <MarkdownEditor
                   value={formData.content}
-                  onChange={handleInputChange}
-                  required
-                  rows={15}
-                  className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] focus:border-[#e8c547]/50 focus:outline-none transition-colors duration-300 font-mono"
+                  onChange={handleContentChange}
                   placeholder="Write your post content here... You can use Markdown formatting."
+                  className="w-full"
                 />
               </div>
             </div>
@@ -346,28 +478,112 @@ export default function NewPost() {
               Publishing Options
             </h2>
             
-            <div className="flex items-center space-x-8">
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  name="published"
-                  checked={formData.published}
-                  onChange={handleInputChange}
-                  className="w-4 h-4 text-[#e8c547] bg-[#0e1b12] border-[#3e503e] rounded focus:ring-[#e8c547] focus:ring-2"
-                />
-                <span className="ml-2 text-gray-300">Publish immediately</span>
-              </label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <label className="flex items-center">
+                  <input
+                    type="checkbox"
+                    name="published"
+                    checked={formData.published}
+                    onChange={handleInputChange}
+                    className="mr-2 text-[#e8c547] focus:ring-[#e8c547]"
+                  />
+                  <span className="text-gray-300">Published</span>
+                </label>
+                
+                <label className="flex items-center">
+                  <input
+                    type="checkbox"
+                    name="featured"
+                    checked={formData.featured}
+                    onChange={handleInputChange}
+                    className="mr-2 text-[#e8c547] focus:ring-[#e8c547]"
+                  />
+                  <span className="text-gray-300">Featured</span>
+                </label>
+              </div>
 
-              <label className="flex items-center">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Read Time
+                </label>
                 <input
-                  type="checkbox"
-                  name="featured"
-                  checked={formData.featured}
+                  type="text"
+                  name="readTime"
+                  value={formData.readTime}
                   onChange={handleInputChange}
-                  className="w-4 h-4 text-[#e8c547] bg-[#0e1b12] border-[#3e503e] rounded focus:ring-[#e8c547] focus:ring-2"
+                  className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] focus:border-[#e8c547]/50 focus:outline-none transition-colors duration-300"
+                  placeholder="5 min read"
                 />
-                <span className="ml-2 text-gray-300">Featured post</span>
-              </label>
+              </div>
+            </div>
+          </div>
+
+          {/* Visibility & Security Settings */}
+          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg">
+            <h2 className="text-xl font-bold gradient-text mb-6">
+              <i className="fas fa-shield-alt mr-2"></i>
+              Visibility & Security
+            </h2>
+            
+            <div className="space-y-4">
+              {/* Visibility Setting */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Post Visibility
+                </label>
+                <select
+                  name="visibility"
+                  value={formData.visibility}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-white focus:border-[#e8c547] focus:outline-none"
+                >
+                  <option value="public">🌍 Public - Anyone can view</option>
+                  <option value="password">🔒 Password Protected</option>
+                  <option value="members">👥 Members Only</option>
+                  <option value="private">🔐 Private - Only admins</option>
+                </select>
+              </div>
+
+              {/* Password Field (show only if password protected) */}
+              {formData.visibility === 'password' && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Post Password
+                  </label>
+                  <input
+                    type="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    placeholder="Enter password for this post"
+                    className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-white focus:border-[#e8c547] focus:outline-none"
+                  />
+                  <p className="text-xs text-gray-400 mt-1">
+                    Readers will need this password to view the post
+                  </p>
+                </div>
+              )}
+
+              {/* Member Only Info */}
+              {formData.visibility === 'members' && (
+                <div className="p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+                  <p className="text-sm text-blue-300">
+                    <i className="fas fa-info-circle mr-2"></i>
+                    Only registered members will be able to view this post
+                  </p>
+                </div>
+              )}
+
+              {/* Private Info */}
+              {formData.visibility === 'private' && (
+                <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+                  <p className="text-sm text-red-300">
+                    <i className="fas fa-lock mr-2"></i>
+                    This post will only be visible to administrators
+                  </p>
+                </div>
+              )}
             </div>
           </div>
 

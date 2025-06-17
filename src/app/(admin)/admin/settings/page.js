@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import PageHeader from '../../../components/PageHeader';
 
 export default function SettingsPage() {
   const [settings, setSettings] = useState({
@@ -18,7 +19,16 @@ export default function SettingsPage() {
     newsletterEnabled: false,
     darkModeEnabled: true,
     compressionEnabled: true,
-    cacheEnabled: true
+    cacheEnabled: true,
+    // Blog Settings
+    blogPostsPerPage: 9,
+    blogShowExcerpts: true,
+    blogAllowGuestComments: true,
+    blogRequireApproval: true,
+    // Post Security Settings
+    allowPasswordProtected: true,
+    allowMemberOnly: true,
+    defaultPostVisibility: 'public'
   });
   
   const [loading, setLoading] = useState(true);
@@ -92,12 +102,20 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-[#e8c547] to-[#f4d76b] bg-clip-text text-transparent">
-          Settings
-        </h1>
-        <p className="text-gray-400 mt-2">Configure your site settings and preferences</p>
-      </div>
+      <PageHeader
+        title="Settings"
+        subtitle="Configure your site settings and preferences"
+        icon="fas fa-cogs"
+        actions={[
+          {
+            label: saving ? 'Saving...' : 'Save Settings',
+            variant: 'primary',
+            icon: saving ? 'fas fa-spinner fa-spin' : 'fas fa-save',
+            onClick: handleSave,
+            disabled: saving
+          }
+        ]}
+      />
 
       {/* Success/Error Message */}
       {message && (
@@ -151,6 +169,108 @@ export default function SettingsPage() {
               rows={3}
               className="w-full bg-[#1a2e1a]/50 border border-[#3e503e]/30 rounded-lg px-4 py-3 text-[#d1d5db] focus:border-[#e8c547]/50 focus:outline-none transition-colors duration-300"
             />
+          </div>
+        </div>
+
+        {/* Blog Settings */}
+        <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 rounded-lg p-6">
+          <h2 className="text-xl font-semibold text-[#e8c547] mb-6 flex items-center">
+            <i className="fas fa-blog mr-3"></i>
+            Blog Settings
+          </h2>
+          
+          <div className="space-y-6">
+            {/* Posts Per Page */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Posts Per Page</label>
+                <select
+                  value={settings.blogPostsPerPage}
+                  onChange={(e) => handleInputChange('blogPostsPerPage', parseInt(e.target.value))}
+                  className="w-full bg-[#1a2e1a]/50 border border-[#3e503e]/30 rounded-lg px-4 py-3 text-[#d1d5db] focus:border-[#e8c547]/50 focus:outline-none transition-colors duration-300"
+                >
+                  <option value={6}>6 posts</option>
+                  <option value={9}>9 posts</option>
+                  <option value={12}>12 posts</option>
+                  <option value={15}>15 posts</option>
+                  <option value={18}>18 posts</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Default Post Visibility</label>
+                <select
+                  value={settings.defaultPostVisibility}
+                  onChange={(e) => handleInputChange('defaultPostVisibility', e.target.value)}
+                  className="w-full bg-[#1a2e1a]/50 border border-[#3e503e]/30 rounded-lg px-4 py-3 text-[#d1d5db] focus:border-[#e8c547]/50 focus:outline-none transition-colors duration-300"
+                >
+                  <option value="public">Public</option>
+                  <option value="password">Password Protected</option>
+                  <option value="members">Members Only</option>
+                  <option value="private">Private</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Blog Options */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-4 bg-[#1a2e1a]/50 rounded-lg border border-[#3e503e]/30">
+                <div>
+                  <h3 className="font-medium text-[#d1d5db] flex items-center">
+                    <i className="fas fa-eye mr-2 text-blue-400"></i>
+                    Show Post Excerpts
+                  </h3>
+                  <p className="text-sm text-gray-400">Display post excerpts on blog listing page</p>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={settings.blogShowExcerpts}
+                    onChange={() => handleToggle('blogShowExcerpts')}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
+                </label>
+              </div>
+
+              <div className="flex items-center justify-between p-4 bg-[#1a2e1a]/50 rounded-lg border border-[#3e503e]/30">
+                <div>
+                  <h3 className="font-medium text-[#d1d5db] flex items-center">
+                    <i className="fas fa-lock mr-2 text-yellow-400"></i>
+                    Allow Password Protected Posts
+                  </h3>
+                  <p className="text-sm text-gray-400">Enable password protection for posts</p>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={settings.allowPasswordProtected}
+                    onChange={() => handleToggle('allowPasswordProtected')}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-500"></div>
+                </label>
+              </div>
+
+              <div className="flex items-center justify-between p-4 bg-[#1a2e1a]/50 rounded-lg border border-[#3e503e]/30">
+                <div>
+                  <h3 className="font-medium text-[#d1d5db] flex items-center">
+                    <i className="fas fa-users mr-2 text-green-400"></i>
+                    Allow Member-Only Posts
+                  </h3>
+                  <p className="text-sm text-gray-400">Enable member-only access for posts</p>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={settings.allowMemberOnly}
+                    onChange={() => handleToggle('allowMemberOnly')}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                </label>
+              </div>
+            </div>
           </div>
         </div>
 

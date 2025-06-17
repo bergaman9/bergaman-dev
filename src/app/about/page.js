@@ -2,8 +2,10 @@
 
 import Head from 'next/head';
 import ImageModal from "../components/ImageModal";
+import FloatingSkills from "../components/FloatingSkills";
 import Image from 'next/image';
 import { useState } from 'react';
+import Button from "../components/Button";
 
 // Skill Categories Data
 const skillCategories = [
@@ -159,17 +161,67 @@ const interests = [
   }
 ];
 
+// Personal Interests & Hobbies
+const personalInterests = [
+  {
+    title: "Movies & Series",
+    description: "Enjoying films and TV series, especially sci-fi, thrillers, and technology documentaries.",
+    icon: "fas fa-film"
+  },
+  {
+    title: "Fitness & Biking",
+    description: "Staying active through regular fitness routines and cycling adventures.",
+    icon: "fas fa-bicycle"
+  },
+  {
+    title: "Online Research",
+    description: "Continuously learning through online courses, articles, and tech communities.",
+    icon: "fas fa-globe"
+  },
+  {
+    title: "Video Games",
+    description: "Gaming enthusiast with interest in strategy, simulation, and technology-based games.",
+    icon: "fas fa-gamepad"
+  },
+  {
+    title: "Cars & Technology",
+    description: "Fascinated by automotive technology, electric vehicles, and mechanical engineering.",
+    icon: "fas fa-car"
+  },
+  {
+    title: "Reading & Learning",
+    description: "Reading books on technology, science, finance, and personal development.",
+    icon: "fas fa-book"
+  },
+  {
+    title: "Music & Nature",
+    description: "Enjoying music and spending time in nature for relaxation and inspiration.",
+    icon: "fas fa-music"
+  },
+  {
+    title: "Mathematics & Finance",
+    description: "Exploring mathematical concepts and understanding financial markets and investment strategies.",
+    icon: "fas fa-calculator"
+  },
+  {
+    title: "Hardware & Repair",
+    description: "Hands-on work with electronics, soldering, and repairing various devices.",
+    icon: "fas fa-tools"
+  }
+];
+
 export default function About() {
   const [modalImage, setModalImage] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const openModal = (imageSrc, imageAlt) => {
-    setModalImage({ src: imageSrc, alt: imageAlt });
-    setIsModalOpen(true);
+    if (!imageSrc) return; // Don't open modal if no image source
+    setModalImage({ 
+      src: imageSrc, 
+      alt: imageAlt || 'Image preview' 
+    });
   };
 
   const closeModal = () => {
-    setIsModalOpen(false);
     setModalImage(null);
   };
 
@@ -189,33 +241,47 @@ export default function About() {
         <link rel="canonical" href="https://bergaman.dev/about" />
       </Head>
 
-      <main className="page-content py-8">
+      <main className="page-content pt-16 pb-8">
         
         {/* Hero Section */}
         <section className="text-center mb-16 fade-in">
-          <div className="relative mb-8">
-            <Image
-              className="rounded-full border-4 border-[#e8c547] shadow-lg shadow-[#e8c547]/25 mx-auto"
-              src="/images/profile/profile.png"
-              alt="Bergaman Profile Picture"
-              width={200}
-              height={200}
-              priority
-            />
+          {/* Profile Image with Enhanced Styling */}
+          <div className="relative mb-8 flex justify-center">
+            <div className="relative inline-block">
+              {/* Animated Background Glow */}
+              <div className="absolute inset-0 bg-gradient-to-r from-[#e8c547]/30 via-[#f4d76b]/20 to-[#e8c547]/30 rounded-full blur-2xl animate-pulse scale-110"></div>
+              
+              {/* Main Profile Image */}
+              <Image
+                className="relative rounded-full border-4 border-[#e8c547] shadow-2xl shadow-[#e8c547]/25 mx-auto transition-transform duration-500 hover:scale-105"
+                src="/images/profile/profile.png"
+                alt="Bergaman - Electrical & Electronics Engineer"
+                width={200}
+                height={200}
+                priority
+              />
+              
+              {/* Dragon Icon Overlay */}
+              <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-gradient-to-br from-[#e8c547] to-[#d4b445] rounded-full flex items-center justify-center shadow-lg border-2 border-[#0e1b12]">
+                <i className="fas fa-dragon text-[#0e1b12] text-base animate-pulse"></i>
+              </div>
+
+              {/* Floating Skills around profile */}
+              <FloatingSkills />
+            </div>
           </div>
+          
           <h1 className="text-4xl md:text-5xl font-bold gradient-text mb-4 leading-tight flex items-center justify-center gap-3">
             <i className="fas fa-user-circle text-[#e8c547]"></i>
             About Me
           </h1>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Electrical & Electronics Engineer & Full Stack Developer
-          </p>
         </section>
 
         {/* Introduction */}
         <section className="mb-16 slide-in-left">
           <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-8 rounded-lg">
-            <h2 className="text-3xl font-bold gradient-text mb-6">
+            <h2 className="text-3xl font-bold gradient-text mb-6 text-center flex items-center justify-center gap-3">
+              <i className="fas fa-user text-[#e8c547]"></i>
               Who Am I?
             </h2>
             <div className="space-y-6 text-lg text-gray-300 leading-relaxed">
@@ -250,7 +316,8 @@ export default function About() {
 
         {/* Skills Section */}
         <section className="mb-16 slide-in-right">
-          <h2 className="text-3xl font-bold gradient-text mb-8 text-center">
+          <h2 className="text-3xl font-bold gradient-text mb-8 text-center flex items-center justify-center gap-3">
+            <i className="fas fa-code text-[#e8c547]"></i>
             Technical Skills
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -370,7 +437,8 @@ export default function About() {
 
         {/* Interests Section */}
         <section className="mb-16 slide-in-left">
-          <h2 className="text-3xl font-bold gradient-text mb-8 text-center">
+          <h2 className="text-3xl font-bold gradient-text mb-8 text-center flex items-center justify-center gap-3">
+            <i className="fas fa-lightbulb text-[#e8c547]"></i>
             Technical Interests
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -384,10 +452,28 @@ export default function About() {
           </div>
         </section>
 
+        {/* Personal Interests Section */}
+        <section className="mb-16 slide-in-right">
+          <h2 className="text-3xl font-bold gradient-text mb-8 text-center flex items-center justify-center gap-3">
+            <i className="fas fa-heart text-[#e8c547]"></i>
+            Personal Interests & Hobbies
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {personalInterests.map((interest, index) => (
+              <div key={index} className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg text-center">
+                <i className={`${interest.icon} text-[#e8c547] text-4xl mb-4 block`}></i>
+                <h3 className="text-xl font-semibold text-[#e8c547] mb-3">{interest.title}</h3>
+                <p className="text-gray-300 leading-relaxed">{interest.description}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
         {/* Call to Action */}
-        <section className="text-center fade-in">
+        <section className="text-center fade-in mb-20">
           <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-8 rounded-lg">
-            <h2 className="text-3xl font-bold gradient-text mb-4">
+            <h2 className="text-3xl font-bold gradient-text mb-4 flex items-center justify-center gap-3">
+              <i className="fas fa-paper-plane text-[#e8c547]"></i>
               Let's Connect!
             </h2>
             <p className="text-gray-300 mb-6 max-w-2xl mx-auto">
@@ -395,20 +481,21 @@ export default function About() {
               or simply chat about technology and innovation. Feel free to reach out!
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a 
-                href="/contact" 
-                className="bg-[#e8c547] text-[#0e1b12] px-8 py-3 rounded-lg font-semibold transition-all duration-300 hover:bg-[#d4b445] hover:scale-105"
+              <Button 
+                href="/contact"
+                size="lg"
               >
                 <i className="fas fa-envelope mr-2"></i>
                 Get In Touch
-              </a>
-              <a 
-                href="/portfolio" 
-                className="border border-[#e8c547] text-[#e8c547] px-8 py-3 rounded-lg font-semibold transition-all duration-300 hover:bg-[#e8c547]/10 hover:scale-105 flex items-center justify-center gap-2"
+              </Button>
+              <Button 
+                href="/portfolio"
+                variant="secondary"
+                size="lg"
               >
-                <i className="fas fa-briefcase"></i>
+                <i className="fas fa-briefcase mr-2"></i>
                 My Portfolio
-              </a>
+              </Button>
             </div>
           </div>
         </section>
@@ -417,10 +504,9 @@ export default function About() {
 
       {/* Image Modal */}
       <ImageModal 
-        isOpen={isModalOpen}
+        src={modalImage?.src || null}
+        alt={modalImage?.alt || 'Image preview'}
         onClose={closeModal}
-        imageSrc={modalImage?.src}
-        imageAlt={modalImage?.alt}
       />
     </div>
   );
