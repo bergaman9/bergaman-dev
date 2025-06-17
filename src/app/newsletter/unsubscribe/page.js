@@ -1,5 +1,8 @@
 "use client";
 
+// Sayfayı dinamik olarak işaretle
+export const dynamic = 'force-dynamic';
+
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Head from 'next/head';

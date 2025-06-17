@@ -25,18 +25,19 @@ const nextConfig = {
         hostname: '**',
       },
     ],
-    unoptimized: false,
     domains: ['localhost'],
   },
   experimental: {
     optimizeCss: true,
   },
-  // Skip API routes during static generation
   trailingSlash: false,
   generateBuildId: async () => {
     return 'build-' + Date.now();
   },
   reactStrictMode: true,
+  // Güvenlik için varsayılan ayarlar
+  poweredByHeader: false, // X-Powered-By başlığını kaldır
+  compress: true, // Yanıtları sıkıştır
   async headers() {
     return [
       {
@@ -78,9 +79,6 @@ const nextConfig = {
       },
     ];
   },
-  // Güvenlik için varsayılan ayarlar
-  poweredByHeader: false, // X-Powered-By başlığını kaldır
-  compress: true, // Yanıtları sıkıştır
 };
 
 export default nextConfig;

@@ -1,5 +1,8 @@
 "use client";
 
+// Sayfayı dinamik olarak işaretle
+export const dynamic = 'force-dynamic';
+
 import { useState, useEffect } from 'react';
 import PageHeader from '../../../components/PageHeader';
 

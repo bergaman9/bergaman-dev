@@ -67,23 +67,6 @@ function checkRateLimit(ip) {
 }
 
 /**
- * Başarısız giriş denemesini kaydet
- * @param {string} ip - IP adresi
- */
-function recordFailedAttempt(ip) {
-  const attempts = loginAttempts.get(ip) || 0;
-  loginAttempts.set(ip, attempts + 1);
-}
-
-/**
- * Başarılı girişte deneme sayacını sıfırla
- * @param {string} ip - IP adresi
- */
-function resetAttempts(ip) {
-  loginAttempts.delete(ip);
-}
-
-/**
  * JWT token oluştur
  * @param {Object} payload - Token payload
  * @returns {Promise<string>} - JWT token
