@@ -51,6 +51,7 @@ export async function middleware(request) {
   // Admin rotası kontrolü
   const isAdminRoute = SECURITY.PROTECTED_ROUTES.ADMIN.some(route => pathname.startsWith(route));
   const isPublicRoute = SECURITY.PROTECTED_ROUTES.PUBLIC.some(route => pathname.startsWith(route));
+  const isLoginPage = pathname === '/admin';
   
   // Admin rotası değilse veya public rotaysa devam et
   if (!isAdminRoute || isPublicRoute) {
@@ -60,14 +61,18 @@ export async function middleware(request) {
   // Session cookie'sini kontrol et
   const session = request.cookies.get(SECURITY.SESSION.COOKIE_NAME);
   
-  // Cookie yoksa veya geçersizse login sayfasına yönlendir
+  // Cookie yoksa veya geçersizse 
   if (!session || !session.value) {
     if (pathname.startsWith('/api/')) {
       // API rotaları için 401 döndür
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    } else {
-      // Sayfa rotaları için login sayfasına yönlendir
+    } else if (isLoginPage) {
+      // Login sayfası ise devam et
       return response;
+    } else {
+      // Diğer admin sayfaları için login sayfasına yönlendir
+      const url = new URL('/admin', request.url);
+      return NextResponse.redirect(url);
     }
   }
   
@@ -79,9 +84,20 @@ export async function middleware(request) {
       // Geçersiz token veya admin rolü yoksa
       if (pathname.startsWith('/api/')) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-      } else {
+      } else if (isLoginPage) {
+        // Login sayfası ise devam et
         return response;
+      } else {
+        // Diğer admin sayfaları için login sayfasına yönlendir
+        const url = new URL('/admin', request.url);
+        return NextResponse.redirect(url);
       }
+    }
+    
+    // Kullanıcı giriş yapmış ve admin sayfasındaysa panele yönlendir
+    if (isLoginPage && valid && payload.role === 'admin') {
+      const url = new URL('/admin/dashboard', request.url);
+      return NextResponse.redirect(url);
     }
     
     // CSRF koruması - sadece POST, PUT, DELETE istekleri için
@@ -105,8 +121,13 @@ export async function middleware(request) {
     
     if (pathname.startsWith('/api/')) {
       return NextResponse.json({ error: 'Authentication failed' }, { status: 401 });
-    } else {
+    } else if (isLoginPage) {
+      // Login sayfası ise devam et
       return response;
+    } else {
+      // Diğer admin sayfaları için login sayfasına yönlendir
+      const url = new URL('/admin', request.url);
+      return NextResponse.redirect(url);
     }
   }
 }
