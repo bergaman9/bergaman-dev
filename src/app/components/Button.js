@@ -1,6 +1,7 @@
 "use client";
 
 import Link from 'next/link';
+import React from 'react';
 
 export default function Button({
   children,
@@ -14,6 +15,7 @@ export default function Button({
   fullWidth = false,
   icon = null,
   iconPosition = "left",
+  loading = false,
   ...props
 }) {
   // Variant styles
@@ -40,11 +42,26 @@ export default function Button({
     xl: "px-6 py-3 text-xl"
   };
 
-  // Base button styles
-  const baseStyles = "inline-flex items-center justify-center rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#e8c547]/50 disabled:opacity-50 disabled:cursor-not-allowed";
-  
+  // Disabled and loading states
+  const stateClasses = (disabled || loading) 
+    ? 'opacity-70 cursor-not-allowed' 
+    : 'transition-colors duration-200';
+
+  // Full width
+  const widthClass = fullWidth ? 'w-full' : '';
+
+  // Link variant padding
+  const paddingClass = variant === 'link' ? '' : sizes[size] || sizes.md;
+
   // Combined classes
-  const buttonClasses = `${baseStyles} ${variants[variant] || variants.primary} ${sizes[size] || sizes.md} ${fullWidth ? 'w-full' : ''} ${className}`;
+  const buttonClasses = `
+    ${variants[variant] || variants.primary}
+    ${paddingClass}
+    ${stateClasses}
+    ${widthClass}
+    rounded focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#e8c547]/50
+    ${className}
+  `;
 
   // Icon rendering
   const renderIcon = () => {
@@ -59,6 +76,23 @@ export default function Button({
     return <span className={iconPosition === "left" ? "mr-2" : "ml-2"}>{icon}</span>;
   };
 
+  // Loading content
+  const buttonContent = loading ? (
+    <div className="flex items-center justify-center">
+      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      <span>{children}</span>
+    </div>
+  ) : (
+    <>
+      {iconPosition === "left" && renderIcon()}
+      {children}
+      {iconPosition === "right" && renderIcon()}
+    </>
+  );
+
   // Render as link if href is provided
   if (href) {
     return (
@@ -67,9 +101,7 @@ export default function Button({
         className={buttonClasses}
         {...props}
       >
-        {iconPosition === "left" && renderIcon()}
-        {children}
-        {iconPosition === "right" && renderIcon()}
+        {buttonContent}
       </Link>
     );
   }
@@ -80,12 +112,10 @@ export default function Button({
       type={type}
       className={buttonClasses}
       onClick={onClick}
-      disabled={disabled}
+      disabled={disabled || loading ? true : undefined}
       {...props}
     >
-      {iconPosition === "left" && renderIcon()}
-      {children}
-      {iconPosition === "right" && renderIcon()}
+      {buttonContent}
     </button>
   );
 } 

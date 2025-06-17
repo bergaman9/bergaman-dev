@@ -2,82 +2,83 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { SECURITY } from '@/lib/constants';
+import { useRouter } from 'next/navigation';
 
 // Auth Context
 export const AuthContext = createContext();
 
 // Auth Provider
-export function AuthProvider({ children }) {
+export default function AuthProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [csrfToken, setCsrfToken] = useState(null);
   const [sessionExpiry, setSessionExpiry] = useState(null);
   const [refreshTimer, setRefreshTimer] = useState(null);
+  const router = useRouter();
 
   // Session kontrolü
   const checkAuth = useCallback(async () => {
     try {
+      setLoading(true);
       const res = await fetch('/api/admin/auth', {
         method: 'GET',
         headers: {
-          'Cache-Control': 'no-cache',
-          'Pragma': 'no-cache'
+          'Content-Type': 'application/json',
         },
-        credentials: 'include'
+        credentials: 'include',
       });
-
-      if (res.ok) {
-        const data = await res.json();
-        
-        if (data.authenticated) {
-          setIsAuthenticated(true);
-          setUser({
-            username: data.username,
-            role: data.role
-          });
-          
-          // CSRF token oluştur
-          const newCsrfToken = `${data.username}-${Date.now()}`;
-          setCsrfToken(newCsrfToken);
-          
-          // Session süresini hesapla (JWT'nin exp değerinden)
-          const tokenParts = document.cookie
-            .split('; ')
-            .find(row => row.startsWith(`${SECURITY.SESSION.COOKIE_NAME}=`))
-            ?.split('=')[1];
-            
-          if (tokenParts) {
-            try {
-              // JWT'nin payload kısmını decode et (imza kontrolü yapmadan)
-              const payload = JSON.parse(atob(tokenParts.split('.')[1]));
-              const expiryTime = payload.exp * 1000; // saniyeden milisaniyeye çevir
-              setSessionExpiry(expiryTime);
-              
-              // Session yenileme zamanlayıcısını ayarla
-              // Session'ın son 5 dakikasında yenile
-              const timeUntilRefresh = Math.max(0, expiryTime - Date.now() - SECURITY.SESSION.REFRESH_BEFORE);
-              
-              if (refreshTimer) clearTimeout(refreshTimer);
-              
-              const timer = setTimeout(() => {
-                refreshSession();
-              }, timeUntilRefresh);
-              
-              setRefreshTimer(timer);
-            } catch (e) {
-              console.error('JWT decode error:', e);
-            }
-          }
-          
-          return true;
-        }
-      }
       
-      setIsAuthenticated(false);
-      setUser(null);
-      setCsrfToken(null);
-      return false;
+      const data = await res.json();
+      
+      if (res.ok && data.authenticated) {
+        setIsAuthenticated(true);
+        setUser(data.user || { username: 'Admin' });
+        
+        // CSRF token oluştur
+        const newCsrfToken = `${data.username}-${Date.now()}`;
+        setCsrfToken(newCsrfToken);
+        
+        // Session süresini hesapla (JWT'nin exp değerinden)
+        const tokenParts = document.cookie
+          .split('; ')
+          .find(row => row.startsWith(`${SECURITY.SESSION.COOKIE_NAME}=`))
+          ?.split('=')[1];
+          
+        if (tokenParts) {
+          try {
+            // JWT'nin payload kısmını decode et (imza kontrolü yapmadan)
+            const payload = JSON.parse(atob(tokenParts.split('.')[1]));
+            const expiryTime = payload.exp * 1000; // saniyeden milisaniyeye çevir
+            setSessionExpiry(expiryTime);
+            
+            // Session yenileme zamanlayıcısını ayarla
+            // Session'ın son 5 dakikasında yenile
+            const timeUntilRefresh = Math.max(0, expiryTime - Date.now() - SECURITY.SESSION.REFRESH_BEFORE);
+            
+            if (refreshTimer) clearTimeout(refreshTimer);
+            
+            const timer = setTimeout(() => {
+              refreshSession();
+            }, timeUntilRefresh);
+            
+            setRefreshTimer(timer);
+          } catch (e) {
+            console.error('JWT decode error:', e);
+          }
+        }
+        
+        // Admin etkinliğini logla
+        await logActivity('login', `User ${data.username} logged in successfully`);
+        
+        return true;
+      } else {
+        setIsAuthenticated(false);
+        setUser(null);
+        setCsrfToken(null);
+        router.push('/admin'); // Çıkış yapınca login sayfasına yönlendir
+        return false;
+      }
     } catch (error) {
       console.error('Auth check error:', error);
       setIsAuthenticated(false);
@@ -87,7 +88,7 @@ export function AuthProvider({ children }) {
     } finally {
       setLoading(false);
     }
-  }, [refreshTimer]);
+  }, [refreshTimer, router]);
 
   // Session yenileme
   const refreshSession = useCallback(async () => {
@@ -104,12 +105,10 @@ export function AuthProvider({ children }) {
     } catch (error) {
       console.error('Session refresh error:', error);
     }
-  }, [checkAuth, user]);
+  }, [checkAuth, user, login]);
 
   // Giriş işlemi
   const login = async (username, password) => {
-    setLoading(true);
-    
     try {
       const res = await fetch('/api/admin/auth', {
         method: 'POST',
@@ -117,61 +116,65 @@ export function AuthProvider({ children }) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ username, password }),
-        credentials: 'include'
+        credentials: 'include',
       });
-
+      
       const data = await res.json();
-
-      if (res.ok) {
-        // Giriş başarılı, auth durumunu güncelle
-        await checkAuth();
+      
+      if (res.ok && data.success) {
+        setIsAuthenticated(true);
+        setUser(data.user || { username });
+        
+        // Admin etkinliğini logla
+        await logActivity('login', `User ${username} logged in successfully`);
+        
         return { success: true };
       } else {
-        // Giriş başarısız
-        setLoading(false);
+        // Başarısız giriş denemesini logla
+        await logActivity('failed_login', `Failed login attempt for user ${username}`, { ip: data.ip || 'unknown' });
+        
         return { 
           success: false, 
-          error: data.error,
-          remainingAttempts: data.remainingAttempts
+          error: data.message || 'Giriş başarısız', 
+          remainingAttempts: data.remainingAttempts 
         };
       }
     } catch (error) {
       console.error('Login error:', error);
-      setLoading(false);
-      return { success: false, error: 'Login failed. Please try again.' };
+      return { success: false, error: 'Bir hata oluştu' };
     }
   };
 
   // Çıkış işlemi
   const logout = async () => {
-    setLoading(true);
-    
     try {
-      // Sunucudan çıkış yap
-      await fetch('/api/admin/auth', {
+      // Önce çıkış işlemini logla
+      if (isAuthenticated && user) {
+        await logActivity('logout', `User ${user.username} logged out`);
+      }
+      
+      const res = await fetch('/api/admin/auth', {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRF-Token': csrfToken
         },
-        credentials: 'include'
+        credentials: 'include',
       });
       
-      // Zamanlayıcıyı temizle
-      if (refreshTimer) {
-        clearTimeout(refreshTimer);
-        setRefreshTimer(null);
+      if (res.ok) {
+        setIsAuthenticated(false);
+        setUser(null);
+        setCsrfToken(null);
+        setSessionExpiry(null);
+        router.push('/admin'); // Çıkış yapınca login sayfasına yönlendir
+        return true;
+      } else {
+        console.error('Logout failed');
+        return false;
       }
-      
-      // Yerel durumu temizle
-      setIsAuthenticated(false);
-      setUser(null);
-      setCsrfToken(null);
-      setSessionExpiry(null);
     } catch (error) {
       console.error('Logout error:', error);
-    } finally {
-      setLoading(false);
+      return false;
     }
   };
 
@@ -241,6 +244,93 @@ export function AuthProvider({ children }) {
     };
   }, [checkAuth, refreshTimer]);
 
+  // Admin etkinliklerini logla
+  const logActivity = async (action, description, metadata = {}) => {
+    try {
+      const res = await fetch('/api/admin/logs', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action,
+          description,
+          user: user?.username || 'unknown',
+          timestamp: new Date().toISOString(),
+          metadata
+        }),
+        credentials: 'include',
+      });
+      
+      if (!res.ok) {
+        console.error('Failed to log activity');
+      }
+      
+      return res.ok;
+    } catch (error) {
+      console.error('Log activity error:', error);
+      return false;
+    }
+  };
+
+  // Kullanıcı bilgilerini güncelle
+  const updateUser = async (userData) => {
+    try {
+      const res = await fetch('/api/admin/profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData),
+        credentials: 'include',
+      });
+      
+      const data = await res.json();
+      
+      if (res.ok) {
+        setUser(prev => ({ ...prev, ...userData }));
+        
+        // Profil güncelleme işlemini logla
+        await logActivity('profile_update', `User ${user.username} updated their profile`);
+        
+        return { success: true };
+      } else {
+        return { success: false, error: data.message || 'Güncelleme başarısız' };
+      }
+    } catch (error) {
+      console.error('Update user error:', error);
+      return { success: false, error: 'Bir hata oluştu' };
+    }
+  };
+
+  // Şifre değiştir
+  const changePassword = async (currentPassword, newPassword) => {
+    try {
+      const res = await fetch('/api/admin/profile/password', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ currentPassword, newPassword }),
+        credentials: 'include',
+      });
+      
+      const data = await res.json();
+      
+      if (res.ok) {
+        // Şifre değiştirme işlemini logla
+        await logActivity('password_change', `User ${user.username} changed their password`);
+        
+        return { success: true };
+      } else {
+        return { success: false, error: data.message || 'Şifre değiştirme başarısız' };
+      }
+    } catch (error) {
+      console.error('Change password error:', error);
+      return { success: false, error: 'Bir hata oluştu' };
+    }
+  };
+
   // Auth context değerleri
   const value = {
     isAuthenticated,
@@ -251,7 +341,10 @@ export function AuthProvider({ children }) {
     checkAuth,
     secureFetch,
     csrfToken,
-    sessionExpiry
+    sessionExpiry,
+    updateUser,
+    changePassword,
+    logActivity
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import Button from './Button';
+import Tooltip from './Tooltip';
 
 export default function ProjectCard({ project }) {
   // Get placeholder image based on category
@@ -27,9 +28,15 @@ export default function ProjectCard({ project }) {
   const formattedDate = project.createdAt 
     ? new Date(project.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })
     : null;
+    
+  // Get extra technologies for tooltip
+  const displayedTechs = project.technologies?.slice(0, 3) || [];
+  const extraTechs = project.technologies?.slice(3) || [];
+  const extraTechsString = extraTechs.join(', ');
 
   return (
     <div className="bg-[#2e3d29]/20 backdrop-blur-md border border-[#3e503e]/30 hover:border-[#e8c547]/50 rounded-lg overflow-hidden transition-all duration-300 h-full flex flex-col">
+      {/* Image Section - Fixed Height */}
       <div className="relative h-48 bg-gradient-to-br from-[#2e3d29] to-[#0e1b12] flex items-center justify-center overflow-hidden">
         {project.image ? (
           <Image
@@ -48,11 +55,19 @@ export default function ProjectCard({ project }) {
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         )}
+        
+        {/* Status Badge - Properly Capitalized */}
         <div className="absolute top-3 right-3">
           <span className="px-3 py-1 bg-[#e8c547] text-[#0e1b12] rounded-full text-xs font-bold">
-            {project.status || 'Active'}
+            {project.status === 'active' ? 'Active' : 
+             project.status === 'completed' ? 'Completed' :
+             project.status === 'ongoing' ? 'Ongoing' :
+             project.status === 'archived' ? 'Archived' :
+             project.status || 'Active'}
           </span>
         </div>
+        
+        {/* Category Badge */}
         {project.category && (
           <div className="absolute top-3 left-3">
             <span className="px-3 py-1 bg-[#0e1b12]/80 text-gray-300 rounded-full text-xs flex items-center gap-1">
@@ -72,6 +87,8 @@ export default function ProjectCard({ project }) {
             </span>
           </div>
         )}
+        
+        {/* Featured Badge */}
         {project.featured && (
           <div className="absolute bottom-3 left-3">
             <span className="px-3 py-1 bg-[#e8c547]/80 text-[#0e1b12] rounded-full text-xs font-bold flex items-center gap-1">
@@ -80,48 +97,80 @@ export default function ProjectCard({ project }) {
             </span>
           </div>
         )}
-      </div>
-      <div className="p-4 flex-grow flex flex-col">
-        <h3 className="text-xl font-bold gradient-text mb-2">{project.title}</h3>
-        <p className="text-gray-300 mb-4 text-sm leading-relaxed flex-grow">{project.description}</p>
         
-        {/* Technologies */}
+        {/* Date Badge - Moved to top right corner */}
+        {formattedDate && (
+          <div className="absolute bottom-3 right-3">
+            <span className="px-3 py-1 bg-[#0e1b12]/80 text-gray-300 rounded-full text-xs flex items-center gap-1">
+              <i className="far fa-calendar-alt mr-1"></i>
+              {formattedDate}
+            </span>
+          </div>
+        )}
+      </div>
+      
+      {/* Content Section - Fixed Height with Flexbox */}
+      <div className="p-4 flex-grow flex flex-col h-64">
+        {/* Title */}
+        <h3 className="text-xl font-bold gradient-text mb-2">{project.title}</h3>
+        
+        {/* Description - With line clamp for consistent height */}
+        <p className="text-gray-300 mb-4 text-sm leading-relaxed flex-grow line-clamp-4">
+          {project.description}
+        </p>
+        
+        {/* Technologies with Tooltip for extras */}
         {project.technologies && project.technologies.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-4">
-            {project.technologies.slice(0, 4).map((tech, index) => (
+            {displayedTechs.map((tech, index) => (
               <span key={index} className="px-2 py-1 bg-[#0e1b12] border border-[#3e503e] rounded text-xs text-[#e8c547]">
                 {tech}
               </span>
             ))}
-            {project.technologies.length > 4 && (
-              <span className="px-2 py-1 bg-[#0e1b12] border border-[#3e503e] rounded text-xs text-gray-400">
-                +{project.technologies.length - 4}
-              </span>
+            
+            {extraTechs.length > 0 && (
+              <Tooltip 
+                content={
+                  <div className="p-1">
+                    <div className="font-medium mb-1">Additional Technologies:</div>
+                    <ul className="list-disc pl-4">
+                      {extraTechs.map((tech, index) => (
+                        <li key={index}>{tech}</li>
+                      ))}
+                    </ul>
+                  </div>
+                }
+                position="top"
+                variant="dark"
+              >
+                <span className="px-2 py-1 bg-[#0e1b12] border border-[#3e503e] rounded text-xs text-gray-300 cursor-help">
+                  +{extraTechs.length}
+                </span>
+              </Tooltip>
             )}
           </div>
         )}
         
-        {/* Date */}
-        {formattedDate && (
-          <div className="text-xs text-gray-400 mb-3">
-            <i className="far fa-calendar-alt mr-1"></i> {formattedDate}
-          </div>
-        )}
-        
         {/* Action Buttons */}
-        <div className="flex gap-2">
+        <div className="flex gap-2 mt-auto">
           {project.githubUrl && (
             <Button href={project.githubUrl} variant="secondary" size="sm" newTab>
               <i className="fab fa-github mr-1"></i>GitHub
             </Button>
           )}
+          
           {project.demoUrl ? (
             <Button href={project.demoUrl} size="sm" newTab>
               <i className="fas fa-external-link-alt mr-1"></i>Demo
             </Button>
           ) : (
-            <Button as="span" size="sm" className="bg-gray-600 text-gray-300 cursor-not-allowed">
-              <i className="fas fa-external-link-alt mr-1"></i>Demo N/A
+            <Button 
+              disabled={true}
+              size="sm" 
+              variant="secondary"
+              className="opacity-60 cursor-not-allowed"
+            >
+              <i className="fas fa-external-link-alt mr-1"></i>Demo
             </Button>
           )}
         </div>

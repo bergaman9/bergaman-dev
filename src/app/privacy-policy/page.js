@@ -2,16 +2,11 @@ import Link from 'next/link';
 import { SITE_CONFIG } from '@/lib/constants';
 import PrivacyHeader from './PrivacyHeader';
 
-export const metadata = {
-  title: 'Privacy Policy | Bergaman',
-  description: 'Privacy policy and data protection information for Bergaman\'s website',
-};
-
 export default function PrivacyPolicyPage() {
   const lastUpdated = '2024-06-01'; // Update this when you make changes to the policy
   
   return (
-    <div className="px-4 py-12">
+    <div className="pt-24 pb-12 px-4">
       <PrivacyHeader lastUpdated={lastUpdated} />
 
       <div className="prose prose-lg prose-invert max-w-4xl mx-auto">

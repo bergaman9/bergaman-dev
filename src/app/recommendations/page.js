@@ -12,13 +12,12 @@ const categoryConfig = {
   music: { name: 'Music', icon: 'fas fa-music' },
   series: { name: 'TV Series', icon: 'fas fa-tv' },
   link: { name: 'Links & Tools', icon: 'fas fa-link' },
-  all: { name: 'All Recommendations', icon: 'fas fa-th-large' },
 };
 
 export default function Recommendations() {
   const [recommendations, setRecommendations] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeCategory, setActiveCategory] = useState('all');
+  const [activeCategory, setActiveCategory] = useState('movie');
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -28,9 +27,7 @@ export default function Recommendations() {
   const fetchRecommendations = async (category) => {
     try {
       setLoading(true);
-      const url = category === 'all' 
-        ? '/api/recommendations' 
-        : `/api/recommendations?category=${category}`;
+      const url = `/api/recommendations?category=${category}`;
       
       const response = await fetch(url, { cache: 'no-store' });
       
@@ -59,7 +56,7 @@ export default function Recommendations() {
     return categoryConfig[category] || { name: category, icon: 'fas fa-star' };
   };
   
-  const categories = ['all', 'movie', 'game', 'book', 'series', 'link'];
+  const categories = ['movie', 'game', 'book', 'series', 'link'];
   const filteredRecommendations = recommendations;
 
   return (
@@ -73,7 +70,7 @@ export default function Recommendations() {
           variant="large"
           stats={[
             { label: "Total", value: recommendations.length },
-            { label: "Categories", value: categories.length - 1 } // Subtract 1 for "all"
+            { label: "Categories", value: categories.length }
           ]}
         />
 
@@ -100,11 +97,11 @@ export default function Recommendations() {
 
         {/* Recommendations Grid */}
         {loading ? (
-          <div className="text-center py-20">
+          <div className="flex justify-center items-center py-20">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#e8c547]"></div>
           </div>
         ) : error ? (
-          <div className="text-center py-20">
+          <div className="flex justify-center items-center py-20">
             <p className="text-red-400">Error: {error}</p>
           </div>
         ) : filteredRecommendations.length > 0 ? (
@@ -117,7 +114,7 @@ export default function Recommendations() {
             ))}
           </div>
         ) : (
-          <div className="text-center py-20">
+          <div className="flex justify-center items-center py-20">
             <p className="text-gray-400">No recommendations found for this category.</p>
           </div>
         )}

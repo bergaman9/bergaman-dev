@@ -4,6 +4,7 @@ import "./globals.css";
 import { Analytics } from '@vercel/analytics/next';
 import { SITE_CONFIG, SEO_DEFAULTS } from '../lib/constants';
 import LayoutWrapper from './components/LayoutWrapper';
+import { AuthProvider } from './components/AuthContext';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -64,6 +65,13 @@ export const metadata = {
   },
   category: 'technology',
   metadataBase: new URL(SITE_CONFIG.url),
+  themeColor: '#000000',
+  manifest: '/site.webmanifest',
+  other: {
+    'apple-mobile-web-app-capable': 'yes',
+    'apple-mobile-web-app-status-bar-style': 'black',
+    'format-detection': 'telephone=no',
+  },
 };
 
 export default function RootLayout({ children }) {
@@ -86,11 +94,20 @@ export default function RootLayout({ children }) {
           crossOrigin="anonymous"
           referrerPolicy="no-referrer"
         />
+        {/* Güvenlik meta etiketleri */}
+        <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="referrer" content="strict-origin-when-cross-origin" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} ${inter.className} antialiased min-h-screen text-[#d1d5db] flex flex-col`}>
-        <LayoutWrapper>
-          {children}
-        </LayoutWrapper>
+        <AuthProvider>
+          <LayoutWrapper>
+            {children}
+          </LayoutWrapper>
+        </AuthProvider>
         <Analytics />
         
         {/* Structured Data */}

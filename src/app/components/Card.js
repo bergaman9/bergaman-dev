@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { useState } from 'react';
 
 export default function Card({
   children,
@@ -35,6 +36,22 @@ export default function Card({
   rounded = "lg",
   fullWidth = false
 }) {
+  // State to track image errors
+  const [imageError, setImageError] = useState(false);
+
+  // Function to get placeholder image based on category
+  const getPlaceholderImage = (category) => {
+    switch (category) {
+      case 'game': return '/images/portfolio/game-placeholder.svg';
+      case 'movie': return '/images/portfolio/default.svg';
+      case 'book': return '/images/portfolio/default.svg';
+      case 'series': return '/images/portfolio/default.svg';
+      case 'music': return '/images/portfolio/default.svg';
+      case 'link': return '/images/portfolio/web-placeholder.svg';
+      default: return '/images/portfolio/default.svg';
+    }
+  };
+
   // Base card styles
   const baseClasses = `overflow-hidden transition-all duration-300 ${fullWidth ? 'w-full' : ''}`;
   
@@ -121,15 +138,19 @@ export default function Card({
   // Combine classes
   const cardClasses = `${baseClasses} ${roundedClasses[rounded]} ${variantClasses[variant]} ${elevationClasses[elevation]} ${hoverClasses} ${className}`;
   
+  // Determine which image to use (original or placeholder)
+  const imageToUse = imageError ? getPlaceholderImage(category) : (imageSrc || getPlaceholderImage(category));
+
   // Image component with position handling
-  const imageComponent = imageSrc && (
+  const imageComponent = (
     <div className={`relative ${imageHeight} bg-gradient-to-br from-[#2e3d29] to-[#0e1b12] flex items-center justify-center overflow-hidden`}>
       <Image
-        src={imageSrc}
+        src={imageToUse}
         alt={imageAlt || title || "Card image"}
         fill
         className="object-cover group-hover:scale-105 transition-transform duration-300"
         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+        onError={() => setImageError(true)}
       />
       
       {/* Overlay for better text visibility */}
@@ -250,7 +271,11 @@ export default function Card({
       </button>
     );
   }
-
-  // Default render as div
-  return <div className={cardClasses}>{cardContent}</div>;
+  
+  // Default render
+  return (
+    <div className={cardClasses}>
+      {cardContent}
+    </div>
+  );
 } 

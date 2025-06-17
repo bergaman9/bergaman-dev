@@ -8,6 +8,10 @@ import PageHeader from '@/app/components/PageHeader';
 import Input from '@/app/components/Input';
 import Alert from '@/app/components/Alert';
 import Badge from '@/app/components/Badge';
+import Select from '@/app/components/Select';
+import Loading from '@/app/components/Loading';
+import Tabs from '@/app/components/Tabs';
+import Tooltip from '@/app/components/Tooltip';
 
 export default function ComponentsTestPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -19,6 +23,16 @@ export default function ComponentsTestPage() {
     search: ''
   });
   const [activeModal, setActiveModal] = useState(null);
+  const [selectValues, setSelectValues] = useState({
+    default: '',
+    primary: 'option2',
+    secondary: '',
+    withIcon: 'react',
+    withLabel: '',
+    disabled: 'option1'
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [demoTabActive, setDemoTabActive] = useState('tab1');
   
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -27,6 +41,20 @@ export default function ComponentsTestPage() {
       [name]: value
     }));
   };
+
+  const handleSelectChange = (field, value) => {
+    setSelectValues(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+  
+  const simulateLoading = () => {
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
+  };
   
   const tabs = [
     { id: 'buttons', label: 'Buttons', icon: 'fas fa-square' },
@@ -34,6 +62,10 @@ export default function ComponentsTestPage() {
     { id: 'modals', label: 'Modals', icon: 'fas fa-window-maximize' },
     { id: 'headers', label: 'Page Headers', icon: 'fas fa-heading' },
     { id: 'inputs', label: 'Inputs', icon: 'fas fa-keyboard' },
+    { id: 'selects', label: 'Select Menus', icon: 'fas fa-list' },
+    { id: 'tabs', label: 'Tabs', icon: 'fas fa-folder' },
+    { id: 'loading', label: 'Loading', icon: 'fas fa-spinner' },
+    { id: 'tooltips', label: 'Tooltips', icon: 'fas fa-info-circle' },
     { id: 'alerts', label: 'Alerts', icon: 'fas fa-exclamation-triangle' },
     { id: 'badges', label: 'Badges', icon: 'fas fa-tag' },
   ];
@@ -54,6 +86,82 @@ export default function ComponentsTestPage() {
     "minimal",
     "frosted",
     "glow"
+  ];
+
+  // Sample options for select components
+  const basicOptions = [
+    { value: 'option1', label: 'Option 1' },
+    { value: 'option2', label: 'Option 2' },
+    { value: 'option3', label: 'Option 3' },
+    { value: 'option4', label: 'Option 4' },
+    { value: 'option5', label: 'Option 5' }
+  ];
+
+  const categoryOptions = [
+    { value: 'all', label: 'All Categories' },
+    { value: 'web', label: 'Web Development' },
+    { value: 'mobile', label: 'Mobile Development' },
+    { value: 'design', label: 'UI/UX Design' },
+    { value: 'devops', label: 'DevOps' },
+    { value: 'data', label: 'Data Science' }
+  ];
+
+  const techOptions = [
+    { value: 'react', label: 'React', icon: 'fab fa-react' },
+    { value: 'vue', label: 'Vue.js', icon: 'fab fa-vuejs' },
+    { value: 'angular', label: 'Angular', icon: 'fab fa-angular' },
+    { value: 'node', label: 'Node.js', icon: 'fab fa-node-js' },
+    { value: 'python', label: 'Python', icon: 'fab fa-python' }
+  ];
+  
+  // Demo tabs for Tabs component
+  const demoTabs = [
+    {
+      id: 'tab1',
+      label: 'Dashboard',
+      icon: 'fas fa-chart-line',
+      badge: '5',
+      content: (
+        <div className="p-4 bg-[#1a2e1a]/30 rounded-lg">
+          <h3 className="text-lg font-medium text-[#e8c547] mb-2">Dashboard Content</h3>
+          <p className="text-gray-300">This is the content of the dashboard tab.</p>
+        </div>
+      )
+    },
+    {
+      id: 'tab2',
+      label: 'Profile',
+      icon: 'fas fa-user',
+      content: (
+        <div className="p-4 bg-[#1a2e1a]/30 rounded-lg">
+          <h3 className="text-lg font-medium text-[#e8c547] mb-2">Profile Content</h3>
+          <p className="text-gray-300">This is the content of the profile tab.</p>
+        </div>
+      )
+    },
+    {
+      id: 'tab3',
+      label: 'Settings',
+      icon: 'fas fa-cog',
+      content: (
+        <div className="p-4 bg-[#1a2e1a]/30 rounded-lg">
+          <h3 className="text-lg font-medium text-[#e8c547] mb-2">Settings Content</h3>
+          <p className="text-gray-300">This is the content of the settings tab.</p>
+        </div>
+      )
+    },
+    {
+      id: 'tab4',
+      label: 'Notifications',
+      icon: 'fas fa-bell',
+      badge: '3',
+      content: (
+        <div className="p-4 bg-[#1a2e1a]/30 rounded-lg">
+          <h3 className="text-lg font-medium text-[#e8c547] mb-2">Notifications Content</h3>
+          <p className="text-gray-300">This is the content of the notifications tab.</p>
+        </div>
+      )
+    }
   ];
   
   return (
@@ -89,6 +197,616 @@ export default function ComponentsTestPage() {
           </button>
         ))}
       </div>
+      
+      {/* Loading Components Section */}
+      {activeTab === 'loading' && (
+        <div className="space-y-8">
+          <div>
+            <h2 className="text-xl font-bold mb-4">Loading Variants</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              <Card variant="default" title="Default Loading">
+                <div className="p-4 flex flex-col items-center">
+                  <Loading variant="default" size="md" />
+                </div>
+              </Card>
+              
+              <Card variant="default" title="Primary Loading">
+                <div className="p-4 flex flex-col items-center">
+                  <Loading variant="primary" size="md" />
+                </div>
+              </Card>
+              
+              <Card variant="default" title="Success Loading">
+                <div className="p-4 flex flex-col items-center">
+                  <Loading variant="success" size="md" />
+                </div>
+              </Card>
+              
+              <Card variant="default" title="Danger Loading">
+                <div className="p-4 flex flex-col items-center">
+                  <Loading variant="danger" size="md" />
+                </div>
+              </Card>
+              
+              <Card variant="default" title="Warning Loading">
+                <div className="p-4 flex flex-col items-center">
+                  <Loading variant="warning" size="md" />
+                </div>
+              </Card>
+              
+              <Card variant="default" title="Info Loading">
+                <div className="p-4 flex flex-col items-center">
+                  <Loading variant="info" size="md" />
+                </div>
+              </Card>
+            </div>
+          </div>
+          
+          <div>
+            <h2 className="text-xl font-bold mb-4">Loading Sizes</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <Card variant="default" title="Small Loading">
+                <div className="p-4 flex flex-col items-center">
+                  <Loading variant="primary" size="sm" />
+                </div>
+              </Card>
+              
+              <Card variant="default" title="Medium Loading">
+                <div className="p-4 flex flex-col items-center">
+                  <Loading variant="primary" size="md" />
+                </div>
+              </Card>
+              
+              <Card variant="default" title="Large Loading">
+                <div className="p-4 flex flex-col items-center">
+                  <Loading variant="primary" size="lg" />
+                </div>
+              </Card>
+              
+              <Card variant="default" title="Extra Large Loading">
+                <div className="p-4 flex flex-col items-center">
+                  <Loading variant="primary" size="xl" />
+                </div>
+              </Card>
+            </div>
+          </div>
+          
+          <div>
+            <h2 className="text-xl font-bold mb-4">Loading with Text</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              <Card variant="default" title="With Default Text">
+                <div className="p-4 flex flex-col items-center">
+                  <Loading variant="primary" size="md" text="Loading..." showText={true} />
+                </div>
+              </Card>
+              
+              <Card variant="default" title="With Custom Text">
+                <div className="p-4 flex flex-col items-center">
+                  <Loading variant="primary" size="md" text="Fetching data..." showText={true} />
+                </div>
+              </Card>
+            </div>
+          </div>
+          
+          <div>
+            <h2 className="text-xl font-bold mb-4">Loading Overlay</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              <Card variant="default" title="Overlay Example">
+                <div className="p-4">
+                  <Loading isLoading={isLoading} overlay={true} overlayColor="primary">
+                    <div className="p-4 bg-[#1a2e1a]/30 rounded-lg h-40 flex items-center justify-center">
+                      <p className="text-gray-300">Content will be covered by overlay when loading</p>
+                    </div>
+                  </Loading>
+                  <div className="mt-4 flex justify-center">
+                    <Button variant="primary" onClick={simulateLoading}>
+                      Simulate Loading
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+              
+              <Card variant="default" title="Full Screen Loading">
+                <div className="p-4 flex flex-col items-center">
+                  <p className="text-gray-300 mb-4">Click the button to simulate a full screen loading (3 seconds)</p>
+                  <Button 
+                    variant="primary" 
+                    onClick={() => {
+                      document.body.style.overflow = 'hidden';
+                      const loadingEl = document.createElement('div');
+                      loadingEl.id = 'full-screen-loading';
+                      loadingEl.className = 'fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#0e1b12]/80 backdrop-blur-sm';
+                      loadingEl.innerHTML = `
+                        <div class="rounded-full animate-spin h-12 w-12 border-2 border-t-[#e8c547] border-r-[#e8c547]/40 border-b-[#e8c547]/20 border-l-[#e8c547]/10"></div>
+                        <p class="mt-4 font-medium text-white">Loading...</p>
+                      `;
+                      document.body.appendChild(loadingEl);
+                      
+                      setTimeout(() => {
+                        document.body.style.overflow = '';
+                        document.getElementById('full-screen-loading').remove();
+                      }, 3000);
+                    }}
+                  >
+                    Show Full Screen Loading
+                  </Button>
+                </div>
+              </Card>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Tabs Components Section */}
+      {activeTab === 'tabs' && (
+        <div className="space-y-8">
+          <div>
+            <h2 className="text-xl font-bold mb-4">Basic Tabs</h2>
+            <div className="mb-8">
+              <Tabs
+                tabs={demoTabs}
+                activeTab={demoTabActive}
+                onChange={setDemoTabActive}
+                variant="primary"
+              />
+            </div>
+          </div>
+          
+          <div>
+            <h2 className="text-xl font-bold mb-4">Tab Variants</h2>
+            <div className="grid grid-cols-1 gap-6 mb-8">
+              <Card variant="default" title="Default Tabs">
+                <div className="p-4">
+                  <Tabs
+                    tabs={demoTabs.slice(0, 3)}
+                    variant="default"
+                    showContent={false}
+                  />
+                </div>
+              </Card>
+              
+              <Card variant="default" title="Primary Tabs">
+                <div className="p-4">
+                  <Tabs
+                    tabs={demoTabs.slice(0, 3)}
+                    variant="primary"
+                    showContent={false}
+                  />
+                </div>
+              </Card>
+              
+              <Card variant="default" title="Success Tabs">
+                <div className="p-4">
+                  <Tabs
+                    tabs={demoTabs.slice(0, 3)}
+                    variant="success"
+                    showContent={false}
+                  />
+                </div>
+              </Card>
+            </div>
+          </div>
+          
+          <div>
+            <h2 className="text-xl font-bold mb-4">Tab Styles</h2>
+            <div className="grid grid-cols-1 gap-6 mb-8">
+              <Card variant="default" title="Underlined Tabs">
+                <div className="p-4">
+                  <Tabs
+                    tabs={demoTabs.slice(0, 3)}
+                    variant="primary"
+                    underlined={true}
+                    showContent={false}
+                  />
+                </div>
+              </Card>
+              
+              <Card variant="default" title="Pills Tabs">
+                <div className="p-4">
+                  <Tabs
+                    tabs={demoTabs.slice(0, 3)}
+                    variant="primary"
+                    pills={true}
+                    showContent={false}
+                  />
+                </div>
+              </Card>
+              
+              <Card variant="default" title="Bordered Tabs">
+                <div className="p-4">
+                  <Tabs
+                    tabs={demoTabs.slice(0, 3)}
+                    variant="primary"
+                    bordered={true}
+                    showContent={false}
+                  />
+                </div>
+              </Card>
+            </div>
+          </div>
+          
+          <div>
+            <h2 className="text-xl font-bold mb-4">Tab Layouts</h2>
+            <div className="grid grid-cols-1 gap-6 mb-8">
+              <Card variant="default" title="Vertical Tabs">
+                <div className="p-4">
+                  <Tabs
+                    tabs={demoTabs.slice(0, 3)}
+                    variant="primary"
+                    vertical={true}
+                    showContent={true}
+                  />
+                </div>
+              </Card>
+              
+              <Card variant="default" title="Full Width Tabs">
+                <div className="p-4">
+                  <Tabs
+                    tabs={demoTabs.slice(0, 3)}
+                    variant="primary"
+                    fullWidth={true}
+                    showContent={false}
+                  />
+                </div>
+              </Card>
+              
+              <Card variant="default" title="Equal Width Tabs">
+                <div className="p-4">
+                  <Tabs
+                    tabs={demoTabs.slice(0, 3)}
+                    variant="primary"
+                    equalWidth={true}
+                    showContent={false}
+                  />
+                </div>
+              </Card>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Tooltips Section */}
+      {activeTab === 'tooltips' && (
+        <div className="space-y-8">
+          <div>
+            <h2 className="text-xl font-bold mb-4">Tooltip Positions</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              <Card variant="default" title="Top Tooltip">
+                <div className="p-4 flex justify-center">
+                  <Tooltip content="This is a top tooltip" position="top">
+                    <Button variant="primary">Hover Me</Button>
+                  </Tooltip>
+                </div>
+              </Card>
+              
+              <Card variant="default" title="Bottom Tooltip">
+                <div className="p-4 flex justify-center">
+                  <Tooltip content="This is a bottom tooltip" position="bottom">
+                    <Button variant="primary">Hover Me</Button>
+                  </Tooltip>
+                </div>
+              </Card>
+              
+              <Card variant="default" title="Left Tooltip">
+                <div className="p-4 flex justify-center">
+                  <Tooltip content="This is a left tooltip" position="left">
+                    <Button variant="primary">Hover Me</Button>
+                  </Tooltip>
+                </div>
+              </Card>
+              
+              <Card variant="default" title="Right Tooltip">
+                <div className="p-4 flex justify-center">
+                  <Tooltip content="This is a right tooltip" position="right">
+                    <Button variant="primary">Hover Me</Button>
+                  </Tooltip>
+                </div>
+              </Card>
+            </div>
+          </div>
+          
+          <div>
+            <h2 className="text-xl font-bold mb-4">Tooltip Variants</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              <Card variant="default" title="Default Tooltip">
+                <div className="p-4 flex justify-center">
+                  <Tooltip content="Default tooltip style" variant="default">
+                    <Button variant="secondary">Hover Me</Button>
+                  </Tooltip>
+                </div>
+              </Card>
+              
+              <Card variant="default" title="Dark Tooltip">
+                <div className="p-4 flex justify-center">
+                  <Tooltip content="Dark tooltip style" variant="dark">
+                    <Button variant="secondary">Hover Me</Button>
+                  </Tooltip>
+                </div>
+              </Card>
+              
+              <Card variant="default" title="Light Tooltip">
+                <div className="p-4 flex justify-center">
+                  <Tooltip content="Light tooltip style" variant="light">
+                    <Button variant="secondary">Hover Me</Button>
+                  </Tooltip>
+                </div>
+              </Card>
+              
+              <Card variant="default" title="Primary Tooltip">
+                <div className="p-4 flex justify-center">
+                  <Tooltip content="Primary tooltip style" variant="primary">
+                    <Button variant="secondary">Hover Me</Button>
+                  </Tooltip>
+                </div>
+              </Card>
+              
+              <Card variant="default" title="Success Tooltip">
+                <div className="p-4 flex justify-center">
+                  <Tooltip content="Success tooltip style" variant="success">
+                    <Button variant="secondary">Hover Me</Button>
+                  </Tooltip>
+                </div>
+              </Card>
+              
+              <Card variant="default" title="Glass Tooltip">
+                <div className="p-4 flex justify-center">
+                  <Tooltip content="Glass tooltip style with blur effect" variant="glass">
+                    <Button variant="secondary">Hover Me</Button>
+                  </Tooltip>
+                </div>
+              </Card>
+            </div>
+          </div>
+          
+          <div>
+            <h2 className="text-xl font-bold mb-4">Rich Content Tooltips</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              <Card variant="default" title="HTML Content">
+                <div className="p-4 flex justify-center">
+                  <Tooltip 
+                    content={
+                      <div>
+                        <h3 className="text-[#e8c547] font-medium mb-1">Rich Content</h3>
+                        <p>This tooltip contains formatted HTML content.</p>
+                        <ul className="list-disc pl-4 mt-2">
+                          <li>Feature 1</li>
+                          <li>Feature 2</li>
+                          <li>Feature 3</li>
+                        </ul>
+                      </div>
+                    } 
+                    position="top"
+                    maxWidth={300}
+                  >
+                    <Button variant="primary">Show Rich Tooltip</Button>
+                  </Tooltip>
+                </div>
+              </Card>
+              
+              <Card variant="default" title="Interactive Tooltip">
+                <div className="p-4 flex justify-center">
+                  <Tooltip 
+                    content={
+                      <div>
+                        <h3 className="text-[#e8c547] font-medium mb-1">Interactive Tooltip</h3>
+                        <p className="mb-2">You can hover over the tooltip content.</p>
+                        <Button size="sm" variant="primary" onClick={() => alert('Button clicked!')}>
+                          Click Me
+                        </Button>
+                      </div>
+                    } 
+                    position="top"
+                    interactive={true}
+                  >
+                    <Button variant="primary">Show Interactive Tooltip</Button>
+                  </Tooltip>
+                </div>
+              </Card>
+            </div>
+          </div>
+          
+          <div>
+            <h2 className="text-xl font-bold mb-4">Tooltip Triggers</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              <Card variant="default" title="Hover Trigger">
+                <div className="p-4 flex justify-center">
+                  <Tooltip 
+                    content="This tooltip appears on hover" 
+                    trigger="hover"
+                  >
+                    <Button variant="primary">Hover Me</Button>
+                  </Tooltip>
+                </div>
+              </Card>
+              
+              <Card variant="default" title="Click Trigger">
+                <div className="p-4 flex justify-center">
+                  <Tooltip 
+                    content="This tooltip appears on click" 
+                    trigger="hover"
+                    showOnClick={true}
+                  >
+                    <Button variant="primary">Click Me</Button>
+                  </Tooltip>
+                </div>
+              </Card>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Select Menus Section */}
+      {activeTab === 'selects' && (
+        <div className="space-y-8">
+          <div>
+            <h2 className="text-xl font-bold mb-4">Select Variants</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              <Select
+                options={basicOptions}
+                value={selectValues.default}
+                onChange={(value) => handleSelectChange('default', value)}
+                placeholder="Default Select"
+                variant="default"
+              />
+              
+              <Select
+                options={basicOptions}
+                value={selectValues.primary}
+                onChange={(value) => handleSelectChange('primary', value)}
+                placeholder="Primary Select"
+                variant="primary"
+              />
+              
+              <Select
+                options={basicOptions}
+                value={selectValues.secondary}
+                onChange={(value) => handleSelectChange('secondary', value)}
+                placeholder="Secondary Select"
+                variant="secondary"
+              />
+              
+              <Select
+                options={basicOptions}
+                value={selectValues.dark}
+                onChange={(value) => handleSelectChange('dark', value)}
+                placeholder="Dark Select"
+                variant="dark"
+              />
+              
+              <Select
+                options={basicOptions}
+                value={selectValues.light}
+                onChange={(value) => handleSelectChange('light', value)}
+                placeholder="Light Select"
+                variant="light"
+              />
+              
+              <Select
+                options={basicOptions}
+                value={selectValues.glass}
+                onChange={(value) => handleSelectChange('glass', value)}
+                placeholder="Glass Select"
+                variant="glass"
+              />
+              
+              <Select
+                options={basicOptions}
+                value={selectValues.minimal}
+                onChange={(value) => handleSelectChange('minimal', value)}
+                placeholder="Minimal Select"
+                variant="minimal"
+              />
+              
+              <Select
+                options={basicOptions}
+                value={selectValues.success}
+                onChange={(value) => handleSelectChange('success', value)}
+                placeholder="Success Select"
+                variant="success"
+              />
+              
+              <Select
+                options={basicOptions}
+                value={selectValues.danger}
+                onChange={(value) => handleSelectChange('danger', value)}
+                placeholder="Danger Select"
+                variant="danger"
+              />
+            </div>
+          </div>
+          
+          <div>
+            <h2 className="text-xl font-bold mb-4">Select Sizes</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <Select
+                options={basicOptions}
+                value={selectValues.small}
+                onChange={(value) => handleSelectChange('small', value)}
+                placeholder="Small Select"
+                size="sm"
+              />
+              
+              <Select
+                options={basicOptions}
+                value={selectValues.medium}
+                onChange={(value) => handleSelectChange('medium', value)}
+                placeholder="Medium Select"
+                size="md"
+              />
+              
+              <Select
+                options={basicOptions}
+                value={selectValues.large}
+                onChange={(value) => handleSelectChange('large', value)}
+                placeholder="Large Select"
+                size="lg"
+              />
+            </div>
+          </div>
+          
+          <div>
+            <h2 className="text-xl font-bold mb-4">Select with Icons</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              <Select
+                options={techOptions}
+                value={selectValues.withIcon}
+                onChange={(value) => handleSelectChange('withIcon', value)}
+                placeholder="Select Technology"
+                icon="fas fa-code"
+              />
+              
+              <Select
+                options={categoryOptions}
+                value={selectValues.categories}
+                onChange={(value) => handleSelectChange('categories', value)}
+                placeholder="Select Category"
+                icon="fas fa-folder"
+              />
+            </div>
+          </div>
+          
+          <div>
+            <h2 className="text-xl font-bold mb-4">Select with Label and Full Width</h2>
+            <div className="mb-8">
+              <Select
+                options={categoryOptions}
+                value={selectValues.withLabel}
+                onChange={(value) => handleSelectChange('withLabel', value)}
+                placeholder="Select a category"
+                label="Category"
+                required={true}
+                fullWidth={true}
+              />
+            </div>
+          </div>
+          
+          <div>
+            <h2 className="text-xl font-bold mb-4">Disabled Select</h2>
+            <div className="mb-8">
+              <Select
+                options={basicOptions}
+                value={selectValues.disabled}
+                onChange={(value) => handleSelectChange('disabled', value)}
+                placeholder="Disabled Select"
+                disabled={true}
+              />
+            </div>
+          </div>
+          
+          <div>
+            <h2 className="text-xl font-bold mb-4">Select with Error</h2>
+            <div className="mb-8">
+              <Select
+                options={basicOptions}
+                value=""
+                onChange={(value) => {}}
+                placeholder="Please select an option"
+                error="This field is required"
+              />
+            </div>
+          </div>
+        </div>
+      )}
       
       {/* Buttons Section */}
       {activeTab === 'buttons' && (

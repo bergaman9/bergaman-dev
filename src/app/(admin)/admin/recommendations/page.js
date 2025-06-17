@@ -20,9 +20,9 @@ export default function AdminRecommendationsPage() {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingRecommendation, setEditingRecommendation] = useState(null);
-  const [activeFilter, setActiveFilter] = useState('all');
+  const [activeFilter, setActiveFilter] = useState('movie');
   const [showImageSelector, setShowImageSelector] = useState(false);
-  const [filter, setFilter] = useState('all');
+  const [filter, setFilter] = useState('movie');
   const [searchTerm, setSearchTerm] = useState('');
   const [uploadingImage, setUploadingImage] = useState(false);
   const fileInputRef = useRef(null);
@@ -229,18 +229,29 @@ export default function AdminRecommendationsPage() {
       e.preventDefault();
       e.stopPropagation();
       
-      // Calculate position relative to viewport
-      const rect = e.currentTarget.getBoundingClientRect();
-      
-      // Store the scroll position and card position
-      setModalPosition({
-        x: rect.left + window.scrollX,
-        y: rect.top + window.scrollY
+      // Doğrudan modal pozisyonunu ayarlamak yerine sadece düzenleme modunu açıyoruz
+      setEditingRecommendation(recommendation);
+      setFormData({
+        title: recommendation.title,
+        description: recommendation.description,
+        category: recommendation.category,
+        image: recommendation.image,
+        rating: recommendation.rating || 7.5,
+        year: recommendation.year || new Date().getFullYear(),
+        genre: recommendation.genre || '',
+        director: recommendation.director || '',
+        author: recommendation.author || '',
+        developer: recommendation.developer || '',
+        url: recommendation.url || '',
+        linkType: recommendation.linkType || '',
+        recommendation: recommendation.recommendation,
+        status: recommendation.status,
+        order: recommendation.order || 0
       });
       
-      // Ensure the clicked element is visible in the viewport
-      // This will scroll to the element if needed
-      e.currentTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      // Modal'ı hemen açıyoruz
+      setShowModal(true);
+      return;
     }
     
     setEditingRecommendation(recommendation);
@@ -262,10 +273,7 @@ export default function AdminRecommendationsPage() {
       order: recommendation.order || 0
     });
     
-    // Short delay to ensure scroll position is updated before opening modal
-    setTimeout(() => {
-      setShowModal(true);
-    }, 100);
+    setShowModal(true);
   };
 
   const handleDelete = async (id) => {
@@ -333,17 +341,36 @@ export default function AdminRecommendationsPage() {
     }
   };
 
-  // Filter and search recommendations
-  const filteredRecommendations = recommendations
-    .filter(rec => {
-      if (filter === 'all') return true;
-      return rec.category === filter;
-    })
-    .filter(rec => {
-      if (!searchTerm) return true;
-      return rec.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-             rec.description.toLowerCase().includes(searchTerm.toLowerCase());
-    });
+  // Filter recommendations based on the current filter
+  const filteredRecommendations = recommendations.filter(item => {
+    // Status filters
+    if (filter === 'active' && item.status === 'active') return true;
+    if (filter === 'draft' && item.status === 'draft') return true;
+    if (filter === 'archived' && item.status === 'archived') return true;
+    
+    // Category filters
+    if (filter === 'movie' && item.category === 'movie') return true;
+    if (filter === 'game' && item.category === 'game') return true;
+    if (filter === 'book' && item.category === 'book') return true;
+    if (filter === 'series' && item.category === 'series') return true;
+    if (filter === 'music' && item.category === 'music') return true;
+    if (filter === 'link' && item.category === 'link') return true;
+    
+    return false;
+  }).filter(item => {
+    if (!searchTerm) return true;
+    
+    const searchLower = searchTerm.toLowerCase();
+    return (
+      item.title?.toLowerCase().includes(searchLower) ||
+      item.description?.toLowerCase().includes(searchLower) ||
+      item.genre?.toLowerCase().includes(searchLower) ||
+      item.director?.toLowerCase().includes(searchLower) ||
+      item.author?.toLowerCase().includes(searchLower) ||
+      item.developer?.toLowerCase().includes(searchLower) ||
+      item.recommendation?.toLowerCase().includes(searchLower)
+    );
+  });
 
   // Get stats for each category
   const getStats = () => {
@@ -357,8 +384,12 @@ export default function AdminRecommendationsPage() {
   const stats = getStats();
 
   const handleStatFilter = (key) => {
+    if (key === 'active' || key === 'draft' || key === 'archived') {
+      setFilter(key);
+      return;
+    }
+    
     setFilter(key);
-    setActiveFilter(key);
   };
 
   // Add genre options for different categories
@@ -543,48 +574,105 @@ export default function AdminRecommendationsPage() {
       {/* Filter Tabs */}
       <div className="flex flex-wrap gap-2 mb-6">
         <button
-          onClick={() => handleStatFilter('all')}
+          onClick={() => handleStatFilter('movie')}
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center space-x-2 ${
-            activeFilter === 'all'
+            activeFilter === 'movie'
               ? 'bg-[#e8c547]/20 text-[#e8c547] border border-[#e8c547]/30'
               : 'text-gray-300 hover:text-[#e8c547] hover:bg-[#e8c547]/10'
           }`}
         >
-          <i className="fas fa-layer-group text-sm mr-2"></i>
-          <span>All</span>
+          <i className="fas fa-film text-sm mr-2"></i>
+          <span>Movie</span>
           <span className="ml-2 bg-[#2e3d29] px-2 py-0.5 rounded-full text-xs">
-            {stats.all}
+            {stats.movie}
           </span>
         </button>
         
-        {categories.map((category) => (
-          <button
-            key={category.value}
-            onClick={() => handleStatFilter(category.value)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center space-x-2 ${
-              activeFilter === category.value
-                ? 'bg-[#e8c547]/20 text-[#e8c547] border border-[#e8c547]/30'
-                : 'text-gray-300 hover:text-[#e8c547] hover:bg-[#e8c547]/10'
-            }`}
-          >
-            <i className={`${category.icon} text-sm mr-2`}></i>
-            <span>{category.label}</span>
-            <span className="ml-2 bg-[#2e3d29] px-2 py-0.5 rounded-full text-xs">
-              {stats[category.value] || 0}
-            </span>
-          </button>
-        ))}
+        <button
+          onClick={() => handleStatFilter('game')}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center space-x-2 ${
+            activeFilter === 'game'
+              ? 'bg-[#e8c547]/20 text-[#e8c547] border border-[#e8c547]/30'
+              : 'text-gray-300 hover:text-[#e8c547] hover:bg-[#e8c547]/10'
+          }`}
+        >
+          <i className="fas fa-gamepad text-sm mr-2"></i>
+          <span>Game</span>
+          <span className="ml-2 bg-[#2e3d29] px-2 py-0.5 rounded-full text-xs">
+            {stats.game}
+          </span>
+        </button>
+        
+        <button
+          onClick={() => handleStatFilter('book')}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center space-x-2 ${
+            activeFilter === 'book'
+              ? 'bg-[#e8c547]/20 text-[#e8c547] border border-[#e8c547]/30'
+              : 'text-gray-300 hover:text-[#e8c547] hover:bg-[#e8c547]/10'
+          }`}
+        >
+          <i className="fas fa-book text-sm mr-2"></i>
+          <span>Book</span>
+          <span className="ml-2 bg-[#2e3d29] px-2 py-0.5 rounded-full text-xs">
+            {stats.book}
+          </span>
+        </button>
+        
+        <button
+          onClick={() => handleStatFilter('series')}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center space-x-2 ${
+            activeFilter === 'series'
+              ? 'bg-[#e8c547]/20 text-[#e8c547] border border-[#e8c547]/30'
+              : 'text-gray-300 hover:text-[#e8c547] hover:bg-[#e8c547]/10'
+          }`}
+        >
+          <i className="fas fa-tv text-sm mr-2"></i>
+          <span>Series</span>
+          <span className="ml-2 bg-[#2e3d29] px-2 py-0.5 rounded-full text-xs">
+            {stats.series}
+          </span>
+        </button>
+        
+        <button
+          onClick={() => handleStatFilter('music')}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center space-x-2 ${
+            activeFilter === 'music'
+              ? 'bg-[#e8c547]/20 text-[#e8c547] border border-[#e8c547]/30'
+              : 'text-gray-300 hover:text-[#e8c547] hover:bg-[#e8c547]/10'
+          }`}
+        >
+          <i className="fas fa-music text-sm mr-2"></i>
+          <span>Music</span>
+          <span className="ml-2 bg-[#2e3d29] px-2 py-0.5 rounded-full text-xs">
+            {stats.music}
+          </span>
+        </button>
+        
+        <button
+          onClick={() => handleStatFilter('link')}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center space-x-2 ${
+            activeFilter === 'link'
+              ? 'bg-[#e8c547]/20 text-[#e8c547] border border-[#e8c547]/30'
+              : 'text-gray-300 hover:text-[#e8c547] hover:bg-[#e8c547]/10'
+          }`}
+        >
+          <i className="fas fa-link text-sm mr-2"></i>
+          <span>Link</span>
+          <span className="ml-2 bg-[#2e3d29] px-2 py-0.5 rounded-full text-xs">
+            {stats.link}
+          </span>
+        </button>
       </div>
       
-      {/* Search */}
+      {/* Search Bar */}
       <div className="mb-6">
         <div className="relative">
           <input
             type="text"
+            className="w-full px-4 py-2 bg-[#2e3d29]/20 border border-[#3e503e]/30 rounded-lg text-gray-200 focus:outline-none focus:border-[#e8c547]/50"
             placeholder="Search recommendations..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-4 py-2 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-white focus:outline-none focus:ring-1 focus:ring-[#e8c547] focus:border-[#e8c547] transition-all duration-300"
           />
           <div className="absolute inset-y-0 right-0 flex items-center pr-3">
             <i className="fas fa-search text-gray-400"></i>
@@ -594,87 +682,54 @@ export default function AdminRecommendationsPage() {
       
       {/* Recommendations Grid */}
       {loading ? (
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#e8c547]"></div>
+        <div className="flex justify-center items-center py-20">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#e8c547]"></div>
+        </div>
+      ) : filteredRecommendations.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {filteredRecommendations.map((recommendation) => (
+            <RecommendationCard
+              key={recommendation._id}
+              recommendation={recommendation}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              isAdmin={true}
+            />
+          ))}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {filteredRecommendations.length > 0 ? (
-            filteredRecommendations.map((recommendation) => (
-              <RecommendationCard
-                key={recommendation._id}
-                recommendation={recommendation}
-                isAdmin={true}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-              />
-            ))
-          ) : (
-            <div className="col-span-full text-center py-12">
-              <div className="text-4xl text-gray-500 mb-4">
-                <i className="fas fa-search"></i>
-              </div>
-              <h3 className="text-xl font-medium text-gray-400 mb-2">No recommendations found</h3>
-              <p className="text-gray-500">
-                {filter !== 'all' 
-                  ? `No ${filter} recommendations found. Try a different filter or add a new one.`
-                  : searchTerm 
-                    ? `No results found for "${searchTerm}". Try a different search term.`
-                    : 'Start by adding your first recommendation.'}
-              </p>
-              <Button
-                variant="primary"
-                className="mt-4"
-                icon="fas fa-plus"
-                iconPosition="left"
-                onClick={() => {
-                  resetForm();
-                  setShowModal(true);
-                }}
-              >
-                Add Recommendation
-              </Button>
-            </div>
-          )}
+        <div className="flex justify-center items-center py-20">
+          <div className="text-center">
+            <h3 className="text-xl font-medium text-gray-400 mb-2">No recommendations found</h3>
+            <p className="text-gray-500">
+              {filter !== 'movie' 
+                ? `No ${filter} recommendations found. Try a different filter or add a new one.`
+                : searchTerm 
+                  ? `No results found for "${searchTerm}". Try a different search term.`
+                  : 'No recommendations found. Add a new recommendation to get started.'}
+            </p>
+          </div>
         </div>
       )}
       
-      {/* Add/Edit Modal */}
+      {/* Modal */}
       <Modal
         isOpen={showModal}
         onClose={() => {
           setShowModal(false);
           resetForm();
         }}
-        title={editingRecommendation ? 'Edit Recommendation' : 'Add New Recommendation'}
-        size="2xl"
-        variant="modern"
+        title={editingRecommendation ? `Edit Recommendation: ${editingRecommendation.title}` : "Add New Recommendation"}
+        size="4xl"
+        variant="default"
         position="center"
+        hideFooter={true}
+        scrollable={true}
+        zIndex={1050}
         preventScroll={true}
-        zIndex={999}
-        className="!mt-0"
-        footer={
-          <div className="flex justify-end space-x-3">
-            <Button
-              variant="secondary"
-              onClick={() => {
-                setShowModal(false);
-                resetForm();
-              }}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="primary"
-              onClick={handleSubmit}
-            >
-              {editingRecommendation ? 'Update' : 'Save'}
-            </Button>
-          </div>
-        }
       >
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <form id="modalForm" onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
               <h3 className="text-lg font-medium mb-4 text-[#e8c547]">Basic Information</h3>
               
@@ -697,23 +752,9 @@ export default function AdminRecommendationsPage() {
                   onChange={(value) => handleSelectChange('category', value)}
                   placeholder="Select category"
                   variant="primary"
-                  required
                   fullWidth
+                  required
                 />
-              </div>
-              
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Description
-                </label>
-                <textarea
-                  name="description"
-                  value={formData.description}
-                  onChange={handleInputChange}
-                  placeholder="Enter description"
-                  className="w-full px-4 py-2 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-white focus:outline-none focus:ring-1 focus:ring-[#e8c547] focus:border-[#e8c547] transition-all duration-300"
-                  rows="3"
-                ></textarea>
               </div>
               
               <div className="mb-4">
@@ -723,7 +764,17 @@ export default function AdminRecommendationsPage() {
                   type="number"
                   value={formData.year}
                   onChange={handleInputChange}
-                  placeholder="Year"
+                  placeholder="Year of release"
+                />
+              </div>
+              
+              <div className="mb-4">
+                <Input
+                  label="Description"
+                  name="description"
+                  value={formData.description}
+                  onChange={handleInputChange}
+                  placeholder="Short description"
                 />
               </div>
               
@@ -898,6 +949,25 @@ export default function AdminRecommendationsPage() {
                   placeholder="Display order (lower numbers shown first)"
                 />
               </div>
+              
+              <div className="flex justify-end gap-3 mt-8">
+                <Button
+                  variant="secondary"
+                  onClick={() => {
+                    setShowModal(false);
+                    resetForm();
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="primary"
+                  type="submit"
+                  loading={uploadingImage}
+                >
+                  {editingRecommendation ? 'Update' : 'Create'} Recommendation
+                </Button>
+              </div>
             </div>
           </div>
         </form>
@@ -911,7 +981,8 @@ export default function AdminRecommendationsPage() {
         size="4xl"
         position="center"
         preventScroll={true}
-        zIndex={1000}
+        zIndex={1100}
+        hideFooter={true}
       >
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
           {(formData.category !== 'all' && predefinedImages[formData.category]
@@ -931,6 +1002,15 @@ export default function AdminRecommendationsPage() {
               />
             </div>
           ))}
+        </div>
+        
+        <div className="flex justify-end mt-6">
+          <Button
+            variant="secondary"
+            onClick={() => setShowImageSelector(false)}
+          >
+            Cancel
+          </Button>
         </div>
       </Modal>
     </div>

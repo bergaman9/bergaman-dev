@@ -3,8 +3,10 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { useContext } from 'react';
+import { AuthContext } from '@/app/components/AuthContext';
 
-export default function AdminHeader({ activeTab = 'dashboard' }) {
+export default function AdminHeader({ activeTab = 'dashboard', username = 'Admin', onLogout }) {
   const pathname = usePathname();
   const router = useRouter();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -13,6 +15,7 @@ export default function AdminHeader({ activeTab = 'dashboard' }) {
   const dropdownRef = useRef(null);
   const moreDropdownRef = useRef(null);
   const mobileMenuRef = useRef(null);
+  const { user, logout } = useContext(AuthContext);
 
   // Auto-close dropdowns when clicking outside
   useEffect(() => {
@@ -37,11 +40,12 @@ export default function AdminHeader({ activeTab = 'dashboard' }) {
   }, [isDropdownOpen, isMenuOpen, isMoreDropdownOpen]);
 
   const handleLogout = () => {
-    localStorage.removeItem('adminAuth');
-    localStorage.removeItem('adminEditMode');
+    if (onLogout && typeof onLogout === 'function') {
+      onLogout();
+    }
+    
     setIsDropdownOpen(false);
     setIsMenuOpen(false);
-    router.push('/admin');
   };
 
   const isActive = (path) => {
@@ -58,6 +62,8 @@ export default function AdminHeader({ activeTab = 'dashboard' }) {
     if (path === '/admin/profile' && activeTab === 'profile') return true;
     if (path === '/admin/categories' && activeTab === 'categories') return true;
     if (path === '/admin/tags' && activeTab === 'tags') return true;
+    if (path === '/admin/components-test' && activeTab === 'components-test') return true;
+    if (path === '/admin/logs' && activeTab === 'logs') return true;
     return false;
   };
 
@@ -65,8 +71,10 @@ export default function AdminHeader({ activeTab = 'dashboard' }) {
   const primaryNavItems = [
     { href: '/admin', icon: 'fas fa-tachometer-alt', label: 'Dashboard' },
     { href: '/admin/posts', icon: 'fas fa-file-alt', label: 'Posts' },
+    { href: '/admin/portfolio', icon: 'fas fa-briefcase', label: 'Portfolio' },
     { href: '/admin/newsletter', icon: 'fas fa-newspaper', label: 'Newsletter' },
-    { href: '/admin/settings', icon: 'fas fa-cog', label: 'Settings' }
+    { href: '/admin/components-test', icon: 'fas fa-puzzle-piece', label: 'Components' },
+    { href: '/admin/logs', icon: 'fas fa-history', label: 'System Logs' }
   ];
 
   // Secondary navigation items (in dropdown)
@@ -75,12 +83,12 @@ export default function AdminHeader({ activeTab = 'dashboard' }) {
     { href: '/admin/contacts', icon: 'fas fa-envelope', label: 'Contacts' },
     { href: '/admin/media', icon: 'fas fa-images', label: 'Media' },
     { href: '/admin/members', icon: 'fas fa-users', label: 'Members' },
-    { href: '/admin/portfolio', icon: 'fas fa-briefcase', label: 'Portfolio' },
-    { href: '/admin/recommendations', icon: 'fas fa-lightbulb', label: 'Recommendations' }
+    { href: '/admin/recommendations', icon: 'fas fa-lightbulb', label: 'Recommendations' },
+    { href: '/admin/settings', icon: 'fas fa-cog', label: 'Settings' }
   ];
 
   return (
-    <header className="bg-gradient-to-r from-[#0a1a0f]/95 via-[#0e1b12]/95 via-[#1a2e1a]/95 to-[#0a1a0f]/95 border-b border-[#e8c547]/20 backdrop-blur-md sticky top-0 z-30">
+    <header className="bg-gradient-to-r from-[#0a1a0f]/95 via-[#0e1b12]/95 via-[#1a2e1a]/95 to-[#0a1a0f]/95 border-b border-[#e8c547]/20 backdrop-blur-md sticky top-0 z-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           
@@ -187,7 +195,7 @@ export default function AdminHeader({ activeTab = 'dashboard' }) {
                   <i className="fas fa-user text-[#0e1b12] text-xs"></i>
                 </div>
                 <div className="hidden sm:block text-left">
-                  <p className="text-xs font-medium text-[#e8c547]">Bergaman</p>
+                  <p className="text-xs font-medium text-[#e8c547]">{username || 'Admin'}</p>
                   <p className="text-xs text-gray-400">Administrator</p>
                 </div>
                 <i className={`fas fa-chevron-down text-xs text-gray-400 transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`}></i>
@@ -198,7 +206,7 @@ export default function AdminHeader({ activeTab = 'dashboard' }) {
                 <div className="absolute right-0 mt-2 w-48 bg-[#1a2e1a] border border-[#3e503e]/30 rounded-lg shadow-xl backdrop-blur-md z-50">
                   <div className="py-2">
                     <div className="px-4 py-2 border-b border-[#3e503e]/30">
-                      <p className="text-sm font-medium text-[#e8c547]">Bergaman</p>
+                      <p className="text-sm font-medium text-[#e8c547]">{username || 'Admin'}</p>
                       <p className="text-xs text-gray-400">Administrator</p>
                     </div>
                     
@@ -254,6 +262,26 @@ export default function AdminHeader({ activeTab = 'dashboard' }) {
                   <span>{item.label}</span>
                 </Link>
               ))}
+              
+              <div className="border-t border-[#3e503e]/30 mt-4 pt-4">
+                <Link
+                  href="/"
+                  target="_blank"
+                  className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-300 hover:text-[#e8c547]"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <i className="fas fa-external-link-alt"></i>
+                  <span>View Site</span>
+                </Link>
+                
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center space-x-3 w-full px-4 py-2 text-sm text-red-400 hover:text-red-300"
+                >
+                  <i className="fas fa-sign-out-alt"></i>
+                  <span>Logout</span>
+                </button>
+              </div>
             </div>
           </div>
         )}

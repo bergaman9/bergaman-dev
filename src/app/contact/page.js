@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { useAdminMode } from '../../hooks/useAdminMode';
+import PageHeader from '../components/PageHeader';
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -180,15 +181,14 @@ export default function Contact() {
       <main className={`page-content py-8 ${isAdminMode ? 'pt-16' : ''}`}>
         
         {/* Page Header */}
-        <section className="text-center mb-12 fade-in">
-          <h1 className="text-4xl md:text-5xl font-bold gradient-text mb-4 leading-tight">
-            <i className="fas fa-envelope mr-3"></i>
-            Contact Me
-          </h1>
-          <p className="text-lg text-gray-300 max-w-3xl mx-auto">
-            Feel free to reach out for questions, collaborations, tech discussions, or just to say hello! I'm always excited to connect with fellow developers and tech enthusiasts.
-          </p>
-        </section>
+        <PageHeader
+          title="Contact Me"
+          subtitle="Feel free to reach out for questions, collaborations, tech discussions, or just to say hello! I'm always excited to connect with fellow developers and tech enthusiasts."
+          icon="fas fa-envelope"
+          variant="large"
+          centered={true}
+          className="text-center mb-12 fade-in"
+        />
 
         {/* Contact Content */}
         <section className="max-w-6xl mx-auto">

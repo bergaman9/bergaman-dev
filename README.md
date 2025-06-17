@@ -57,9 +57,14 @@ A cutting-edge portfolio website featuring a sophisticated admin panel, real-tim
 ### 🧩 **UI Component Library**
 - **Modal System**: 15+ design variants including modern, elegant, glass, and more
 - **Button Components**: Consistent button styling with multiple variants
+- **Select Components**: Versatile dropdown selects with multiple variants, sizes, and icon support
+- **Loading Components**: Customizable loading spinners with overlay and full-screen options
+- **Tabs Components**: Interactive tab navigation with multiple styles and animations
+- **Tooltip Components**: Rich tooltip system with positioning and interactive content
 - **PageHeader**: Flexible page headers with actions, stats, and filters
 - **Form Elements**: Styled inputs, selects, and form controls
 - **Card Components**: Versatile card layouts for content display
+- **Component Showcase**: Interactive component library for testing and demonstration
 
 ## 🛠️ **Tech Stack**
 

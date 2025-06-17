@@ -15,7 +15,10 @@ export async function GET(request) {
     const featured = searchParams.get('featured') === 'true';
     
     let filter = { status: 'active' };
-    if (category && category !== 'all') filter.category = category;
+    if (category && category !== 'all') {
+      // Kategorinin tam eşleşmesini sağlayalım
+      filter.category = { $eq: category };
+    }
     if (featured) filter.featured = true;
     
     const recommendations = await Recommendation.find(filter)
@@ -24,7 +27,7 @@ export async function GET(request) {
     
     // Add fallback data if no recommendations found
     if (recommendations.length === 0) {
-      const fallbackRecommendations = generateFallbackRecommendations();
+      const fallbackRecommendations = generateFallbackRecommendations(category);
       
       return NextResponse.json({
         success: true,
@@ -69,8 +72,9 @@ export async function GET(request) {
 }
 
 // Generate fallback recommendations data
-function generateFallbackRecommendations() {
-  return [
+function generateFallbackRecommendations(category = 'link') {
+  // Kategori belirtilmişse sadece o kategoriye ait öneriler döndür
+  const allFallbacks = [
     {
       _id: 'fallback-1',
       title: 'Visual Studio Code',
@@ -145,6 +149,80 @@ function generateFallbackRecommendations() {
       order: 5,
       createdAt: new Date(),
       updatedAt: new Date()
+    },
+    // Movie kategorisi için fallback
+    {
+      _id: 'fallback-movie-1',
+      title: 'Inception',
+      description: 'A thief who steals corporate secrets through the use of dream-sharing technology.',
+      category: 'movie',
+      image: '/images/movies/inception.jpg',
+      rating: '9.3',
+      year: '2010',
+      director: 'Christopher Nolan',
+      genre: 'Sci-Fi',
+      recommendation: 'One of the most mind-bending movies ever made. The visual effects and story are incredible.',
+      status: 'active',
+      order: 1,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    // Game kategorisi için fallback
+    {
+      _id: 'fallback-game-1',
+      title: 'The Witcher 3',
+      description: 'An action role-playing game set in an open world.',
+      category: 'game',
+      image: '/images/games/witcher3.png',
+      rating: '9.8',
+      year: '2015',
+      developer: 'CD Projekt Red',
+      genre: 'RPG',
+      recommendation: 'The best RPG I have ever played. The story, characters, and world are all amazing.',
+      status: 'active',
+      order: 1,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    // Book kategorisi için fallback
+    {
+      _id: 'fallback-book-1',
+      title: '1984',
+      description: 'A dystopian social science fiction novel.',
+      category: 'book',
+      image: '/images/books/1984.png',
+      rating: '9.5',
+      year: '1949',
+      author: 'George Orwell',
+      genre: 'Dystopian',
+      recommendation: 'A classic that remains relevant today. The themes of government surveillance and control are more pertinent than ever.',
+      status: 'active',
+      order: 1,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    // Series kategorisi için fallback
+    {
+      _id: 'fallback-series-1',
+      title: 'Foundation',
+      description: 'A complex saga of humans scattered on planets throughout the galaxy.',
+      category: 'series',
+      image: '/images/movies/foundation.jpg',
+      rating: '8.7',
+      year: '2021',
+      director: 'David S. Goyer',
+      genre: 'Sci-Fi',
+      recommendation: 'A visually stunning adaptation of Asimov\'s classic series with great world-building.',
+      status: 'active',
+      order: 1,
+      createdAt: new Date(),
+      updatedAt: new Date()
     }
   ];
+  
+  if (category && category !== 'all') {
+    return allFallbacks.filter(item => item.category === category);
+  }
+  
+  return allFallbacks;
 } 

@@ -26,7 +26,7 @@ export default function Modal({
   fullScreen = false,
   scrollable = true,
   backdropOpacity = 80,
-  zIndex = 50,
+  zIndex = 999,
   onBackdropClick,
   rounded = "lg",
   loading = false,
@@ -36,14 +36,69 @@ export default function Modal({
 }) {
   const modalRef = useRef(null);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [scrollPosition, setScrollPosition] = useState(0);
   
-  // Handle initial animation
+  // Save scroll position when modal opens
   useEffect(() => {
     if (isOpen) {
+      // Store current scroll position
+      const currentScroll = window.scrollY;
+      setScrollPosition(currentScroll);
       setIsAnimating(true);
+      
       const timer = setTimeout(() => {
         setIsAnimating(false);
       }, 300);
+
+      // Header'ı gizlemek yerine arka planda göster
+      const headerElement = document.querySelector('header');
+      if (headerElement) {
+        headerElement.style.zIndex = '10'; // Modal'dan daha düşük bir z-index değeri ver
+      }
+
+      // Don't prevent scrolling entirely, just lock the body in place
+      if (preventScroll) {
+        // Save the current scroll position
+        document.body.style.position = 'fixed';
+        document.body.style.top = `-${currentScroll}px`;
+        document.body.style.width = '100%';
+      }
+
+      return () => clearTimeout(timer);
+    } else {
+      // Header'ın z-index değerini geri al
+      const headerElement = document.querySelector('header');
+      if (headerElement) {
+        headerElement.style.zIndex = ''; // Varsayılan değere döndür
+      }
+
+      // Restore scroll position when modal closes
+      if (preventScroll) {
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        window.scrollTo(0, scrollPosition);
+      }
+    }
+  }, [isOpen, preventScroll, scrollPosition]);
+  
+  // Ensure modal is visible in viewport when it opens
+  useEffect(() => {
+    if (isOpen && modalRef.current) {
+      // Give the modal time to render before checking position
+      const timer = setTimeout(() => {
+        const modalRect = modalRef.current.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+        
+        // If modal is outside viewport or partially outside, center it
+        if (modalRect.top < 0 || modalRect.bottom > viewportHeight) {
+          modalRef.current.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
+          });
+        }
+      }, 100);
+      
       return () => clearTimeout(timer);
     }
   }, [isOpen]);
@@ -58,18 +113,10 @@ export default function Modal({
     
     document.addEventListener('keydown', handleEscKey);
     
-    // Prevent scrolling when modal is open
-    if (isOpen && preventScroll) {
-      document.body.style.overflow = 'hidden';
-    }
-    
     return () => {
       document.removeEventListener('keydown', handleEscKey);
-      if (preventScroll) {
-        document.body.style.overflow = '';
-      }
     };
-  }, [isOpen, onClose, closeOnEsc, preventScroll]);
+  }, [isOpen, onClose, closeOnEsc]);
   
   // Handle outside click
   const handleBackdropClick = (e) => {
@@ -128,6 +175,9 @@ export default function Modal({
     "bottom-right": "items-end justify-end pb-10 pr-10"
   };
   
+  // Use the actual position from props
+  const actualPosition = position;
+  
   // Animation classes
   const animationClasses = {
     fade: isAnimating ? "opacity-0 scale-95" : "opacity-100 scale-100",
@@ -179,8 +229,9 @@ export default function Modal({
   
   return (
     <div 
-      className={`fixed inset-0 z-${zIndex} flex ${positionClasses[position]} p-4 bg-black/${backdropOpacity} backdrop-blur-sm transition-opacity duration-300`}
+      className={`fixed inset-0 flex ${positionClasses[actualPosition]} p-4 bg-black/${backdropOpacity} backdrop-blur-sm transition-opacity duration-300`}
       onClick={handleBackdropClick}
+      style={{ zIndex }}
     >
       <div 
         ref={modalRef}
@@ -200,60 +251,50 @@ export default function Modal({
           </div>
         )}
         
-        {/* Header */}
+        {/* Modal header */}
         {!hideHeader && (header || title) && (
-          <div className="flex items-center justify-between p-4 border-b border-[#3e503e]/50">
+          <div className={`px-6 py-4 border-b border-[#3e503e]/30 ${titleAlign ? titleAlignClasses[titleAlign] : ''}`}>
             {header || (
               <div className="flex items-center">
                 {icon && (
-                  <div className={`mr-3 text-xl ${iconColorClasses[iconColor]}`}>
-                    {typeof icon === 'string' ? <i className={icon}></i> : icon}
+                  <div className={`mr-3 ${iconColorClasses[iconColor]}`}>
+                    <i className={icon}></i>
                   </div>
                 )}
                 <div>
-                  <h3 className={`text-xl font-bold text-[#e8c547] ${titleAlignClasses[titleAlign]}`}>{title}</h3>
-                  {subtitle && <p className="text-sm text-gray-400 mt-1">{subtitle}</p>}
+                  <h3 className="text-lg font-medium text-[#e8c547]">{title}</h3>
+                  {subtitle && <p className="mt-1 text-sm text-gray-300">{subtitle}</p>}
                 </div>
               </div>
             )}
             {showCloseButton && (
-              <Button
-                variant="ghost"
-                size="sm"
+              <button
                 onClick={onClose}
-                className="text-gray-400 hover:text-white"
+                className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors duration-200 focus:outline-none"
                 aria-label="Close"
-                icon="fas fa-times"
               >
-              </Button>
+                <i className="fas fa-times text-lg"></i>
+              </button>
             )}
           </div>
         )}
         
-        {/* Body */}
-        <div className={`p-4 ${scrollable && !fullScreen ? 'overflow-y-auto max-h-[70vh]' : ''} ${fullScreen ? 'flex-grow overflow-y-auto' : ''}`}>
+        {/* Modal body */}
+        <div className={`px-6 py-4 ${scrollable ? 'overflow-y-auto' : ''} ${fullScreen ? 'flex-grow' : ''}`} style={{ maxHeight: fullScreen ? 'none' : 'calc(80vh - 160px)' }}>
           {children}
         </div>
         
-        {/* Footer */}
-        {!hideFooter && footer && (
-          <div className={`flex ${footerAlignClasses[footerAlign]} gap-2 p-4 border-t border-[#3e503e]/50`}>
-            {footer}
+        {/* Modal footer */}
+        {!hideFooter && (footer || (
+          <div className={`px-6 py-4 border-t border-[#3e503e]/30 flex ${footerAlignClasses[footerAlign]} gap-3`}>
+            <Button variant="secondary" onClick={onClose}>
+              Cancel
+            </Button>
+            <Button variant="primary" type="submit" form="modalForm">
+              Save
+            </Button>
           </div>
-        )}
-        
-        {/* Close button when no header */}
-        {hideHeader && showCloseButton && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onClose}
-            className="absolute top-2 right-2 text-gray-400 hover:text-white"
-            aria-label="Close"
-            icon="fas fa-times"
-          >
-          </Button>
-        )}
+        ))}
       </div>
     </div>
   );

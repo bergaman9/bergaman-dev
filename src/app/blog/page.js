@@ -8,6 +8,7 @@ import Image from 'next/image';
 import ImageModal from '../components/ImageModal';
 import { useAdminMode } from '../../hooks/useAdminMode';
 import BlogPostCard from '../components/BlogPostCard';
+import PageHeader from '../components/PageHeader';
 
 export default function Blog() {
   const [posts, setPosts] = useState([]);
@@ -177,15 +178,16 @@ export default function Blog() {
       <main className={`page-content ${isAdminMode ? 'pt-16' : ''}`}>
         
         {/* Page Header */}
-        <div className="page-header fade-in">
-          <h1 className="page-title">
-            <i className="fas fa-blog page-title-icon"></i>
-            Blog
-          </h1>
-          <p className="page-subtitle">
-            Thoughts, tutorials, and insights from the dragon's lair
-          </p>
-        </div>
+        <PageHeader
+          title="Blog"
+          subtitle="Thoughts, tutorials, and insights from the dragon's lair"
+          icon="fas fa-blog"
+          variant="large"
+          stats={[
+            { label: "Posts", value: totalPosts },
+            { label: "Categories", value: categories.length - 1 } // Subtract 1 for "all"
+          ]}
+        />
 
         {/* Search and Filter */}
         <section className="content-section slide-in-left">

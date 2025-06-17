@@ -2,7 +2,10 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
-import ImageUpload from '@/components/ImageUpload';
+import ImageUpload from '@/app/components/ImageUpload';
+import PageHeader from '@/app/components/PageHeader';
+import Button from '@/app/components/Button';
+import Modal from '@/app/components/Modal';
 
 export default function MediaManagement() {
   const [images, setImages] = useState([]);
@@ -225,47 +228,110 @@ export default function MediaManagement() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold gradient-text">
-            <i className="fas fa-images mr-3"></i>
-            Media Management
-          </h1>
-          <p className="text-gray-400 mt-2">Manage uploaded images and media files</p>
-        </div>
-        
-        <div className="flex gap-3">
-          {selectedImages.length > 0 && (
-            <button
-              onClick={deleteSelectedImages}
-              className="bg-red-600/20 hover:bg-red-600/30 border border-red-500/50 text-red-400 px-4 py-2 rounded-lg font-medium transition-all duration-300"
+      <PageHeader
+        title="Media Management"
+        subtitle="Manage uploaded images and media files"
+        icon="fas fa-images"
+        actions={[
+          ...(selectedImages.length > 0 ? [
+            {
+              label: `Delete (${selectedImages.length})`,
+              variant: 'danger',
+              icon: 'fas fa-trash',
+              onClick: deleteSelectedImages
+            }
+          ] : []),
+          {
+            label: 'Upload Media',
+            variant: 'primary',
+            icon: 'fas fa-upload',
+            onClick: () => setShowUpload(!showUpload)
+          }
+        ]}
+        filter={
+          <div className="flex flex-wrap gap-3">
+            <div className="flex rounded-lg overflow-hidden border border-[#3e503e]/30">
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`px-3 py-1 ${viewMode === 'grid' ? 'bg-[#e8c547]/20 text-[#e8c547]' : 'bg-[#2e3d29]/30 text-gray-400 hover:text-gray-300'}`}
+              >
+                <i className="fas fa-th"></i>
+              </button>
+              <button
+                onClick={() => setViewMode('list')}
+                className={`px-3 py-1 ${viewMode === 'list' ? 'bg-[#e8c547]/20 text-[#e8c547]' : 'bg-[#2e3d29]/30 text-gray-400 hover:text-gray-300'}`}
+              >
+                <i className="fas fa-list"></i>
+              </button>
+            </div>
+            
+            <select
+              value={filterType}
+              onChange={(e) => setFilterType(e.target.value)}
+              className="bg-[#2e3d29]/30 border border-[#3e503e]/30 rounded-lg px-3 py-1 text-sm text-gray-300"
             >
-              <i className="fas fa-trash mr-2"></i>
-              Delete ({selectedImages.length})
-            </button>
-          )}
-          
-          <button
-            onClick={() => setShowUpload(!showUpload)}
-            className="bg-[#e8c547]/20 hover:bg-[#e8c547]/30 border border-[#e8c547]/50 text-[#e8c547] px-6 py-2 rounded-lg font-medium transition-all duration-300"
-          >
-            <i className="fas fa-plus mr-2"></i>
-            Upload New
-          </button>
-        </div>
-      </div>
+              <option value="all">All Types</option>
+              <option value="image">Images</option>
+              <option value="document">Documents</option>
+              <option value="other">Other</option>
+            </select>
+            
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="bg-[#2e3d29]/30 border border-[#3e503e]/30 rounded-lg px-3 py-1 text-sm text-gray-300"
+            >
+              <option value="newest">Newest First</option>
+              <option value="oldest">Oldest First</option>
+              <option value="name">Name (A-Z)</option>
+            </select>
+            
+            <select
+              value={groupBy}
+              onChange={(e) => setGroupBy(e.target.value)}
+              className="bg-[#2e3d29]/30 border border-[#3e503e]/30 rounded-lg px-3 py-1 text-sm text-gray-300"
+            >
+              <option value="none">No Grouping</option>
+              <option value="folder">By Folder</option>
+              <option value="type">By Type</option>
+              <option value="date">By Date</option>
+            </select>
+            
+            <div className="flex rounded-lg overflow-hidden border border-[#3e503e]/30">
+              <button
+                onClick={() => setZoomLevel(Math.max(0, zoomLevel - 1))}
+                className="px-2 py-1 bg-[#2e3d29]/30 text-gray-400 hover:text-gray-300 disabled:opacity-50"
+                disabled={zoomLevel === 0}
+              >
+                <i className="fas fa-search-minus"></i>
+              </button>
+              <button
+                onClick={() => setZoomLevel(Math.min(3, zoomLevel + 1))}
+                className="px-2 py-1 bg-[#2e3d29]/30 text-gray-400 hover:text-gray-300 disabled:opacity-50"
+                disabled={zoomLevel === 3}
+              >
+                <i className="fas fa-search-plus"></i>
+              </button>
+            </div>
+            
+            <div className="flex-grow">
+              <input
+                type="text"
+                placeholder="Search media..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full bg-[#2e3d29]/30 border border-[#3e503e]/30 rounded-lg px-3 py-1 text-sm text-gray-300 focus:outline-none focus:border-[#e8c547]/50"
+              />
+            </div>
+          </div>
+        }
+      />
 
-      {/* Upload Section */}
+      {/* Upload Area */}
       {showUpload && (
-        <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg">
-          <h2 className="text-xl font-bold gradient-text mb-4">
-            <i className="fas fa-cloud-upload-alt mr-2"></i>
-            Upload New Image
-          </h2>
-          <ImageUpload
-            onImageUpload={handleImageUpload}
-            className="max-w-md"
-          />
+        <div className="bg-[#1a2e1a]/50 border border-[#3e503e]/30 rounded-lg p-6">
+          <h2 className="text-xl font-semibold text-[#e8c547] mb-4">Upload Media</h2>
+          <ImageUpload onImageUpload={handleImageUpload} />
         </div>
       )}
 
@@ -303,101 +369,6 @@ export default function MediaManagement() {
             <div>
               <p className="text-gray-400 text-sm">Storage Used</p>
               <p className="text-2xl font-bold text-white">~{Math.round(images.length * 0.5)}MB</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Filter and Controls */}
-      <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg">
-        <div className="flex flex-col md:flex-row gap-4 justify-between">
-          {/* Search */}
-          <div className="w-full md:w-1/3">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search images..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-white focus:border-[#e8c547] focus:outline-none"
-              />
-              <i className="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-            </div>
-          </div>
-          
-          {/* Controls */}
-          <div className="flex flex-wrap gap-3">
-            {/* View Mode */}
-            <div className="flex border border-[#3e503e] rounded-lg overflow-hidden">
-              <button
-                onClick={() => setViewMode('grid')}
-                className={`px-3 py-2 ${viewMode === 'grid' ? 'bg-[#3e503e] text-white' : 'bg-[#0e1b12] text-gray-400'}`}
-                title="Grid View"
-              >
-                <i className="fas fa-th"></i>
-              </button>
-              <button
-                onClick={() => setViewMode('list')}
-                className={`px-3 py-2 ${viewMode === 'list' ? 'bg-[#3e503e] text-white' : 'bg-[#0e1b12] text-gray-400'}`}
-                title="List View"
-              >
-                <i className="fas fa-list"></i>
-              </button>
-            </div>
-            
-            {/* Sort By */}
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="px-3 py-2 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-white focus:border-[#e8c547] focus:outline-none"
-            >
-              <option value="newest">Newest First</option>
-              <option value="oldest">Oldest First</option>
-              <option value="name">Name</option>
-            </select>
-            
-            {/* Group By */}
-            <select
-              value={groupBy}
-              onChange={(e) => setGroupBy(e.target.value)}
-              className="px-3 py-2 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-white focus:border-[#e8c547] focus:outline-none"
-            >
-              <option value="none">No Grouping</option>
-              <option value="folder">By Folder</option>
-              <option value="type">By Type</option>
-              <option value="date">By Date</option>
-            </select>
-            
-            {/* Filter Type */}
-            <select
-              value={filterType}
-              onChange={(e) => setFilterType(e.target.value)}
-              className="px-3 py-2 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-white focus:border-[#e8c547] focus:outline-none"
-            >
-              <option value="all">All Types</option>
-              <option value="image">Images</option>
-              <option value="document">Documents</option>
-              <option value="other">Other</option>
-            </select>
-            
-            {/* Zoom Controls */}
-            <div className="flex border border-[#3e503e] rounded-lg overflow-hidden">
-              <button
-                onClick={() => setZoomLevel(Math.max(0, zoomLevel - 1))}
-                className="px-3 py-2 bg-[#0e1b12] text-gray-400 hover:bg-[#3e503e] hover:text-white disabled:opacity-50"
-                disabled={zoomLevel === 0}
-                title="Zoom Out"
-              >
-                <i className="fas fa-search-minus"></i>
-              </button>
-              <button
-                onClick={() => setZoomLevel(Math.min(3, zoomLevel + 1))}
-                className="px-3 py-2 bg-[#0e1b12] text-gray-400 hover:bg-[#3e503e] hover:text-white disabled:opacity-50"
-                disabled={zoomLevel === 3}
-                title="Zoom In"
-              >
-                <i className="fas fa-search-plus"></i>
-              </button>
             </div>
           </div>
         </div>
@@ -598,70 +569,42 @@ export default function MediaManagement() {
       </div>
 
       {/* Zoom Modal */}
-      {showZoomModal && zoomImage && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="relative w-full max-w-4xl max-h-[90vh] bg-[#1a2e1a] rounded-lg overflow-hidden">
-            {/* Modal Header */}
-            <div className="flex items-center justify-between p-4 border-b border-[#3e503e]">
-              <h3 className="text-lg font-semibold text-white">
-                {zoomImage.split('/').pop()}
-              </h3>
-              <button
-                onClick={() => setShowZoomModal(false)}
-                className="text-gray-400 hover:text-white"
+      <Modal
+        isOpen={showZoomModal}
+        onClose={() => setShowZoomModal(false)}
+        title="Image Preview"
+        size="lg"
+        variant="dark"
+      >
+        {zoomImage && (
+          <div className="text-center">
+            <img
+              src={zoomImage}
+              alt="Preview"
+              className="max-w-full max-h-[70vh] mx-auto mb-4"
+            />
+            <div className="flex justify-center space-x-4 mt-4">
+              <Button
+                variant="secondary"
+                onClick={() => copyToClipboard(zoomImage)}
               >
-                <i className="fas fa-times text-xl"></i>
-              </button>
-            </div>
-            
-            {/* Image Container */}
-            <div className="relative w-full h-[70vh] bg-[#0e1b12]">
-              <Image
-                src={zoomImage}
-                alt="Enlarged view"
-                fill
-                className="object-contain"
-              />
-            </div>
-            
-            {/* Actions Footer */}
-            <div className="p-4 border-t border-[#3e503e] flex justify-between">
-              <div className="text-sm text-gray-400">
-                <span className="mr-4">
-                  <i className="fas fa-link mr-1"></i>
-                  {zoomImage}
-                </span>
-                <span>
-                  <i className="fas fa-file mr-1"></i>
-                  {getFileExtension(zoomImage).toUpperCase()}
-                </span>
-              </div>
-              
-              <div className="flex space-x-3">
-                <button
-                  onClick={() => copyToClipboard(zoomImage)}
-                  className="bg-[#e8c547]/20 hover:bg-[#e8c547]/30 border border-[#e8c547]/50 text-[#e8c547] px-4 py-2 rounded-lg text-sm transition-colors"
-                >
-                  <i className="fas fa-copy mr-2"></i>
-                  Copy URL
-                </button>
-                
-                <button
-                  onClick={() => {
-                    setSelectedImages([zoomImage]);
-                    deleteSelectedImages();
-                    setShowZoomModal(false);
-                  }}
-                  className="bg-red-600/20 hover:bg-red-600/30 border border-red-500/50 text-red-400 px-4 py-2 rounded-lg text-sm transition-colors"
-                >
-                  <i className="fas fa-trash mr-2"></i>
-                  Delete
-                </button>
-              </div>
+                <i className="fas fa-clipboard mr-2"></i>
+                Copy URL
+              </Button>
+              <Button
+                variant="danger"
+                onClick={() => {
+                  toggleImageSelection(zoomImage);
+                  setShowZoomModal(false);
+                }}
+              >
+                <i className="fas fa-trash mr-2"></i>
+                Delete
+              </Button>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </Modal>
     </div>
   );
 } 

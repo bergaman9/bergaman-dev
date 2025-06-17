@@ -6,6 +6,7 @@ import ImageModal from '../components/ImageModal';
 import Card from '../components/Card';
 import Button from '../components/Button';
 import ProjectCard from '../components/ProjectCard';
+import PageHeader from '../components/PageHeader';
 
 export default function Portfolio() {
   const [portfolioItems, setPortfolioItems] = useState([]);
@@ -109,15 +110,11 @@ export default function Portfolio() {
     return (
       <div className="min-h-screen page-container">
         <div className="page-content">
-          <div className="page-header">
-            <h1 className="page-title">
-              <i className="page-title-icon fas fa-briefcase"></i>
-              Portfolio
-            </h1>
-            <p className="page-subtitle">
-              Loading my projects and work...
-            </p>
-          </div>
+          <PageHeader 
+            title="Portfolio"
+            subtitle="Loading my projects and work..."
+            icon="fas fa-briefcase"
+          />
           
           <div className="flex justify-center items-center py-20">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#e8c547]"></div>
@@ -131,24 +128,19 @@ export default function Portfolio() {
     return (
       <div className="min-h-screen page-container">
         <div className="page-content">
-          <div className="page-header">
-            <h1 className="page-title">
-              <i className="page-title-icon fas fa-briefcase"></i>
-              Portfolio
-            </h1>
-            <p className="page-subtitle text-red-400">
-              Error: {error}
-            </p>
-          </div>
-          
-          <div className="flex justify-center items-center py-20">
-            <Button 
-              onClick={fetchPortfolios}
-              variant="primary"
-            >
-              Try Again
-            </Button>
-          </div>
+          <PageHeader 
+            title="Portfolio"
+            subtitle={`Error: ${error}`}
+            icon="fas fa-briefcase"
+            actions={[
+              {
+                label: "Try Again",
+                onClick: fetchPortfolios,
+                variant: "primary",
+                icon: "fas fa-sync"
+              }
+            ]}
+          />
         </div>
       </div>
     );
@@ -158,35 +150,17 @@ export default function Portfolio() {
     <div className="min-h-screen page-container">
       <div className="page-content">
         {/* Header */}
-        <div className="page-header">
-          <h1 className="page-title">
-            <i className="page-title-icon fas fa-briefcase"></i>
-            Portfolio
-          </h1>
-          <p className="page-subtitle">
-            A showcase of my projects, from web applications to automation solutions
-          </p>
-        </div>
-
-        {/* Portfolio Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          <Card variant="glass" className="p-6">
-            <div className="text-3xl font-bold text-[#e8c547] mb-2">{portfolioItems.length}</div>
-            <div className="text-gray-400">Total Projects</div>
-          </Card>
-          <Card variant="glass" className="p-6">
-            <div className="text-3xl font-bold text-[#e8c547] mb-2">
-              {categories.filter(c => c !== 'all').length}
-            </div>
-            <div className="text-gray-400">Categories</div>
-          </Card>
-          <Card variant="glass" className="p-6">
-            <div className="text-3xl font-bold text-[#e8c547] mb-2">
-              {portfolioItems.filter(item => item.featured).length}
-            </div>
-            <div className="text-gray-400">Featured</div>
-          </Card>
-        </div>
+        <PageHeader 
+          title="Portfolio"
+          subtitle="A showcase of my projects, from web applications to automation solutions"
+          icon="fas fa-briefcase"
+          variant="large"
+          stats={[
+            { label: "Total Projects", value: portfolioItems.length },
+            { label: "Categories", value: categories.filter(c => c !== 'all').length },
+            { label: "Featured", value: portfolioItems.filter(item => item.featured).length }
+          ]}
+        />
 
         {/* Category Filter */}
         <div className="content-section mb-10">

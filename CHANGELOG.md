@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### 🚀 Features
+
+* **New Components**: Added Loading, Tooltip, and Tabs components for enhanced UI functionality
+* **ProjectCard Improvements**: Enhanced ProjectCard with consistent height, proper capitalization, and technology tooltips
+* **New Select Component**: Added versatile Select component with multiple variants, sizes, and icon support
+* **UI Improvements**: Fixed AdminHeader z-index to prevent overlap with modals
+* **Admin Layout**: Updated admin layout with consistent width and CleanMyMac-inspired background style
+* **Recommendation System**: Enhanced Edit Recommendation modal with proper buttons and improved form layout
+* **Component Library**: Added component showcase for new Loading, Tooltip, and Tabs components
+* **Modal System**: Improved modal z-index management for better UI layering
+
+### 🐛 Bug Fixes
+
+* **Modal Display**: Fixed modal display issues where AdminHeader was appearing above modals
+* **Form Controls**: Added missing form controls in Edit Recommendation modal
+* **Consistent Width**: Fixed inconsistent width in admin pages
+* **Visual Hierarchy**: Improved visual hierarchy in admin interface with better spacing and organization
 
 ## [2.4.0](https://github.com/bergaman9/bergaman-dev/compare/v2.3.0...v2.4.0) (2025-06-14)
 
@@ -154,15 +173,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ---
 
 🐉 **Built with dragon-like precision and wisdom** 🐉
-
-## [Unreleased]
-
-### 🚀 Features
-
-* **Enhanced UI Components**: Added 15+ modal design variants including modern, elegant, glass, frosted, and more
-* **Admin Panel Improvements**: Updated admin panel with soft blurred green background and flowing gradients
-* **Consistent PageHeader**: Implemented PageHeader component across all admin pages and public pages
-* **Privacy Policy**: Added comprehensive privacy policy page with GDPR and CCPA compliance
-* **Portfolio Management**: Updated portfolio management to use the new Modal components
-* **Mobile Optimization**: Fixed width issues in admin pages for better mobile display
-* **Z-index Management**: Fixed modal display issues with proper z-index hierarchy

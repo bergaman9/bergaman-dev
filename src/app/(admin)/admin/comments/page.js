@@ -3,12 +3,20 @@
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import PageHeader from '../../../components/PageHeader';
+import Select from '../../../components/Select';
 
 export default function AdminCommentsPage() {
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedComment, setSelectedComment] = useState(null);
   const [filter, setFilter] = useState('all'); // all, approved, pending
+
+  // Filter options for the Select component
+  const filterOptions = [
+    { value: 'all', label: 'All Comments', icon: 'fas fa-list' },
+    { value: 'approved', label: 'Approved', icon: 'fas fa-check-circle' },
+    { value: 'pending', label: 'Pending', icon: 'fas fa-clock' }
+  ];
 
   useEffect(() => {
     fetchComments();
@@ -115,15 +123,13 @@ export default function AdminCommentsPage() {
           filter={
             <div className="flex items-center space-x-2">
               <label className="text-sm text-gray-400">Filter:</label>
-              <select
+              <Select
+                options={filterOptions}
                 value={filter}
-                onChange={(e) => setFilter(e.target.value)}
-                className="px-3 py-2 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] focus:border-[#e8c547]/50 focus:outline-none"
-              >
-                <option value="all">All Comments</option>
-                <option value="approved">Approved</option>
-                <option value="pending">Pending</option>
-              </select>
+                onChange={(value) => setFilter(value)}
+                variant="primary"
+                size="md"
+              />
             </div>
           }
           stats={[
