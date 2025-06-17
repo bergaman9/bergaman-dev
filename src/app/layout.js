@@ -4,7 +4,7 @@ import "./globals.css";
 import { Analytics } from '@vercel/analytics/next';
 import { SITE_CONFIG, SEO_DEFAULTS } from '../lib/constants';
 import LayoutWrapper from './components/LayoutWrapper';
-import { AuthProvider } from './components/AuthContext';
+import AuthProvider from './components/AuthContext';
 
 const inter = Inter({ subsets: ["latin"] });
 
