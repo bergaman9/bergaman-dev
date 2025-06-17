@@ -568,3 +568,42 @@
     -webkit-line-clamp: 3;
   }
 }
+
+/* Modal Z-Index Fixes */
+.modal-backdrop,
+.modal-overlay {
+  z-index: 1040 !important;
+}
+
+.modal,
+.modal-container {
+  z-index: 1050 !important;
+}
+
+.modal-content {
+  z-index: 1051 !important;
+}
+
+/* Ensure modals are above admin header */
+.admin-header {
+  z-index: 1030;
+}
+
+/* Image selector modal should be above main modal */
+.image-selector-modal {
+  z-index: 1100 !important;
+}
+
+/* Fix for modal positioning */
+.modal-wrapper {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Prevent body scroll when modal is open */
+body.modal-open {
+  overflow: hidden;
+}

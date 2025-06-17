@@ -320,7 +320,7 @@ export function isValidSession(session) {
   if (!session) return false;
   
   // Oturum süresi kontrolü
-  if (session.exp && session.exp < Date.now()) {
+  if (session.exp && session.exp < Math.floor(Date.now() / 1000)) {
     return false;
   }
   

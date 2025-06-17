@@ -10,7 +10,286 @@ import Button from '@/app/components/Button';
 import Input from '@/app/components/Input';
 import Alert from '../../components/Alert';
 
-export default function AdminLogin() {
+// Dashboard component
+function AdminDashboard() {
+  const [stats, setStats] = useState({
+    posts: 0,
+    portfolio: 0,
+    comments: 0,
+    subscribers: 0,
+    recommendations: 0,
+    contacts: 0,
+    tags: 0,
+    categories: 0,
+    media: 0,
+    members: 0
+  });
+  const [recentActivity, setRecentActivity] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        // Fetch various stats
+        const [postsRes, portfolioRes, commentsRes, subscribersRes, recommendationsRes, contactsRes] = await Promise.all([
+          fetch('/api/admin/posts?page=1&limit=1'),
+          fetch('/api/admin/portfolio'),
+          fetch('/api/admin/comments'),
+          fetch('/api/admin/newsletter/subscribers'),
+          fetch('/api/admin/recommendations'),
+          fetch('/api/admin/contacts')
+        ]);
+
+        const postsData = await postsRes.json();
+        const portfolioData = await portfolioRes.json();
+        const commentsData = await commentsRes.json();
+        const subscribersData = await subscribersRes.json();
+        const recommendationsData = await recommendationsRes.json();
+        const contactsData = await contactsRes.json();
+
+        setStats({
+          posts: postsData.total || 0,
+          portfolio: portfolioData.portfolio?.length || 0,
+          comments: commentsData.comments?.length || 0,
+          subscribers: subscribersData.subscribers?.length || 0,
+          recommendations: recommendationsData.recommendations?.length || 0,
+          contacts: contactsData.contacts?.length || 0,
+          tags: 15, // Placeholder
+          categories: 8, // Placeholder
+          media: 42, // Placeholder
+          members: 1 // Admin count
+        });
+
+        // Create recent activity from latest data
+        const activities = [];
+        
+        if (commentsData.comments?.length > 0) {
+          const latestComment = commentsData.comments[0];
+          activities.push({
+            icon: 'fas fa-comment',
+            color: 'text-green-500',
+            title: 'New Comment',
+            description: `${latestComment.name} commented on "${latestComment.postTitle || 'a post'}"`,
+            time: new Date(latestComment.createdAt).toLocaleString()
+          });
+        }
+
+        if (contactsData.contacts?.length > 0) {
+          const latestContact = contactsData.contacts[0];
+          activities.push({
+            icon: 'fas fa-envelope',
+            color: 'text-blue-500',
+            title: 'New Contact Message',
+            description: `${latestContact.name} sent a message`,
+            time: new Date(latestContact.createdAt).toLocaleString()
+          });
+        }
+
+        if (subscribersData.subscribers?.length > 0) {
+          const latestSubscriber = subscribersData.subscribers[0];
+          activities.push({
+            icon: 'fas fa-user-plus',
+            color: 'text-purple-500',
+            title: 'New Subscriber',
+            description: `${latestSubscriber.email} subscribed to newsletter`,
+            time: new Date(latestSubscriber.createdAt).toLocaleString()
+          });
+        }
+
+        setRecentActivity(activities.slice(0, 5));
+      } catch (error) {
+        console.error('Error fetching stats:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStats();
+  }, []);
+
+  const allQuickLinks = [
+    // Main sections
+    { href: '/admin/posts', label: 'Posts', icon: 'fas fa-blog', count: stats.posts, color: 'from-blue-500 to-blue-600', description: 'Blog posts and articles' },
+    { href: '/admin/portfolio', label: 'Portfolio', icon: 'fas fa-briefcase', count: stats.portfolio, color: 'from-purple-500 to-purple-600', description: 'Projects and works' },
+    { href: '/admin/recommendations', label: 'Recommendations', icon: 'fas fa-star', count: stats.recommendations, color: 'from-yellow-500 to-yellow-600', description: 'Movies, games, books' },
+    { href: '/admin/comments', label: 'Comments', icon: 'fas fa-comments', count: stats.comments, color: 'from-green-500 to-green-600', description: 'User comments' },
+    { href: '/admin/newsletter', label: 'Newsletter', icon: 'fas fa-envelope', count: stats.subscribers, color: 'from-pink-500 to-pink-600', description: 'Email subscribers' },
+    { href: '/admin/contacts', label: 'Contacts', icon: 'fas fa-address-book', count: stats.contacts, color: 'from-indigo-500 to-indigo-600', description: 'Contact messages' },
+    
+    // Additional sections not in header
+    { href: '/admin/tags', label: 'Tags', icon: 'fas fa-tags', count: stats.tags, color: 'from-orange-500 to-orange-600', description: 'Content tags' },
+    { href: '/admin/categories', label: 'Categories', icon: 'fas fa-folder', count: stats.categories, color: 'from-teal-500 to-teal-600', description: 'Content categories' },
+    { href: '/admin/media', label: 'Media', icon: 'fas fa-photo-video', count: stats.media, color: 'from-red-500 to-red-600', description: 'Images and files' },
+    { href: '/admin/members', label: 'Members', icon: 'fas fa-users', count: stats.members, color: 'from-gray-500 to-gray-600', description: 'Admin users' },
+    { href: '/admin/settings', label: 'Settings', icon: 'fas fa-cog', count: null, color: 'from-slate-500 to-slate-600', description: 'Site configuration' },
+    { href: '/admin/profile', label: 'Profile', icon: 'fas fa-user-circle', count: null, color: 'from-cyan-500 to-cyan-600', description: 'Your profile' }
+  ];
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold text-white mb-2">Admin Dashboard</h1>
+        <p className="text-gray-400">Welcome back! Here's an overview of your site.</p>
+      </div>
+
+      {/* Stats Overview */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="bg-gradient-to-br from-[#1a2e20] to-[#243e2b] rounded-lg p-4 border border-[#3e503e]/30">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-gray-400 text-sm">Total Views</p>
+              <p className="text-2xl font-bold text-white">12.5K</p>
+            </div>
+            <i className="fas fa-eye text-3xl text-[#e8c547]/50"></i>
+          </div>
+        </div>
+        <div className="bg-gradient-to-br from-[#1a2e20] to-[#243e2b] rounded-lg p-4 border border-[#3e503e]/30">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-gray-400 text-sm">Total Comments</p>
+              <p className="text-2xl font-bold text-white">{stats.comments}</p>
+            </div>
+            <i className="fas fa-comments text-3xl text-green-500/50"></i>
+          </div>
+        </div>
+        <div className="bg-gradient-to-br from-[#1a2e20] to-[#243e2b] rounded-lg p-4 border border-[#3e503e]/30">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-gray-400 text-sm">Subscribers</p>
+              <p className="text-2xl font-bold text-white">{stats.subscribers}</p>
+            </div>
+            <i className="fas fa-users text-3xl text-purple-500/50"></i>
+          </div>
+        </div>
+        <div className="bg-gradient-to-br from-[#1a2e20] to-[#243e2b] rounded-lg p-4 border border-[#3e503e]/30">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-gray-400 text-sm">Total Content</p>
+              <p className="text-2xl font-bold text-white">{stats.posts + stats.portfolio + stats.recommendations}</p>
+            </div>
+            <i className="fas fa-database text-3xl text-blue-500/50"></i>
+          </div>
+        </div>
+      </div>
+
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {[...Array(12)].map((_, i) => (
+            <div key={i} className="bg-[#1a2e20]/50 rounded-lg p-6 animate-pulse">
+              <div className="h-4 bg-gray-700 rounded w-1/2 mb-4"></div>
+              <div className="h-8 bg-gray-700 rounded w-1/3"></div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {allQuickLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="group relative overflow-hidden bg-gradient-to-br from-[#1a2e20] to-[#243e2b] rounded-lg p-6 hover:shadow-xl transition-all duration-300 border border-[#3e503e]/30"
+            >
+              <div className="relative z-10">
+                <div className="flex items-center justify-between mb-4">
+                  <i className={`${link.icon} text-3xl text-gray-400 group-hover:text-white transition-colors`}></i>
+                  {link.count !== null && (
+                    <span className={`text-3xl font-bold bg-gradient-to-r ${link.color} bg-clip-text text-transparent`}>
+                      {link.count}
+                    </span>
+                  )}
+                </div>
+                <h3 className="text-lg font-semibold text-gray-300 group-hover:text-white transition-colors">
+                  {link.label}
+                </h3>
+                <p className="text-sm text-gray-500 mt-1">{link.description}</p>
+              </div>
+              <div className={`absolute inset-0 bg-gradient-to-r ${link.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}></div>
+            </Link>
+          ))}
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
+        <div className="bg-gradient-to-br from-[#1a2e20] to-[#243e2b] rounded-lg p-6 border border-[#3e503e]/30">
+          <h2 className="text-xl font-semibold text-white mb-4">
+            <i className="fas fa-chart-line mr-2 text-[#e8c547]"></i>
+            Recent Activity
+          </h2>
+          <div className="space-y-3">
+            {recentActivity.length > 0 ? (
+              recentActivity.map((activity, index) => (
+                <div key={index} className="flex items-start space-x-3 p-3 rounded-lg hover:bg-[#2e3d29]/20 transition-colors">
+                  <i className={`${activity.icon} ${activity.color} mt-1`}></i>
+                  <div className="flex-1">
+                    <p className="text-gray-300 font-medium">{activity.title}</p>
+                    <p className="text-gray-500 text-sm">{activity.description}</p>
+                    <p className="text-gray-600 text-xs mt-1">{activity.time}</p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-400 text-sm">No recent activity to display.</p>
+            )}
+          </div>
+        </div>
+
+        <div className="bg-gradient-to-br from-[#1a2e20] to-[#243e2b] rounded-lg p-6 border border-[#3e503e]/30">
+          <h2 className="text-xl font-semibold text-white mb-4">
+            <i className="fas fa-tasks mr-2 text-[#e8c547]"></i>
+            Quick Actions
+          </h2>
+          <div className="space-y-3">
+            <Link href="/admin/posts/new" className="flex items-center text-gray-300 hover:text-[#e8c547] transition-colors p-2 rounded hover:bg-[#2e3d29]/20">
+              <i className="fas fa-plus-circle mr-3 text-lg"></i>
+              <span>Create New Post</span>
+            </Link>
+            <Link href="/admin/portfolio" className="flex items-center text-gray-300 hover:text-[#e8c547] transition-colors p-2 rounded hover:bg-[#2e3d29]/20">
+              <i className="fas fa-plus-circle mr-3 text-lg"></i>
+              <span>Add Portfolio Item</span>
+            </Link>
+            <Link href="/admin/recommendations/new" className="flex items-center text-gray-300 hover:text-[#e8c547] transition-colors p-2 rounded hover:bg-[#2e3d29]/20">
+              <i className="fas fa-plus-circle mr-3 text-lg"></i>
+              <span>Add Recommendation</span>
+            </Link>
+            <Link href="/admin/newsletter" className="flex items-center text-gray-300 hover:text-[#e8c547] transition-colors p-2 rounded hover:bg-[#2e3d29]/20">
+              <i className="fas fa-paper-plane mr-3 text-lg"></i>
+              <span>Send Newsletter</span>
+            </Link>
+            <Link href="/admin/media" className="flex items-center text-gray-300 hover:text-[#e8c547] transition-colors p-2 rounded hover:bg-[#2e3d29]/20">
+              <i className="fas fa-upload mr-3 text-lg"></i>
+              <span>Upload Media</span>
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* System Info */}
+      <div className="bg-gradient-to-br from-[#1a2e20] to-[#243e2b] rounded-lg p-6 border border-[#3e503e]/30 mt-6">
+        <h2 className="text-xl font-semibold text-white mb-4">
+          <i className="fas fa-info-circle mr-2 text-[#e8c547]"></i>
+          System Information
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <p className="text-gray-400 text-sm">Version</p>
+            <p className="text-white font-medium">v2.5.13</p>
+          </div>
+          <div>
+            <p className="text-gray-400 text-sm">Database</p>
+            <p className="text-white font-medium">MongoDB Atlas</p>
+          </div>
+          <div>
+            <p className="text-gray-400 text-sm">Environment</p>
+            <p className="text-white font-medium">Development</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Login component
+function AdminLogin({ onLoginSuccess }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -22,13 +301,6 @@ export default function AdminLogin() {
   
   const router = useRouter();
   const { isAuthenticated, loading, login, checkAuth } = useContext(AuthContext);
-
-  // Admin zaten giriş yapmışsa dashboard'a yönlendir
-  useEffect(() => {
-    if (isAuthenticated && !loading) {
-      router.push('/admin/profile');
-    }
-  }, [isAuthenticated, loading, router]);
 
   // Form gönderildiğinde
   const handleSubmit = async (e) => {
@@ -57,10 +329,10 @@ export default function AdminLogin() {
         setUsername('');
         setPassword('');
         
-        // Auth durumunu kontrol et ve yönlendir
+        // Auth durumunu kontrol et ve dashboard'u göster
         const authCheck = await checkAuth();
         if (authCheck) {
-          router.push('/admin/profile');
+          onLoginSuccess();
         }
       } else {
         // Failed login
@@ -111,14 +383,6 @@ export default function AdminLogin() {
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0e1e12]">
-        <div className="text-white text-xl">Loading...</div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0e1e12] via-[#132218] to-[#0e1e12] p-4 relative overflow-hidden">
@@ -268,4 +532,25 @@ export default function AdminLogin() {
       </div>
     </div>
   );
+}
+
+export default function AdminPage() {
+  const { isAuthenticated, loading } = useContext(AuthContext);
+  const [showDashboard, setShowDashboard] = useState(false);
+
+  useEffect(() => {
+    if (!loading && isAuthenticated) {
+      setShowDashboard(true);
+    }
+  }, [isAuthenticated, loading]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#0e1e12]">
+        <div className="text-white text-xl">Loading...</div>
+      </div>
+    );
+  }
+
+  return showDashboard ? <AdminDashboard /> : <AdminLogin onLoginSuccess={() => setShowDashboard(true)} />;
 } 

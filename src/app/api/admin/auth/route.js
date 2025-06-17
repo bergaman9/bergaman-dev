@@ -136,29 +136,16 @@ async function handleLogin(request) {
       // Başarılı giriş - deneme sayacını sıfırla
       resetAttempts(ip, 'login');
       
-      // Admin log oluştur
-      try {
-        await fetch(new URL('/api/admin/logs', request.url).toString(), {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            action: 'login',
-            description: `Admin user ${username} logged in successfully`,
-            user: username
-          })
-        });
-      } catch (logError) {
-        console.error('Failed to create login log:', logError);
-      }
+      // Login başarılı - console log
+      console.log(`Admin login successful: ${username} at ${new Date().toISOString()}`);
+      
+      // TODO: Admin log oluşturma işlemi daha sonra eklenecek
+      // Şu an middleware token kontrolü yüzünden log oluşturamıyoruz
       
       // Session için JWT oluştur
       const sessionData = {
         username: username,
-        role: 'admin',
-        iat: Date.now(),
-        exp: Date.now() + SECURITY.SESSION.DURATION
+        role: 'admin'
       };
       
       // JWT token oluştur

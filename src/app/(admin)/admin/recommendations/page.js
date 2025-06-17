@@ -794,8 +794,10 @@ export default function AdminRecommendationsPage() {
         position="center"
         hideFooter={true}
         scrollable={true}
-        zIndex={1050}
+        zIndex={9999}
         preventScroll={true}
+        closeOnOutsideClick={false}
+        className="modal-container"
       >
         <form id="modalForm" onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -1053,8 +1055,10 @@ export default function AdminRecommendationsPage() {
         size="4xl"
         position="center"
         preventScroll={true}
-        zIndex={1100}
+        zIndex={10000}
         hideFooter={true}
+        closeOnOutsideClick={false}
+        className="image-selector-modal"
       >
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
           {(formData.category !== 'all' && predefinedImages[formData.category]

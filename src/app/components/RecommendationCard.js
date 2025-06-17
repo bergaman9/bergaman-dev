@@ -137,12 +137,12 @@ const BookCard = ({ recommendation, onEdit, onDelete, isAdmin = false }) => {
           
           <h3 className="text-xl font-bold text-white mb-2 font-serif">{recommendation.title}</h3>
           
-          {recommendation.author && (
+            {recommendation.author && (
             <p className={`${config.textColor} text-sm mb-1 flex items-center gap-2`}>
               <i className="fas fa-feather-alt text-xs"></i>
               <span className="font-medium">{recommendation.author}</span>
-            </p>
-          )}
+              </p>
+            )}
           
           <div className="flex flex-wrap gap-3 text-sm text-gray-400 mb-3">
             {recommendation.year && (
@@ -219,23 +219,23 @@ const GameCard = ({ recommendation, onEdit, onDelete, isAdmin = false }) => {
         {/* Title on Image */}
         <div className="absolute bottom-0 left-0 right-0 p-4">
           <h3 className="text-2xl font-bold text-white mb-1 drop-shadow-lg">{recommendation.title}</h3>
-          {recommendation.developer && (
+        {recommendation.developer && (
             <p className={`${config.textColor} text-sm font-medium drop-shadow-lg`}>
               <i className="fas fa-code text-xs"></i> {recommendation.developer}
-            </p>
-          )}
+          </p>
+        )}
         </div>
       </div>
       
       {/* Content */}
       <div className="p-5">
         <div className="flex flex-wrap gap-3 text-sm text-gray-400 mb-3">
-          {recommendation.year && (
+        {recommendation.year && (
             <span className="flex items-center gap-1">
               <i className="fas fa-calendar-alt text-xs"></i> {recommendation.year}
             </span>
-          )}
-          {recommendation.genre && (
+        )}
+        {recommendation.genre && (
             <span className="flex items-center gap-1">
               <i className="fas fa-dice text-xs"></i> {recommendation.genre}
             </span>
@@ -305,7 +305,7 @@ const MovieCard = ({ recommendation, onEdit, onDelete, isAdmin = false }) => {
         </div>
         
         {/* Rating Badge */}
-        {recommendation.rating && (
+          {recommendation.rating && (
           <div className="absolute top-10 right-3">
             <div className="relative">
               <div className="absolute inset-0 bg-[#e8c547] blur-lg opacity-50"></div>
@@ -364,7 +364,7 @@ const MovieCard = ({ recommendation, onEdit, onDelete, isAdmin = false }) => {
             >
               <i className="fas fa-trash-alt"></i>
             </button>
-          </div>
+      </div>
         )}
       </div>
     </div>
@@ -402,14 +402,14 @@ const MusicCard = ({ recommendation, onEdit, onDelete, isAdmin = false }) => {
                 <div className="absolute inset-4 rounded-full bg-gray-900"></div>
                 <div className="absolute inset-8 rounded-full bg-black"></div>
                 <div className="absolute inset-12 rounded-full overflow-hidden">
-                  <Image
-                    src={imageSrc}
-                    alt={recommendation.title}
+          <Image
+            src={imageSrc}
+            alt={recommendation.title}
                     width={96}
                     height={96}
                     className="object-cover w-full h-full"
-                    onError={() => setImageError(true)}
-                  />
+            onError={() => setImageError(true)}
+          />
                 </div>
                 {/* Center hole */}
                 <div className="absolute inset-0 flex items-center justify-center">
@@ -422,7 +422,7 @@ const MusicCard = ({ recommendation, onEdit, onDelete, isAdmin = false }) => {
             <div className="absolute top-4 right-4 text-green-400 opacity-50">
               <i className="fas fa-music text-2xl animate-bounce"></i>
             </div>
-          </div>
+        </div>
         </>
       )}
       
@@ -442,17 +442,17 @@ const MusicCard = ({ recommendation, onEdit, onDelete, isAdmin = false }) => {
         <h3 className="text-xl font-bold text-white mb-2">{recommendation.title}</h3>
         
         <div className="flex flex-wrap gap-3 text-sm text-gray-400 mb-3">
-          {recommendation.artist && (
+        {recommendation.artist && (
             <span className="flex items-center gap-1">
               <i className="fas fa-microphone text-xs"></i> {recommendation.artist}
             </span>
-          )}
-          {recommendation.year && (
+        )}
+        {recommendation.year && (
             <span className="flex items-center gap-1">
               <i className="fas fa-calendar text-xs"></i> {recommendation.year}
             </span>
-          )}
-          {recommendation.genre && (
+        )}
+        {recommendation.genre && (
             <span className="flex items-center gap-1">
               <i className="fas fa-guitar text-xs"></i> {recommendation.genre}
             </span>
@@ -521,28 +521,28 @@ const LinkCard = ({ recommendation, onEdit, onDelete, isAdmin = false }) => {
         
         {/* Centered Icon/Favicon */}
         <div className="absolute inset-0 flex items-center justify-center">
-          {faviconUrl ? (
+        {faviconUrl ? (
             <div className="relative">
               <div className="absolute inset-0 bg-white/20 rounded-2xl blur-xl"></div>
               <div className="relative w-20 h-20 bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
-                <Image
-                  src={faviconUrl}
-                  alt={domain || recommendation.title}
-                  width={48}
-                  height={48}
+            <Image
+              src={faviconUrl}
+              alt={domain || recommendation.title}
+              width={48}
+              height={48}
                   className="object-contain w-full h-full"
-                  onError={() => setFaviconUrl(null)}
-                />
+              onError={() => setFaviconUrl(null)}
+            />
               </div>
-            </div>
-          ) : (
+          </div>
+        ) : (
             <div className="relative">
               <div className="absolute inset-0 bg-cyan-400/20 rounded-2xl blur-xl"></div>
               <div className="relative w-20 h-20 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 backdrop-blur-sm rounded-2xl flex items-center justify-center border border-cyan-400/30">
                 <i className="fas fa-link text-3xl text-cyan-400"></i>
               </div>
-            </div>
-          )}
+          </div>
+        )}
         </div>
       </div>
       
@@ -622,13 +622,13 @@ const SeriesCard = ({ recommendation, onEdit, onDelete, isAdmin = false }) => {
       <div className="relative">
         {/* TV Screen */}
         <div className="relative h-64 bg-black rounded-t-xl overflow-hidden">
-          <Image
-            src={imageSrc}
-            alt={recommendation.title}
-            fill
+        <Image
+          src={imageSrc}
+          alt={recommendation.title}
+          fill
             className="object-cover group-hover:scale-105 transition-transform duration-500"
-            onError={() => setImageError(true)}
-          />
+          onError={() => setImageError(true)}
+        />
           <div className="absolute inset-0 bg-gradient-to-t from-[#0e1b12] via-transparent to-transparent"></div>
           
           {/* TV Static Effect on Hover */}
@@ -650,7 +650,7 @@ const SeriesCard = ({ recommendation, onEdit, onDelete, isAdmin = false }) => {
             <div className="absolute top-3 right-3">
               <span className="px-3 py-1 bg-[#e8c547] text-[#0e1b12] rounded-full text-xs font-bold flex items-center gap-1">
                 <i className="fas fa-star"></i> {recommendation.rating}/10
-              </span>
+            </span>
             </div>
           )}
         </div>
@@ -669,17 +669,17 @@ const SeriesCard = ({ recommendation, onEdit, onDelete, isAdmin = false }) => {
         </div>
         
         <div className="flex flex-wrap gap-3 text-sm text-gray-400 mb-3">
-          {recommendation.director && (
+        {recommendation.director && (
             <span className="flex items-center gap-1">
               <i className="fas fa-user text-xs"></i> {recommendation.director}
             </span>
-          )}
-          {recommendation.year && (
+        )}
+        {recommendation.year && (
             <span className="flex items-center gap-1">
               <i className="fas fa-calendar text-xs"></i> {recommendation.year}
             </span>
-          )}
-          {recommendation.genre && (
+        )}
+        {recommendation.genre && (
             <span className="flex items-center gap-1">
               <i className="fas fa-tags text-xs"></i> {recommendation.genre}
             </span>

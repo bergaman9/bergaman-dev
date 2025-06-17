@@ -74,7 +74,7 @@ export default function AdminHeader({ activeTab = 'dashboard', username = 'Admin
   ];
 
   return (
-    <header className="bg-gradient-to-r from-[#0a1a0f]/95 via-[#0e1b12]/95 to-[#0a1a0f]/95 border-b border-[#e8c547]/20 backdrop-blur-md sticky top-0 z-20">
+    <header className="bg-gradient-to-r from-[#0a1a0f]/95 via-[#0e1b12]/95 to-[#0a1a0f]/95 border-b border-[#e8c547]/20 backdrop-blur-md sticky top-0 z-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           
