@@ -1,54 +1,105 @@
 import { NextResponse } from 'next/server';
+import { jwtVerify } from 'jose';
+import { SECURITY } from './lib/constants';
+import { addSecurityHeaders } from './lib/helmet';
 
-export async function middleware(request) {
-  const { pathname } = request.nextUrl;
-  
-  // Skip middleware for admin routes, API routes, static files, and maintenance page itself
-  if (
-    pathname.startsWith('/admin') ||
-    pathname.startsWith('/api') ||
-    pathname.startsWith('/_next') ||
-    pathname.startsWith('/favicon') ||
-    pathname === '/maintenance' ||
-    pathname.includes('.')
-  ) {
-    return NextResponse.next();
-  }
-
+// JWT token doğrulama
+async function verifyToken(token) {
   try {
-    // Check if maintenance mode is enabled
-    const baseUrl = request.nextUrl.origin;
-    const settingsResponse = await fetch(`${baseUrl}/api/admin/settings`, {
-      headers: {
-        'Cache-Control': 'no-cache',
-      },
-    });
-
-    if (settingsResponse.ok) {
-      const settings = await settingsResponse.json();
-      
-      if (settings.maintenanceMode) {
-        // Redirect to maintenance page
-        return NextResponse.redirect(new URL('/maintenance', request.url));
-      }
-    }
+    const { payload } = await jwtVerify(
+      token, 
+      new TextEncoder().encode(SECURITY.JWT.SECRET), 
+      { algorithms: [SECURITY.JWT.ALGORITHM] }
+    );
+    return { valid: true, payload };
   } catch (error) {
-    console.error('Middleware error:', error);
-    // If there's an error fetching settings, continue normally
+    return { valid: false, error: error.message };
   }
-
-  return NextResponse.next();
 }
 
+// Middleware fonksiyonu
+export async function middleware(request) {
+  // URL'den yolu al
+  const { pathname } = request.nextUrl;
+  
+  // Yanıt oluştur
+  let response = NextResponse.next();
+  
+  // Tüm yanıtlara güvenlik başlıkları ekle
+  response.headers = addSecurityHeaders(response.headers);
+  
+  // Admin rotası kontrolü
+  const isAdminRoute = SECURITY.PROTECTED_ROUTES.ADMIN.some(route => pathname.startsWith(route));
+  const isPublicRoute = SECURITY.PROTECTED_ROUTES.PUBLIC.some(route => pathname.startsWith(route));
+  
+  // Admin rotası değilse veya public rotaysa devam et
+  if (!isAdminRoute || isPublicRoute) {
+    return response;
+  }
+  
+  // Session cookie'sini kontrol et
+  const session = request.cookies.get(SECURITY.SESSION.COOKIE_NAME);
+  
+  // Cookie yoksa veya geçersizse login sayfasına yönlendir
+  if (!session || !session.value) {
+    if (pathname.startsWith('/api/')) {
+      // API rotaları için 401 döndür
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    } else {
+      // Sayfa rotaları için login sayfasına yönlendir
+      const url = new URL('/admin', request.url);
+      return NextResponse.redirect(url);
+    }
+  }
+  
+  try {
+    // JWT token'ı doğrula
+    const { valid, payload } = await verifyToken(session.value);
+    
+    if (!valid || payload.role !== 'admin') {
+      // Geçersiz token veya admin rolü yoksa
+      if (pathname.startsWith('/api/')) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      } else {
+        const url = new URL('/admin', request.url);
+        return NextResponse.redirect(url);
+      }
+    }
+    
+    // CSRF koruması - sadece POST, PUT, DELETE istekleri için
+    if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(request.method)) {
+      const csrfToken = request.headers.get('x-csrf-token');
+      const expectedToken = payload.username + '-' + payload.iat;
+      
+      // CSRF token kontrolü (basit bir örnek, gerçek uygulamada daha güvenli bir yöntem kullanılmalıdır)
+      if (!csrfToken || csrfToken !== expectedToken) {
+        return NextResponse.json({ error: 'CSRF token validation failed' }, { status: 403 });
+      }
+    }
+    
+    // Kullanıcı bilgilerini request başlıklarına ekle
+    response.headers.set('x-user', payload.username);
+    response.headers.set('x-user-role', payload.role);
+    
+    return response;
+  } catch (error) {
+    console.error('Middleware authentication error:', error);
+    
+    if (pathname.startsWith('/api/')) {
+      return NextResponse.json({ error: 'Authentication failed' }, { status: 401 });
+    } else {
+      const url = new URL('/admin', request.url);
+      return NextResponse.redirect(url);
+    }
+  }
+}
+
+// Middleware'in çalışacağı rotaları belirle
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - bergaman-v2.4.0.ico (favicon file)
-     */
-    '/((?!api|_next/static|_next/image|bergaman-v2.4.0.ico).*)',
+    // Admin sayfaları
+    '/admin/:path*',
+    // Admin API rotaları
+    '/api/admin/:path*',
   ],
 }; 

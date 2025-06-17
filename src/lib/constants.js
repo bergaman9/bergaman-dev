@@ -89,17 +89,123 @@ export const SEO_DEFAULTS = {
   },
 };
 
-// Blog Categories
+// Genel sabitler
+export const APP_NAME = 'Bergaman';
+export const APP_VERSION = '2.4.0';
+export const APP_DESCRIPTION = 'Personal portfolio and blog';
+export const APP_URL = 'https://bergaman.dev';
+
+// API rotaları
+export const API_ROUTES = {
+  POSTS: '/api/posts',
+  PORTFOLIO: '/api/portfolio',
+  CONTACT: '/api/contact',
+  NEWSLETTER: '/api/newsletter',
+  MEDIA: '/api/media',
+  ADMIN: '/api/admin',
+  RECOMMENDATIONS: '/api/recommendations',
+  COMMENTS: '/api/comments',
+};
+
+// Medya türleri
+export const MEDIA_TYPES = {
+  IMAGE: 'image',
+  VIDEO: 'video',
+  DOCUMENT: 'document',
+};
+
+// Sayfa boyutları
+export const PAGE_SIZES = {
+  SMALL: 5,
+  MEDIUM: 10,
+  LARGE: 20,
+};
+
+// Blog kategorileri
 export const BLOG_CATEGORIES = [
-  'technology',
-  'ai',
-  'blockchain',
-  'web-development',
-  'programming',
-  'tutorial',
-  'personal',
-  'gaming'
+  'Technology',
+  'Design',
+  'Development',
+  'Business',
+  'Lifestyle',
+  'Personal',
 ];
+
+// Portfolio kategorileri
+export const PORTFOLIO_CATEGORIES = [
+  'Web Development',
+  'Mobile Development',
+  'UI/UX Design',
+  'Branding',
+  'Game Development',
+  'AI & Machine Learning',
+  'IoT',
+  'Desktop Applications',
+];
+
+// Güvenlik sabitleri
+export const SECURITY = {
+  // Session ayarları
+  SESSION: {
+    DURATION: 24 * 60 * 60 * 1000, // 24 saat (ms)
+    REFRESH_BEFORE: 5 * 60 * 1000, // Son 5 dakikada yenile (ms)
+    COOKIE_NAME: 'admin_session',
+    COOKIE_OPTIONS: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      path: '/',
+    },
+  },
+  
+  // Rate limiting
+  RATE_LIMIT: {
+    MAX_LOGIN_ATTEMPTS: process.env.RATE_LIMIT_MAX ? parseInt(process.env.RATE_LIMIT_MAX) : 5,
+    LOCKOUT_DURATION: process.env.RATE_LIMIT_WINDOW_MS ? parseInt(process.env.RATE_LIMIT_WINDOW_MS) : 15 * 60 * 1000, // 15 dakika (ms)
+    API_LIMIT: process.env.API_RATE_LIMIT ? parseInt(process.env.API_RATE_LIMIT) : 100,
+    API_WINDOW: process.env.API_RATE_LIMIT_WINDOW_MS ? parseInt(process.env.API_RATE_LIMIT_WINDOW_MS) : 60 * 1000, // 1 dakika (ms)
+  },
+  
+  // JWT ayarları
+  JWT: {
+    ALGORITHM: 'HS256',
+    SECRET: process.env.JWT_SECRET || 'bergaman-secret-key-please-change-in-production',
+  },
+  
+  // Şifre güvenliği
+  PASSWORD: {
+    MIN_LENGTH: 12,
+    HASH_ITERATIONS: 10000,
+    HASH_KEYLEN: 64,
+    HASH_DIGEST: 'sha512',
+  },
+  
+  // Güvenlik başlıkları
+  HEADERS: {
+    CONTENT_SECURITY_POLICY: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://*.vercel-insights.com",
+    XSS_PROTECTION: '1; mode=block',
+    FRAME_OPTIONS: 'SAMEORIGIN',
+    CONTENT_TYPE_OPTIONS: 'nosniff',
+    REFERRER_POLICY: 'strict-origin-when-cross-origin',
+    HSTS: 'max-age=31536000; includeSubDomains',
+    PERMISSIONS_POLICY: 'camera=(), microphone=(), geolocation=()',
+  },
+  
+  // Korunan rotalar
+  PROTECTED_ROUTES: {
+    ADMIN: ['/admin', '/api/admin'],
+    PUBLIC: ['/api/admin/auth'],
+  },
+  
+  // CORS ayarları
+  CORS: {
+    ALLOWED_ORIGINS: process.env.CORS_ALLOWED_ORIGINS ? 
+      process.env.CORS_ALLOWED_ORIGINS.split(',') : 
+      ['http://localhost:3000', 'https://bergaman.dev'],
+    ALLOWED_METHODS: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    ALLOWED_HEADERS: ['Content-Type', 'Authorization', 'X-CSRF-Token'],
+  },
+};
 
 // Skills Data
 export const SKILLS = [
