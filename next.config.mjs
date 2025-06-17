@@ -30,7 +30,6 @@ const nextConfig = {
         hostname: '**',
       },
     ],
-    domains: ['localhost'],
   },
   experimental: {
     optimizeCss: true,

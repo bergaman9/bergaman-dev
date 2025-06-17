@@ -139,16 +139,18 @@ export default function AdminLogin() {
         <div className="bg-[#132218]/90 backdrop-blur-md p-8 rounded-2xl shadow-2xl border border-[#243e2b]/50">
                   {/* Logo and Title Section */}
           <div className="mb-8">
-            <div className="flex items-center space-x-3">
-              <div className="relative">
-                <div className="absolute inset-0 bg-[#e8c547]/30 rounded-full blur-lg animate-pulse"></div>
-                <i className="fas fa-dragon text-4xl text-[#e8c547] relative z-10 drop-shadow-lg"></i>
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-[#e8c547] to-[#f4d76b] bg-clip-text text-transparent">
-                  Bergaman
-                </h1>
-                <p className="text-sm text-gray-400 -mt-1">Admin Dashboard</p>
+            <div className="flex items-start">
+              <div className="flex items-center space-x-3">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-[#e8c547]/20 rounded-full blur-md"></div>
+                  <i className="fas fa-dragon text-3xl text-[#e8c547] relative z-10"></i>
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold bg-gradient-to-r from-[#e8c547] to-[#f4d76b] bg-clip-text text-transparent">
+                    Bergaman
+                  </h1>
+                  <p className="text-xs text-gray-400">Admin Dashboard</p>
+                </div>
               </div>
             </div>
           </div>
@@ -165,7 +167,7 @@ export default function AdminLogin() {
             </label>
             <div className="relative group">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <i className="fas fa-user text-gray-400 group-focus-within:text-[#e8c547] transition-colors duration-300"></i>
+                <i className="fas fa-user text-gray-300 group-focus-within:text-[#e8c547] transition-colors duration-300"></i>
               </div>
               <input
                 id="username"
@@ -188,7 +190,7 @@ export default function AdminLogin() {
             </label>
             <div className="relative group">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <i className="fas fa-lock text-gray-400 group-focus-within:text-[#e8c547] transition-colors duration-300"></i>
+                <i className="fas fa-lock text-gray-300 group-focus-within:text-[#e8c547] transition-colors duration-300"></i>
               </div>
               <input
                 id="password"

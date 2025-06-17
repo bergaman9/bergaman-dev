@@ -136,6 +136,23 @@ async function handleLogin(request) {
       // Başarılı giriş - deneme sayacını sıfırla
       resetAttempts(ip, 'login');
       
+      // Admin log oluştur
+      try {
+        await fetch(new URL('/api/admin/logs', request.url).toString(), {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            action: 'login',
+            description: `Admin user ${username} logged in successfully`,
+            user: username
+          })
+        });
+      } catch (logError) {
+        console.error('Failed to create login log:', logError);
+      }
+      
       // Session için JWT oluştur
       const sessionData = {
         username: username,
