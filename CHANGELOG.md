@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## [2.5.0](https://github.com/bergaman9/bergaman-dev/compare/v2.4.0...v2.5.0) (2025-06-17)
+
+### 🚀 Features
+
+* Enhance admin security with logging system v2.4.0 ([83c0932](https://github.com/bergaman9/bergaman-dev/commit/83c0932114c221743e95b6f30480da15cd55dcfe))
+* enhance UI components with modal variants and admin panel improvements ([f561a23](https://github.com/bergaman9/bergaman-dev/commit/f561a237538cb9283ede32e9c4eb107dece1d059))
+* update homepage design, blog functionality, and fix version display - Remove Future Plans section from about page for cleaner design - Add comment count display to blog posts with comment icon - Move view/comment stats to bottom in individual blog posts - Fix footer border visibility and reduce excessive spacing - Update Additional Information panel width in contact page - Change İstanbul to Istanbul for consistency - Update development environment version to v2.3.0 ([c68cc38](https://github.com/bergaman9/bergaman-dev/commit/c68cc38acb673af79bf6c21688153b1fd2a3ff5b))
+
+### 🐛 Bug Fixes
+
+* Update AuthProvider import in LayoutWrapper ([d929824](https://github.com/bergaman9/bergaman-dev/commit/d9298242caa443f80fa925c31cfd70e049afef13))
+* Update AuthProvider import in RootLayout ([491f1e3](https://github.com/bergaman9/bergaman-dev/commit/491f1e3880d7edeee5d5ff065b785e777d4e1c29))
+
+### 📚 Documentation
+
+* Translate CHANGELOG to English ([913daa3](https://github.com/bergaman9/bergaman-dev/commit/913daa32a68a5a7e9f552ca226882f8093a308f0))
+
 ## [Unreleased]
 
 ### 🚀 Features
