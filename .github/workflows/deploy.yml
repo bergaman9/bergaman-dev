@@ -66,11 +66,8 @@ jobs:
     - name: 📥 Install dependencies
       run: npm ci
       
-    - name: 🧹 Clean environment files and configure git
+    - name: 🧹 Configure git for semantic release
       run: |
-        # Remove all environment files
-        rm -f .env.local .env*.local .env.development.local .env.test.local .env.production.local
-        
         # Configure git to ignore advice about ignored files
         git config --global advice.addIgnoredFile false
         
@@ -80,10 +77,6 @@ jobs:
         
         # Clean git status
         git status --porcelain
-        
-        # Ensure .env.local is properly ignored
-        echo ".env.local" >> .gitignore
-        echo ".env*.local" >> .gitignore
         
         # Show final status
         git status
