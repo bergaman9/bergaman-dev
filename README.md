@@ -221,7 +221,7 @@ npm run dev
 
 ```env
 # .env.local
-MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/bergaman-dev
+MONGODB_URI=mongodb+srv://your-username:your-password@your-cluster.mongodb.net/your-database
 NEXTAUTH_SECRET=your-secret-key
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 NEXT_PUBLIC_APP_VERSION=2.1.1

@@ -3,8 +3,8 @@
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import rehypeHighlight from 'rehype-highlight';
+import 'highlight.js/styles/vs2015.css';
 
 export default function MarkdownRenderer({ content, className = "" }) {
   if (!content) {
@@ -23,14 +23,11 @@ export default function MarkdownRenderer({ content, className = "" }) {
             <div className="absolute top-2 right-2 text-xs text-gray-400 bg-black/50 px-2 py-1 rounded z-10">
               {language}
             </div>
-            <SyntaxHighlighter
-              style={vscDarkPlus}
-              language={language}
-              PreTag="div"
-              {...props}
-            >
-              {String(children).replace(/\n$/, '')}
-            </SyntaxHighlighter>
+            <pre className={`hljs language-${language} p-4 rounded-lg overflow-auto`}>
+              <code className={`language-${language}`} {...props}>
+                {String(children).replace(/\n$/, '')}
+              </code>
+            </pre>
           </div>
         );
       }
@@ -73,7 +70,7 @@ export default function MarkdownRenderer({ content, className = "" }) {
       <ReactMarkdown
         components={components}
         remarkPlugins={[remarkGfm]}
-        rehypePlugins={[rehypeRaw]}
+        rehypePlugins={[rehypeRaw, rehypeHighlight]}
       >
         {content}
       </ReactMarkdown>
