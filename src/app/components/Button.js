@@ -16,6 +16,7 @@ export default function Button({
   icon = null,
   iconPosition = "left",
   loading = false,
+  newTab = false,
   ...props
 }) {
   // Variant styles
@@ -93,13 +94,20 @@ export default function Button({
     </>
   );
 
+  // Prepare link props for the next/link component
+  const linkProps = {...props};
+  if (newTab) {
+    linkProps.target = "_blank";
+    linkProps.rel = "noopener noreferrer";
+  }
+
   // Render as link if href is provided
   if (href) {
     return (
       <Link 
         href={href} 
         className={buttonClasses}
-        {...props}
+        {...linkProps}
       >
         {buttonContent}
       </Link>

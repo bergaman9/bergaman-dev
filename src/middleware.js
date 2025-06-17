@@ -26,10 +26,27 @@ export async function middleware(request) {
   const { pathname } = request.nextUrl;
   
   // Yanıt oluştur
-  let response = NextResponse.next();
+  const response = NextResponse.next();
   
-  // Tüm yanıtlara güvenlik başlıkları ekle
-  response.headers = addSecurityHeaders(response.headers);
+  // Güvenlik başlıklarını ekle - doğrudan Headers nesnesini manipüle etme
+  const securityHeaders = {
+    'Content-Security-Policy': SECURITY.HEADERS.CONTENT_SECURITY_POLICY,
+    'X-XSS-Protection': SECURITY.HEADERS.XSS_PROTECTION,
+    'X-Frame-Options': SECURITY.HEADERS.FRAME_OPTIONS,
+    'X-Content-Type-Options': SECURITY.HEADERS.CONTENT_TYPE_OPTIONS,
+    'Referrer-Policy': SECURITY.HEADERS.REFERRER_POLICY,
+    'Permissions-Policy': SECURITY.HEADERS.PERMISSIONS_POLICY
+  };
+  
+  // Production ortamındaysa HSTS başlığı ekle
+  if (process.env.NODE_ENV === 'production') {
+    securityHeaders['Strict-Transport-Security'] = SECURITY.HEADERS.HSTS;
+  }
+  
+  // Başlıkları ekle
+  Object.entries(securityHeaders).forEach(([key, value]) => {
+    response.headers.set(key, value);
+  });
   
   // Admin rotası kontrolü
   const isAdminRoute = SECURITY.PROTECTED_ROUTES.ADMIN.some(route => pathname.startsWith(route));
