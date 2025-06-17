@@ -221,4 +221,23 @@ export const SKILLS = [
   { name: 'Blockchain', level: 65 }
 ];
 
+// Default export for ESM compatibility
+export default {
+  SITE_CONFIG,
+  NAV_LINKS,
+  SOCIAL_LINKS,
+  SEO_DEFAULTS,
+  APP_NAME,
+  APP_VERSION,
+  APP_DESCRIPTION,
+  APP_URL,
+  API_ROUTES,
+  MEDIA_TYPES,
+  PAGE_SIZES,
+  BLOG_CATEGORIES,
+  PORTFOLIO_CATEGORIES,
+  SECURITY,
+  SKILLS
+};
+
  
