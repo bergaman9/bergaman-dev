@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useAuth } from "./AuthContext";
 import { getAppVersion } from '@/lib/version';
 
+// Header component for the application
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAdminDropdownOpen, setIsAdminDropdownOpen] = useState(false);
