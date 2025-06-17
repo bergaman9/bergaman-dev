@@ -9,13 +9,16 @@ on:
 jobs:
   version-and-release:
     runs-on: ubuntu-latest
-    
+    permissions:
+      contents: write
+      
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
         token: ${{ secrets.GITHUB_TOKEN }}
+        persist-credentials: false
 
     - name: Setup Node.js
       uses: actions/setup-node@v4
@@ -104,9 +107,11 @@ jobs:
 
     - name: Push changes and tags
       if: github.ref == 'refs/heads/main'
-      run: |
-        git push origin main
-        git push origin --tags
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: main
+        tags: true
 
     - name: Generate changelog
       if: github.ref == 'refs/heads/main'
