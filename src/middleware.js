@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { jwtVerify } from 'jose';
 import { SECURITY } from './lib/constants';
-import { addSecurityHeaders } from './lib/helmet';
 
 // Force dynamic rendering to prevent initialization errors
 export const dynamic = 'force-dynamic';
@@ -43,27 +42,22 @@ export async function middleware(request) {
     securityHeaders['Strict-Transport-Security'] = SECURITY.HEADERS.HSTS;
   }
   
-  // Başlıkları ekle - NextResponse.headers kullanarak
+  // Başlıkları ekle
   Object.entries(securityHeaders).forEach(([key, value]) => {
     response.headers.set(key, value);
   });
-  
-  // Ana admin sayfasıysa doğrudan response döndür (zaten matcher'da hariç tutulduğu için buraya ulaşmaz)
-  if (pathname === '/admin') {
-    return response;
-  }
-  
-  // API auth rotasıysa bypass et
-  if (pathname === '/api/admin/auth') {
+
+  // Özel durumlar - Tamamen bypass edilmesi gereken rotalar
+  if (pathname === '/admin' || pathname === '/api/admin/auth') {
     return response;
   }
   
   // Session cookie'sini kontrol et
   const session = request.cookies.get(SECURITY.SESSION.COOKIE_NAME);
   
-  // Cookie yoksa veya geçersizse 
+  // Cookie yoksa veya geçersizse
   if (!session || !session.value) {
-    if (pathname.startsWith('/api/')) {
+    if (pathname.startsWith('/api/admin/')) {
       // API rotaları için 401 döndür
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     } else {
@@ -78,24 +72,11 @@ export async function middleware(request) {
     const { valid, payload } = await verifyToken(session.value);
     
     if (!valid || payload.role !== 'admin') {
-      // Geçersiz token veya admin rolü yoksa
-      if (pathname.startsWith('/api/')) {
+      if (pathname.startsWith('/api/admin/')) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       } else {
-        // Diğer admin sayfaları için login sayfasına yönlendir
         const url = new URL('/admin', request.url);
         return NextResponse.redirect(url);
-      }
-    }
-    
-    // CSRF koruması - sadece POST, PUT, DELETE istekleri için
-    if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(request.method)) {
-      const csrfToken = request.headers.get('x-csrf-token');
-      const expectedToken = payload.username + '-' + payload.iat;
-      
-      // CSRF token kontrolü (basit bir örnek, gerçek uygulamada daha güvenli bir yöntem kullanılmalıdır)
-      if (!csrfToken || csrfToken !== expectedToken) {
-        return NextResponse.json({ error: 'CSRF token validation failed' }, { status: 403 });
       }
     }
     
@@ -107,22 +88,21 @@ export async function middleware(request) {
   } catch (error) {
     console.error('Middleware authentication error:', error);
     
-    if (pathname.startsWith('/api/')) {
+    if (pathname.startsWith('/api/admin/')) {
       return NextResponse.json({ error: 'Authentication failed' }, { status: 401 });
     } else {
-      // Diğer admin sayfaları için login sayfasına yönlendir
       const url = new URL('/admin', request.url);
       return NextResponse.redirect(url);
     }
   }
 }
 
-// Middleware'in çalışacağı rotaları belirle
+// Middleware'in çalışacağı rotaları belirle - ÖNEMLİ!
 export const config = {
   matcher: [
-    // Admin sayfaları - ana admin sayfası hariç
-    '/admin/:path*',
-    // Admin API rotaları - auth hariç
-    '/api/admin/:path*',
+    // Sadece admin alt sayfalarında çalış, ana admin sayfası hariç
+    '/admin/((?!$).*)',
+    // Admin API rotalarında çalış, auth hariç
+    '/api/admin/((?!auth).*)',
   ],
 }; 
