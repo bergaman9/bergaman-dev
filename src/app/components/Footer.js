@@ -7,7 +7,7 @@ import { getAppVersion } from '../../lib/version';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
-  const [appVersion, setAppVersion] = useState('v2.3.0');
+  const [appVersion, setAppVersion] = useState('v2.5.13');
   
   useEffect(() => {
     // Set version on client-side to avoid hydration mismatch

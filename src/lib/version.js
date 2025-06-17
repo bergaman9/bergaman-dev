@@ -14,7 +14,7 @@ export function getAppVersion() {
     try {
       // Use dynamic import instead of require to avoid initialization issues
       // This is safer in Next.js environment and prevents the 'y' reference error
-      const { version } = JSON.parse(process.env.npm_package_json || '{"version":"2.3.0"}');
+      const { version } = JSON.parse(process.env.npm_package_json || '{"version":"2.5.13"}');
       return `v${version}`;
     } catch (error) {
       console.warn('Could not read version from package.json:', error);
@@ -22,7 +22,7 @@ export function getAppVersion() {
   }
   
   // Final fallback - updated to current version
-  return 'v2.3.0';
+  return 'v2.5.13';
 }
 
 /**
