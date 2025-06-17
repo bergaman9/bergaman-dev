@@ -5,7 +5,7 @@ import { Inter } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import { Analytics } from '@vercel/analytics/next';
-import { SITE_CONFIG, SEO_DEFAULTS } from '../lib/constants';
+import { SITE_CONFIG, SEO_DEFAULTS, APP_VERSION } from '../lib/constants';
 import LayoutWrapper from './components/LayoutWrapper';
 import AuthProvider from './components/AuthContext';
 
@@ -41,8 +41,8 @@ export const metadata = {
   creator: SITE_CONFIG.name,
   publisher: SITE_CONFIG.name,
   icons: {
-    icon: '/bergaman-v2.4.0.ico',
-    shortcut: '/bergaman-v2.4.0.ico',
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
     apple: '/apple-touch-icon.png',
   },
   robots: {
@@ -87,7 +87,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href="/bergaman-v2.4.0.ico" />
+        <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
@@ -101,6 +101,21 @@ export default function RootLayout({ children }) {
           integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
           crossOrigin="anonymous"
           referrerPolicy="no-referrer"
+        />
+        {/* Additional FontAwesome for web fonts */}
+        <link 
+          rel="preload" 
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/webfonts/fa-solid-900.woff2" 
+          as="font" 
+          type="font/woff2" 
+          crossOrigin="anonymous" 
+        />
+        <link 
+          rel="preload" 
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/webfonts/fa-brands-400.woff2" 
+          as="font" 
+          type="font/woff2" 
+          crossOrigin="anonymous" 
         />
         {/* Güvenlik meta etiketleri */}
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
