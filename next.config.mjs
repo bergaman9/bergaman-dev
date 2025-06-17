@@ -8,6 +8,9 @@ const { SECURITY } = pkg;
 const packageJson = JSON.parse(readFileSync(join(process.cwd(), 'package.json'), 'utf8'));
 const version = `v${packageJson.version}`;
 
+// Get current environment
+const nodeEnv = process.env.NODE_ENV || 'development';
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   env: {
@@ -71,7 +74,7 @@ const nextConfig = {
             value: SECURITY.HEADERS.PERMISSIONS_POLICY,
           },
           // HSTS başlığı sadece production ortamında eklenecek
-          ...(process.env.NODE_ENV === 'production' ? [
+          ...(nodeEnv === 'production' ? [
             {
               key: 'Strict-Transport-Security',
               value: SECURITY.HEADERS.HSTS,

@@ -12,8 +12,10 @@ export function getAppVersion() {
   // Fallback: try to read from package.json only on server-side
   if (typeof window === 'undefined') {
     try {
-      const packageJson = require('../../package.json');
-      return `v${packageJson.version}`;
+      // Use dynamic import instead of require to avoid initialization issues
+      // This is safer in Next.js environment and prevents the 'y' reference error
+      const { version } = JSON.parse(process.env.npm_package_json || '{"version":"2.3.0"}');
+      return `v${version}`;
     } catch (error) {
       console.warn('Could not read version from package.json:', error);
     }

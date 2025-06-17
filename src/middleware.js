@@ -3,6 +3,9 @@ import { jwtVerify } from 'jose';
 import { SECURITY } from './lib/constants';
 import { addSecurityHeaders } from './lib/helmet';
 
+// Force dynamic rendering to prevent initialization errors
+export const dynamic = 'force-dynamic';
+
 // JWT token doğrulama
 async function verifyToken(token) {
   try {
