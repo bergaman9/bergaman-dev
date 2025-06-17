@@ -17,6 +17,68 @@ export default function AuthProvider({ children }) {
   const [refreshTimer, setRefreshTimer] = useState(null);
   const router = useRouter();
 
+  // Admin etkinliklerini logla - moved up before being used
+  const logActivity = async (action, description, metadata = {}) => {
+    try {
+      const res = await fetch('/api/admin/logs', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': csrfToken
+        },
+        body: JSON.stringify({
+          action,
+          description,
+          metadata
+        }),
+        credentials: 'include'
+      });
+      
+      return res.ok;
+    } catch (error) {
+      console.error('Log activity error:', error);
+      return false;
+    }
+  };
+  
+  // Giriş işlemi - now logActivity is defined before this uses it
+  const login = async (username, password) => {
+    try {
+      const res = await fetch('/api/admin/auth', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+        credentials: 'include',
+      });
+      
+      const data = await res.json();
+      
+      if (res.ok && data.success) {
+        setIsAuthenticated(true);
+        setUser(data.user || { username });
+        
+        // Admin etkinliğini logla
+        await logActivity('login', `User ${username} logged in successfully`);
+        
+        return { success: true };
+      } else {
+        // Başarısız giriş denemesini logla
+        await logActivity('failed_login', `Failed login attempt for user ${username}`, { ip: data.ip || 'unknown' });
+        
+        return { 
+          success: false, 
+          error: data.message || 'Giriş başarısız', 
+          remainingAttempts: data.remainingAttempts 
+        };
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      return { success: false, error: 'Bir hata oluştu' };
+    }
+  };
+
   // Session kontrolü
   const checkAuth = useCallback(async () => {
     try {
@@ -106,44 +168,6 @@ export default function AuthProvider({ children }) {
       console.error('Session refresh error:', error);
     }
   }, [checkAuth, user, login]);
-
-  // Giriş işlemi
-  const login = async (username, password) => {
-    try {
-      const res = await fetch('/api/admin/auth', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),
-        credentials: 'include',
-      });
-      
-      const data = await res.json();
-      
-      if (res.ok && data.success) {
-        setIsAuthenticated(true);
-        setUser(data.user || { username });
-        
-        // Admin etkinliğini logla
-        await logActivity('login', `User ${username} logged in successfully`);
-        
-        return { success: true };
-      } else {
-        // Başarısız giriş denemesini logla
-        await logActivity('failed_login', `Failed login attempt for user ${username}`, { ip: data.ip || 'unknown' });
-        
-        return { 
-          success: false, 
-          error: data.message || 'Giriş başarısız', 
-          remainingAttempts: data.remainingAttempts 
-        };
-      }
-    } catch (error) {
-      console.error('Login error:', error);
-      return { success: false, error: 'Bir hata oluştu' };
-    }
-  };
 
   // Çıkış işlemi
   const logout = async () => {
@@ -243,35 +267,6 @@ export default function AuthProvider({ children }) {
       }
     };
   }, [checkAuth, refreshTimer]);
-
-  // Admin etkinliklerini logla
-  const logActivity = async (action, description, metadata = {}) => {
-    try {
-      const res = await fetch('/api/admin/logs', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          action,
-          description,
-          user: user?.username || 'unknown',
-          timestamp: new Date().toISOString(),
-          metadata
-        }),
-        credentials: 'include',
-      });
-      
-      if (!res.ok) {
-        console.error('Failed to log activity');
-      }
-      
-      return res.ok;
-    } catch (error) {
-      console.error('Log activity error:', error);
-      return false;
-    }
-  };
 
   // Kullanıcı bilgilerini güncelle
   const updateUser = async (userData) => {
