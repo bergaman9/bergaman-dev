@@ -173,3 +173,60 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ---
 
 🐉 **Built with dragon-like precision and wisdom** 🐉
+
+## [2.4.0] - 2025-06-17
+
+### Added
+- Security improvements for admin panel
+- Logging system for admin operations
+- System logs viewing page
+- Login attempt limit and locking mechanism
+- Enhanced portal interface for admin login
+- Activity recording system for admin operations
+
+### Changed
+- Fixed loading property in Button component
+- Added System Logs page to admin header menu
+- Improved admin login page design
+- Updated AuthContext component
+
+### Fixed
+- Resolved admin page redirection issue
+- Fixed loading error in Button component
+- Corrected password input width in admin login page
+
+## [2.3.0] - 2025-06-10
+
+### Added
+- Added Recommendations page
+- API endpoints for game and movie recommendations
+- New media upload system
+- Responsive design improvements
+
+### Changed
+- Redesigned Portfolio page
+- Updated Card component
+- Updated Modal component
+
+### Fixed
+- Fixed pagination issue on Blog page
+- Fixed contact form submission error
+- Fixed responsive design issues
+
+## [2.2.0] - 2025-05-20
+
+### Added
+- Blog post categories
+- Comment system
+- Newsletter subscription system
+- Contact form
+
+### Changed
+- Updated header and footer design
+- Redesigned blog post page
+- Improved admin panel interface
+
+### Fixed
+- Fixed markdown rendering issues
+- Fixed responsive design issues
+- SEO improvements

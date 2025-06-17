@@ -5,9 +5,116 @@
 [![Next.js](https://img.shields.io/badge/Next.js-15.3.3-black.svg)](https://nextjs.org/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-green.svg)](https://www.mongodb.com/)
 
-> **Crafting technology inspired by the strength and wisdom of a dragon** 🐉
+🐉 **Built with dragon-like precision and wisdom** 🐉
 
-A cutting-edge portfolio website featuring a sophisticated admin panel, real-time content management, newsletter system, and dragon-themed UI effects. Built with Next.js 15, MongoDB, and modern web technologies.
+## Overview
+
+Bergaman Portal is a personal portfolio, blog, and recommendation platform built with Next.js 14, React, and MongoDB. The application features a responsive design, admin dashboard, and various interactive components.
+
+## Features
+
+- **Portfolio Showcase**: Display your projects with detailed information
+- **Blog System**: Write and publish articles with Markdown support
+- **Recommendation System**: Share your favorite games, books, and movies
+- **Admin Dashboard**: Manage all content through an intuitive admin interface
+- **Comment System**: Allow visitors to comment on blog posts
+- **Contact Form**: Let visitors reach out to you
+- **Newsletter**: Collect subscriber emails and send campaigns
+- **User Authentication**: Secure admin access with JWT
+- **Admin Logs**: Track all admin activities with detailed logging
+- **Responsive Design**: Works on all devices from mobile to desktop
+
+## Tech Stack
+
+- **Frontend**: Next.js 14, React, TailwindCSS
+- **Backend**: Next.js API Routes
+- **Database**: MongoDB with Mongoose ODM
+- **Authentication**: JWT, HTTP-only cookies
+- **Deployment**: Vercel
+- **Media Storage**: Local storage with option for cloud storage
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 18.17 or later
+- MongoDB database
+- npm or yarn
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/bergaman-portal.git
+   cd bergaman-portal
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   # or
+   yarn install
+   ```
+
+3. Create a `.env` file in the root directory with the following variables:
+   ```
+   MONGODB_URI=your_mongodb_connection_string
+   JWT_SECRET=your_jwt_secret
+   ADMIN_USERNAME=your_admin_username
+   ADMIN_PASSWORD=your_admin_password_hash
+   NEXTAUTH_URL=http://localhost:3000
+   ```
+
+4. Run the development server:
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   ```
+
+5. Open [http://localhost:3000](http://localhost:3000) in your browser
+
+## Admin Dashboard
+
+Access the admin dashboard at [http://localhost:3000/admin](http://localhost:3000/admin) using the credentials you set in the `.env` file.
+
+The admin dashboard allows you to:
+- Create, edit, and delete blog posts
+- Manage portfolio projects
+- Add and edit recommendations
+- Moderate comments
+- View contact messages
+- Manage newsletter subscribers and campaigns
+- View system logs and admin activities
+- Update site settings
+
+## Security Features
+
+- JWT-based authentication with HTTP-only cookies
+- CSRF protection
+- Rate limiting for login attempts
+- Session timeout
+- Admin activity logging
+- IP tracking for suspicious activities
+
+## Customization
+
+You can customize the site by:
+- Modifying the TailwindCSS configuration in `tailwind.config.js`
+- Updating site metadata in `src/app/layout.js`
+- Changing colors and styles in `src/app/globals.css`
+- Adding new components in `src/app/components`
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- Next.js team for the amazing framework
+- TailwindCSS for the utility-first CSS framework
+- MongoDB for the flexible document database
+- All open-source contributors whose libraries made this project possible
 
 ## 🌟 **Live Demo**
 
