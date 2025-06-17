@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import AdminHeader from './components/AdminHeader';
 import AdminFooter from './components/AdminFooter';
 import { useRouter, usePathname } from 'next/navigation';
+import AuthProvider from '../components/AuthContext';
 
 export default function AdminLayout({ children }) {
   const router = useRouter();
@@ -31,6 +32,10 @@ export default function AdminLayout({ children }) {
         if (res.ok && data.authenticated) {
           setIsAuthenticated(true);
           setUsername(data.username);
+          // Store auth status in localStorage for header
+          localStorage.setItem('adminAuth', 'true');
+          localStorage.setItem('adminUser', JSON.stringify({ username: data.username }));
+          window.dispatchEvent(new CustomEvent('adminAuthChange'));
         } else {
           // Eğer ana admin sayfasında değilsek ve kimlik doğrulama başarısızsa, ana admin sayfasına yönlendir
           if (!isMainAdminPage) {
@@ -59,6 +64,11 @@ export default function AdminLayout({ children }) {
       // Cookie'yi temizle
       document.cookie = "admin_session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
       
+      // Clear localStorage
+      localStorage.removeItem('adminAuth');
+      localStorage.removeItem('adminUser');
+      window.dispatchEvent(new CustomEvent('adminAuthChange'));
+      
       // Kimlik doğrulama durumunu güncelle
       setIsAuthenticated(false);
       
@@ -82,8 +92,9 @@ export default function AdminLayout({ children }) {
   const showHeaderFooter = isAuthenticated;
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-[#0a1a0f] via-[#0e1b12] to-[#0a1a0f]">
-      {showHeaderFooter && <AdminHeader activeTab={pathname.split('/')[2] || 'dashboard'} username={username} onLogout={handleLogout} />}
+    <AuthProvider>
+      <div className="min-h-screen flex flex-col bg-gradient-to-br from-[#0a1a0f] via-[#0e1b12] to-[#0a1a0f]">
+        {showHeaderFooter && <AdminHeader activeTab={pathname.split('/')[2] || 'dashboard'} username={username} onLogout={handleLogout} />}
       
       <main className="flex-grow">
         {(isAuthenticated || isMainAdminPage) ? (
@@ -102,7 +113,7 @@ export default function AdminLayout({ children }) {
       </main>
       
       {showHeaderFooter && <AdminFooter />}
-      
+      </div>
       {/* Global admin styles */}
       <style jsx global>{`
         .admin-content {
@@ -171,6 +182,6 @@ export default function AdminLayout({ children }) {
           margin-bottom: 1.5rem;
         }
       `}</style>
-    </div>
+    </AuthProvider>
   );
 } 

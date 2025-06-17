@@ -7,7 +7,6 @@ import "./globals.css";
 import { Analytics } from '@vercel/analytics/next';
 import { SITE_CONFIG, SEO_DEFAULTS, APP_VERSION } from '../lib/constants';
 import LayoutWrapper from './components/LayoutWrapper';
-import AuthProvider from './components/AuthContext';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -125,11 +124,9 @@ export default function RootLayout({ children }) {
         <meta name="apple-mobile-web-app-status-bar-style" content="black" />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} ${inter.className} antialiased min-h-screen text-[#d1d5db] flex flex-col`}>
-        <AuthProvider>
-          <LayoutWrapper>
-            {children}
-          </LayoutWrapper>
-        </AuthProvider>
+        <LayoutWrapper>
+          {children}
+        </LayoutWrapper>
         <Analytics />
         
         {/* Structured Data */}

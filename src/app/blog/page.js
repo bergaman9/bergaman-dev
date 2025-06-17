@@ -178,7 +178,7 @@ export default function Blog() {
         <link rel="canonical" href="https://bergaman.dev/blog" />
       </Head>
 
-      <main className={`page-content ${isAdminMode ? 'pt-16' : ''}`}>
+      <main className={`page-content ${isAdminMode ? 'pt-24' : 'pt-16'}`}>
         
         {/* Page Header */}
         <PageHeader

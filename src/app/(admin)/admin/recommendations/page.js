@@ -40,6 +40,7 @@ export default function AdminRecommendationsPage() {
     author: '',
     developer: '',
     url: '',
+    link: '',
     linkType: '',
     recommendation: '',
     status: 'active',
@@ -242,7 +243,8 @@ export default function AdminRecommendationsPage() {
         director: recommendation.director || '',
         author: recommendation.author || '',
         developer: recommendation.developer || '',
-        url: recommendation.url || '',
+        url: recommendation.url || recommendation.link || '',
+        link: recommendation.link || recommendation.url || '',
         linkType: recommendation.linkType || '',
         recommendation: recommendation.recommendation,
         status: recommendation.status,
@@ -313,6 +315,7 @@ export default function AdminRecommendationsPage() {
       author: '',
       developer: '',
       url: '',
+      link: '',
       linkType: '',
       recommendation: '',
       status: 'active',
@@ -528,8 +531,8 @@ export default function AdminRecommendationsPage() {
             <div className="mb-4">
               <Input
                 label="URL"
-                name="url"
-                value={formData.url}
+                name="link"
+                value={formData.link}
                 onChange={handleInputChange}
                 placeholder="https://example.com"
               />
@@ -543,6 +546,72 @@ export default function AdminRecommendationsPage() {
                 placeholder="Select link type"
                 variant="primary"
                 fullWidth
+              />
+            </div>
+          </>
+        );
+      case 'music':
+        return (
+          <>
+            <div className="mb-4">
+              <Input
+                label="Artist"
+                name="author"
+                value={formData.author}
+                onChange={handleInputChange}
+                placeholder="Artist name"
+              />
+            </div>
+            <div className="mb-4">
+              <Input
+                label="Spotify URL"
+                name="link"
+                value={formData.link}
+                onChange={handleInputChange}
+                placeholder="https://open.spotify.com/track/..."
+              />
+            </div>
+            <div className="mb-4">
+              <Input
+                label="Genre"
+                name="genre"
+                value={formData.genre}
+                onChange={handleInputChange}
+                placeholder="Music genre (Pop, Rock, Hip-Hop, etc.)"
+              />
+            </div>
+          </>
+        );
+      case 'series':
+        return (
+          <>
+            <div className="mb-4">
+              <Input
+                label="Director/Creator"
+                name="director"
+                value={formData.director}
+                onChange={handleInputChange}
+                placeholder="Director or creator name"
+              />
+            </div>
+            <div className="mb-4">
+              <Select
+                label="Genre"
+                options={movieGenres}
+                value={formData.genre}
+                onChange={(value) => handleSelectChange('genre', value)}
+                placeholder="Select genre"
+                variant="primary"
+                fullWidth
+              />
+            </div>
+            <div className="mb-4">
+              <Input
+                label="Streaming Link"
+                name="link"
+                value={formData.link}
+                onChange={handleInputChange}
+                placeholder="Netflix, HBO, etc. URL"
               />
             </div>
           </>
@@ -686,14 +755,14 @@ export default function AdminRecommendationsPage() {
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#e8c547]"></div>
         </div>
       ) : filteredRecommendations.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredRecommendations.map((recommendation) => (
             <RecommendationCard
               key={recommendation._id}
               recommendation={recommendation}
+              variant="admin"
               onEdit={handleEdit}
-              onDelete={handleDelete}
-              isAdmin={true}
+              isAdminMode={true}
             />
           ))}
         </div>
@@ -778,84 +847,87 @@ export default function AdminRecommendationsPage() {
                 />
               </div>
               
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Rating (1-10)
-                </label>
-                <div className="flex flex-col space-y-2">
-                  <div className="flex items-center">
-                    <input
-                      type="range"
-                      min="0.5"
-                      max="10"
-                      step="0.5"
-                      value={formData.rating}
-                      onChange={(e) => setFormData({ ...formData, rating: parseFloat(e.target.value) })}
-                      className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
-                    />
-                    <span className="ml-3 text-lg font-medium text-[#e8c547]">
-                      {formData.rating.toFixed(1)}
-                    </span>
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
-                      <button
-                        key={num}
-                        type="button"
-                        onClick={() => setFormData({ ...formData, rating: num })}
-                        className={`text-lg ${
-                          Math.round(formData.rating) === num ? 'text-[#e8c547]' : 'text-gray-500'
-                        } focus:outline-none transition-colors duration-200`}
-                      >
-                        {num}
-                      </button>
-                    ))}
-                  </div>
-                  
-                  <div className="flex items-center justify-center mt-1">
+              {/* Rating - Only for movies, series, games, and books */}
+              {formData.category !== 'link' && formData.category !== 'music' && (
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Rating (1-10)
+                  </label>
+                  <div className="flex flex-col space-y-2">
                     <div className="flex items-center">
-                      {[...Array(5)].map((_, i) => {
-                        const starValue = (i + 1) * 2;
-                        const isHalfFilled = formData.rating > starValue - 2 && formData.rating < starValue;
-                        const isFilled = formData.rating >= starValue;
-                        
-                        return (
-                          <div key={i} className="relative">
-                            <button
-                              type="button"
-                              onClick={() => setFormData({ ...formData, rating: starValue - 1 })}
-                              className="absolute left-0 w-1/2 h-full z-10 focus:outline-none"
-                              title={`${starValue - 1}`}
-                            ></button>
-                            <button
-                              type="button"
-                              onClick={() => setFormData({ ...formData, rating: starValue })}
-                              className="absolute right-0 w-1/2 h-full z-10 focus:outline-none"
-                              title={`${starValue}`}
-                            ></button>
-                            <span className="text-2xl">
-                              {isHalfFilled ? (
-                                <span className="text-[#e8c547]">
-                                  <i className="fas fa-star-half-alt"></i>
-                                </span>
-                              ) : isFilled ? (
-                                <span className="text-[#e8c547]">
-                                  <i className="fas fa-star"></i>
-                                </span>
-                              ) : (
-                                <span className="text-gray-500">
-                                  <i className="far fa-star"></i>
-                                </span>
-                              )}
-                            </span>
-                          </div>
-                        );
-                      })}
+                      <input
+                        type="range"
+                        min="0.5"
+                        max="10"
+                        step="0.5"
+                        value={formData.rating}
+                        onChange={(e) => setFormData({ ...formData, rating: parseFloat(e.target.value) })}
+                        className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                      />
+                      <span className="ml-3 text-lg font-medium text-[#e8c547]">
+                        {formData.rating.toFixed(1)}
+                      </span>
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
+                        <button
+                          key={num}
+                          type="button"
+                          onClick={() => setFormData({ ...formData, rating: num })}
+                          className={`text-lg ${
+                            Math.round(formData.rating) === num ? 'text-[#e8c547]' : 'text-gray-500'
+                          } focus:outline-none transition-colors duration-200`}
+                        >
+                          {num}
+                        </button>
+                      ))}
+                    </div>
+                    
+                    <div className="flex items-center justify-center mt-1">
+                      <div className="flex items-center">
+                        {[...Array(5)].map((_, i) => {
+                          const starValue = (i + 1) * 2;
+                          const isHalfFilled = formData.rating > starValue - 2 && formData.rating < starValue;
+                          const isFilled = formData.rating >= starValue;
+                          
+                          return (
+                            <div key={i} className="relative">
+                              <button
+                                type="button"
+                                onClick={() => setFormData({ ...formData, rating: starValue - 1 })}
+                                className="absolute left-0 w-1/2 h-full z-10 focus:outline-none"
+                                title={`${starValue - 1}`}
+                              ></button>
+                              <button
+                                type="button"
+                                onClick={() => setFormData({ ...formData, rating: starValue })}
+                                className="absolute right-0 w-1/2 h-full z-10 focus:outline-none"
+                                title={`${starValue}`}
+                              ></button>
+                              <span className="text-2xl">
+                                {isHalfFilled ? (
+                                  <span className="text-[#e8c547]">
+                                    <i className="fas fa-star-half-alt"></i>
+                                  </span>
+                                ) : isFilled ? (
+                                  <span className="text-[#e8c547]">
+                                    <i className="fas fa-star"></i>
+                                  </span>
+                                ) : (
+                                  <span className="text-gray-500">
+                                    <i className="far fa-star"></i>
+                                  </span>
+                                )}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              )}
               
               {renderCategorySpecificFields()}
               

@@ -7,27 +7,28 @@ export const dynamic = 'force-dynamic';
 
 // JWT token doğrulama
 async function verifyToken(token) {
+  if (!token) {
+    return { valid: false, error: 'Token not provided' };
+  }
   try {
     const { payload } = await jwtVerify(
-      token, 
-      new TextEncoder().encode(SECURITY.JWT.SECRET), 
+      token,
+      new TextEncoder().encode(SECURITY.JWT.SECRET),
       { algorithms: [SECURITY.JWT.ALGORITHM] }
     );
     return { valid: true, payload };
   } catch (error) {
+    console.error('Token verification error:', error.message);
     return { valid: false, error: error.message };
   }
 }
 
 // Middleware fonksiyonu
 export async function middleware(request) {
-  // URL'den yolu al
   const { pathname } = request.nextUrl;
-  
-  // Yanıt oluştur
   const response = NextResponse.next();
   
-  // Güvenlik başlıklarını ekle
+  // Apply security headers to all responses
   const securityHeaders = {
     'Content-Security-Policy': SECURITY.HEADERS.CONTENT_SECURITY_POLICY,
     'X-XSS-Protection': SECURITY.HEADERS.XSS_PROTECTION,
@@ -36,65 +37,39 @@ export async function middleware(request) {
     'Referrer-Policy': SECURITY.HEADERS.REFERRER_POLICY,
     'Permissions-Policy': SECURITY.HEADERS.PERMISSIONS_POLICY
   };
-  
-  // Production ortamındaysa HSTS başlığı ekle
+
   if (process.env.NODE_ENV === 'production') {
     securityHeaders['Strict-Transport-Security'] = SECURITY.HEADERS.HSTS;
   }
-  
-  // Başlıkları ekle
+
   Object.entries(securityHeaders).forEach(([key, value]) => {
     response.headers.set(key, value);
   });
+  
+  const sessionCookie = request.cookies.get(SECURITY.SESSION.COOKIE_NAME);
+  const { valid, payload } = await verifyToken(sessionCookie?.value);
 
-  // Özel durumlar - Tamamen bypass edilmesi gereken rotalar
-  if (pathname === '/admin' || pathname === '/api/admin/auth') {
-    return response;
-  }
-  
-  // Session cookie'sini kontrol et
-  const session = request.cookies.get(SECURITY.SESSION.COOKIE_NAME);
-  
-  // Cookie yoksa veya geçersizse
-  if (!session || !session.value) {
-    if (pathname.startsWith('/api/admin/')) {
-      // API rotaları için 401 döndür
+  const isApiRoute = pathname.startsWith('/api/admin/');
+  const isAdminPage = pathname.startsWith('/admin/');
+
+  // Check if user is not authenticated or not admin
+  if (!valid || !payload || payload.role !== 'admin') {
+    if (isApiRoute) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    } else {
-      // Diğer admin sayfaları için login sayfasına yönlendir
+    }
+    if (isAdminPage) {
       const url = new URL('/admin', request.url);
       return NextResponse.redirect(url);
     }
   }
   
-  try {
-    // JWT token'ı doğrula
-    const { valid, payload } = await verifyToken(session.value);
-    
-    if (!valid || payload.role !== 'admin') {
-      if (pathname.startsWith('/api/admin/')) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-      } else {
-        const url = new URL('/admin', request.url);
-        return NextResponse.redirect(url);
-      }
-    }
-    
-    // Kullanıcı bilgilerini request başlıklarına ekle
+  // If valid admin, add user info to headers for downstream components
+  if (valid && payload) {
     response.headers.set('x-user', payload.username);
     response.headers.set('x-user-role', payload.role);
-    
-    return response;
-  } catch (error) {
-    console.error('Middleware authentication error:', error);
-    
-    if (pathname.startsWith('/api/admin/')) {
-      return NextResponse.json({ error: 'Authentication failed' }, { status: 401 });
-    } else {
-      const url = new URL('/admin', request.url);
-      return NextResponse.redirect(url);
-    }
   }
+
+  return response;
 }
 
 // Middleware'in çalışacağı rotaları belirle - ÖNEMLİ!

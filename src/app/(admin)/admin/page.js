@@ -38,11 +38,11 @@ export default function AdminLogin() {
       return;
     }
     
-    // Form doğrulama
-    if (!username || !password) {
-      setError('Lütfen kullanıcı adı ve şifre giriniz.');
-      return;
-    }
+      // Form validation
+  if (!username || !password) {
+    setError('Please enter username and password.');
+    return;
+  }
 
     try {
       setIsLoggingIn(true);
@@ -63,16 +63,16 @@ export default function AdminLogin() {
           router.push('/admin/profile');
         }
       } else {
-        // Başarısız giriş
-        setError(result.error || 'Giriş başarısız. Lütfen bilgilerinizi kontrol edin.');
+        // Failed login
+        setError(result.error || 'Login failed. Please check your credentials.');
         
-        // Kalan deneme sayısını göster
+        // Show remaining attempts
         if (result.remainingAttempts !== undefined) {
           setRemainingAttempts(result.remainingAttempts);
           
-          // Son deneme hakkı kaldıysa uyarı ver
+          // Warn if last attempt
           if (result.remainingAttempts === 1) {
-            setError('Dikkat! Son giriş hakkınız. Başarısız olursa hesabınız 15 dakika kilitlenecek.');
+            setError('Warning! Last login attempt. If failed, your account will be locked for 15 minutes.');
           }
           
           // Hesap kilitlenmişse giriş butonunu devre dışı bırak
@@ -91,7 +91,7 @@ export default function AdminLogin() {
         }
       }
     } catch (err) {
-      setError('Bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
+      setError('An error occurred. Please try again later.');
       console.error('Login error:', err);
     } finally {
       setIsLoggingIn(false);
@@ -115,37 +115,57 @@ export default function AdminLogin() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#0e1e12]">
-        <div className="text-white text-xl">Yükleniyor...</div>
+        <div className="text-white text-xl">Loading...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0e1e12] p-4">
-      <div className="bg-[#132218] p-8 rounded-lg shadow-lg w-full max-w-md border border-[#243e2b]/30">
-        <div className="text-center mb-8">
-          <div className="flex justify-center mb-4">
-            <img src="/images/bergaman-logo.png" alt="Bergaman Logo" className="h-16 w-auto" />
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0e1e12] via-[#132218] to-[#0e1e12] p-4 relative overflow-hidden">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 opacity-5">
+        <div 
+          className="absolute top-0 left-0 w-full h-full"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23e8c547' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+          }}
+        ></div>
+      </div>
+      
+      {/* Animated Background Glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[#e8c547]/10 rounded-full blur-3xl animate-pulse"></div>
+      
+      <div className="w-full max-w-md relative z-10">
+        <div className="bg-[#132218]/90 backdrop-blur-md p-8 rounded-2xl shadow-2xl border border-[#243e2b]/50">
+                  {/* Logo and Title Section */}
+          <div className="mb-8">
+            <div className="flex items-center space-x-3">
+              <div className="relative">
+                <div className="absolute inset-0 bg-[#e8c547]/30 rounded-full blur-lg animate-pulse"></div>
+                <i className="fas fa-dragon text-4xl text-[#e8c547] relative z-10 drop-shadow-lg"></i>
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-[#e8c547] to-[#f4d76b] bg-clip-text text-transparent">
+                  Bergaman
+                </h1>
+                <p className="text-sm text-gray-400 -mt-1">Admin Dashboard</p>
+              </div>
+            </div>
           </div>
-          <h1 className="text-3xl font-bold text-[#e8c547]">Bergaman Portal</h1>
-          <p className="text-gray-400 mt-2">Admin Dashboard</p>
-        </div>
 
-        {error && <Alert type="error" message={error} className="mb-4" />}
+        {error && error.trim() !== '' && <Alert type="error" message={error} className="mb-4" />}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* CSRF Koruması - Form içinde gizli bir input olarak */}
           <input type="hidden" name="csrf_protection" value="1" />
           
           <div>
-            <label htmlFor="username" className="block text-sm font-medium text-gray-300 mb-1">
+            <label htmlFor="username" className="block text-sm font-medium text-gray-300 mb-2">
               Username <span className="text-red-500">*</span>
             </label>
-            <div className="relative">
+            <div className="relative group">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-gray-500">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-                </svg>
+                <i className="fas fa-user text-gray-400 group-focus-within:text-[#e8c547] transition-colors duration-300"></i>
               </div>
               <input
                 id="username"
@@ -155,7 +175,7 @@ export default function AdminLogin() {
                 required
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 rounded bg-[#1a2e20] border border-[#243e2b] text-white focus:outline-none focus:ring-2 focus:ring-[#e8c547]/50 focus:border-[#e8c547]"
+                className="w-full pl-10 pr-4 py-3 rounded-lg bg-[#1a2e20]/80 backdrop-blur-sm border border-[#243e2b]/50 text-white focus:outline-none focus:ring-2 focus:ring-[#e8c547]/50 focus:border-[#e8c547] transition-all duration-300"
                 placeholder="Enter your username"
                 disabled={isLoggingIn || loginDisabled}
               />
@@ -163,14 +183,12 @@ export default function AdminLogin() {
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-1">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
               Password <span className="text-red-500">*</span>
             </label>
-            <div className="relative">
+            <div className="relative group">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-gray-500">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-                </svg>
+                <i className="fas fa-lock text-gray-400 group-focus-within:text-[#e8c547] transition-colors duration-300"></i>
               </div>
               <input
                 id="password"
@@ -180,44 +198,35 @@ export default function AdminLogin() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-10 pr-10 py-2 rounded bg-[#1a2e20] border border-[#243e2b] text-white focus:outline-none focus:ring-2 focus:ring-[#e8c547]/50 focus:border-[#e8c547]"
+                className="w-full pl-10 pr-10 py-3 rounded-lg bg-[#1a2e20]/80 backdrop-blur-sm border border-[#243e2b]/50 text-white focus:outline-none focus:ring-2 focus:ring-[#e8c547]/50 focus:border-[#e8c547] transition-all duration-300"
                 placeholder="Enter your password"
                 disabled={isLoggingIn || loginDisabled}
               />
               <button
                 type="button"
                 onClick={togglePasswordVisibility}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-white"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-[#e8c547] transition-colors duration-300"
               >
-                {showPassword ? (
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
-                  </svg>
-                ) : (
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                )}
+                <i className={showPassword ? "fas fa-eye-slash" : "fas fa-eye"}></i>
               </button>
             </div>
           </div>
 
           {remainingAttempts !== null && remainingAttempts > 0 && (
             <div className="text-amber-400 text-sm">
-              Kalan giriş hakkı: {remainingAttempts}
+              Remaining attempts: {remainingAttempts}
             </div>
           )}
 
           <div>
             <button
               type="submit"
-              className={`w-full py-2 px-4 rounded font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#e8c547] 
+              className={`w-full py-3 px-4 rounded-lg font-semibold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#e8c547] transition-all duration-300 transform hover:scale-[1.02]
                 ${loginDisabled 
                   ? 'bg-gray-600 text-gray-300 cursor-not-allowed' 
                   : isLoggingIn 
                     ? 'bg-[#e8c547]/80 text-gray-900 cursor-wait' 
-                    : 'bg-[#e8c547] hover:bg-[#d4b43e] text-gray-900'}`}
+                    : 'bg-gradient-to-r from-[#e8c547] to-[#f4d76b] hover:from-[#d4b43e] hover:to-[#e8c547] text-gray-900 shadow-lg hover:shadow-[#e8c547]/30'}`}
               disabled={isLoggingIn || loginDisabled}
             >
               {isLoggingIn ? (
@@ -226,32 +235,34 @@ export default function AdminLogin() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  <span>Giriş yapılıyor...</span>
+                  <span>Logging in...</span>
                 </div>
-              ) : loginDisabled ? 'Hesap kilitlendi' : 'Login'}
+              ) : loginDisabled ? 'Account locked' : 'Login'}
             </button>
           </div>
         </form>
 
         {loginDisabled && (
           <div className="mt-4 text-center text-red-400 text-sm">
-            Çok fazla başarısız giriş denemesi. Hesabınız 15 dakika kilitlendi.
+            Too many failed login attempts. Your account is locked for 15 minutes.
           </div>
         )}
 
-        <div className="mt-6 text-center text-sm text-gray-400">
-          <p>Güvenli bir bağlantı üzerinden giriş yapıyorsunuz</p>
-          <p className="mt-1">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 inline-block mr-1">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+        <div className="mt-6 text-center">
+          <div className="inline-flex items-center gap-2 text-sm text-gray-400 bg-[#1a2e20]/50 px-4 py-2 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 text-green-500">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
             </svg>
-            SSL korumalı
-          </p>
+            <span>Secure SSL Connection</span>
+          </div>
         </div>
         
-        <div className="mt-8 text-center text-xs text-gray-500">
-          © 2025 Bergaman Portal
+        <div className="mt-8 text-center">
+          <p className="text-xs text-gray-500">
+            © {new Date().getFullYear()} Bergaman • The Dragon's Domain
+          </p>
         </div>
+      </div>
       </div>
     </div>
   );

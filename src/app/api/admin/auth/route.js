@@ -21,9 +21,9 @@ const lockedAccounts = new Map();
 
 // Gerçek bir uygulamada bu bilgiler veritabanında saklanmalıdır
 const ADMIN_USER = {
-  username: process.env.ADMIN_USERNAME || 'bergaman',
-  // Gerçek hash: tE0&5A3&DBb!c55dm98&
-  passwordHash: '4e2e2a5c8f95f2f3e2a0a9d7d8f3a2e0f3a2e0f3a2e0f3a2e0f3a2e0f3a2e0f3a2e0f3a2e0f3a2e0f3a2e0f3a2e0f3a2e0f3a2e0f3a2e0f3a2e0f3a2e0f3a2e0f3a2e0f3a2e0',
+  username: process.env.ADMIN_USERNAME || 'admin',
+  // Password should be set in environment variables
+  password: process.env.ADMIN_PASSWORD,
   salt: process.env.ADMIN_PASSWORD_SALT || 'bergaman-salt-please-change-in-production'
 };
 
@@ -105,25 +105,31 @@ async function handleLogin(request) {
     
     const { username, password } = await request.json();
 
-    // Şifre kontrolü - hem PBKDF2 hem de bcrypt desteği için
+    // Şifre kontrolü - basit karşılaştırma
     let isPasswordValid = false;
     
-    // Kullanıcı adı kontrolü
-    if (username === ADMIN_USER.username) {
-      // Önce PBKDF2 ile kontrol et
-      const passwordHash = hashPasswordWithPbkdf2(password, ADMIN_USER.salt);
-      if (passwordHash === ADMIN_USER.passwordHash) {
-        isPasswordValid = true;
-      }
-      
-      // Eğer bcrypt ile hashlenmiş şifre varsa ve PBKDF2 kontrolü başarısız olduysa
-      if (!isPasswordValid && process.env.ADMIN_BCRYPT_HASH) {
-        try {
-          isPasswordValid = await verifyPassword(password, process.env.ADMIN_BCRYPT_HASH);
-        } catch (err) {
-          console.error('Bcrypt verification error:', err);
-        }
-      }
+    // Environment variable kontrolü
+    if (!ADMIN_USER.password) {
+      console.error('ADMIN_PASSWORD environment variable is not set');
+      console.error('ADMIN_USER:', { username: ADMIN_USER.username, hasPassword: !!ADMIN_USER.password });
+      return NextResponse.json({ 
+        error: 'Server configuration error' 
+      }, { 
+        status: 500,
+        headers: getSecurityHeadersObject()
+      });
+    }
+    
+    // Debug log
+    console.log('Login attempt:', { 
+      username, 
+      expectedUsername: ADMIN_USER.username,
+      passwordMatch: password === ADMIN_USER.password 
+    });
+    
+    // Kullanıcı adı ve şifre kontrolü
+    if (username === ADMIN_USER.username && password === ADMIN_USER.password) {
+      isPasswordValid = true;
     }
     
     if (isPasswordValid) {

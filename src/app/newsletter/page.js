@@ -101,7 +101,7 @@ export default function NewsletterSignup() {
         <meta name="description" content="Subscribe to Bergaman's newsletter for AI, blockchain, and full-stack development insights." />
       </Head>
       
-      <div className="page-content pt-8">
+              <div className="page-content pt-16">
         <div className="container mx-auto px-4 py-12">
         <div className="max-w-2xl mx-auto">
           

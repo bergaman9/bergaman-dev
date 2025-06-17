@@ -5,7 +5,6 @@ import { useEffect } from 'react';
 import Head from 'next/head';
 import Header from './Header';
 import Footer from './Footer';
-import AuthProvider, { useAuth } from './AuthContext';
 
 function LayoutContent({ children }) {
   const pathname = usePathname();
@@ -24,16 +23,13 @@ function LayoutContent({ children }) {
   return (
     <>
       {!isAdminPage && <Header showHomeLink={showHomeLink} />}
-      <main>{children}</main>
+      {/* Add padding-top to account for fixed header */}
+      <main className={!isAdminPage ? "pt-20" : ""}>{children}</main>
       {!isAdminPage && <Footer />}
     </>
   );
 }
 
 export default function LayoutWrapper({ children }) {
-  return (
-    <AuthProvider>
-      <LayoutContent>{children}</LayoutContent>
-    </AuthProvider>
-  );
+  return <LayoutContent>{children}</LayoutContent>;
 } 

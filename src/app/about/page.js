@@ -9,6 +9,7 @@ import FloatingSkills from "../components/FloatingSkills";
 import Image from 'next/image';
 import { useState } from 'react';
 import Button from "../components/Button";
+import PageHeader from "../components/PageHeader";
 
 // Skill Categories Data
 const skillCategories = [
@@ -246,38 +247,37 @@ export default function About() {
 
       <main className="page-content pt-16 pb-8">
         
-        {/* Hero Section */}
-        <section className="text-center mb-16 fade-in">
-          {/* Profile Image with Enhanced Styling */}
-          <div className="relative mb-8 flex justify-center">
-            <div className="relative inline-block">
-              {/* Animated Background Glow */}
-              <div className="absolute inset-0 bg-gradient-to-r from-[#e8c547]/30 via-[#f4d76b]/20 to-[#e8c547]/30 rounded-full blur-2xl animate-pulse scale-110"></div>
+        {/* Page Header */}
+        <PageHeader
+          title="About Me"
+          subtitle="Electrical & Electronics Engineer | Full-Stack Developer | Tech Enthusiast"
+          icon="fas fa-user"
+          variant="large"
+        />
+
+        {/* Hero Section with Profile Image */}
+        <section className="mb-16 fade-in">
+          <div className="flex justify-center">
+            <div className="relative">
+              {/* Animated Background Effects */}
+              <div className="absolute inset-0 bg-gradient-to-r from-[#e8c547]/20 to-[#f4d76b]/20 rounded-full blur-3xl animate-pulse scale-125"></div>
               
               {/* Main Profile Image */}
-              <Image
-                className="relative rounded-full border-4 border-[#e8c547] shadow-2xl shadow-[#e8c547]/25 mx-auto transition-transform duration-500 hover:scale-105"
-                src="/images/profile/profile.png"
-                alt="Bergaman - Electrical & Electronics Engineer"
-                width={200}
-                height={200}
-                priority
-              />
-              
-              {/* Dragon Icon Overlay */}
-              <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-gradient-to-br from-[#e8c547] to-[#d4b445] rounded-full flex items-center justify-center shadow-lg border-2 border-[#0e1b12]">
-                <i className="fas fa-dragon text-[#0e1b12] text-base animate-pulse"></i>
+              <div className="relative w-48 h-48 sm:w-56 sm:h-56">
+                <Image
+                  className="relative rounded-full border-4 border-[#e8c547]/50 shadow-2xl shadow-[#0e1b12]/50 transition-all duration-700 hover:scale-105 hover:border-[#e8c547]/80"
+                  src="/images/profile/profile.png"
+                  alt="Ömer Faruk Güler - Bergaman"
+                  width={224}
+                  height={224}
+                  priority
+                />
+                
+                {/* Floating Skills */}
+                <FloatingSkills />
               </div>
-
-              {/* Floating Skills around profile */}
-              <FloatingSkills />
             </div>
           </div>
-          
-          <h1 className="text-4xl md:text-5xl font-bold gradient-text mb-4 leading-tight flex items-center justify-center gap-3">
-            <i className="fas fa-user-circle text-[#e8c547]"></i>
-            About Me
-          </h1>
         </section>
 
         {/* Introduction */}
@@ -325,7 +325,7 @@ export default function About() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {skillCategories.map((category, index) => (
-              <div key={index} className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg">
+              <div key={index} className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg hover:border-[#e8c547]/30 transition-all duration-300">
                 <div className="flex items-center mb-4">
                   <i className={`${category.icon} text-[#e8c547] text-2xl mr-3`}></i>
                   <h3 className="text-xl font-semibold text-[#e8c547]">{category.title}</h3>
@@ -368,7 +368,7 @@ export default function About() {
                   <div className="absolute left-6 w-4 h-4 bg-[#e8c547] rounded-full border-4 border-[#0e1b12] z-10 shadow-lg shadow-[#e8c547]/25"></div>
                   
                   {/* Content */}
-                  <div className="ml-20 bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg w-full">
+                  <div className="ml-20 bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg w-full hover:border-[#e8c547]/30 transition-all duration-300">
                     <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-4">
                       <div className="flex-1">
                         <h3 className="text-xl font-semibold text-[#e8c547] mb-2">{exp.title}</h3>
@@ -411,7 +411,7 @@ export default function About() {
                   <div className="absolute left-6 w-4 h-4 bg-[#e8c547] rounded-full border-4 border-[#0e1b12] z-10 shadow-lg shadow-[#e8c547]/25"></div>
                   
                   {/* Content */}
-                  <div className="ml-20 bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg w-full">
+                  <div className="ml-20 bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg w-full hover:border-[#e8c547]/30 transition-all duration-300">
                     <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-4">
                       <div className="flex-1">
                         <h3 className="text-xl font-semibold text-[#e8c547] mb-2">{edu.title}</h3>
@@ -446,8 +446,8 @@ export default function About() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {interests.map((interest, index) => (
-              <div key={index} className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg text-center">
-                <i className={`${interest.icon} text-[#e8c547] text-4xl mb-4 block`}></i>
+              <div key={index} className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg text-center hover:border-[#e8c547]/30 transition-all duration-300 group">
+                <i className={`${interest.icon} text-[#e8c547] text-4xl mb-4 block group-hover:scale-110 transition-transform duration-300`}></i>
                 <h3 className="text-xl font-semibold text-[#e8c547] mb-3">{interest.title}</h3>
                 <p className="text-gray-300 leading-relaxed">{interest.description}</p>
               </div>
@@ -463,8 +463,8 @@ export default function About() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {personalInterests.map((interest, index) => (
-              <div key={index} className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg text-center">
-                <i className={`${interest.icon} text-[#e8c547] text-4xl mb-4 block`}></i>
+              <div key={index} className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg text-center hover:border-[#e8c547]/30 transition-all duration-300 group">
+                <i className={`${interest.icon} text-[#e8c547] text-4xl mb-4 block group-hover:scale-110 transition-transform duration-300`}></i>
                 <h3 className="text-xl font-semibold text-[#e8c547] mb-3">{interest.title}</h3>
                 <p className="text-gray-300 leading-relaxed">{interest.description}</p>
               </div>
@@ -505,12 +505,13 @@ export default function About() {
 
       </main>
 
-      {/* Image Modal */}
-      <ImageModal 
-        src={modalImage?.src || null}
-        alt={modalImage?.alt || 'Image preview'}
-        onClose={closeModal}
-      />
+      {modalImage && (
+        <ImageModal
+          src={modalImage.src}
+          alt={modalImage.alt}
+          onClose={closeModal}
+        />
+      )}
     </div>
   );
 }

@@ -61,7 +61,7 @@ export default function Contact() {
           <meta name="description" content="Contact form is currently disabled." />
         </Head>
 
-        <main className="page-content py-8">
+        <main className="page-content pt-16 pb-8">
           <section className="text-center mb-12 fade-in">
             <h1 className="text-4xl md:text-5xl font-bold gradient-text mb-4 leading-tight">
               <i className="fas fa-envelope-slash mr-3"></i>
@@ -181,7 +181,7 @@ export default function Contact() {
         </div>
       )}
 
-      <main className={`page-content py-8 ${isAdminMode ? 'pt-16' : ''}`}>
+      <main className={`page-content pb-8 ${isAdminMode ? 'pt-24' : 'pt-16'}`}>
         
         {/* Page Header */}
         <PageHeader
@@ -189,8 +189,6 @@ export default function Contact() {
           subtitle="Feel free to reach out for questions, collaborations, tech discussions, or just to say hello! I'm always excited to connect with fellow developers and tech enthusiasts."
           icon="fas fa-envelope"
           variant="large"
-          centered={true}
-          className="text-center mb-12 fade-in"
         />
 
         {/* Contact Content */}

@@ -11,9 +11,7 @@ export default function AdminHeader({ activeTab = 'dashboard', username = 'Admin
   const router = useRouter();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isMoreDropdownOpen, setIsMoreDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
-  const moreDropdownRef = useRef(null);
   const mobileMenuRef = useRef(null);
   const { user, logout } = useContext(AuthContext);
 
@@ -23,27 +21,23 @@ export default function AdminHeader({ activeTab = 'dashboard', username = 'Admin
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsDropdownOpen(false);
       }
-      if (moreDropdownRef.current && !moreDropdownRef.current.contains(event.target)) {
-        setIsMoreDropdownOpen(false);
-      }
       if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target)) {
         setIsMenuOpen(false);
       }
     }
 
-    if (isDropdownOpen || isMenuOpen || isMoreDropdownOpen) {
+    if (isDropdownOpen || isMenuOpen) {
       document.addEventListener('mousedown', handleClickOutside);
       return () => {
         document.removeEventListener('mousedown', handleClickOutside);
       };
     }
-  }, [isDropdownOpen, isMenuOpen, isMoreDropdownOpen]);
+  }, [isDropdownOpen, isMenuOpen]);
 
   const handleLogout = () => {
     if (onLogout && typeof onLogout === 'function') {
       onLogout();
     }
-    
     setIsDropdownOpen(false);
     setIsMenuOpen(false);
   };
@@ -63,32 +57,24 @@ export default function AdminHeader({ activeTab = 'dashboard', username = 'Admin
     if (path === '/admin/categories' && activeTab === 'categories') return true;
     if (path === '/admin/tags' && activeTab === 'tags') return true;
     if (path === '/admin/components-test' && activeTab === 'components-test') return true;
-    if (path === '/admin/logs' && activeTab === 'logs') return true;
     return false;
   };
 
-  // Primary navigation items (always visible)
-  const primaryNavItems = [
+  // Navigation items
+  const navItems = [
     { href: '/admin', icon: 'fas fa-tachometer-alt', label: 'Dashboard' },
     { href: '/admin/posts', icon: 'fas fa-file-alt', label: 'Posts' },
     { href: '/admin/portfolio', icon: 'fas fa-briefcase', label: 'Portfolio' },
+    { href: '/admin/recommendations', icon: 'fas fa-lightbulb', label: 'Recommendations' },
     { href: '/admin/newsletter', icon: 'fas fa-newspaper', label: 'Newsletter' },
-    { href: '/admin/components-test', icon: 'fas fa-puzzle-piece', label: 'Components' },
-    { href: '/admin/logs', icon: 'fas fa-history', label: 'System Logs' }
-  ];
-
-  // Secondary navigation items (in dropdown)
-  const secondaryNavItems = [
     { href: '/admin/comments', icon: 'fas fa-comments', label: 'Comments' },
     { href: '/admin/contacts', icon: 'fas fa-envelope', label: 'Contacts' },
     { href: '/admin/media', icon: 'fas fa-images', label: 'Media' },
-    { href: '/admin/members', icon: 'fas fa-users', label: 'Members' },
-    { href: '/admin/recommendations', icon: 'fas fa-lightbulb', label: 'Recommendations' },
     { href: '/admin/settings', icon: 'fas fa-cog', label: 'Settings' }
   ];
 
   return (
-    <header className="bg-gradient-to-r from-[#0a1a0f]/95 via-[#0e1b12]/95 via-[#1a2e1a]/95 to-[#0a1a0f]/95 border-b border-[#e8c547]/20 backdrop-blur-md sticky top-0 z-20">
+    <header className="bg-gradient-to-r from-[#0a1a0f]/95 via-[#0e1b12]/95 to-[#0a1a0f]/95 border-b border-[#e8c547]/20 backdrop-blur-md sticky top-0 z-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           
@@ -103,18 +89,17 @@ export default function AdminHeader({ activeTab = 'dashboard', username = 'Admin
                 <h1 className="text-lg font-bold bg-gradient-to-r from-[#e8c547] to-[#f4d76b] bg-clip-text text-transparent">
                   Bergaman Portal
                 </h1>
-                <p className="text-xs text-gray-400 -mt-1">Admin Dashboard</p>
               </div>
             </Link>
           </div>
 
-          {/* Primary Navigation */}
-          <nav className="hidden lg:flex items-center space-x-6">
-            {primaryNavItems.map((item) => (
+          {/* Desktop Navigation */}
+          <nav className="hidden lg:flex items-center space-x-1">
+            {navItems.slice(0, 6).map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center space-x-2 ${
+                className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
                   isActive(item.href)
                     ? 'bg-[#e8c547]/20 text-[#e8c547] border border-[#e8c547]/30'
                     : 'text-gray-300 hover:text-[#e8c547] hover:bg-[#e8c547]/10'
@@ -124,51 +109,6 @@ export default function AdminHeader({ activeTab = 'dashboard', username = 'Admin
                 <span>{item.label}</span>
               </Link>
             ))}
-            
-            {/* More Menu Dropdown */}
-            <div className="relative" ref={moreDropdownRef}>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsMoreDropdownOpen(!isMoreDropdownOpen);
-                }}
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center space-x-2 ${
-                  secondaryNavItems.some(item => isActive(item.href))
-                    ? 'bg-[#e8c547]/20 text-[#e8c547] border border-[#e8c547]/30'
-                    : 'text-gray-300 hover:text-[#e8c547] hover:bg-[#e8c547]/10'
-                }`}
-              >
-                <i className="fas fa-ellipsis-h text-sm"></i>
-                <span>More</span>
-                <i className={`fas fa-chevron-down text-xs transition-transform duration-300 ${isMoreDropdownOpen ? 'rotate-180' : ''}`}></i>
-              </button>
-
-              {/* More Menu Dropdown */}
-              {isMoreDropdownOpen && (
-                <div 
-                  className="absolute left-0 mt-2 w-48 bg-[#1a2e1a] border border-[#3e503e]/30 rounded-lg shadow-xl backdrop-blur-md z-50"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <div className="py-2">
-                    {secondaryNavItems.map((item) => (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        className={`flex items-center space-x-3 px-4 py-2 text-sm transition-colors duration-300 ${
-                          isActive(item.href)
-                            ? 'text-[#e8c547] bg-[#e8c547]/10'
-                            : 'text-gray-300 hover:text-[#e8c547] hover:bg-[#e8c547]/10'
-                        }`}
-                        onClick={() => setIsMoreDropdownOpen(false)}
-                      >
-                        <i className={item.icon}></i>
-                        <span>{item.label}</span>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
           </nav>
 
           {/* User Menu */}
@@ -178,7 +118,7 @@ export default function AdminHeader({ activeTab = 'dashboard', username = 'Admin
               <Link
                 href="/"
                 target="_blank"
-                className="p-2 text-gray-400 hover:text-[#e8c547] transition-colors duration-300"
+                className="p-2 text-gray-400 hover:text-[#e8c547] transition-colors duration-300 rounded-lg hover:bg-[#e8c547]/10"
                 title="View Site"
               >
                 <i className="fas fa-external-link-alt text-sm"></i>
@@ -235,10 +175,10 @@ export default function AdminHeader({ activeTab = 'dashboard', username = 'Admin
 
             {/* Mobile Menu Button */}
             <button 
-              className="lg:hidden p-2 text-gray-400 hover:text-[#e8c547] transition-colors duration-300"
+              className="lg:hidden p-2 text-gray-400 hover:text-[#e8c547] transition-colors duration-300 rounded-lg hover:bg-[#e8c547]/10"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
-              <i className="fas fa-bars"></i>
+              <i className={`fas ${isMenuOpen ? 'fa-times' : 'fa-bars'} transition-transform duration-300 ${isMenuOpen ? 'rotate-90' : ''}`}></i>
             </button>
           </div>
         </div>
@@ -247,7 +187,7 @@ export default function AdminHeader({ activeTab = 'dashboard', username = 'Admin
         {isMenuOpen && (
           <div ref={mobileMenuRef} className="lg:hidden border-t border-[#3e503e]/30 py-4">
             <div className="space-y-2">
-              {[...primaryNavItems, ...secondaryNavItems].map((item) => (
+              {navItems.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
@@ -267,7 +207,7 @@ export default function AdminHeader({ activeTab = 'dashboard', username = 'Admin
                 <Link
                   href="/"
                   target="_blank"
-                  className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-300 hover:text-[#e8c547]"
+                  className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-300 hover:text-[#e8c547] transition-colors duration-300"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   <i className="fas fa-external-link-alt"></i>
@@ -276,7 +216,7 @@ export default function AdminHeader({ activeTab = 'dashboard', username = 'Admin
                 
                 <button
                   onClick={handleLogout}
-                  className="flex items-center space-x-3 w-full px-4 py-2 text-sm text-red-400 hover:text-red-300"
+                  className="flex items-center space-x-3 w-full px-4 py-2 text-sm text-red-400 hover:text-red-300 transition-colors duration-300"
                 >
                   <i className="fas fa-sign-out-alt"></i>
                   <span>Logout</span>

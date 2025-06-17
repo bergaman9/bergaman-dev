@@ -127,7 +127,7 @@ export default function Home() {
 
   const fetchBlogPosts = async () => {
     try {
-      const response = await fetch('/api/admin/posts?limit=3&published=true');
+      const response = await fetch('/api/posts?limit=3');
       const data = await response.json();
       
       if (data.posts) {
@@ -164,7 +164,7 @@ export default function Home() {
   const fetchRecommendations = async () => {
     try {
       setLoadingRecommendations(true);
-      const response = await fetch('/api/recommendations?featured=true&limit=4');
+      const response = await fetch('/api/recommendations');
       
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
@@ -173,7 +173,9 @@ export default function Home() {
       const data = await response.json();
       
       if (data.success && data.recommendations) {
-        setRecommendations(data.recommendations);
+        // Shuffle array and pick 3 random items
+        const shuffled = [...data.recommendations].sort(() => 0.5 - Math.random());
+        setRecommendations(shuffled.slice(0, 3));
       }
     } catch (error) {
       console.error('Error fetching recommendations:', error);
@@ -230,60 +232,98 @@ export default function Home() {
       <main className="flex-grow">
         <div className="bg-grid-pattern-dark">
           <div className="page-container">
-            <div className="page-content">
-              {/* Hero Section */}
-              <section className="text-center py-16 md:py-24 fade-in">
-                {/* Profile Image with Enhanced Styling */}
+            <div className="page-content pt-12">
+              {/* Hero Section - Enhanced */}
+              <section className="text-center py-16 md:py-24 fade-in relative">
+                {/* Background Pattern */}
+                <div className="absolute inset-0 opacity-5">
+                  <div className="absolute inset-0" style={{
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23e8c547' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+                  }}></div>
+                </div>
+
+                {/* Profile Image - Cleaner Design */}
                 <div className="relative mb-8 flex justify-center">
-                  <div className="relative inline-block">
-                    {/* Animated Background Glow */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#e8c547]/30 via-[#f4d76b]/20 to-[#e8c547]/30 rounded-full blur-2xl animate-pulse scale-110"></div>
+                  <div className="relative">
+                    {/* Animated Background Effects */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#e8c547]/15 to-[#f4d76b]/15 rounded-full blur-2xl animate-pulse scale-125"></div>
                     
                     {/* Main Profile Image */}
-                    <div className="relative w-48 h-48 sm:w-56 sm:h-56 lg:w-64 lg:h-64 mx-auto">
-                      <div className="relative w-full h-full group">
-                        <Image
-                          className="relative rounded-full border-4 border-[#e8c547] shadow-2xl shadow-[#e8c547]/25 mx-auto transition-transform duration-500 hover:scale-105"
-                          src="/images/profile/profile.png"
-                          alt="Bergaman - The Dragon's Domain"
-                          width={256}
-                          height={256}
-                          priority
-                        />
-                        
-                        {/* Dragon Icon Overlay */}
-                        <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-gradient-to-br from-[#e8c547] to-[#d4b445] rounded-full flex items-center justify-center shadow-lg border-2 border-[#0e1b12]">
-                          <i className="fas fa-dragon text-[#0e1b12] text-base animate-pulse"></i>
-                        </div>
-
-                        {/* Floating Skills around profile */}
-                        <FloatingSkills />
-                      </div>
+                    <div className="relative w-48 h-48 sm:w-56 sm:h-56 lg:w-64 lg:h-64">
+                      <Image
+                        className="relative rounded-full border-4 border-[#e8c547]/40 shadow-xl shadow-[#0e1b12]/30 transition-all duration-500 hover:scale-105 hover:border-[#e8c547]/60"
+                        src="/images/profile/profile.png"
+                        alt="Ömer Faruk Güler - Bergaman"
+                        width={256}
+                        height={256}
+                        priority
+                      />
+                      
+                      {/* Floating Skills - Enhanced positioning */}
+                      <FloatingSkills />
                     </div>
                   </div>
                 </div>
 
-                <h1 className="text-4xl md:text-5xl font-bold gradient-text mb-4 leading-tight">
-                  Bergaman - The Dragon&apos;s Domain
-                </h1>
-                <p className="max-w-3xl mx-auto text-gray-300 mb-8">
-                  Electrical & Electronics Engineer | Full-Stack Developer | AI Enthusiast
-                </p>
-                <p className="text-gray-300 mb-8 max-w-3xl mx-auto">
-                  Crafting innovative technical solutions with the strength and wisdom of a dragon. 
-                  Specializing in embedded systems, web development, and artificial intelligence.
-                </p>
-                
-                {/* CTA Buttons */}
-                <div className="flex flex-wrap gap-4 justify-center">
-                  <Button href="/portfolio"><i className="fas fa-briefcase mr-2"></i>View Portfolio</Button>
-                  <Button href="/about" variant="secondary"><i className="fas fa-user mr-2"></i>About Me</Button>
-                  <Button href="/contact" variant="secondary"><i className="fas fa-envelope mr-2"></i>Get in Touch</Button>
+                {/* Text Content - Enhanced Typography */}
+                <div className="relative z-10">
+                  <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
+                    <span className="bg-gradient-to-r from-[#e8c547] via-[#f4d76b] to-[#e8c547] bg-clip-text text-transparent animate-gradient bg-300">
+                      Bergaman
+                    </span>
+                  </h1>
+                  
+                  <p className="text-xl md:text-2xl text-gray-300 mb-6 font-light">
+                    The Dragon's Domain
+                  </p>
+                  
+                  <div className="flex flex-wrap justify-center items-center gap-3 text-gray-400 mb-6">
+                    <span className="flex items-center gap-2">
+                      <i className="fas fa-bolt text-[#e8c547]"></i>
+                      Electrical & Electronics Engineer
+                    </span>
+                    <span className="hidden sm:inline text-gray-600">•</span>
+                    <span className="flex items-center gap-2">
+                      <i className="fas fa-code text-[#e8c547]"></i>
+                      Full-Stack Developer
+                    </span>
+                    <span className="hidden sm:inline text-gray-600">•</span>
+                    <span className="flex items-center gap-2">
+                      <i className="fas fa-brain text-[#e8c547]"></i>
+                      AI Enthusiast
+                    </span>
+                  </div>
+                  
+                  <p className="text-lg text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
+                    Crafting innovative technical solutions with the strength and wisdom of a dragon. 
+                    Specializing in embedded systems, web development, and artificial intelligence.
+                  </p>
+                  
+                  {/* CTA Buttons - Enhanced */}
+                  <div className="flex flex-wrap gap-4 justify-center">
+                    <Button href="/portfolio" size="lg" className="group">
+                      <i className="fas fa-briefcase mr-2 group-hover:rotate-12 transition-transform"></i>
+                      View Portfolio
+                    </Button>
+                    <Button href="/about" variant="secondary" size="lg" className="group">
+                      <i className="fas fa-user mr-2 group-hover:scale-110 transition-transform"></i>
+                      About Me
+                    </Button>
+                    <Button href="/contact" variant="secondary" size="lg" className="group">
+                      <i className="fas fa-envelope mr-2 group-hover:translate-x-1 transition-transform"></i>
+                      Get in Touch
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Scroll Indicator */}
+                <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+                  <i className="fas fa-chevron-down text-2xl text-[#e8c547]/50"></i>
                 </div>
               </section>
 
               {/* Latest Blog Posts */}
-              <section className="mb-16 slide-in-right">
+              <section className="mb-12 slide-in-right">
                 <h2 className="text-3xl font-bold gradient-text mb-6 text-center">
                   <i className="fas fa-blog mr-3"></i>
                   Latest Blog Posts
@@ -325,7 +365,7 @@ export default function Home() {
               </section>
 
               {/* Featured Projects */}
-              <section className="mb-16 slide-in-left">
+              <section className="mb-12 slide-in-left">
                 <h2 className="text-3xl font-bold gradient-text mb-8 text-center">
                   <i className="fas fa-star mr-3"></i>
                   Featured Projects
@@ -352,7 +392,7 @@ export default function Home() {
               </section>
 
               {/* Recommendations Section */}
-              <section className="mb-16 slide-in-right">
+              <section className="mb-12 slide-in-right">
                 <h2 className="text-3xl font-bold gradient-text mb-8 text-center">
                   <i className="fas fa-thumbs-up mr-3"></i>
                   My Recommendations
@@ -365,8 +405,8 @@ export default function Home() {
                   </div>
                 ) : recommendations.length > 0 ? (
                   <>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {recommendations.slice(0, 4).map((rec) => (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {recommendations.map((rec) => (
                         <RecommendationCard
                           key={rec._id}
                           recommendation={rec}
@@ -385,7 +425,7 @@ export default function Home() {
               </section>
 
               {/* Technical Skills */}
-              <section className="mb-16 slide-in-right">
+              <section className="mb-12 slide-in-right">
                 <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-8 rounded-lg">
                   <h2 className="text-3xl font-bold gradient-text mb-8 text-center">
                     <i className="fas fa-code mr-3"></i>
@@ -421,7 +461,7 @@ export default function Home() {
               </section>
 
               {/* Interests & Passions */}
-              <section className="mb-16 slide-in-left">
+              <section className="mb-12 slide-in-left">
                 <h2 className="text-3xl font-bold gradient-text mb-8 text-center">
                   <i className="fas fa-heart mr-3"></i>
                   Interests & Passions
@@ -438,7 +478,7 @@ export default function Home() {
               </section>
 
               {/* Contact CTA */}
-              <section className="mb-16 slide-in-right">
+              <section className="mb-12 slide-in-right">
                 <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-8 rounded-lg text-center">
                   <h2 className="text-3xl font-bold gradient-text mb-4">
                     <i className="fas fa-handshake mr-3"></i>

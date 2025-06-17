@@ -112,7 +112,7 @@ export default function Portfolio() {
   if (loading) {
     return (
       <div className="min-h-screen page-container">
-        <div className="page-content">
+        <div className="page-content pt-16 pb-8">
           <PageHeader 
             title="Portfolio"
             subtitle="Loading my projects and work..."
@@ -130,7 +130,7 @@ export default function Portfolio() {
   if (error) {
     return (
       <div className="min-h-screen page-container">
-        <div className="page-content">
+        <div className="page-content pt-16 pb-8">
           <PageHeader 
             title="Portfolio"
             subtitle={`Error: ${error}`}
@@ -151,7 +151,7 @@ export default function Portfolio() {
 
   return (
     <div className="min-h-screen page-container">
-      <div className="page-content">
+      <div className="page-content pt-16 pb-8">
         {/* Header */}
         <PageHeader 
           title="Portfolio"

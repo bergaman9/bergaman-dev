@@ -89,7 +89,7 @@ export default function Select({
             {selectedOption ? selectedOption.label : placeholder}
           </span>
         </div>
-        <i className={`fas fa-chevron-down text-xs transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}></i>
+        <i className={`fas fa-chevron-down text-xs transition-transform duration-300 ml-2 ${isOpen ? 'rotate-180' : ''}`}></i>
       </button>
       
       {isOpen && (
