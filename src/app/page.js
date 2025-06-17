@@ -12,6 +12,7 @@ import Card from './components/Card';
 import Button from './components/Button';
 import BlogPostCard from './components/BlogPostCard';
 import ProjectCard from './components/ProjectCard';
+import RecommendationCard from './components/RecommendationCard';
 
 export default function Home() {
   const [blogPosts, setBlogPosts] = useState([]);
@@ -361,50 +362,12 @@ export default function Home() {
                   </div>
                 ) : recommendations.length > 0 ? (
                   <>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {recommendations.slice(0, 4).map((rec) => (
-                        <Card key={rec._id || rec.id} className="h-full">
-                          <div className="relative h-48 bg-gradient-to-br from-[#2e3d29] to-[#0e1b12] flex items-center justify-center overflow-hidden mx-2 mt-2 rounded-lg">
-                            <Image 
-                              src={rec.image || `/images/portfolio/web-placeholder.svg`}
-                              alt={rec.title}
-                              fill
-                              className="object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
-                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                            />
-                            <div className="absolute top-2 right-2">
-                              <div className="bg-[#e8c547] text-[#0e1b12] w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm">
-                                {rec.rating ? Number(rec.rating).toFixed(1) : "?"}
-                              </div>
-                            </div>
-                            <div className="absolute top-2 left-2">
-                              <span className="px-2 py-1 bg-[#0e1b12]/80 text-gray-300 rounded-full text-xs capitalize flex items-center gap-1">
-                                {rec.category === 'movie' && <i className="fas fa-film"></i>}
-                                {rec.category === 'game' && <i className="fas fa-gamepad"></i>}
-                                {rec.category === 'book' && <i className="fas fa-book"></i>}
-                                {rec.category === 'music' && <i className="fas fa-music"></i>}
-                                {rec.category === 'series' && <i className="fas fa-tv"></i>}
-                                {rec.category === 'link' && <i className="fas fa-link"></i>}
-                                {rec.category}
-                              </span>
-                            </div>
-                          </div>
-                          <div className="p-3">
-                            <h3 className="text-lg font-bold gradient-text mb-2">{rec.title}</h3>
-                            <p className="text-gray-300 mb-3 text-sm line-clamp-2">{rec.description}</p>
-                            
-                            {rec.category === 'link' && rec.url && (
-                              <Button 
-                                href={rec.url}
-                                variant="secondary"
-                                size="sm"
-                                className="w-full"
-                              >
-                                <i className="fas fa-external-link-alt mr-1"></i>Visit
-                              </Button>
-                            )}
-                          </div>
-                        </Card>
+                        <RecommendationCard
+                          key={rec._id}
+                          recommendation={rec}
+                        />
                       ))}
                     </div>
                     <div className="text-center mt-8">
