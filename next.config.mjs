@@ -1,6 +1,8 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
-import { SECURITY } from './src/lib/constants.js';
+// CommonJS modülünden named export'ları import etmek için önerilen yöntem
+import pkg from './src/lib/constants.js';
+const { SECURITY } = pkg;
 
 // Read version from package.json
 const packageJson = JSON.parse(readFileSync(join(process.cwd(), 'package.json'), 'utf8'));
