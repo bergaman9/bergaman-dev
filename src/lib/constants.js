@@ -193,8 +193,8 @@ export const SECURITY = {
   
   // Korunan rotalar
   PROTECTED_ROUTES: {
-    ADMIN: ['/admin/', '/api/admin/'],
-    PUBLIC: ['/api/admin/auth', '/admin'],
+    ADMIN: ['/admin/dashboard', '/admin/portfolio', '/admin/posts', '/api/admin/portfolio', '/api/admin/posts'],
+    PUBLIC: ['/admin', '/api/admin/auth'],
   },
   
   // CORS ayarları
