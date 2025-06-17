@@ -1,32 +1,28 @@
 "use client";
 
 import { usePathname } from 'next/navigation';
+import { useEffect } from 'react';
+import Head from 'next/head';
 import Header from './Header';
 import Footer from './Footer';
-import { AuthProvider, useAuth } from './AuthContext';
+import AuthProvider, { useAuth } from './AuthContext';
 
 function LayoutContent({ children }) {
   const pathname = usePathname();
-  const { isAuthenticated, isLoading } = useAuth();
-  const isAdminRoute = pathname?.startsWith('/admin');
 
-  // For admin routes, hide header/footer for security reasons
-  if (isAdminRoute) {
-    return (
-      <div className="min-h-screen bg-[#0e1b12]">
-        {children}
-      </div>
-    );
-  }
+  // Scroll to top on route change
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
 
-  // For normal routes, always render with header and footer
+  // Don't render header/footer on admin pages
+  const isAdminPage = pathname?.startsWith('/admin');
+
   return (
     <>
-      <Header />
-      <main className="flex-1">
-        {children}
-      </main>
-      <Footer />
+      {!isAdminPage && <Header />}
+      <main>{children}</main>
+      {!isAdminPage && <Footer />}
     </>
   );
 }
@@ -34,9 +30,7 @@ function LayoutContent({ children }) {
 export default function LayoutWrapper({ children }) {
   return (
     <AuthProvider>
-      <LayoutContent>
-        {children}
-      </LayoutContent>
+      <LayoutContent>{children}</LayoutContent>
     </AuthProvider>
   );
 } 
