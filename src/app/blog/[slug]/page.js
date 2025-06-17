@@ -1,5 +1,8 @@
 "use client";
 
+// Force dynamic rendering to prevent initialization errors
+export const dynamic = 'force-dynamic';
+
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';

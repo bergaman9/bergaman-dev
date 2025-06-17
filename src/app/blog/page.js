@@ -1,5 +1,8 @@
 "use client";
 
+// Force dynamic rendering to prevent initialization errors
+export const dynamic = 'force-dynamic';
+
 import Head from 'next/head';
 import Link from "next/link";
 import BlogImageGenerator from "../components/BlogImageGenerator";
