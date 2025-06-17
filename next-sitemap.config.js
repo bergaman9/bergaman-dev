@@ -1,5 +1,5 @@
 /** @type {import('next-sitemap').IConfig} */
-module.exports = {
+const config = {
   siteUrl: process.env.SITE_URL || 'https://bergaman.dev',
   generateRobotsTxt: true,
   exclude: ['/admin/*', '/api/*'],
@@ -56,4 +56,6 @@ module.exports = {
       lastmod: new Date().toISOString(),
     }
   },
-} 
+};
+
+export default config; 
