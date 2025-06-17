@@ -51,6 +51,7 @@
     "dotenv": "^16.5.0",
     "express-rate-limit": "^7.5.0",
     "helmet": "^8.1.0",
+    "highlight.js": "^11.11.1",
     "jose": "^6.0.11",
     "marked": "^15.0.12",
     "mongodb": "^6.17.0",
@@ -58,6 +59,7 @@
     "next": "^15.0.3",
     "next-sitemap": "^4.2.3",
     "nodemailer": "^7.0.3",
+    "prismjs": "^1.30.0",
     "react": "^18",
     "react-circular-progressbar": "^2.2.0",
     "react-dom": "^18",
@@ -65,7 +67,6 @@
     "react-icons": "^5.3.0",
     "react-markdown": "^10.1.0",
     "react-simple-image-viewer": "^1.2.2",
-    "react-syntax-highlighter": "^15.6.1",
     "rehype-highlight": "^7.0.2",
     "rehype-raw": "^7.0.0",
     "remark-gfm": "^4.0.1"
