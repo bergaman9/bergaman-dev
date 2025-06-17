@@ -20,7 +20,7 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '18'
+        node-version: '20'
         cache: 'npm'
 
     - name: Install dependencies
@@ -58,21 +58,10 @@ jobs:
         echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
         echo "New version: $NEW_VERSION"
 
-    - name: Update environment variable
+    - name: Update environment example
       run: |
         NEW_VERSION=${{ steps.new_version.outputs.version }}
-        # Update .env.local if it exists
-        if [ -f .env.local ]; then
-          if grep -q "NEXT_PUBLIC_APP_VERSION" .env.local; then
-            sed -i "s/NEXT_PUBLIC_APP_VERSION=.*/NEXT_PUBLIC_APP_VERSION=$NEW_VERSION/" .env.local
-          else
-            echo "NEXT_PUBLIC_APP_VERSION=$NEW_VERSION" >> .env.local
-          fi
-        else
-          echo "NEXT_PUBLIC_APP_VERSION=$NEW_VERSION" > .env.local
-        fi
-        
-        # Also update .env.example if it exists
+        # Update .env.example if it exists
         if [ -f .env.example ]; then
           if grep -q "NEXT_PUBLIC_APP_VERSION" .env.example; then
             sed -i "s/NEXT_PUBLIC_APP_VERSION=.*/NEXT_PUBLIC_APP_VERSION=$NEW_VERSION/" .env.example
@@ -83,16 +72,28 @@ jobs:
 
     - name: Build project
       run: npm run build
+      env:
+        # Add environment variables needed for build
+        MONGODB_URI: ${{ secrets.MONGODB_URI || 'mongodb://localhost:27017/bergaman-dev' }}
+        NEXT_PUBLIC_SITE_URL: https://bergaman.dev
+        NEXT_PUBLIC_APP_VERSION: ${{ steps.new_version.outputs.version }}
 
     - name: Run tests (if available)
       run: npm test --if-present
 
-    - name: Commit version changes
+    - name: Configure Git
       if: github.ref == 'refs/heads/main'
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
-        git add package.json package-lock.json .env.local .env.example
+        # Disable advice about ignored files
+        git config --global advice.addIgnoredFile false
+
+    - name: Commit version changes
+      if: github.ref == 'refs/heads/main'
+      run: |
+        # Only add files that are not ignored
+        git add package.json package-lock.json .env.example
         git commit -m "chore: bump version to ${{ steps.new_version.outputs.version }}" || exit 0
 
     - name: Create Git tag

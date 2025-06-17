@@ -2,16 +2,6 @@
 
 import { useState, useEffect } from 'react';
 
-// Simple HTML sanitization function
-const sanitizeInput = (input) => {
-  return input
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#x27;')
-    .replace(/\//g, '&#x2F;');
-};
-
 // Email validation
 const isValidEmail = (email) => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -79,7 +69,6 @@ export default function CommentSystem({ postSlug, onCommentCountUpdate }) {
       });
 
       if (response.ok) {
-        const data = await response.json();
         // Refresh comments list
         const refreshResponse = await fetch(`/api/comments?postSlug=${postSlug}`);
         if (refreshResponse.ok) {
@@ -160,7 +149,7 @@ export default function CommentSystem({ postSlug, onCommentCountUpdate }) {
       // Reset form
       setNewComment({ name: '', email: '', message: '' });
       setErrors({});
-    } catch (error) {
+    } catch {
       alert('Failed to post comment. Please try again.');
     } finally {
       setIsSubmitting(false);

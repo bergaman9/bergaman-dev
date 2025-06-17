@@ -9,7 +9,7 @@ export async function GET() {
     let files = [];
     try {
       files = await readdir(uploadsDir);
-    } catch (error) {
+    } catch {
       // Directory doesn't exist or is empty
       return NextResponse.json({ images: [] });
     }

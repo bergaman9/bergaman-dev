@@ -4,7 +4,7 @@ import Contact from '../../../../models/Contact';
 
 export async function POST(request) {
   try {
-    const { contactId, message, senderName, senderEmail, replyToken } = await request.json();
+    const { contactId, message, senderName, senderEmail } = await request.json();
 
     if (!contactId || !message || !senderName || !senderEmail) {
       return NextResponse.json(
