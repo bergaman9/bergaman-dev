@@ -1,6 +1,6 @@
 # 🐉 Bergaman Portfolio - The Dragon's Domain
 
-[![Version](https://img.shields.io/badge/version-2.4.0-blue.svg)](https://github.com/bergaman9/bergaman-dev)
+[![Version](https://img.shields.io/badge/version-2.5.5-blue.svg)](https://github.com/bergaman9/bergaman-dev)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/bergaman9/bergaman-dev/blob/main/LICENSE)
 [![Next.js](https://img.shields.io/badge/Next.js-15.3.3-black.svg)](https://nextjs.org/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-green.svg)](https://www.mongodb.com/)
@@ -9,7 +9,7 @@
 
 ## Overview
 
-Bergaman Portal is a personal portfolio, blog, and recommendation platform built with Next.js 14, React, and MongoDB. The application features a responsive design, admin dashboard, and various interactive components.
+Bergaman Portal is a personal portfolio, blog, and recommendation platform built with Next.js 15, React, and MongoDB. The application features a responsive design, admin dashboard, and various interactive components.
 
 ## Features
 
@@ -26,7 +26,7 @@ Bergaman Portal is a personal portfolio, blog, and recommendation platform built
 
 ## Tech Stack
 
-- **Frontend**: Next.js 14, React, TailwindCSS
+- **Frontend**: Next.js 15, React, TailwindCSS
 - **Backend**: Next.js API Routes
 - **Database**: MongoDB with Mongoose ODM
 - **Authentication**: JWT, HTTP-only cookies
@@ -118,7 +118,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 🌟 **Live Demo**
 
-- **🚀 Current Version (v2.4.0)**: [bergaman.dev](https://bergaman.dev)
+- **🚀 Current Version (v2.5.5)**: [bergaman.dev](https://bergaman.dev)
 - **🕰️ Legacy Version (v1.0.0)**: [bergaman-v1.vercel.app](https://bergaman-v1.vercel.app/)
 
 ## ✨ **Key Features**
@@ -379,7 +379,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 **Ömer (Bergaman)**
 - 🌐 Website: [bergaman.dev](https://bergaman.dev)
 - 🐙 GitHub: [@bergaman9](https://github.com/bergaman9)
-- 💼 LinkedIn: [Ömer Güler](https://www.linkedin.com/in/omerguler/)
 - 📧 Email: contact@bergaman.dev
 
 ## 🙏 **Acknowledgments**
@@ -392,7 +391,16 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📊 **Version History**
 
-### **v2.1.1** (Current)
+### **v2.5.5** (Current)
+- 🛠️ Fixed initialization errors in Next.js server components
+- 🔧 Improved version handling in dynamic environments
+- 🚀 Updated to Next.js 15.3.3 with Turbopack support
+- 🎨 Enhanced middleware with force-dynamic rendering
+- 📊 Improved recommendation system with new data structure
+- 🔒 Fixed security issues in middleware authentication
+- ⚡ Performance optimizations for faster loading times
+
+### **v2.1.1** (Previous)
 - 📧 Complete newsletter system with subscriber management
 - 📨 Email campaign creation and sending functionality
 - 📊 Real-time newsletter statistics and analytics
