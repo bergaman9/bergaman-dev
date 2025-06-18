@@ -1,6 +1,6 @@
 {
   "name": "bergaman-dev",
-  "version": "2.5.13",
+  "version": "2.6.0",
   "description": "🐉 The Dragon's Domain - A cutting-edge portfolio website with MongoDB backend, admin panel, and real-time content management",
   "private": true,
   "type": "module",
