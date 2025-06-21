@@ -4,7 +4,6 @@
 export const dynamic = 'force-dynamic';
 
 import { useState, useEffect } from 'react';
-import Image from 'next/image';
 import ImageModal from '../components/ImageModal';
 import Card from '../components/Card';
 import Button from '../components/Button';
@@ -14,7 +13,6 @@ import Badge from '../components/Badge';
 import SafeImage from '../components/SafeImage';
 import Select from '../components/Select';
 import PageContainer from '../components/PageContainer';
-import Loading from '../components/Loading';
 
 export default function Portfolio() {
   const [portfolioItems, setPortfolioItems] = useState([]);

@@ -1,7 +1,5 @@
 "use client";
 
-import Link from 'next/link';
-import Button from './Button';
 import Tooltip from './Tooltip';
 import SafeImage from './SafeImage';
 
@@ -58,11 +56,6 @@ export default function ProjectCard({ project, isAdmin = false, onEdit, onDelete
   const formattedDate = project.createdAt 
     ? new Date(project.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })
     : null;
-    
-  // Get extra technologies for tooltip
-  const displayedTechs = project.technologies?.slice(0, 3) || [];
-  const extraTechs = project.technologies?.slice(3) || [];
-  const extraTechsString = extraTechs.join(', ');
 
   // Debug log for image path
   console.log('Project image path:', project.image, 'for project:', project.title);
