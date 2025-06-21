@@ -37,7 +37,21 @@ export async function GET() {
         // Post Security Settings
         allowPasswordProtected: true,
         allowMemberOnly: true,
-        defaultPostVisibility: 'public'
+        defaultPostVisibility: 'public',
+        // Author Profile Settings
+        authorProfile: {
+          name: 'Bergaman',
+          bio: 'Electrical & Electronics Engineer specializing in full-stack development and AI technologies.',
+          about: '',
+          avatar: '/images/profile/profile.png',
+          showAuthorBio: true,
+          social: {
+            github: 'https://github.com/bergaman9',
+            linkedin: 'https://www.linkedin.com/in/omerguler/',
+            twitter: '',
+            website: 'https://bergaman.dev'
+          }
+        }
       };
       return NextResponse.json(defaultSettings);
     }

@@ -336,7 +336,7 @@ export default function NewRecommendationPage() {
                         ))}
                       </div>
                       
-                      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 max-h-64 overflow-y-auto p-1">
+                      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 max-h-64 overflow-y-auto p-1 modal-scrollbar">
                         {(filter === 'all' ? getAllImages() : predefinedImages[filter] || []).map((img, index) => (
                           <div 
                             key={index} 

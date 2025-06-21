@@ -10,6 +10,7 @@ import Image from 'next/image';
 import { useState } from 'react';
 import Button from "../components/Button";
 import PageHeader from "../components/PageHeader";
+import PageContainer from "../components/PageContainer";
 
 // Skill Categories Data
 const skillCategories = [
@@ -78,10 +79,10 @@ const skillCategories = [
 // Experience Data - Updated with correct information
 const experiences = [
   {
-    title: "Bergasoft Projects",
-    company: "Personal Software Development",
+    title: "Founder",
+    company: "Bergasoft",
     period: "2024 - Present (Until August 2025)",
-    description: "Developing innovative software solutions and technology projects as personal hobby/research initiatives. Focus on AI-powered applications, web development, and emerging technologies. Building knowledge and experience through hands-on projects.",
+    description: "Developing innovative software solutions and technology projects as semi-professional initiatives. While not primarily profit-driven, gaining valuable experience and building practical projects. Focus on AI-powered applications, web development, and emerging technologies.",
     technologies: ["Python", "C#", "React", "Next.js", "AI Tools", "Web Development"],
     type: "personal"
   },
@@ -94,19 +95,19 @@ const experiences = [
     type: "freelance"
   },
   {
-    title: "Engineering Intern",
+    title: "Intern",
     company: "Ministry of Environment, Urbanization and Climate Change",
     period: "Jun 2023 - Jul 2023",
-    description: "Completed mandatory engineering internship in Yalova, Turkey. Gained insights into government sector operations and environmental engineering practices.",
-    technologies: ["Environmental Engineering", "Government Systems", "Technical Documentation"],
+    description: "Completed building inspection internship in Yalova, Turkey. Gained insights into government sector operations, structural inspections, and environmental engineering practices.",
+    technologies: ["Building Inspection", "Government Systems", "Technical Documentation"],
     type: "internship"
   },
   {
-    title: "Electronics Intern", 
+    title: "Intern", 
     company: "Birfen Elektrik&Elektronik",
     period: "Aug 2022 - Sep 2022",
-    description: "Hands-on electrical and electronics engineering internship in Yalova, Turkey. Practical experience with electrical systems and electronic components.",
-    technologies: ["Electrical Systems", "Electronics", "Circuit Analysis", "Technical Troubleshooting"],
+    description: "Workshop internship at a panel production and automation company in Yalova, Turkey. Gained hands-on experience with electrical panels, automation systems, and electronic components.",
+    technologies: ["Panel Production", "Automation Systems", "Circuit Analysis", "Technical Troubleshooting"],
     type: "internship"
   }
 ];
@@ -230,7 +231,7 @@ export default function About() {
   };
 
   return (
-    <div className="min-h-screen text-[#d1d5db] page-container">
+    <PageContainer>
       <Head>
         <title>About Me - Bergaman | Electrical & Electronics Engineer & Full Stack Developer</title>
         <meta name="description" content="Learn more about Bergaman - Electrical & Electronics Engineer specializing in innovative solutions, full-stack development, and technical projects based in İstanbul, Turkey." />
@@ -245,12 +246,12 @@ export default function About() {
         <link rel="canonical" href="https://bergaman.dev/about" />
       </Head>
 
-      <main className="page-content pt-16 pb-8">
+      <main>
         
         {/* Page Header */}
         <PageHeader
           title="About Me"
-          subtitle="Electrical & Electronics Engineer | Full-Stack Developer | Tech Enthusiast"
+          subtitle="Passionate engineer transforming ideas into digital solutions with a focus on innovation and continuous learning"
           icon="fas fa-user"
           variant="large"
         />
@@ -512,6 +513,6 @@ export default function About() {
           onClose={closeModal}
         />
       )}
-    </div>
+    </PageContainer>
   );
 }

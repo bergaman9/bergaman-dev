@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Head from 'next/head';
 import PageHeader from '../../../components/PageHeader';
+import Input from '../../../components/Input';
+import Select from '../../../components/Select';
 
 export default function AdminPosts() {
   const [posts, setPosts] = useState([]);
@@ -270,31 +272,32 @@ export default function AdminPosts() {
             <label htmlFor="search" className="block text-sm font-medium text-gray-300 mb-2">
               Search Posts
             </label>
-            <input
+            <Input
               type="text"
               id="search"
               value={searchTerm}
               onChange={handleSearch}
               placeholder="Search by title, description, or content..."
-              className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] placeholder-gray-400 focus:border-[#e8c547]/50 focus:outline-none transition-colors duration-300"
+              icon="fas fa-search"
+              className="w-full"
             />
           </div>
-          <div className="md:w-48">
+          <div className="md:w-64">
             <label htmlFor="category" className="block text-sm font-medium text-gray-300 mb-2">
               Category
             </label>
-            <select
+            <Select
               id="category"
               value={selectedCategory}
               onChange={handleCategoryChange}
-              className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] focus:border-[#e8c547]/50 focus:outline-none transition-colors duration-300"
+              className="w-full"
             >
               {categories.map(category => (
                 <option key={category} value={category}>
                   {category === 'all' ? 'All Categories' : formatCategoryName(category)}
                 </option>
               ))}
-            </select>
+            </Select>
           </div>
         </div>
 

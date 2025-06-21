@@ -1,34 +1,45 @@
 import { NextResponse } from 'next/server';
-import { connectDB } from '../../../../lib/mongodb';
-import Contact from '../../../../models/Contact';
+import { connectDB } from '@/lib/mongodb';
+import Contact from '@/models/Contact';
+import mongoose from 'mongoose';
+import { withRateLimit } from '@/lib/rateLimit';
 
-export async function POST(request) {
+async function handler(request) {
   try {
-    const { contactId, message, senderName, senderEmail } = await request.json();
 
-    if (!contactId || !message || !senderName || !senderEmail) {
+    const { contactId, message, email } = await request.json();
+
+    if (!contactId || !message?.trim() || !email?.trim()) {
       return NextResponse.json(
-        { error: 'Contact ID, message, sender name, and email are required' },
+        { success: false, error: 'Contact ID, message, and email are required' },
+        { status: 400 }
+      );
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid email format' },
+        { status: 400 }
+      );
+    }
+
+    // Validate ObjectId
+    if (!mongoose.Types.ObjectId.isValid(contactId)) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid contact ID' },
         { status: 400 }
       );
     }
 
     await connectDB();
 
-    // Verify the contact exists and the email matches
     const contact = await Contact.findById(contactId);
     if (!contact) {
       return NextResponse.json(
-        { error: 'Contact not found' },
+        { success: false, error: 'Contact not found' },
         { status: 404 }
-      );
-    }
-
-    // Verify sender email matches original contact email
-    if (contact.email.toLowerCase() !== senderEmail.toLowerCase()) {
-      return NextResponse.json(
-        { error: 'Email does not match original contact' },
-        { status: 403 }
       );
     }
 
@@ -38,38 +49,50 @@ export async function POST(request) {
     const userAgent = request.headers.get('user-agent') || 'unknown';
 
     // Create reply object
-    const reply = {
-      message,
-      isFromAdmin: false,
-      senderName,
-      senderEmail,
-      timestamp: new Date(),
+    const newReply = {
+      _id: new mongoose.Types.ObjectId(),
+      message: message.trim(),
+      type: 'user',
+      createdAt: new Date(),
+      read: false,
+      email: email.trim(),
+      senderName: contact.name, // Use the original contact name
       ipAddress,
       userAgent
     };
 
-    // Add reply to contact
-    const updatedContact = await Contact.findByIdAndUpdate(
-      contactId,
-      {
-        $push: { replies: reply },
-        $set: { 
-          status: 'read' // Mark as read when user replies
-        }
-      },
-      { new: true }
-    );
+    // Initialize replies array if it doesn't exist
+    if (!contact.replies) {
+      contact.replies = [];
+    }
 
+    // Add reply to contact
+    contact.replies.push(newReply);
+    contact.lastActivity = new Date();
+    contact.status = 'active'; // Reactivate the conversation
+
+    await contact.save();
+
+    // TODO: Send notification email to admin
+    // This could be implemented with a service like SendGrid or AWS SES
+    
     return NextResponse.json({
-      message: 'Reply added successfully',
-      contact: updatedContact
+      success: true,
+      message: 'Reply sent successfully',
+      replyId: newReply._id
     });
 
   } catch (error) {
     console.error('Error adding user reply:', error);
     return NextResponse.json(
-      { error: 'Failed to add reply' },
+      { success: false, error: 'Failed to add reply' },
       { status: 500 }
     );
   }
-} 
+}
+
+// Export with rate limiting (5 requests per minute)
+export const POST = withRateLimit(handler, {
+  limit: 5,
+  windowMs: 60 * 1000 // 1 minute
+}); 

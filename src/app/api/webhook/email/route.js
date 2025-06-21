@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { connectDB } from '../../../../lib/mongodb';
 import Contact from '../../../../models/Contact';
+import mongoose from 'mongoose';
 
 export async function POST(request) {
   try {
@@ -79,22 +80,27 @@ export async function POST(request) {
       
       // Add reply to existing contact
       const reply = {
+        _id: new mongoose.Types.ObjectId(),
         message: cleanEmailMessage(message),
-        isFromAdmin: false,
+        type: 'user',
         senderName: fromName,
-        senderEmail: fromEmail,
-        timestamp: new Date(),
+        email: fromEmail,
+        createdAt: new Date(),
+        read: false,
         ipAddress: 'email-webhook',
         userAgent: 'email-client'
       };
 
-      await Contact.findByIdAndUpdate(
-        contact._id,
-        {
-          $push: { replies: reply },
-          $set: { status: 'read' }
-        }
-      );
+      // Initialize replies array if it doesn't exist
+      if (!contact.replies) {
+        contact.replies = [];
+      }
+
+      contact.replies.push(reply);
+      contact.status = 'active';
+      contact.lastActivity = new Date();
+      
+      await contact.save();
 
       console.log('Added reply to existing contact');
     } else {

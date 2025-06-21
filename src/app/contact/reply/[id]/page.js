@@ -2,19 +2,23 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import Head from 'next/head';
+import toast from 'react-hot-toast';
+import PageHeader from '@/app/components/PageHeader';
+import Card from '@/app/components/Card';
+import Button from '@/app/components/Button';
+import Input from '@/app/components/Input';
+import Badge from '@/app/components/Badge';
 
 export default function ContactReply() {
   const params = useParams();
   const router = useRouter();
-  const [contact, setContact] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [replyMessage, setReplyMessage] = useState('');
-  const [senderName, setSenderName] = useState('');
-  const [senderEmail, setSenderEmail] = useState('');
-  const [sending, setSending] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [contact, setContact] = useState(null);
+  const [formData, setFormData] = useState({
+    message: '',
+    email: ''
+  });
 
   useEffect(() => {
     if (params.id) {
@@ -24,20 +28,23 @@ export default function ContactReply() {
 
   const fetchContact = async () => {
     try {
-      setLoading(true);
       const response = await fetch(`/api/contacts/${params.id}`);
-      
-      if (!response.ok) {
-        throw new Error('Contact not found');
-      }
-      
       const data = await response.json();
-      setContact(data.contact);
-      setSenderEmail(data.contact.email);
-      setSenderName(data.contact.name);
+
+      if (response.ok && data.success) {
+        setContact(data.contact);
+        // Pre-fill email if available
+        if (data.contact.email) {
+          setFormData(prev => ({ ...prev, email: data.contact.email }));
+        }
+      } else {
+        toast.error('Contact not found');
+        router.push('/contact');
+      }
     } catch (error) {
       console.error('Error fetching contact:', error);
-      setError('Contact not found or invalid link');
+      toast.error('Failed to load conversation');
+      router.push('/contact');
     } finally {
       setLoading(false);
     }
@@ -46,15 +53,14 @@ export default function ContactReply() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!replyMessage.trim() || !senderName.trim() || !senderEmail.trim()) {
-      setError('Please fill in all fields');
+    if (!formData.message.trim()) {
+      toast.error('Please enter a message');
       return;
     }
 
-    try {
-      setSending(true);
-      setError('');
+    setSubmitting(true);
 
+    try {
       const response = await fetch('/api/contacts/reply', {
         method: 'POST',
         headers: {
@@ -62,247 +68,188 @@ export default function ContactReply() {
         },
         body: JSON.stringify({
           contactId: params.id,
-          message: replyMessage,
-          senderName,
-          senderEmail
+          message: formData.message,
+          email: formData.email
         }),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to send reply');
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        toast.success('Reply sent successfully!');
+        // Refresh the conversation
+        fetchContact();
+        // Clear the message
+        setFormData(prev => ({ ...prev, message: '' }));
+      } else {
+        toast.error(data.error || 'Failed to send reply');
       }
-
-      setSuccess(true);
-      setReplyMessage('');
-      
-      // Refresh contact data to show new reply
-      await fetchContact();
-
     } catch (error) {
       console.error('Error sending reply:', error);
-      setError(error.message);
+      toast.error('Failed to send reply');
     } finally {
-      setSending(false);
+      setSubmitting(false);
     }
-  };
-
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#0a1a0f] via-[#0e1b12] to-[#1a2e1a] flex items-center justify-center">
-        <div className="text-center">
-          <i className="fas fa-spinner fa-spin text-4xl text-[#e8c547] mb-4"></i>
-          <p className="text-[#d1d5db]">Loading conversation...</p>
+      <div className="min-h-screen page-container">
+        <div className="page-content pt-4 pb-8">
+          <div className="flex justify-center items-center py-20">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#e8c547]"></div>
+          </div>
         </div>
       </div>
     );
   }
 
-  if (error && !contact) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-[#0a1a0f] via-[#0e1b12] to-[#1a2e1a] flex items-center justify-center">
-        <div className="text-center">
-          <i className="fas fa-exclamation-triangle text-4xl text-red-400 mb-4"></i>
-          <h1 className="text-2xl font-bold text-[#d1d5db] mb-2">Invalid Link</h1>
-          <p className="text-gray-400 mb-6">{error}</p>
-          <button
-            onClick={() => router.push('/contact')}
-            className="px-6 py-3 bg-[#e8c547] text-[#0e1b12] rounded-lg font-medium hover:bg-[#d4b445] transition-colors"
-          >
-            Go to Contact Page
-          </button>
-        </div>
-      </div>
-    );
+  if (!contact) {
+    return null;
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a1a0f] via-[#0e1b12] to-[#1a2e1a] text-[#d1d5db]">
-      <Head>
-        <title>Reply to Contact - Bergaman</title>
-      </Head>
+    <div className="min-h-screen page-container">
+      <div className="page-content pt-4 pb-8">
+        <PageHeader
+          title="Reply to Conversation"
+          subtitle="Continue your conversation with the admin"
+          icon="fas fa-reply"
+        />
 
-      <div className="container mx-auto px-4 py-12">
-        <div className="max-w-4xl mx-auto">
-          
-          {/* Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-[#e8c547] mb-2">
-              <i className="fas fa-reply mr-3"></i>
-              Reply to Conversation
-            </h1>
-            <p className="text-gray-400">Continue your conversation with Bergaman</p>
-          </div>
-
-          {/* Original Message */}
-          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 rounded-lg p-6 mb-8">
-            <h2 className="text-xl font-semibold text-[#e8c547] mb-4">Original Message</h2>
-            <div className="bg-[#0e1b12] border border-[#3e503e] rounded-lg p-4">
-              <div className="flex items-center justify-between mb-3">
-                <div>
-                  <span className="font-medium text-[#d1d5db]">{contact?.name}</span>
-                  <span className="text-gray-400 ml-2">{contact?.email}</span>
+        <div className="max-w-4xl mx-auto space-y-6">
+          {/* Conversation History */}
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold text-[#e8c547] mb-4 flex items-center">
+              <i className="fas fa-history mr-2"></i>
+              Conversation History
+            </h3>
+            
+            <div className="space-y-4">
+              {/* Original Message */}
+              <div className="bg-[#0e1b12]/50 rounded-lg p-4 border-l-4 border-[#e8c547]">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-gray-300">
+                    <i className="fas fa-user mr-2"></i>
+                    {contact.name} (You)
+                  </span>
+                  <span className="text-xs text-gray-500">
+                    {new Date(contact.createdAt).toLocaleString()}
+                  </span>
                 </div>
-                <span className="text-sm text-gray-500">
-                  {contact?.createdAt && formatDate(contact.createdAt)}
-                </span>
+                <p className="text-gray-200">{contact.message}</p>
               </div>
-              <p className="text-[#d1d5db] whitespace-pre-wrap">{contact?.message}</p>
-            </div>
-          </div>
 
-          {/* Conversation Thread */}
-          {contact?.replies && contact.replies.length > 0 && (
-            <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 rounded-lg p-6 mb-8">
-              <h2 className="text-xl font-semibold text-[#e8c547] mb-4">
-                <i className="fas fa-comments mr-2"></i>
-                Conversation ({contact.replies.length} {contact.replies.length === 1 ? 'reply' : 'replies'})
-              </h2>
-              <div className="space-y-4 max-h-96 overflow-y-auto">
-                {contact.replies.map((reply, index) => (
-                  <div 
-                    key={index} 
-                    className={`p-4 rounded-lg border-l-4 ${
-                      reply.isFromAdmin 
-                        ? 'bg-green-900/20 border-green-500 ml-4' 
-                        : 'bg-blue-900/20 border-blue-500 mr-4'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center space-x-2">
-                        <span className={`text-sm font-medium ${
-                          reply.isFromAdmin ? 'text-green-400' : 'text-blue-400'
-                        }`}>
-                          {reply.isFromAdmin ? (
-                            <>
-                              <i className="fas fa-user-shield mr-1"></i>
-                              Bergaman (Admin)
-                            </>
-                          ) : (
-                            <>
-                              <i className="fas fa-user mr-1"></i>
-                              {reply.senderName}
-                            </>
-                          )}
+              {/* Admin Reply */}
+              {contact.adminReply && (
+                <div className="bg-[#1a2e1a]/50 rounded-lg p-4 border-l-4 border-blue-500">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium text-gray-300">
+                      <i className="fas fa-user-shield mr-2"></i>
+                      Admin
+                    </span>
+                    <span className="text-xs text-gray-500">
+                      {new Date(contact.repliedAt).toLocaleString()}
+                    </span>
+                  </div>
+                  <p className="text-gray-200">{contact.adminReply}</p>
+                </div>
+              )}
+
+              {/* Previous Replies */}
+              {contact.replies && contact.replies.length > 0 && (
+                <>
+                  {contact.replies.map((reply, index) => (
+                    <div
+                      key={reply._id || index}
+                      className={`rounded-lg p-4 border-l-4 ${
+                        reply.type === 'admin'
+                          ? 'bg-[#1a2e1a]/50 border-blue-500'
+                          : 'bg-[#0e1b12]/50 border-[#e8c547]'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-medium text-gray-300">
+                          <i className={`fas ${reply.type === 'admin' ? 'fa-user-shield' : 'fa-user'} mr-2`}></i>
+                          {reply.type === 'admin' ? 'Admin' : `${contact.name} (You)`}
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          {new Date(reply.createdAt).toLocaleString()}
                         </span>
                       </div>
-                      <span className="text-xs text-gray-500">
-                        {formatDate(reply.timestamp)}
-                      </span>
+                      <p className="text-gray-200">{reply.message}</p>
                     </div>
-                    <p className="text-[#d1d5db] whitespace-pre-wrap">{reply.message}</p>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </>
+              )}
             </div>
-          )}
-
-          {/* Success Message */}
-          {success && (
-            <div className="bg-green-900/20 border border-green-500 rounded-lg p-4 mb-6">
-              <div className="flex items-center">
-                <i className="fas fa-check-circle text-green-400 mr-3"></i>
-                <span className="text-green-400 font-medium">Reply sent successfully!</span>
-              </div>
-            </div>
-          )}
+          </Card>
 
           {/* Reply Form */}
-          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 rounded-lg p-6">
-            <h2 className="text-xl font-semibold text-[#e8c547] mb-6">Send Your Reply</h2>
-            
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-[#e8c547] mb-2">
-                    Your Name
-                  </label>
-                  <input
-                    type="text"
-                    value={senderName}
-                    onChange={(e) => setSenderName(e.target.value)}
-                    className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] placeholder-gray-400 focus:border-[#e8c547]/50 focus:outline-none"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-[#e8c547] mb-2">
-                    Your Email
-                  </label>
-                  <input
-                    type="email"
-                    value={senderEmail}
-                    onChange={(e) => setSenderEmail(e.target.value)}
-                    className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] placeholder-gray-400 focus:border-[#e8c547]/50 focus:outline-none"
-                    required
-                  />
-                </div>
-              </div>
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold text-[#e8c547] mb-4 flex items-center">
+              <i className="fas fa-comment mr-2"></i>
+              Send a Reply
+            </h3>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <Input
+                label="Your Email"
+                type="email"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                placeholder="your@email.com"
+                icon="fas fa-envelope"
+                required
+                disabled={contact.email} // Disable if email already exists
+              />
 
               <div>
-                <label className="block text-sm font-medium text-[#e8c547] mb-2">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <i className="fas fa-message mr-2"></i>
                   Your Reply
                 </label>
                 <textarea
-                  value={replyMessage}
-                  onChange={(e) => setReplyMessage(e.target.value)}
+                  value={formData.message}
+                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                  rows={5}
+                  className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-white focus:border-[#e8c547] focus:outline-none transition-colors duration-300"
                   placeholder="Type your reply here..."
-                  rows={6}
-                  className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] placeholder-gray-400 focus:border-[#e8c547]/50 focus:outline-none resize-vertical"
                   required
                 />
               </div>
 
-              {error && (
-                <div className="bg-red-900/20 border border-red-500 rounded-lg p-4">
-                  <div className="flex items-center">
-                    <i className="fas fa-exclamation-triangle text-red-400 mr-3"></i>
-                    <span className="text-red-400">{error}</span>
-                  </div>
-                </div>
-              )}
-
-              <div className="flex items-center justify-between">
-                <button
-                  type="button"
-                  onClick={() => router.push('/contact')}
-                  className="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
-                >
-                  <i className="fas fa-arrow-left mr-2"></i>
-                  Back to Contact
-                </button>
+              <div className="flex justify-between items-center">
+                <p className="text-xs text-gray-500">
+                  <i className="fas fa-info-circle mr-1"></i>
+                  The admin will be notified of your reply
+                </p>
                 
-                <button
+                <Button
                   type="submit"
-                  disabled={sending || !replyMessage.trim()}
-                  className="px-8 py-3 bg-[#e8c547] text-[#0e1b12] rounded-lg font-medium hover:bg-[#d4b445] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                  variant="primary"
+                  loading={submitting}
+                  icon="fas fa-paper-plane"
                 >
-                  {sending ? (
-                    <>
-                      <i className="fas fa-spinner fa-spin mr-2"></i>
-                      Sending...
-                    </>
-                  ) : (
-                    <>
-                      <i className="fas fa-paper-plane mr-2"></i>
-                      Send Reply
-                    </>
-                  )}
-                </button>
+                  Send Reply
+                </Button>
               </div>
             </form>
-          </div>
+          </Card>
 
+          {/* Info Box */}
+          <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
+            <h4 className="text-sm font-semibold text-blue-400 mb-2 flex items-center">
+              <i className="fas fa-lightbulb mr-2"></i>
+              How it works
+            </h4>
+            <ul className="text-xs text-gray-400 space-y-1">
+              <li>• Your reply will be added to this conversation</li>
+              <li>• The admin will receive a notification in their dashboard</li>
+              <li>• You can bookmark this page to check for new responses</li>
+              <li>• All replies are tracked and timestamped</li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>

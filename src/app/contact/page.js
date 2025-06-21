@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { useAdminMode } from '../../hooks/useAdminMode';
 import PageHeader from '../components/PageHeader';
+import PageContainer from '../components/PageContainer';
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -41,27 +42,27 @@ export default function Contact() {
   // Show loading state
   if (loading) {
     return (
-      <div className="page-container">
+      <PageContainer>
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <i className="fas fa-spinner fa-spin text-4xl text-[#e8c547] mb-4"></i>
             <p className="text-gray-400">Loading...</p>
           </div>
         </div>
-      </div>
+      </PageContainer>
     );
   }
 
   // Show contact form disabled message if setting is off
   if (settings && !settings.allowContactForm) {
     return (
-      <div className="page-container">
+      <PageContainer>
         <Head>
           <title>Contact Form Disabled - Ömer</title>
           <meta name="description" content="Contact form is currently disabled." />
         </Head>
 
-        <main className="page-content pt-16 pb-8">
+        <main>
           <section className="text-center mb-12 fade-in">
             <h1 className="text-4xl md:text-5xl font-bold gradient-text mb-4 leading-tight">
               <i className="fas fa-envelope-slash mr-3"></i>
@@ -109,7 +110,7 @@ export default function Contact() {
             </div>
           </section>
         </main>
-      </div>
+      </PageContainer>
     );
   }
 
@@ -149,7 +150,7 @@ export default function Contact() {
   };
 
   return (
-    <div className="page-container">
+    <PageContainer>
       <Head>
         <title>Contact Me - Ömer | Get in Touch</title>
         <meta name="description" content="Get in touch with Ömer for questions, collaborations, or just to say hello. Always open to connecting with fellow developers and tech enthusiasts." />
@@ -181,7 +182,7 @@ export default function Contact() {
         </div>
       )}
 
-      <main className={`page-content pb-8 ${isAdminMode ? 'pt-24' : 'pt-16'}`}>
+      <main className={isAdminMode ? 'pt-12' : ''}>
         
         {/* Page Header */}
         <PageHeader
@@ -364,6 +365,6 @@ export default function Contact() {
         </section>
 
       </main>
-    </div>
+    </PageContainer>
   );
 } 

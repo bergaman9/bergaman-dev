@@ -7,7 +7,7 @@ import { getAppVersion } from '../../lib/version';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
-  const [appVersion, setAppVersion] = useState('v2.5.13');
+  const [appVersion, setAppVersion] = useState('2.5.13');
   
   useEffect(() => {
     // Set version on client-side to avoid hydration mismatch
@@ -125,7 +125,7 @@ export default function Footer() {
                 title={SITE_CONFIG.previousVersions.v1.description}
               >
                 <i className="fas fa-history text-xs group-hover:scale-110 transition-transform duration-300"></i>
-                <span className="text-sm group-hover:translate-x-1 transition-transform duration-300">Portfolio v1.0</span>
+                <span className="text-sm group-hover:translate-x-1 transition-transform duration-300">Portfolio 1.x.x</span>
               </a>
             </div>
           </div>

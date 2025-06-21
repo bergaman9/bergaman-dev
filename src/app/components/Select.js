@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 
 export default function Select({
   options = [],
@@ -18,10 +19,32 @@ export default function Select({
   icon,
   name,
   id,
+  usePortal = false,
 }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 0 });
+  const [mounted, setMounted] = useState(false);
+  const [shouldUsePortal, setShouldUsePortal] = useState(usePortal);
   const selectRef = useRef(null);
+  const buttonRef = useRef(null);
   const selectedOption = options.find(option => option.value === value);
+
+  // Mount effect for portal
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Calculate dropdown position when using portal
+  useEffect(() => {
+    if (isOpen && shouldUsePortal && buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      setDropdownPosition({
+        top: rect.bottom + window.scrollY + 4,
+        left: rect.left + window.scrollX,
+        width: rect.width
+      });
+    }
+  }, [isOpen, shouldUsePortal]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -31,11 +54,24 @@ export default function Select({
       }
     }
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }
+  }, [isOpen]);
+
+  // Auto-detect if we're inside a modal
+  useEffect(() => {
+    if (selectRef.current) {
+      const modalParent = selectRef.current.closest('[role="dialog"], .modal-container, .image-selector-modal');
+      if (modalParent && !usePortal) {
+        // We're inside a modal, enable portal automatically
+        setShouldUsePortal(true);
+      }
+    }
+  }, [usePortal]);
 
   // Variants
   const variants = {
@@ -54,15 +90,71 @@ export default function Select({
 
   // Sizes
   const sizes = {
-    sm: "px-2 py-1 text-xs",
-    md: "px-3 py-2 text-sm",
-    lg: "px-4 py-3 text-base",
+    sm: "px-2 py-1 text-xs h-8",
+    md: "px-3 py-3 text-sm h-12",
+    lg: "px-4 py-4 text-base h-14",
   };
 
   // Handle option selection
   const handleSelect = (option) => {
-    onChange(option.value);
+    // Create a synthetic event like object to match native select behavior
+    const syntheticEvent = {
+      target: {
+        value: option.value,
+        name: name,
+        id: id
+      }
+    };
+    onChange(syntheticEvent);
     setIsOpen(false);
+  };
+
+  // Render dropdown content
+  const renderDropdown = () => {
+    if (!isOpen || !mounted) return null;
+
+    const dropdown = (
+      <div 
+        className="bg-[#1a2e1a] border border-[#3e503e]/30 rounded-lg shadow-xl max-h-60 overflow-y-auto modal-scrollbar z-[100000]"
+        style={shouldUsePortal ? {
+          position: 'absolute',
+          top: `${dropdownPosition.top}px`,
+          left: `${dropdownPosition.left}px`,
+          width: `${dropdownPosition.width}px`,
+        } : {}}
+      >
+        <ul role="listbox" className="py-1">
+          {options.map((option) => (
+            <li
+              key={option.value}
+              role="option"
+              aria-selected={value === option.value}
+              className={`px-3 py-2 cursor-pointer transition-colors duration-200 ${
+                value === option.value 
+                  ? 'bg-[#e8c547]/10 text-[#e8c547]' 
+                  : 'text-gray-300 hover:bg-[#2e3d29]/30 hover:text-white'
+              }`}
+              onClick={() => handleSelect(option)}
+            >
+              <div className="flex items-center">
+                {option.icon && <i className={`${option.icon} mr-2`}></i>}
+                {option.label}
+              </div>
+            </li>
+          ))}
+          {options.length === 0 && (
+            <li className="px-3 py-2 text-gray-500 italic">No options available</li>
+          )}
+        </ul>
+      </div>
+    );
+
+    // Use portal if enabled
+    if (shouldUsePortal && typeof window !== 'undefined') {
+      return createPortal(dropdown, document.body);
+    }
+
+    return dropdown;
   };
 
   return (
@@ -74,9 +166,10 @@ export default function Select({
       )}
       
       <button
+        ref={buttonRef}
         type="button"
         onClick={() => !disabled && setIsOpen(!isOpen)}
-        className={`flex items-center justify-between w-full ${variants[variant]} ${sizes[size]} rounded-lg transition-all duration-300 ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:border-opacity-50'}`}
+        className={`relative flex items-center justify-between w-full ${variants[variant]} ${sizes[size]} rounded-lg transition-all duration-300 ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:border-opacity-50'} focus:outline-none focus:ring-2 focus:ring-[#e8c547]/20 appearance-none`}
         disabled={disabled}
         id={id}
         name={name}
@@ -89,36 +182,20 @@ export default function Select({
             {selectedOption ? selectedOption.label : placeholder}
           </span>
         </div>
-        <i className={`fas fa-chevron-down text-xs transition-transform duration-300 ml-2 ${isOpen ? 'rotate-180' : ''}`}></i>
+        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+          <i className={`fas fa-chevron-down text-xs text-gray-400 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}></i>
+        </div>
       </button>
       
-      {isOpen && (
-        <div className="absolute z-50 w-full mt-1 bg-[#1a2e1a] border border-[#3e503e]/30 rounded-lg shadow-xl max-h-60 overflow-y-auto">
-          <ul role="listbox" className="py-1">
-            {options.map((option) => (
-              <li
-                key={option.value}
-                role="option"
-                aria-selected={value === option.value}
-                className={`px-3 py-2 cursor-pointer transition-colors duration-200 ${
-                  value === option.value 
-                    ? 'bg-[#e8c547]/10 text-[#e8c547]' 
-                    : 'text-gray-300 hover:bg-[#2e3d29]/30 hover:text-white'
-                }`}
-                onClick={() => handleSelect(option)}
-              >
-                <div className="flex items-center">
-                  {option.icon && <i className={`${option.icon} mr-2`}></i>}
-                  {option.label}
-                </div>
-              </li>
-            ))}
-            {options.length === 0 && (
-              <li className="px-3 py-2 text-gray-500 italic">No options available</li>
-            )}
-          </ul>
+      {/* Render dropdown - either in place or via portal */}
+      {!shouldUsePortal && isOpen && (
+        <div className="absolute z-[100000] w-full mt-1">
+          {renderDropdown()}
         </div>
       )}
+      
+      {/* Portal rendered dropdown */}
+      {shouldUsePortal && renderDropdown()}
       
       {error && (
         <p className="mt-1 text-xs text-red-400">{error}</p>

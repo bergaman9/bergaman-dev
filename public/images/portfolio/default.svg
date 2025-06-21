@@ -1,20 +1,127 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300">
-  <rect width="400" height="300" fill="#0a1a0f" />
-  <path d="M200,150 L200,150" stroke="#e8c547" stroke-width="2" opacity="0.1">
-    <animate attributeName="d" dur="10s" repeatCount="indefinite" 
-      values="M200,150 L200,150;
-              M100,50 C150,150 250,150 300,75;
-              M50,100 C150,50 250,250 350,100;
-              M100,50 C150,150 250,150 300,75;
-              M200,150 L200,150" />
-  </path>
-  <g fill="#e8c547" transform="translate(150, 100)">
-    <rect x="10" y="10" width="80" height="80" rx="10" ry="10" opacity="0.5" />
-    <path d="M30,40 L70,40 M30,60 L70,60" stroke="#e8c547" stroke-width="4" opacity="0.7" />
-    <circle cx="30" cy="30" r="5" opacity="0.7" />
-    <circle cx="70" cy="30" r="5" opacity="0.7" />
-    <circle cx="30" cy="70" r="5" opacity="0.7" />
-    <circle cx="70" cy="70" r="5" opacity="0.7" />
+  <!-- Dark background with gradient -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a1a0f;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0e1b12;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Glow effect -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <!-- Animated gradient -->
+    <linearGradient id="animGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#e8c547;stop-opacity:0.8">
+        <animate attributeName="offset" values="0;0.5;0" dur="5s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="100%" style="stop-color:#e8c547;stop-opacity:0.2">
+        <animate attributeName="offset" values="1;0.5;1" dur="5s" repeatCount="indefinite"/>
+      </stop>
+    </linearGradient>
+  </defs>
+  
+  <rect width="400" height="300" fill="url(#bgGradient)" />
+  
+  <!-- Abstract pattern background -->
+  <g opacity="0.05">
+    <pattern id="hexPattern" width="60" height="52" patternUnits="userSpaceOnUse">
+      <path d="M30,0 L45,15 L45,37 L30,52 L15,37 L15,15 Z" fill="none" stroke="#e8c547" stroke-width="0.5"/>
+    </pattern>
+    <rect width="400" height="300" fill="url(#hexPattern)"/>
   </g>
-  <text x="200" y="220" font-family="Arial" font-size="16" fill="#e8c547" text-anchor="middle">Project</text>
+  
+  <!-- Main icon container -->
+  <g transform="translate(200, 150)">
+    <!-- Outer rotating rings -->
+    <g opacity="0.2">
+      <circle cx="0" cy="0" r="70" fill="none" stroke="#e8c547" stroke-width="1" stroke-dasharray="10 5">
+        <animateTransform attributeName="transform" type="rotate" 
+          from="0 0 0" to="360 0 0" dur="30s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="0" cy="0" r="85" fill="none" stroke="#e8c547" stroke-width="0.5" stroke-dasharray="5 10">
+        <animateTransform attributeName="transform" type="rotate" 
+          from="0 0 0" to="-360 0 0" dur="35s" repeatCount="indefinite"/>
+      </circle>
+    </g>
+    
+    <!-- Central geometric shape -->
+    <g transform="scale(2)" filter="url(#glow)">
+      <!-- Cube-like structure -->
+      <g opacity="0.9">
+        <!-- Front face -->
+        <path d="M-15,-15 L15,-15 L15,15 L-15,15 Z" fill="none" stroke="#e8c547" stroke-width="1.5"/>
+        <!-- Top face -->
+        <path d="M-15,-15 L0,-25 L30,-25 L15,-15" fill="none" stroke="#e8c547" stroke-width="1.5" opacity="0.7"/>
+        <!-- Right face -->
+        <path d="M15,-15 L30,-25 L30,5 L15,15" fill="none" stroke="#e8c547" stroke-width="1.5" opacity="0.5"/>
+        
+        <!-- Inner lines -->
+        <line x1="-5" y1="-15" x2="-5" y2="15" stroke="#e8c547" stroke-width="0.5" opacity="0.5">
+          <animate attributeName="opacity" values="0.5;1;0.5" dur="3s" repeatCount="indefinite"/>
+        </line>
+        <line x1="5" y1="-15" x2="5" y2="15" stroke="#e8c547" stroke-width="0.5" opacity="0.5">
+          <animate attributeName="opacity" values="0.5;1;0.5" dur="3s" begin="1s" repeatCount="indefinite"/>
+        </line>
+        <line x1="-15" y1="-5" x2="15" y2="-5" stroke="#e8c547" stroke-width="0.5" opacity="0.5">
+          <animate attributeName="opacity" values="0.5;1;0.5" dur="3s" begin="2s" repeatCount="indefinite"/>
+        </line>
+        <line x1="-15" y1="5" x2="15" y2="5" stroke="#e8c547" stroke-width="0.5" opacity="0.5">
+          <animate attributeName="opacity" values="0.5;1;0.5" dur="3s" begin="0.5s" repeatCount="indefinite"/>
+        </line>
+      </g>
+    </g>
+    
+    <!-- Orbiting elements -->
+    <g opacity="0.6">
+      <!-- Element 1 -->
+      <circle r="4" fill="#e8c547">
+        <animateMotion dur="5s" repeatCount="indefinite">
+          <mpath href="#orbit1"/>
+        </animateMotion>
+      </circle>
+      
+      <!-- Element 2 -->
+      <rect x="-3" y="-3" width="6" height="6" fill="#e8c547">
+        <animateMotion dur="7s" repeatCount="indefinite">
+          <mpath href="#orbit2"/>
+        </animateMotion>
+      </rect>
+      
+      <!-- Element 3 -->
+      <path d="M0,-4 L4,4 L-4,4 Z" fill="#e8c547">
+        <animateMotion dur="6s" repeatCount="indefinite">
+          <mpath href="#orbit3"/>
+        </animateMotion>
+      </path>
+    </g>
+    
+    <!-- Orbit paths -->
+    <defs>
+      <path id="orbit1" d="M60,0 A60,60 0 1,1 -60,0 A60,60 0 1,1 60,0" fill="none"/>
+      <path id="orbit2" d="M0,-50 A50,50 0 1,1 0,50 A50,50 0 1,1 0,-50" fill="none"/>
+      <path id="orbit3" d="M-40,-40 A56.57,56.57 0 1,1 40,40 A56.57,56.57 0 1,1 -40,-40" fill="none"/>
+    </defs>
+    
+    <!-- Energy pulses -->
+    <g opacity="0.4">
+      <circle cx="0" cy="0" r="20" fill="none" stroke="url(#animGradient)" stroke-width="2">
+        <animate attributeName="r" values="20;60;20" dur="4s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.4;0;0.4" dur="4s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="0" cy="0" r="20" fill="none" stroke="url(#animGradient)" stroke-width="2">
+        <animate attributeName="r" values="20;60;20" dur="4s" begin="2s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.4;0;0.4" dur="4s" begin="2s" repeatCount="indefinite"/>
+      </circle>
+    </g>
+  </g>
+  
+  <!-- Category text -->
+  <text x="200" y="260" font-family="Arial, sans-serif" font-size="14" fill="#e8c547" 
+    text-anchor="middle" opacity="0.8" letter-spacing="2">PROJECT</text>
 </svg> 

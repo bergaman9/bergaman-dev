@@ -14,7 +14,7 @@ export default function BlogPostCard({ post, formatDate, formatCategoryName, ope
 
   return (
     <Link href={`/blog/${post.slug}`} className="h-full block rounded-lg overflow-hidden transition-all duration-300 bg-[#2e3d29]/20 backdrop-blur-md border border-[#3e503e]/30 hover:border-[#e8c547]/50 group">
-      <div className="relative h-48">
+      <div className="relative h-48 overflow-hidden">
         {post.image ? (
           <Image
             src={post.image}

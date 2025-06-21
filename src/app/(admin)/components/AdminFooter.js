@@ -6,11 +6,13 @@ import { getAppVersion } from '../../../lib/version';
 
 export default function AdminFooter() {
   const [currentTime, setCurrentTime] = useState('');
-  const [appVersion, setAppVersion] = useState('v2.5.13');
+  const [appVersion, setAppVersion] = useState('2.5.13');
   const [systemStats, setSystemStats] = useState({
     uptime: '0h 0m',
     memory: '0%',
-    cpu: '0%'
+    cpu: '0%',
+    activeUsers: 0,
+    todayVisits: 0
   });
 
   useEffect(() => {
@@ -23,13 +25,67 @@ export default function AdminFooter() {
       }));
     };
 
-    const updateStats = () => {
-      // Simulated system stats (in a real app, these would come from an API)
-      setSystemStats({
-        uptime: Math.floor(Date.now() / 1000 / 60) + 'm',
-        memory: Math.floor(Math.random() * 30 + 40) + '%',
-        cpu: Math.floor(Math.random() * 20 + 10) + '%'
-      });
+    const updateStats = async () => {
+      try {
+        // Get process start time from environment or fallback to session start
+        const startTime = window.sessionStartTime || Date.now();
+        if (!window.sessionStartTime) {
+          window.sessionStartTime = startTime;
+        }
+        
+        const uptimeMs = Date.now() - startTime;
+        const uptimeMinutes = Math.floor(uptimeMs / 1000 / 60);
+        const hours = Math.floor(uptimeMinutes / 60);
+        const minutes = uptimeMinutes % 60;
+        
+        // Get real memory usage if available
+        let memoryUsage = 'N/A';
+        let cpuUsage = 'N/A';
+        
+        if (performance && performance.memory) {
+          const memUsed = performance.memory.usedJSHeapSize;
+          const memTotal = performance.memory.jsHeapSizeLimit;
+          memoryUsage = Math.round((memUsed / memTotal) * 100) + '%';
+        }
+        
+        // Get active users from localStorage or session
+        const activeUsers = parseInt(localStorage.getItem('activeUsers') || '1');
+        
+        // Get today's visits from localStorage
+        const today = new Date().toDateString();
+        const visitData = JSON.parse(localStorage.getItem('visitData') || '{}');
+        if (visitData.date !== today) {
+          visitData.date = today;
+          visitData.count = 1;
+        } else {
+          visitData.count = (visitData.count || 0) + 1;
+        }
+        localStorage.setItem('visitData', JSON.stringify(visitData));
+        
+        setSystemStats({
+          uptime: `${hours}h ${minutes}m`,
+          memory: memoryUsage,
+          cpu: cpuUsage,
+          activeUsers: activeUsers,
+          todayVisits: visitData.count
+        });
+        
+        // Try to fetch real stats from API if available
+        try {
+          const response = await fetch('/api/admin/system-stats');
+          if (response.ok) {
+            const data = await response.json();
+            setSystemStats(prevStats => ({
+              ...prevStats,
+              ...data
+            }));
+          }
+        } catch (error) {
+          // Silently fail - use local stats
+        }
+      } catch (error) {
+        console.error('Error updating stats:', error);
+      }
     };
 
     updateTime();
@@ -83,6 +139,14 @@ export default function AdminFooter() {
                 <span className="text-gray-400">CPU:</span>
                 <span className="text-purple-400 font-mono text-xs">{systemStats.cpu}</span>
               </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-400">Active Users:</span>
+                <span className="text-orange-400 font-mono text-xs">{systemStats.activeUsers}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-400">Today's Visits:</span>
+                <span className="text-cyan-400 font-mono text-xs">{systemStats.todayVisits}</span>
+              </div>
             </div>
           </div>
 
@@ -115,7 +179,7 @@ export default function AdminFooter() {
             </h3>
             <div className="space-y-1 sm:space-y-2 text-xs text-gray-400">
               <p className="truncate">Bergaman - The Dragon's Domain</p>
-              <p>Version {appVersion.replace('v', '')}</p>
+              <p>Version {appVersion}</p>
               <p>Admin Control Panel</p>
               <div className="flex items-center space-x-2 pt-1 sm:pt-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>

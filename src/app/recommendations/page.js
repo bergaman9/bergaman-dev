@@ -116,8 +116,8 @@ export default function RecommendationsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen page-container">
-              <div className="page-content pt-16">
+      <div className="min-h-screen">
+              <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 py-12">
         <Loading />
       </div>
       </div>
@@ -125,8 +125,8 @@ export default function RecommendationsPage() {
   }
 
   return (
-    <div className="min-h-screen page-container">
-      <div className="page-content pt-16 pb-8">
+    <div className="min-h-screen">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 py-12">
         <PageHeader
           title="My Recommendations"
           subtitle="Curated collection of movies, games, books, music, and more"

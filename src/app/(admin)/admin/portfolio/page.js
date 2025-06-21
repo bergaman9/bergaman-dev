@@ -5,18 +5,24 @@ import toast from 'react-hot-toast';
 import Modal from '@/app/components/Modal';
 import PageHeader from '@/app/components/PageHeader';
 import Button from '@/app/components/Button';
+import Checkbox from '@/app/components/Checkbox';
+import Input from '@/app/components/Input';
+import Select from '@/app/components/Select';
+import ProjectCard from '@/app/components/ProjectCard';
+import SafeImage from '@/app/components/SafeImage';
 
 export default function AdminPortfolio() {
   const [portfolios, setPortfolios] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingPortfolio, setEditingPortfolio] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState('all');
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     image: '/images/portfolio/default.svg',
     technologies: [],
-    category: 'Web',
+    category: 'Web Development',
     status: 'active',
     featured: false,
     demoUrl: '',
@@ -30,15 +36,15 @@ export default function AdminPortfolio() {
   const [importLoading, setImportLoading] = useState(false);
 
   const categories = [
-    { value: 'Web', label: 'Web Development' },
-    { value: 'Mobile', label: 'Mobile App' },
-    { value: 'Desktop', label: 'Desktop App' },
-    { value: 'Game', label: 'Game Development' },
-    { value: 'AI', label: 'AI/ML' },
-    { value: 'Bot', label: 'Bot Development' },
+    { value: 'Web Development', label: 'Web Development' },
+    { value: 'Mobile App', label: 'Mobile App' },
+    { value: 'Desktop App', label: 'Desktop App' },
+    { value: 'Game Development', label: 'Game Development' },
+    { value: 'AI/ML', label: 'AI/ML' },
+    { value: 'Bot Development', label: 'Bot Development' },
     { value: 'IoT', label: 'IoT Projects' },
-    { value: 'Graphic Design', label: 'Graphic Design' },
-    { value: 'Brand', label: 'Brand Projects' },
+    { value: 'Design', label: 'Design' },
+    { value: 'Branding', label: 'Branding' },
     { value: 'Other', label: 'Other' }
   ];
 
@@ -174,7 +180,7 @@ export default function AdminPortfolio() {
       description: '',
       image: '/images/portfolio/default.svg',
       technologies: [],
-      category: 'Web',
+      category: 'Web Development',
       status: 'active',
       featured: false,
       demoUrl: '',
@@ -373,6 +379,17 @@ export default function AdminPortfolio() {
     }
   };
 
+  // Get unique categories from portfolios
+  const getUniqueCategories = () => {
+    const uniqueCategories = [...new Set(portfolios.map(p => p.category))];
+    return uniqueCategories.sort();
+  };
+
+  // Filter portfolios by category
+  const filteredPortfolios = selectedCategory === 'all' 
+    ? portfolios 
+    : portfolios.filter(p => p.category === selectedCategory);
+
   if (loading) {
     return (
       <div className="page-content">
@@ -387,194 +404,102 @@ export default function AdminPortfolio() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Page Header */}
-      <PageHeader
-        title="Portfolio Management"
-        subtitle="Showcase your projects and professional work"
-        icon="fas fa-briefcase"
-        actions={[
-          {
-            label: 'Add New Project',
-            variant: 'primary',
-            icon: 'fas fa-plus',
-            onClick: () => {
-              resetForm();
-              setShowModal(true);
+    <>
+      <div className="space-y-6">
+        {/* Page Header */}
+        <PageHeader
+          title="Portfolio Management"
+          subtitle="Showcase your projects and professional work"
+          icon="fas fa-briefcase"
+          actions={[
+            {
+              label: 'Add New Project',
+              variant: 'primary',
+              icon: 'fas fa-plus',
+              onClick: () => {
+                resetForm();
+                setShowModal(true);
+              }
+            },
+            {
+              label: 'Import',
+              variant: 'secondary',
+              icon: 'fas fa-file-import',
+              onClick: () => setShowImportModal(true)
+            },
+            {
+              label: 'Export',
+              variant: 'secondary',
+              icon: 'fas fa-file-export',
+              onClick: handleExport
             }
-          },
-          {
-            label: 'Import',
-            variant: 'secondary',
-            icon: 'fas fa-file-import',
-            onClick: () => setShowImportModal(true)
-          },
-          {
-            label: 'Export',
-            variant: 'secondary',
-            icon: 'fas fa-file-export',
-            onClick: handleExport
-          }
-        ]}
-        stats={[
-          { label: 'Total Projects', value: portfolios.length }
-        ]}
-      />
+          ]}
+          stats={[
+            { label: 'Total Projects', value: portfolios.length }
+          ]}
+        />
 
-      {/* Portfolio Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {portfolios.map((portfolio) => (
-          <div key={portfolio._id} className="bg-[#1a2e1a]/50 rounded-lg border border-[#3e503e]/30 overflow-hidden hover:border-[#e8c547]/30 transition-all duration-300">
-            {/* Project Image */}
-            <div className="relative h-48 bg-[#0e1b12]">
-              {portfolio.image ? (
-                <img
-                  src={portfolio.image}
-                  alt={portfolio.title}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.target.src = '/images/portfolio/default.svg';
-                  }}
-                />
-              ) : (
-                <img 
-                  src="/images/portfolio/default.svg" 
-                  alt="Default placeholder" 
-                  className="w-full h-full object-cover"
-                />
-              )}
-              
-              {/* Status Badge */}
-              <div className="absolute top-3 left-3">
-                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                  portfolio.status === 'active' 
-                    ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-                    : 'bg-gray-500/20 text-gray-400 border border-gray-500/30'
-                }`}>
-                  {portfolio.status}
-                </span>
-              </div>
-
-              {/* Featured Badge */}
-              {portfolio.featured && (
-                <div className="absolute top-3 right-3">
-                  <span className="bg-[#e8c547]/20 text-[#e8c547] px-2 py-1 rounded-full text-xs font-medium border border-[#e8c547]/30">
-                    <i className="fas fa-star mr-1"></i>
-                    Featured
-                  </span>
-                </div>
-              )}
-            </div>
-
-            {/* Project Info */}
-            <div className="p-4">
-              <div className="flex items-start justify-between mb-2">
-                <h3 className="text-lg font-semibold text-white truncate">
-                  {portfolio.title}
-                </h3>
-                <span className="text-xs text-gray-400 ml-2">
-                  #{portfolio.order}
-                </span>
-              </div>
-              
-              <p className="text-gray-400 text-sm mb-3 line-clamp-2">
-                {portfolio.description}
-              </p>
-
-              {/* Category */}
-              <div className="mb-3">
-                <span className="inline-block bg-[#e8c547]/10 text-[#e8c547] px-2 py-1 rounded text-xs border border-[#e8c547]/20">
-                  {categories.find(c => c.value === portfolio.category)?.label || portfolio.category}
-                </span>
-              </div>
-
-              {/* Technologies */}
-              {portfolio.technologies && portfolio.technologies.length > 0 && (
-                <div className="mb-4">
-                  <div className="flex flex-wrap gap-1">
-                    {portfolio.technologies.slice(0, 3).map((tech, index) => (
-                      <span
-                        key={index}
-                        className="bg-[#3e503e]/30 text-gray-300 px-2 py-1 rounded text-xs"
-                      >
-                        {tech}
-                      </span>
-                    ))}
-                    {portfolio.technologies.length > 3 && (
-                      <span className="text-gray-400 text-xs px-2 py-1">
-                        +{portfolio.technologies.length - 3} more
-                      </span>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* Action Buttons */}
-              <div className="flex items-center justify-between pt-3 border-t border-[#3e503e]/30">
-                <div className="flex space-x-2">
-                  {portfolio.demoUrl && (
-                    <a
-                      href={portfolio.demoUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[#e8c547] hover:text-[#d4b445] transition-colors"
-                      title="View Demo"
-                    >
-                      <i className="fas fa-external-link-alt"></i>
-                    </a>
-                  )}
-                  {portfolio.githubUrl && (
-                    <a
-                      href={portfolio.githubUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[#e8c547] hover:text-[#d4b445] transition-colors"
-                      title="View Code"
-                    >
-                      <i className="fab fa-github"></i>
-                    </a>
-                  )}
-                </div>
-                
-                <div className="flex space-x-2">
-                  <button
-                    onClick={() => handleEdit(portfolio)}
-                    className="text-blue-400 hover:text-blue-300 transition-colors"
-                    title="Edit"
-                  >
-                    <i className="fas fa-edit"></i>
-                  </button>
-                  <button
-                    onClick={() => handleDelete(portfolio._id)}
-                    className="text-red-400 hover:text-red-300 transition-colors"
-                    title="Delete"
-                  >
-                    <i className="fas fa-trash"></i>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Empty State */}
-      {portfolios.length === 0 && (
-        <div className="text-center py-12">
-          <i className="fas fa-briefcase text-6xl text-gray-600 mb-4"></i>
-          <h3 className="text-xl font-semibold text-gray-400 mb-2">No Portfolio Projects</h3>
-          <p className="text-gray-500 mb-6">Start by adding your first project to showcase your work.</p>
-          <Button
-            variant="primary"
-            onClick={() => {
-              resetForm();
-              setShowModal(true);
-            }}
+        {/* Category Filter Tabs */}
+        <div className="flex flex-wrap gap-2 p-4 bg-[#0e1b12]/50 rounded-lg border border-[#3e503e]/30 mb-6">
+          <button
+            onClick={() => setSelectedCategory('all')}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              selectedCategory === 'all'
+                ? 'bg-[#e8c547] text-black'
+                : 'bg-[#1a2b1a] text-gray-300 hover:bg-[#2a3b2a] hover:text-white'
+            }`}
           >
-            Add Your First Project
-          </Button>
+            All ({portfolios.length})
+          </button>
+          {getUniqueCategories().map((category) => {
+            const count = portfolios.filter(p => p.category === category).length;
+            return (
+              <button
+                key={category}
+                onClick={() => setSelectedCategory(category)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                  selectedCategory === category
+                    ? 'bg-[#e8c547] text-black'
+                    : 'bg-[#1a2b1a] text-gray-300 hover:bg-[#2a3b2a] hover:text-white'
+                }`}
+              >
+                {category} ({count})
+              </button>
+            );
+          })}
         </div>
-      )}
+
+        {/* Portfolio Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredPortfolios.map((portfolio) => (
+            <ProjectCard
+              key={portfolio._id}
+              project={portfolio}
+              isAdmin={true}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+            />
+          ))}
+        </div>
+
+        {/* Empty State */}
+        {filteredPortfolios.length === 0 && (
+          <div className="text-center py-12">
+            <i className="fas fa-briefcase text-6xl text-gray-600 mb-4"></i>
+            <h3 className="text-xl font-semibold text-gray-400 mb-2">No Portfolio Projects</h3>
+            <p className="text-gray-500 mb-6">Start by adding your first project to showcase your work.</p>
+            <Button
+              variant="primary"
+              onClick={() => {
+                resetForm();
+                setShowModal(true);
+              }}
+            >
+              Add Your First Project
+            </Button>
+          </div>
+        )}
+      </div>
 
       {/* Project Modal */}
       <Modal
@@ -586,38 +511,37 @@ export default function AdminPortfolio() {
         title={editingPortfolio ? 'Edit Project' : 'Add New Project'}
         size="xl"
         variant="modern"
-        footer={
-          <>
-            <Button variant="ghost" onClick={() => {
-              setShowModal(false);
-              resetForm();
-            }}>
-              Cancel
-            </Button>
-            <Button variant="primary" onClick={handleSubmit}>
-              {editingPortfolio ? 'Update Project' : 'Create Project'}
-            </Button>
-          </>
-        }
+        position="center"
+        zIndex={99999}
+        preventScroll={true}
+        hideFooter={true}
       >
-        <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
-          {/* Title */}
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Project Title *
-            </label>
-            <input
-              type="text"
-              value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              className="w-full px-3 py-2 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-white focus:border-[#e8c547] focus:outline-none"
-              required
-            />
-          </div>
+        <form className="space-y-8" onSubmit={(e) => e.preventDefault()}>
+          {/* Basic Information Section */}
+          <div className="space-y-6">
+            <div className="pb-2 border-b border-[#3e503e]/30">
+              <h3 className="text-lg font-semibold text-[#e8c547] flex items-center gap-2">
+                <i className="fas fa-info-circle"></i>
+                Basic Information
+              </h3>
+            </div>
+            
+            {/* Title */}
+            <div>
+              <Input
+                label="Project Title"
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                required
+                placeholder="Enter project title"
+                icon="fas fa-heading"
+              />
+            </div>
 
           {/* Description */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
+              <i className="fas fa-align-left mr-2"></i>
               Description *
             </label>
             <textarea
@@ -628,12 +552,23 @@ export default function AdminPortfolio() {
               required
             />
           </div>
+          </div>
 
-          {/* Image Upload */}
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Project Image
-            </label>
+          {/* Media Section */}
+          <div className="space-y-6">
+            <div className="pb-2 border-b border-[#3e503e]/30">
+              <h3 className="text-lg font-semibold text-[#e8c547] flex items-center gap-2">
+                <i className="fas fa-image"></i>
+                Media
+              </h3>
+            </div>
+            
+            {/* Image Upload */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                <i className="fas fa-image mr-2"></i>
+                Project Image
+              </label>
             <div className="space-y-3">
               {formData.image && (
                 <div className="relative w-full h-40 bg-[#0e1b12] rounded-lg overflow-hidden mb-2">
@@ -645,25 +580,25 @@ export default function AdminPortfolio() {
                       e.target.src = '/images/portfolio/default.svg';
                     }}
                   />
-                  <button
+                  <Button
                     type="button"
                     onClick={() => setFormData({ ...formData, image: '' })}
-                    className="absolute top-2 right-2 bg-red-500/80 text-white p-1 rounded-full hover:bg-red-600 transition-colors"
+                    className="absolute top-2 right-2"
+                    variant="danger"
+                    size="sm"
+                    icon="fas fa-times"
                     title="Remove image"
-                  >
-                    <i className="fas fa-times"></i>
-                  </button>
+                  />
                 </div>
               )}
               
               <div className="flex space-x-2">
                 <div className="flex-1">
-                  <input
-                    type="text"
+                  <Input
                     value={formData.image}
                     onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                    className="w-full px-3 py-2 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-white focus:border-[#e8c547] focus:outline-none"
-                    placeholder="Image path (optional)"
+                    placeholder="Image path or upload a file"
+                    icon="fas fa-link"
                   />
                 </div>
                 <span className="text-gray-400 flex items-center">or</span>
@@ -673,92 +608,80 @@ export default function AdminPortfolio() {
                     id="image-upload"
                     onChange={handleImageUpload}
                     accept="image/*"
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                     disabled={uploadingImage}
                   />
-                  <label
-                    htmlFor="image-upload"
-                    className={`px-4 py-2 bg-[#3e503e] text-white rounded-lg cursor-pointer hover:bg-[#4e614e] transition-colors flex items-center ${
-                      uploadingImage ? 'opacity-70 cursor-not-allowed' : ''
-                    }`}
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    icon="fas fa-upload"
+                    loading={uploadingImage}
+                    disabled={uploadingImage}
+                    className="relative"
                   >
-                    {uploadingImage ? (
-                      <>
-                        <i className="fas fa-spinner fa-spin mr-2"></i>
-                        Uploading...
-                      </>
-                    ) : (
-                      <>
-                        <i className="fas fa-upload mr-2"></i>
-                        Upload
-                      </>
-                    )}
-                  </label>
+                    {uploadingImage ? 'Uploading...' : 'Upload'}
+                  </Button>
                 </div>
               </div>
             </div>
           </div>
+          </div>
+
+          {/* Project Details Section */}
+          <div className="space-y-6">
+            <div className="pb-2 border-b border-[#3e503e]/30">
+              <h3 className="text-lg font-semibold text-[#e8c547] flex items-center gap-2">
+                <i className="fas fa-cog"></i>
+                Project Details
+              </h3>
+            </div>
 
           {/* Category and Status */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Category *
-              </label>
-              <select
-                value={formData.category}
-                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                className="w-full px-3 py-2 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-white focus:border-[#e8c547] focus:outline-none"
-                required
-              >
-                {categories.map((category) => (
-                  <option key={category.value} value={category.value}>
-                    {category.label}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <Select
+              label="Category"
+              value={formData.category}
+              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+              options={categories}
+              required
+              icon="fas fa-folder"
+            />
 
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Status
-              </label>
-              <select
-                value={formData.status}
-                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                className="w-full px-3 py-2 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-white focus:border-[#e8c547] focus:outline-none"
-              >
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-              </select>
-            </div>
+            <Select
+              label="Status"
+              value={formData.status}
+              onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+              options={[
+                { value: 'active', label: 'Active' },
+                { value: 'completed', label: 'Completed' },
+                { value: 'in_progress', label: 'In Progress' },
+                { value: 'planned', label: 'Planned' }
+              ]}
+              icon="fas fa-tasks"
+            />
           </div>
 
           {/* URLs */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Demo URL
-              </label>
-              <input
+              <Input
+                label="Demo URL"
                 type="url"
                 value={formData.demoUrl}
                 onChange={(e) => setFormData({ ...formData, demoUrl: e.target.value })}
-                className="w-full px-3 py-2 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-white focus:border-[#e8c547] focus:outline-none"
                 placeholder="https://demo.example.com"
+                icon="fas fa-external-link-alt"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                GitHub URL
-              </label>
-              <input
+              <Input
+                label="GitHub URL"
                 type="url"
                 value={formData.githubUrl}
                 onChange={(e) => setFormData({ ...formData, githubUrl: e.target.value })}
-                className="w-full px-3 py-2 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-white focus:border-[#e8c547] focus:outline-none"
                 placeholder="https://github.com/username/repo"
+                icon="fab fa-github"
               />
             </div>
           </div>
@@ -766,6 +689,7 @@ export default function AdminPortfolio() {
           {/* Technologies */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
+              <i className="fas fa-code mr-2"></i>
               Technologies
             </label>
             <div className="flex space-x-2 mb-2">
@@ -777,13 +701,15 @@ export default function AdminPortfolio() {
                 className="flex-1 px-3 py-2 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-white focus:border-[#e8c547] focus:outline-none"
                 placeholder="Add technology (e.g., React, Node.js)"
               />
-              <button
+              <Button
                 type="button"
                 onClick={addTechnology}
-                className="px-4 py-2 bg-[#e8c547] text-[#0e1b12] rounded-lg hover:bg-[#d4b445] transition-colors"
+                variant="primary"
+                size="sm"
+                icon="fas fa-plus"
               >
                 Add
-              </button>
+              </Button>
             </div>
             <div className="flex flex-wrap gap-2">
               {formData.technologies.map((tech, index) => (
@@ -807,29 +733,52 @@ export default function AdminPortfolio() {
           {/* Order and Featured */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Display Order
-              </label>
-              <input
+              <Input
+                label="Display Order"
                 type="number"
                 value={formData.order}
                 onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) || 0 })}
-                className="w-full px-3 py-2 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-white focus:border-[#e8c547] focus:outline-none"
                 min="0"
+                placeholder="0"
+                icon="fas fa-sort-numeric-up"
+                description="Lower numbers appear first"
               />
             </div>
 
-            <div className="flex items-center">
-              <label className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={formData.featured}
-                  onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
-                  className="w-4 h-4 text-[#e8c547] bg-[#0e1b12] border-[#3e503e] rounded focus:ring-[#e8c547] focus:ring-2"
-                />
-                <span className="text-sm text-gray-300">Featured Project</span>
-              </label>
+            <div>
+              <Checkbox
+                checked={formData.featured}
+                onChange={(checked) => setFormData({ ...formData, featured: checked })}
+                label="Featured Project"
+                description="Show this project prominently on the homepage"
+                icon="fas fa-star"
+                size="md"
+                variant="primary"
+              />
             </div>
+          </div>
+          </div>
+
+          {/* Form Actions */}
+          <div className="flex justify-end gap-3 pt-6 mt-6 border-t border-[#3e503e]/30">
+            <Button 
+              variant="secondary" 
+              onClick={() => {
+                setShowModal(false);
+                resetForm();
+              }}
+              icon="fas fa-times"
+            >
+              Cancel
+            </Button>
+            <Button 
+              variant="primary" 
+              onClick={handleSubmit}
+              icon={editingPortfolio ? 'fas fa-save' : 'fas fa-plus'}
+              loading={uploadingImage}
+            >
+              {editingPortfolio ? 'Update Project' : 'Create Project'}
+            </Button>
           </div>
         </form>
       </Modal>
@@ -844,6 +793,9 @@ export default function AdminPortfolio() {
         title="Import Portfolio Projects"
         size="md"
         variant="elegant"
+        position="center"
+        zIndex={99999}
+        preventScroll={true}
         footer={
           <>
             <Button variant="ghost" onClick={() => {
@@ -892,6 +844,6 @@ export default function AdminPortfolio() {
           </div>
         </div>
       </Modal>
-    </div>
+    </>
   );
 } 

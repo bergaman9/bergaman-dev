@@ -2,6 +2,46 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Prevent body width shift */
+body {
+  width: 100%;
+  scrollbar-width: thin;
+  scrollbar-color: #3e503e #0e1b12;
+}
+
+body::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+body::-webkit-scrollbar-track {
+  background: #0e1b12;
+  border-radius: 6px;
+}
+
+body::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #3e503e 0%, #2e3d29 100%);
+  border-radius: 6px;
+  border: 2px solid #0e1b12;
+}
+
+body::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #4e5f4e 0%, #3e503e 100%);
+}
+
+body::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(180deg, #e8c547 0%, #d4b445 100%);
+}
+
+body::-webkit-scrollbar-corner {
+  background: #0e1b12;
+}
+
 /* Circuit Board Background Animation */
 @layer base {
   body {
@@ -159,20 +199,63 @@
     display: none;
   }
 
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #3e503e #0e1b12;
+  }
+
   .custom-scrollbar::-webkit-scrollbar {
-    @apply w-2;
+    width: 8px;
+    height: 8px;
   }
 
   .custom-scrollbar::-webkit-scrollbar-track {
-    @apply bg-[#2e3d29]/30;
+    background: #0e1b12;
+    border-radius: 4px;
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    @apply bg-[#e8c547]/50 rounded-full;
+    background: #3e503e;
+    border-radius: 4px;
+    border: 1px solid #2e3d29;
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    @apply bg-[#e8c547]/70;
+    background: #4e5f4e;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:active {
+    background: #e8c547;
+  }
+
+  /* Modal specific scrollbar */
+  .modal-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #e8c547 #1a2e1a;
+  }
+
+  .modal-scrollbar::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  .modal-scrollbar::-webkit-scrollbar-track {
+    background: #1a2e1a;
+    border-radius: 5px;
+  }
+
+  .modal-scrollbar::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #e8c547 0%, #d4b445 100%);
+    border-radius: 5px;
+    border: 1px solid #2e3d29;
+  }
+
+  .modal-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #f4d76b 0%, #e8c547 100%);
+  }
+
+  .modal-scrollbar::-webkit-scrollbar-corner {
+    background: #1a2e1a;
   }
 
   /* Markdown Content Styling */
@@ -569,41 +652,49 @@
   }
 }
 
-/* Modal Z-Index Fixes */
-.modal-backdrop,
-.modal-overlay {
-  z-index: 1040 !important;
+/* Image error fallback styling */
+img.image-error {
+  @apply bg-gray-800 flex items-center justify-center;
+  color: #666;
 }
 
-.modal,
-.modal-container {
-  z-index: 1050 !important;
+img[src="/images/portfolio/default.svg"],
+img[src="/images/portfolio/default.jpg"] {
+  object-fit: contain;
 }
 
-.modal-content {
-  z-index: 1051 !important;
+/* Page Container Scrollbar */
+.page-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #3e503e #0e1b12;
 }
 
-/* Ensure modals are above admin header */
-.admin-header {
-  z-index: 1030;
+.page-scrollbar::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
 }
 
-/* Image selector modal should be above main modal */
-.image-selector-modal {
-  z-index: 1100 !important;
+.page-scrollbar::-webkit-scrollbar-track {
+  background: #0e1b12;
+  border-radius: 5px;
 }
 
-/* Fix for modal positioning */
-.modal-wrapper {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.page-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #3e503e 0%, #2e3d29 100%);
+  border-radius: 5px;
+  border: 1px solid #1a2e1a;
 }
 
-/* Prevent body scroll when modal is open */
-body.modal-open {
-  overflow: hidden;
+.page-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #4e5f4e 0%, #3e503e 100%);
+}
+
+.page-scrollbar::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(180deg, #e8c547 0%, #d4b445 100%);
+}
+
+/* Scrollbar Styles */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #3e503e #0e1b12;
 }

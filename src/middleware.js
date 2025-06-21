@@ -28,6 +28,11 @@ export async function middleware(request) {
   const { pathname } = request.nextUrl;
   const response = NextResponse.next();
   
+  // Skip middleware for static files
+  if (pathname.match(/\.(jpg|jpeg|png|gif|webp|svg|ico|css|js)$/i)) {
+    return response;
+  }
+  
   // Apply security headers to all responses
   const securityHeaders = {
     'Content-Security-Policy': SECURITY.HEADERS.CONTENT_SECURITY_POLICY,

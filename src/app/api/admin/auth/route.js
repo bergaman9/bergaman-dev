@@ -154,7 +154,11 @@ async function handleLogin(request) {
       // Session cookie'sini ayarla
       const response = NextResponse.json({ 
         success: true,
-        message: 'Authentication successful'
+        message: 'Authentication successful',
+        user: {
+          username: username,
+          role: 'admin'
+        }
       }, { 
         status: 200,
         headers: getSecurityHeadersObject()
@@ -241,7 +245,11 @@ async function checkSession(request) {
       return NextResponse.json({ 
         authenticated: true,
         username: payload.username,
-        role: payload.role
+        role: payload.role,
+        user: {
+          username: payload.username,
+          role: payload.role || 'admin'
+        }
       }, { 
         status: 200,
         headers: {

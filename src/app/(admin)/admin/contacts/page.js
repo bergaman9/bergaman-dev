@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import PageHeader from '../../../components/PageHeader';
+import Modal from '../../../components/Modal';
+import { toast } from 'react-hot-toast';
 
 export default function AdminContacts() {
   const [contacts, setContacts] = useState([]);
@@ -145,6 +147,8 @@ export default function AdminContacts() {
       case 'new': return 'bg-blue-500';
       case 'read': return 'bg-yellow-500';
       case 'replied': return 'bg-green-500';
+      case 'active': return 'bg-purple-500';
+      case 'closed': return 'bg-gray-500';
       default: return 'bg-gray-500';
     }
   };
@@ -154,6 +158,8 @@ export default function AdminContacts() {
       case 'new': return 'fas fa-envelope';
       case 'read': return 'fas fa-envelope-open';
       case 'replied': return 'fas fa-reply';
+      case 'active': return 'fas fa-comments';
+      case 'closed': return 'fas fa-lock';
       default: return 'fas fa-question';
     }
   };
@@ -181,31 +187,32 @@ export default function AdminContacts() {
   });
 
   return (
-    <div className="space-y-6">
-      <Head>
-        <title>Contact Management - Admin Panel</title>
-      </Head>
+    <>
+      <div className="space-y-6">
+        <Head>
+          <title>Contact Management - Admin Panel</title>
+        </Head>
 
-      {/* Page Header */}
-      <PageHeader
-        title="Contact Management"
-        subtitle="Manage and respond to contact form submissions"
-        icon="fas fa-envelope"
-        stats={[
-          { label: 'Total Messages', value: statistics.total || 0 },
-          { label: 'New Messages', value: statistics.new || 0 },
-          { label: 'Read Messages', value: statistics.read || 0 },
-          { label: 'Replied', value: statistics.replied || 0 }
-        ]}
-        actions={[
-          {
-            label: 'Refresh',
-            variant: 'secondary',
-            icon: 'fas fa-sync-alt',
-            onClick: fetchContacts
-          }
-        ]}
-      />
+        {/* Page Header */}
+        <PageHeader
+          title="Contact Management"
+          subtitle="Manage and respond to contact form submissions"
+          icon="fas fa-envelope"
+          stats={[
+            { label: 'Total Messages', value: statistics.total || 0 },
+            { label: 'New Messages', value: statistics.new || 0 },
+            { label: 'Read Messages', value: statistics.read || 0 },
+            { label: 'Replied', value: statistics.replied || 0 }
+          ]}
+          actions={[
+            {
+              label: 'Refresh',
+              variant: 'secondary',
+              icon: 'fas fa-sync-alt',
+              onClick: fetchContacts
+            }
+          ]}
+        />
 
       {/* Filters */}
       <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg">
@@ -242,6 +249,8 @@ export default function AdminContacts() {
               <option value="new">New</option>
               <option value="read">Read</option>
               <option value="replied">Replied</option>
+              <option value="active">Active</option>
+              <option value="closed">Closed</option>
             </select>
           </div>
         </div>
@@ -296,13 +305,13 @@ export default function AdminContacts() {
                             
                             {/* Show latest reply preview */}
                             {!expandedContact || expandedContact !== contact._id ? (
-                              <div className="bg-[#2e3d29]/50 border-l-4 border-green-500 p-3 rounded-r">
+                              <div className={`${contact.replies[contact.replies.length - 1].type === 'admin' ? 'bg-[#2e3d29]/50 border-green-500' : 'bg-[#0e1b12]/50 border-blue-500'} border-l-4 p-3 rounded-r`}>
                                 <div className="flex items-center justify-between mb-1">
-                                  <span className="text-xs text-green-400 font-medium">
-                                    {contact.replies[contact.replies.length - 1].isFromAdmin ? 'Admin' : contact.replies[contact.replies.length - 1].senderName}:
+                                  <span className={`text-xs font-medium ${contact.replies[contact.replies.length - 1].type === 'admin' ? 'text-green-400' : 'text-blue-400'}`}>
+                                    {contact.replies[contact.replies.length - 1].type === 'admin' ? 'Admin' : contact.replies[contact.replies.length - 1].senderName}:
                                   </span>
                                   <span className="text-xs text-gray-500">
-                                    {formatDate(contact.replies[contact.replies.length - 1].timestamp)}
+                                    {formatDate(contact.replies[contact.replies.length - 1].createdAt || contact.replies[contact.replies.length - 1].timestamp)}
                                   </span>
                                 </div>
                                 <p className="text-gray-300 text-sm line-clamp-2">{contact.replies[contact.replies.length - 1].message}</p>
@@ -312,9 +321,9 @@ export default function AdminContacts() {
                               <div className="space-y-3 max-h-96 overflow-y-auto">
                                 {contact.replies.map((reply, index) => (
                                   <div 
-                                    key={index} 
+                                    key={reply._id || index} 
                                     className={`p-3 rounded-lg border-l-4 ${
-                                      reply.isFromAdmin 
+                                      reply.type === 'admin' 
                                         ? 'bg-green-900/20 border-green-500 ml-4' 
                                         : 'bg-blue-900/20 border-blue-500 mr-4'
                                     }`}
@@ -322,9 +331,9 @@ export default function AdminContacts() {
                                     <div className="flex items-center justify-between mb-2">
                                       <div className="flex items-center space-x-2">
                                         <span className={`text-xs font-medium ${
-                                          reply.isFromAdmin ? 'text-green-400' : 'text-blue-400'
+                                          reply.type === 'admin' ? 'text-green-400' : 'text-blue-400'
                                         }`}>
-                                          {reply.isFromAdmin ? (
+                                          {reply.type === 'admin' ? (
                                             <>
                                               <i className="fas fa-user-shield mr-1"></i>
                                               Admin
@@ -336,10 +345,10 @@ export default function AdminContacts() {
                                             </>
                                           )}
                                         </span>
-                                        <span className="text-xs text-gray-500">{reply.senderEmail}</span>
+                                        <span className="text-xs text-gray-500">{reply.email}</span>
                                       </div>
                                       <span className="text-xs text-gray-500">
-                                        {formatDate(reply.timestamp)}
+                                        {formatDate(reply.createdAt || reply.timestamp)}
                                       </span>
                                     </div>
                                     <p className="text-gray-300 text-sm whitespace-pre-wrap">{reply.message}</p>
@@ -384,6 +393,20 @@ export default function AdminContacts() {
                       <div className="flex items-center space-x-2 ml-4">
                         <button
                           onClick={() => {
+                            // Copy reply link to clipboard
+                            const replyLink = `${window.location.origin}/contact/reply/${contact._id}`;
+                            navigator.clipboard.writeText(replyLink).then(() => {
+                              toast.success('Reply link copied to clipboard!');
+                            });
+                          }}
+                          className="text-purple-400 hover:text-purple-300 transition-colors p-2 rounded hover:bg-[#2e3d29]/50"
+                          title="Copy Reply Link"
+                        >
+                          <i className="fas fa-link"></i>
+                        </button>
+
+                        <button
+                          onClick={() => {
                             setSelectedContact(contact);
                             setReplyMessage(contact.adminReply || '');
                             setShowReplyModal(true);
@@ -402,6 +425,8 @@ export default function AdminContacts() {
                           <option value="new">New</option>
                           <option value="read">Read</option>
                           <option value="replied">Replied</option>
+                          <option value="active">Active</option>
+                          <option value="closed">Closed</option>
                         </select>
                         
                         <button
@@ -450,139 +475,137 @@ export default function AdminContacts() {
           </>
         )}
       </div>
+    </div>
 
-      {/* Reply Modal */}
-      {showReplyModal && selectedContact && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#2e3d29] border border-[#3e503e] rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    {/* Reply Modal */}
+    <Modal
+      isOpen={showReplyModal && selectedContact}
+      onClose={() => {
+        setShowReplyModal(false);
+        setSelectedContact(null);
+        setReplyMessage('');
+      }}
+      title={`Reply to ${selectedContact?.name || ''}`}
+      icon="fas fa-reply"
+      size="2xl"
+      variant="modern"
+      hideFooter={true}
+      zIndex={99999}
+    >
+      {selectedContact && (
+        <div className="space-y-6">
             
-            {/* Modal Header */}
-            <div className="p-6 border-b border-[#3e503e]">
-              <div className="flex items-center justify-between">
-                <h3 className="text-xl font-bold text-[#e8c547]">
-                  <i className="fas fa-reply mr-2"></i>
-                  Reply to {selectedContact.name}
-                </h3>
-                <button
-                  onClick={() => {
-                    setShowReplyModal(false);
-                    setSelectedContact(null);
-                    setReplyMessage('');
-                  }}
-                  className="text-gray-400 hover:text-[#e8c547] transition-colors"
-                >
-                  <i className="fas fa-times text-xl"></i>
-                </button>
+            {/* Contact Info */}
+            <div className="bg-[#0e1b12] border border-[#3e503e] rounded-lg p-4 mb-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <span className="text-sm text-gray-400">Name:</span>
+                  <p className="text-[#d1d5db] font-medium">{selectedContact.name}</p>
+                </div>
+                <div>
+                  <span className="text-sm text-gray-400">Email:</span>
+                  <p className="text-[#d1d5db]">{selectedContact.email}</p>
+                </div>
+              </div>
+              
+              <div className="mb-4">
+                <span className="text-sm text-gray-400">Original Message:</span>
+                <div className="mt-2 p-3 bg-[#2e3d29]/50 border-l-4 border-[#e8c547] rounded">
+                  <p className="text-[#d1d5db] whitespace-pre-wrap">{selectedContact.message}</p>
+                </div>
+              </div>
+
+              <div className="text-xs text-gray-500">
+                Received: {formatDate(selectedContact.createdAt)}
+                {selectedContact.repliedAt && (
+                  <span className="ml-4">
+                    Last replied: {formatDate(selectedContact.repliedAt)}
+                  </span>
+                )}
               </div>
             </div>
 
-            {/* Modal Content */}
-            <div className="p-6">
-              
-              {/* Contact Info */}
+            {/* Conversation Thread */}
+            {selectedContact.replies && selectedContact.replies.length > 0 && (
               <div className="bg-[#0e1b12] border border-[#3e503e] rounded-lg p-4 mb-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <span className="text-sm text-gray-400">Name:</span>
-                    <p className="text-[#d1d5db] font-medium">{selectedContact.name}</p>
-                  </div>
-                  <div>
-                    <span className="text-sm text-gray-400">Email:</span>
-                    <p className="text-[#d1d5db]">{selectedContact.email}</p>
-                  </div>
-                </div>
-                
-                <div className="mb-4">
-                  <span className="text-sm text-gray-400">Original Message:</span>
-                  <div className="mt-2 p-3 bg-[#2e3d29]/50 border-l-4 border-[#e8c547] rounded">
-                    <p className="text-[#d1d5db] whitespace-pre-wrap">{selectedContact.message}</p>
-                  </div>
-                </div>
-
-                <div className="text-xs text-gray-500">
-                  Received: {formatDate(selectedContact.createdAt)}
-                  {selectedContact.repliedAt && (
-                    <span className="ml-4">
-                      Last replied: {formatDate(selectedContact.repliedAt)}
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              {/* Conversation Thread */}
-              {selectedContact.replies && selectedContact.replies.length > 0 && (
-                <div className="bg-[#0e1b12] border border-[#3e503e] rounded-lg p-4 mb-6">
-                  <h4 className="text-sm font-medium text-[#e8c547] mb-4">
-                    <i className="fas fa-comments mr-2"></i>
-                    Conversation Thread ({selectedContact.replies.length} {selectedContact.replies.length === 1 ? 'reply' : 'replies'})
-                  </h4>
-                  <div className="space-y-3 max-h-64 overflow-y-auto">
-                    {selectedContact.replies.map((reply, index) => (
-                      <div 
-                        key={index} 
-                        className={`p-3 rounded-lg border-l-4 ${
-                          reply.isFromAdmin 
-                            ? 'bg-green-900/20 border-green-500 ml-4' 
-                            : 'bg-blue-900/20 border-blue-500 mr-4'
-                        }`}
-                      >
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="flex items-center space-x-2">
-                            <span className={`text-xs font-medium ${
-                              reply.isFromAdmin ? 'text-green-400' : 'text-blue-400'
-                            }`}>
-                              {reply.isFromAdmin ? (
-                                <>
-                                  <i className="fas fa-user-shield mr-1"></i>
-                                  Admin
-                                </>
-                              ) : (
-                                <>
-                                  <i className="fas fa-user mr-1"></i>
-                                  {reply.senderName}
-                                </>
-                              )}
-                            </span>
-                            <span className="text-xs text-gray-500">{reply.senderEmail}</span>
-                          </div>
-                          <span className="text-xs text-gray-500">
-                            {formatDate(reply.timestamp)}
+                <h4 className="text-sm font-medium text-[#e8c547] mb-4">
+                  <i className="fas fa-comments mr-2"></i>
+                  Conversation Thread ({selectedContact.replies.length} {selectedContact.replies.length === 1 ? 'reply' : 'replies'})
+                </h4>
+                <div className="space-y-3 max-h-64 overflow-y-auto">
+                  {selectedContact.replies.map((reply, index) => (
+                    <div 
+                      key={reply._id || index} 
+                      className={`p-3 rounded-lg border-l-4 ${
+                        reply.type === 'admin' 
+                          ? 'bg-green-900/20 border-green-500 ml-4' 
+                          : 'bg-blue-900/20 border-blue-500 mr-4'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center space-x-2">
+                          <span className={`text-xs font-medium ${
+                            reply.type === 'admin' ? 'text-green-400' : 'text-blue-400'
+                          }`}>
+                            {reply.type === 'admin' ? (
+                              <>
+                                <i className="fas fa-user-shield mr-1"></i>
+                                Admin
+                              </>
+                            ) : (
+                              <>
+                                <i className="fas fa-user mr-1"></i>
+                                {reply.senderName}
+                              </>
+                            )}
+                          </span>
+                          <span className="text-xs text-gray-500">{reply.email}</span>
+                        </div>
+                        <span className="text-xs text-gray-500">
+                          {formatDate(reply.createdAt || reply.timestamp)}
+                        </span>
+                      </div>
+                      <p className="text-[#d1d5db] text-sm whitespace-pre-wrap">{reply.message}</p>
+                      {/* Show if user reply is unread */}
+                      {reply.type === 'user' && !reply.read && (
+                        <div className="mt-2">
+                          <span className="text-xs bg-purple-500 text-white px-2 py-1 rounded-full">
+                            <i className="fas fa-circle mr-1"></i>
+                            New Reply
                           </span>
                         </div>
-                        <p className="text-[#d1d5db] text-sm whitespace-pre-wrap">{reply.message}</p>
-                      </div>
-                    ))}
-                  </div>
+                      )}
+                    </div>
+                  ))}
                 </div>
-              )}
-
-              {/* Legacy Previous Reply */}
-              {selectedContact.adminReply && (!selectedContact.replies || selectedContact.replies.length === 0) && (
-                <div className="bg-[#0e1b12] border border-[#3e503e] rounded-lg p-4 mb-6">
-                  <h4 className="text-sm font-medium text-[#e8c547] mb-2">Previous Reply:</h4>
-                  <div className="p-3 bg-[#2e3d29]/50 border-l-4 border-green-500 rounded">
-                    <p className="text-[#d1d5db] whitespace-pre-wrap">{selectedContact.adminReply}</p>
-                  </div>
-                </div>
-              )}
-
-              {/* Reply Form */}
-              <div>
-                <label className="block text-sm font-medium text-[#e8c547] mb-2">
-                  Your Reply:
-                </label>
-                <textarea
-                  value={replyMessage}
-                  onChange={(e) => setReplyMessage(e.target.value)}
-                  placeholder="Type your reply here..."
-                  rows={8}
-                  className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] placeholder-gray-400 focus:border-[#e8c547]/50 focus:outline-none resize-vertical"
-                />
               </div>
+            )}
+
+            {/* Legacy Previous Reply */}
+            {selectedContact.adminReply && (!selectedContact.replies || selectedContact.replies.length === 0) && (
+              <div className="bg-[#0e1b12] border border-[#3e503e] rounded-lg p-4 mb-6">
+                <h4 className="text-sm font-medium text-[#e8c547] mb-2">Previous Reply:</h4>
+                <div className="p-3 bg-[#2e3d29]/50 border-l-4 border-green-500 rounded">
+                  <p className="text-[#d1d5db] whitespace-pre-wrap">{selectedContact.adminReply}</p>
+                </div>
+              </div>
+            )}
+
+            {/* Reply Form */}
+            <div>
+              <label className="block text-sm font-medium text-[#e8c547] mb-2">
+                Your Reply:
+              </label>
+              <textarea
+                value={replyMessage}
+                onChange={(e) => setReplyMessage(e.target.value)}
+                placeholder="Type your reply here..."
+                rows={8}
+                className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] placeholder-gray-400 focus:border-[#e8c547]/50 focus:outline-none resize-vertical"
+              />
             </div>
 
-            {/* Modal Footer */}
-            <div className="p-6 border-t border-[#3e503e] flex items-center justify-end space-x-4">
+            <div className="mt-6 flex items-center justify-end space-x-4">
               <button
                 onClick={() => {
                   setShowReplyModal(false);
@@ -612,9 +635,8 @@ export default function AdminContacts() {
               </button>
             </div>
           </div>
-        </div>
-      )}
-
-    </div>
+        )}
+      </Modal>
+    </>
   );
 } 

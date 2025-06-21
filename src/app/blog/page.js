@@ -12,6 +12,7 @@ import ImageModal from '../components/ImageModal';
 import { useAdminMode } from '../../hooks/useAdminMode';
 import BlogPostCard from '../components/BlogPostCard';
 import PageHeader from '../components/PageHeader';
+import PageContainer from '../components/PageContainer';
 
 export default function Blog() {
   const [posts, setPosts] = useState([]);
@@ -146,7 +147,7 @@ export default function Blog() {
   };
 
   return (
-    <div className="page-container">
+    <PageContainer>
       {/* Admin Edit Mode Bar */}
       {isAdminMode && (
         <div className="fixed top-0 left-0 right-0 bg-[#e8c547] text-[#0e1b12] px-4 py-2 z-50 flex items-center justify-between">
@@ -178,7 +179,7 @@ export default function Blog() {
         <link rel="canonical" href="https://bergaman.dev/blog" />
       </Head>
 
-      <main className={`page-content ${isAdminMode ? 'pt-24' : 'pt-16'}`}>
+      <main className={isAdminMode ? 'pt-12' : ''}>
         
         {/* Page Header */}
         <PageHeader
@@ -424,6 +425,6 @@ export default function Blog() {
           onClose={closeModal}
         />
       )}
-    </div>
+    </PageContainer>
   );
 }

@@ -64,7 +64,7 @@ function UnsubscribeContent() {
         <meta name="description" content="Unsubscribe from Bergaman's newsletter." />
       </Head>
       
-      <div className="page-content pt-16">
+      <div className="page-content pt-4">
         <div className="container mx-auto px-4 py-12">
         <div className="max-w-md mx-auto">
           
@@ -196,7 +196,7 @@ export default function NewsletterUnsubscribe() {
   return (
     <Suspense fallback={
       <div className="page-container">
-        <div className="page-content pt-16">
+        <div className="page-content pt-4">
           <div className="container mx-auto px-4 py-12">
             <div className="max-w-md mx-auto text-center">
               <i className="fas fa-spinner fa-spin text-4xl text-[#e8c547] mb-4"></i>

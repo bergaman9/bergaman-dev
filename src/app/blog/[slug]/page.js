@@ -25,12 +25,14 @@ export default function BlogPost() {
   const [passwordInput, setPasswordInput] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authorProfile, setAuthorProfile] = useState(null);
 
   useEffect(() => {
     if (params.slug) {
       fetchPost();
       loadLikes();
       fetchCommentCount();
+      fetchAuthorProfile();
     }
   }, [params.slug]);
 
@@ -199,6 +201,20 @@ export default function BlogPost() {
       incrementViews(post._id);
     } else {
       setPasswordError('Incorrect password. Please try again.');
+    }
+  };
+
+  const fetchAuthorProfile = async () => {
+    try {
+      const response = await fetch('/api/admin/settings');
+      if (response.ok) {
+        const settings = await response.json();
+        if (settings.authorProfile) {
+          setAuthorProfile(settings.authorProfile);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching author profile:', error);
     }
   };
 
@@ -428,6 +444,60 @@ export default function BlogPost() {
                   #{tag}
                 </span>
               ))}
+            </div>
+          </div>
+        )}
+
+        {/* Author Section */}
+        {(post.showAuthorBio !== false && authorProfile?.showAuthorBio !== false) && (authorProfile?.about || authorProfile?.bio) && (
+          <div className="mb-12">
+            <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg">
+              <div className="flex items-start space-x-4">
+                <div className="flex-shrink-0">
+                  <img
+                    src={authorProfile?.avatar || post.authorImage || '/images/profile/profile.png'}
+                    alt={authorProfile?.name || post.author || 'Bergaman'}
+                    className="w-16 h-16 rounded-full border-2 border-[#e8c547] shadow-lg"
+                  />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center mb-2">
+                    <h3 className="text-lg font-semibold text-[#e8c547]">
+                      {authorProfile?.name || post.author || 'Bergaman'}
+                    </h3>
+                    <div className="ml-2 w-5 h-5 bg-[#e8c547] rounded-full flex items-center justify-center">
+                      <i className="fas fa-crown text-[#0e1b12] text-xs"></i>
+                    </div>
+                  </div>
+                  <p className="text-gray-300 leading-relaxed">
+                    {authorProfile?.about || authorProfile?.bio || 'Electrical & Electronics Engineer specializing in full-stack development and AI technologies.'}
+                  </p>
+                  {authorProfile?.social && (
+                    <div className="flex items-center space-x-4 mt-3">
+                      {authorProfile.social.github && (
+                        <a href={authorProfile.social.github} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[#e8c547] transition-colors">
+                          <i className="fab fa-github"></i>
+                        </a>
+                      )}
+                      {authorProfile.social.linkedin && (
+                        <a href={authorProfile.social.linkedin} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[#e8c547] transition-colors">
+                          <i className="fab fa-linkedin"></i>
+                        </a>
+                      )}
+                      {authorProfile.social.twitter && (
+                        <a href={authorProfile.social.twitter} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[#e8c547] transition-colors">
+                          <i className="fab fa-twitter"></i>
+                        </a>
+                      )}
+                      {authorProfile.social.website && (
+                        <a href={authorProfile.social.website} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[#e8c547] transition-colors">
+                          <i className="fas fa-globe"></i>
+                        </a>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         )}

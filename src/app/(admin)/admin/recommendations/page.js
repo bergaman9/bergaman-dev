@@ -11,6 +11,7 @@ import Select from '@/app/components/Select';
 import ImageUpload from '@/app/components/ImageUpload';
 import Modal from '@/app/components/Modal';
 import Card from '@/app/components/Card';
+import Checkbox from '@/app/components/Checkbox';
 import { useRouter } from 'next/navigation';
 import PageHeader from '@/app/components/PageHeader';
 import RecommendationCard from '../../../components/RecommendationCard';
@@ -163,6 +164,14 @@ export default function AdminRecommendationsPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    // Ensure required fields have default values
+    const submissionData = {
+      ...formData,
+      description: formData.description || 'No description provided',
+      genre: formData.genre || 'General',
+      recommendation: formData.recommendation || 'Recommended',
+    };
+    
     try {
       const url = editingRecommendation 
         ? `/api/admin/recommendations/${editingRecommendation._id}`
@@ -175,7 +184,7 @@ export default function AdminRecommendationsPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(submissionData),
       });
 
       const data = await response.json();
@@ -329,6 +338,53 @@ export default function AdminRecommendationsPage() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  // Fetch Spotify data
+  const fetchSpotifyData = async (url) => {
+    if (!url || !url.includes('spotify.com')) return;
+    
+    // Extract Spotify ID from URL
+    const match = url.match(/(?:track|album|playlist)\/([a-zA-Z0-9]+)/);
+    if (!match) return;
+    
+    const spotifyId = match[1];
+    const type = url.includes('/track/') ? 'track' : url.includes('/album/') ? 'album' : 'playlist';
+    
+    try {
+      // For now, just use the embed image
+      const embedUrl = `https://open.spotify.com/embed/${type}/${spotifyId}`;
+      setFormData(prev => ({
+        ...prev,
+        image: `https://i.scdn.co/image/${spotifyId}`, // Placeholder - would need Spotify API
+        description: `Spotify ${type}`,
+      }));
+      
+      toast.success('Spotify information loaded');
+    } catch (error) {
+      console.error('Error fetching Spotify data:', error);
+      toast.error('Failed to fetch Spotify data');
+    }
+  };
+
+  // Fetch favicon for links
+  const fetchFavicon = async (url) => {
+    if (!url) return;
+    
+    try {
+      const domain = new URL(url).hostname;
+      const faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=256`;
+      
+      setFormData(prev => ({
+        ...prev,
+        image: faviconUrl,
+      }));
+      
+      toast.success('Favicon loaded');
+    } catch (error) {
+      console.error('Error fetching favicon:', error);
+      toast.error('Failed to fetch favicon');
+    }
+  };
+
   const handleSelectChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
@@ -451,169 +507,162 @@ export default function AdminRecommendationsPage() {
   const renderCategorySpecificFields = () => {
     switch (formData.category) {
       case 'movie':
+      case 'series':
         return (
           <>
-            <div className="mb-4">
-              <Input
-                label="Director"
-                name="director"
-                value={formData.director}
-                onChange={handleInputChange}
-                placeholder="Director name"
-              />
-            </div>
-            <div className="mb-4">
-              <Select
-                label="Genre"
-                options={movieGenres}
-                value={formData.genre}
-                onChange={(value) => handleSelectChange('genre', value)}
-                placeholder="Select genre"
-                variant="primary"
-                fullWidth
-              />
-            </div>
+            <Input
+              label="Director"
+              name="director"
+              value={formData.director}
+              onChange={handleInputChange}
+              placeholder="Director name"
+              icon="fas fa-video"
+              required
+            />
+            <Select
+              label="Genre"
+              options={movieGenres}
+              value={formData.genre}
+              onChange={(value) => handleSelectChange('genre', value)}
+              placeholder="Select genre"
+              variant="primary"
+              fullWidth
+              usePortal={true}
+              required
+            />
+            <Input
+              label="Streaming Link"
+              name="link"
+              value={formData.link}
+              onChange={handleInputChange}
+              placeholder="Netflix, HBO, etc. URL"
+              icon="fas fa-play-circle"
+            />
           </>
         );
       case 'book':
         return (
           <>
-            <div className="mb-4">
-              <Input
-                label="Author"
-                name="author"
-                value={formData.author}
-                onChange={handleInputChange}
-                placeholder="Author name"
-              />
-            </div>
-            <div className="mb-4">
-              <Select
-                label="Genre"
-                options={bookGenres}
-                value={formData.genre}
-                onChange={(value) => handleSelectChange('genre', value)}
-                placeholder="Select genre"
-                variant="primary"
-                fullWidth
-              />
-            </div>
+            <Input
+              label="Author"
+              name="author"
+              value={formData.author}
+              onChange={handleInputChange}
+              placeholder="Author name"
+              icon="fas fa-user-edit"
+              required
+            />
+            <Select
+              label="Genre"
+              options={bookGenres}
+              value={formData.genre}
+              onChange={(value) => handleSelectChange('genre', value)}
+              placeholder="Select genre"
+              variant="primary"
+              fullWidth
+              usePortal={true}
+              required
+            />
           </>
         );
       case 'game':
         return (
           <>
-            <div className="mb-4">
-              <Input
-                label="Developer"
-                name="developer"
-                value={formData.developer}
-                onChange={handleInputChange}
-                placeholder="Developer name"
-              />
-            </div>
-            <div className="mb-4">
-              <Select
-                label="Genre"
-                options={gameGenres}
-                value={formData.genre}
-                onChange={(value) => handleSelectChange('genre', value)}
-                placeholder="Select genre"
-                variant="primary"
-                fullWidth
-              />
-            </div>
+            <Input
+              label="Developer"
+              name="developer"
+              value={formData.developer}
+              onChange={handleInputChange}
+              placeholder="Developer name"
+              icon="fas fa-code-branch"
+              required
+            />
+            <Select
+              label="Genre"
+              options={gameGenres}
+              value={formData.genre}
+              onChange={(value) => handleSelectChange('genre', value)}
+              placeholder="Select genre"
+              variant="primary"
+              fullWidth
+              usePortal={true}
+              required
+            />
+            <Input
+              label="Platform/Store URL"
+              name="link"
+              value={formData.link}
+              onChange={handleInputChange}
+              placeholder="Steam, Epic Games, etc. URL"
+              icon="fas fa-gamepad"
+            />
           </>
         );
       case 'link':
         return (
           <>
-            <div className="mb-4">
-              <Input
-                label="URL"
-                name="link"
-                value={formData.link}
-                onChange={handleInputChange}
-                placeholder="https://example.com"
-              />
-            </div>
-            <div className="mb-4">
-              <Select
-                label="Link Type"
-                options={linkTypeOptions}
-                value={formData.linkType}
-                onChange={(value) => handleSelectChange('linkType', value)}
-                placeholder="Select link type"
-                variant="primary"
-                fullWidth
-              />
-            </div>
+            <Input
+              label="URL"
+              name="link"
+              value={formData.link}
+              onChange={(e) => {
+                handleInputChange(e);
+                // Auto-fetch favicon when URL is entered
+                if (e.target.value && e.target.value.startsWith('http')) {
+                  fetchFavicon(e.target.value);
+                }
+              }}
+              placeholder="https://example.com"
+              icon="fas fa-link"
+              required
+            />
+            <Select
+              label="Link Type"
+              options={linkTypeOptions}
+              value={formData.linkType}
+              onChange={(value) => handleSelectChange('linkType', value)}
+              placeholder="Select link type"
+              variant="primary"
+              fullWidth
+              usePortal={true}
+              required
+            />
           </>
         );
       case 'music':
         return (
           <>
-            <div className="mb-4">
-              <Input
-                label="Artist"
-                name="author"
-                value={formData.author}
-                onChange={handleInputChange}
-                placeholder="Artist name"
-              />
-            </div>
-            <div className="mb-4">
-              <Input
-                label="Spotify URL"
-                name="link"
-                value={formData.link}
-                onChange={handleInputChange}
-                placeholder="https://open.spotify.com/track/..."
-              />
-            </div>
-            <div className="mb-4">
-              <Input
-                label="Genre"
-                name="genre"
-                value={formData.genre}
-                onChange={handleInputChange}
-                placeholder="Music genre (Pop, Rock, Hip-Hop, etc.)"
-              />
-            </div>
-          </>
-        );
-      case 'series':
-        return (
-          <>
-            <div className="mb-4">
-              <Input
-                label="Director/Creator"
-                name="director"
-                value={formData.director}
-                onChange={handleInputChange}
-                placeholder="Director or creator name"
-              />
-            </div>
-            <div className="mb-4">
-              <Select
-                label="Genre"
-                options={movieGenres}
-                value={formData.genre}
-                onChange={(value) => handleSelectChange('genre', value)}
-                placeholder="Select genre"
-                variant="primary"
-                fullWidth
-              />
-            </div>
-            <div className="mb-4">
-              <Input
-                label="Streaming Link"
-                name="link"
-                value={formData.link}
-                onChange={handleInputChange}
-                placeholder="Netflix, HBO, etc. URL"
-              />
-            </div>
+            <Input
+              label="Artist"
+              name="author"
+              value={formData.author}
+              onChange={handleInputChange}
+              placeholder="Artist name"
+              icon="fas fa-microphone"
+              required
+            />
+            <Input
+              label="Spotify URL"
+              name="link"
+              value={formData.link}
+              onChange={(e) => {
+                handleInputChange(e);
+                // Auto-fetch Spotify data when URL is entered
+                if (e.target.value && e.target.value.includes('spotify.com')) {
+                  fetchSpotifyData(e.target.value);
+                }
+              }}
+              placeholder="https://open.spotify.com/track/..."
+              icon="fab fa-spotify"
+            />
+            <Input
+              label="Genre"
+              name="genre"
+              value={formData.genre}
+              onChange={handleInputChange}
+              placeholder="Music genre"
+              icon="fas fa-music"
+            />
           </>
         );
       default:
@@ -796,13 +845,19 @@ export default function AdminRecommendationsPage() {
         scrollable={true}
         zIndex={9999}
         preventScroll={true}
-        closeOnOutsideClick={false}
+        closeOnOutsideClick={true}
         className="modal-container"
       >
-        <form id="modalForm" onSubmit={handleSubmit} className="space-y-6">
+        <form id="modalForm" onSubmit={handleSubmit} className="space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div>
-              <h3 className="text-lg font-medium mb-4 text-[#e8c547]">Basic Information</h3>
+            {/* Left Column - Basic Information */}
+            <div className="space-y-6">
+              <div className="pb-2 border-b border-[#3e503e]/30">
+                <h3 className="text-lg font-semibold text-[#e8c547] flex items-center gap-2">
+                  <i className="fas fa-info-circle"></i>
+                  Basic Information
+                </h3>
+              </div>
               
               <div className="mb-4">
                 <Input
@@ -824,6 +879,7 @@ export default function AdminRecommendationsPage() {
                   placeholder="Select category"
                   variant="primary"
                   fullWidth
+                  usePortal={true}
                   required
                 />
               </div>
@@ -846,162 +902,137 @@ export default function AdminRecommendationsPage() {
                   value={formData.description}
                   onChange={handleInputChange}
                   placeholder="Short description"
+                  required
                 />
               </div>
               
               {/* Rating - Only for movies, series, games, and books */}
               {formData.category !== 'link' && formData.category !== 'music' && (
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Rating (1-10)
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-300">
+                    Rating
                   </label>
-                  <div className="flex flex-col space-y-2">
-                    <div className="flex items-center">
-                      <input
-                        type="range"
-                        min="0.5"
-                        max="10"
-                        step="0.5"
-                        value={formData.rating}
-                        onChange={(e) => setFormData({ ...formData, rating: parseFloat(e.target.value) })}
-                        className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
-                      />
-                      <span className="ml-3 text-lg font-medium text-[#e8c547]">
-                        {formData.rating.toFixed(1)}
-                      </span>
-                    </div>
-                    
-                    <div className="flex items-center justify-between">
-                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
-                        <button
-                          key={num}
-                          type="button"
-                          onClick={() => setFormData({ ...formData, rating: num })}
-                          className={`text-lg ${
-                            Math.round(formData.rating) === num ? 'text-[#e8c547]' : 'text-gray-500'
-                          } focus:outline-none transition-colors duration-200`}
-                        >
-                          {num}
-                        </button>
-                      ))}
-                    </div>
-                    
-                    <div className="flex items-center justify-center mt-1">
-                      <div className="flex items-center">
-                        {[...Array(5)].map((_, i) => {
-                          const starValue = (i + 1) * 2;
-                          const isHalfFilled = formData.rating > starValue - 2 && formData.rating < starValue;
-                          const isFilled = formData.rating >= starValue;
-                          
-                          return (
-                            <div key={i} className="relative">
-                              <button
-                                type="button"
-                                onClick={() => setFormData({ ...formData, rating: starValue - 1 })}
-                                className="absolute left-0 w-1/2 h-full z-10 focus:outline-none"
-                                title={`${starValue - 1}`}
-                              ></button>
-                              <button
-                                type="button"
-                                onClick={() => setFormData({ ...formData, rating: starValue })}
-                                className="absolute right-0 w-1/2 h-full z-10 focus:outline-none"
-                                title={`${starValue}`}
-                              ></button>
-                              <span className="text-2xl">
-                                {isHalfFilled ? (
-                                  <span className="text-[#e8c547]">
-                                    <i className="fas fa-star-half-alt"></i>
-                                  </span>
-                                ) : isFilled ? (
-                                  <span className="text-[#e8c547]">
-                                    <i className="fas fa-star"></i>
-                                  </span>
-                                ) : (
-                                  <span className="text-gray-500">
-                                    <i className="far fa-star"></i>
-                                  </span>
-                                )}
-                              </span>
-                            </div>
-                          );
-                        })}
-                      </div>
+                  <div className="flex items-center gap-4">
+                    <input
+                      type="range"
+                      min="0"
+                      max="10"
+                      step="0.1"
+                      value={formData.rating}
+                      onChange={(e) => setFormData({ ...formData, rating: parseFloat(e.target.value) })}
+                      className="flex-1 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                      style={{
+                        background: `linear-gradient(to right, #e8c547 0%, #e8c547 ${formData.rating * 10}%, #374151 ${formData.rating * 10}%, #374151 100%)`
+                      }}
+                    />
+                    <div className="min-w-[3rem] text-center">
+                      <span className="text-lg font-semibold text-[#e8c547]">{formData.rating.toFixed(1)}</span>
+                      <span className="text-sm text-gray-400">/10</span>
                     </div>
                   </div>
                 </div>
               )}
-              
-              {renderCategorySpecificFields()}
-              
-              <div className="mb-4">
-                <Select
-                  label="Status"
-                  options={statusOptions}
-                  value={formData.status}
-                  onChange={(value) => handleSelectChange('status', value)}
-                  placeholder="Select status"
-                  variant="primary"
-                  fullWidth
-                />
+
+              {/* Category Specific Fields */}
+              <div className="space-y-4">
+                {renderCategorySpecificFields()}
               </div>
+
+              <Select
+                label="Status"
+                options={statusOptions}
+                value={formData.status}
+                onChange={(value) => handleSelectChange('status', value)}
+                placeholder="Select status"
+                variant="primary"
+                usePortal={true}
+                fullWidth
+              />
             </div>
-            
-            <div>
-              <h3 className="text-lg font-medium mb-4 text-[#e8c547]">Details & Media</h3>
+
+            {/* Right Column - Media & Details */}
+            <div className="space-y-6">
+              <div className="pb-2 border-b border-[#3e503e]/30">
+                <h3 className="text-lg font-semibold text-[#e8c547] flex items-center gap-2">
+                  <i className="fas fa-photo-video"></i>
+                  Media & Details
+                </h3>
+              </div>
               
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Image
-                </label>
-                <div className="flex flex-col space-y-4">
+              {/* Image */}
+              <div className="space-y-4">
+                {formData.image && (
                   <div className="relative w-full h-48 bg-[#0e1b12] border border-[#3e503e] rounded-lg overflow-hidden">
-                    {formData.image ? (
-                      <Image
-                        src={formData.image}
-                        alt="Recommendation"
-                        fill
-                        className="object-cover"
-                      />
-                    ) : (
-                      <div className="flex items-center justify-center h-full text-gray-500">
-                        <i className="fas fa-image text-3xl"></i>
-                      </div>
-                    )}
-                  </div>
-                  
-                  <div className="flex flex-col space-y-3">
-                    <ImageUpload 
-                      onImageUpload={handleImageUpload} 
-                      currentImage={formData.image} 
+                    <Image
+                      src={formData.image}
+                      alt="Recommendation"
+                      fill
+                      className="object-cover"
                     />
-                    
-                    {/* Image URL Input */}
-                    <div className="mt-2">
-                      <Input
-                        label="Image URL"
-                        name="image"
-                        value={formData.image || ''}
-                        onChange={handleInputChange}
-                        placeholder="Enter image URL or upload an image"
-                        className="w-full"
-                      />
-                    </div>
-                    
+                    <Button
+                      className="absolute top-2 right-2"
+                      variant="danger"
+                      size="sm"
+                      icon="fas fa-times"
+                      onClick={() => setFormData({ ...formData, image: '' })}
+                      title="Remove image"
+                    />
+                  </div>
+                )}
+                
+                <Input
+                  label="Image URL"
+                  name="image"
+                  value={formData.image || ''}
+                  onChange={handleInputChange}
+                  placeholder="Enter image URL or upload an image"
+                  icon="fas fa-link"
+                />
+                
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={async (e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                          const url = await handleUploadImage(file);
+                          if (url) {
+                            setFormData({ ...formData, image: url });
+                          }
+                        }
+                      }}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                      disabled={uploadingImage}
+                    />
                     <Button
                       variant="secondary"
                       size="sm"
-                      icon="fas fa-images"
-                      onClick={() => setShowImageSelector(true)}
+                      icon="fas fa-upload"
+                      loading={uploadingImage}
+                      disabled={uploadingImage}
+                      className="w-full"
                     >
-                      Choose from Library
+                      {uploadingImage ? 'Uploading...' : 'Upload Image'}
                     </Button>
                   </div>
+                  
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    icon="fas fa-images"
+                    onClick={() => setShowImageSelector(true)}
+                  >
+                    Choose from Library
+                  </Button>
                 </div>
               </div>
               
-              <div className="mb-4">
+              {/* Personal Recommendation */}
+              <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Personal Recommendation
+                  Personal Recommendation <span className="text-red-500">*</span>
                 </label>
                 <textarea
                   name="recommendation"
@@ -1009,40 +1040,44 @@ export default function AdminRecommendationsPage() {
                   onChange={handleInputChange}
                   placeholder="Why do you recommend this?"
                   className="w-full px-4 py-2 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-white focus:outline-none focus:ring-1 focus:ring-[#e8c547] focus:border-[#e8c547] transition-all duration-300"
-                  rows="6"
-                ></textarea>
-              </div>
-              
-              <div className="mb-4">
-                <Input
-                  label="Display Order"
-                  name="order"
-                  type="number"
-                  value={formData.order}
-                  onChange={handleInputChange}
-                  placeholder="Display order (lower numbers shown first)"
+                  rows="4"
+                  required
                 />
               </div>
               
-              <div className="flex justify-end gap-3 mt-8">
-                <Button
-                  variant="secondary"
-                  onClick={() => {
-                    setShowModal(false);
-                    resetForm();
-                  }}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  variant="primary"
-                  type="submit"
-                  loading={uploadingImage}
-                >
-                  {editingRecommendation ? 'Update' : 'Create'} Recommendation
-                </Button>
-              </div>
+              <Input
+                label="Display Order"
+                name="order"
+                type="number"
+                value={formData.order}
+                onChange={handleInputChange}
+                placeholder="0"
+                icon="fas fa-sort-numeric-up"
+                description="Lower numbers appear first"
+              />
             </div>
+          </div>
+
+          {/* Form Actions */}
+          <div className="flex justify-end gap-3 pt-6 mt-6 border-t border-[#3e503e]/30">
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setShowModal(false);
+                resetForm();
+              }}
+              icon="fas fa-times"
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="primary"
+              type="submit"
+              loading={uploadingImage}
+              icon={editingRecommendation ? 'fas fa-save' : 'fas fa-plus'}
+            >
+              {editingRecommendation ? 'Update' : 'Create'} Recommendation
+            </Button>
           </div>
         </form>
       </Modal>
@@ -1057,33 +1092,76 @@ export default function AdminRecommendationsPage() {
         preventScroll={true}
         zIndex={10000}
         hideFooter={true}
-        closeOnOutsideClick={false}
+        closeOnOutsideClick={true}
         className="image-selector-modal"
       >
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          {(formData.category !== 'all' && predefinedImages[formData.category]
-            ? predefinedImages[formData.category]
-            : getAllImages()
-          ).map((img, index) => (
-            <div
-              key={index}
-              className="relative aspect-square cursor-pointer rounded-lg overflow-hidden border-2 hover:border-[#e8c547] transition-all duration-200"
-              onClick={() => handleSelectImage(img)}
+        <div className="space-y-4">
+          {/* Filter Tabs */}
+          <div className="flex gap-2 flex-wrap pb-4 border-b border-[#3e503e]/30">
+            <button
+              type="button"
+              onClick={() => setFilter('all')}
+              className={`px-3 py-1.5 text-sm rounded-lg transition-all ${
+                filter === 'all' 
+                  ? 'bg-[#e8c547]/20 text-[#e8c547] border border-[#e8c547]/30' 
+                  : 'bg-[#2e3d29]/30 text-gray-300 hover:text-[#e8c547]'
+              }`}
             >
-              <Image
-                src={img}
-                alt="Thumbnail"
-                fill
-                className="object-cover"
-              />
-            </div>
-          ))}
+              All Images
+            </button>
+            {Object.keys(predefinedImages).map(category => (
+              <button
+                key={category}
+                type="button"
+                onClick={() => setFilter(category)}
+                className={`px-3 py-1.5 text-sm rounded-lg transition-all capitalize flex items-center gap-2 ${
+                  filter === category 
+                    ? 'bg-[#e8c547]/20 text-[#e8c547] border border-[#e8c547]/30' 
+                    : 'bg-[#2e3d29]/30 text-gray-300 hover:text-[#e8c547]'
+                }`}
+              >
+                <i className={categories.find(c => c.value === category)?.icon || 'fas fa-image'}></i>
+                {category}
+              </button>
+            ))}
+          </div>
+
+          {/* Image Grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 max-h-[400px] overflow-y-auto p-1 modal-scrollbar">
+            {(filter === 'all' 
+              ? getAllImages()
+              : predefinedImages[filter] || []
+            ).map((img, index) => (
+              <div
+                key={index}
+                className={`relative aspect-square cursor-pointer rounded-lg overflow-hidden border-2 transition-all duration-200 ${
+                  formData.image === img ? 'border-[#e8c547] ring-2 ring-[#e8c547]/50' : 'border-[#3e503e] hover:border-[#e8c547]/50'
+                }`}
+                onClick={() => handleSelectImage(img)}
+              >
+                <Image
+                  src={img}
+                  alt="Thumbnail"
+                  fill
+                  className="object-cover"
+                />
+                {formData.image === img && (
+                  <div className="absolute inset-0 bg-[#e8c547]/20 flex items-center justify-center">
+                    <div className="bg-[#e8c547] rounded-full p-1">
+                      <i className="fas fa-check text-[#0e1b12] text-sm"></i>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
         
-        <div className="flex justify-end mt-6">
+        <div className="flex justify-end mt-6 pt-4 border-t border-[#3e503e]/30">
           <Button
             variant="secondary"
             onClick={() => setShowImageSelector(false)}
+            icon="fas fa-times"
           >
             Cancel
           </Button>

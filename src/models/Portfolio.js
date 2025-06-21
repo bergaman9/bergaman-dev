@@ -27,7 +27,7 @@ const portfolioSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['active', 'inactive', 'published'],
+    enum: ['active', 'inactive', 'published', 'completed', 'in_progress', 'planned'],
     default: 'active'
   },
   featured: {

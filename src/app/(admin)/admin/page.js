@@ -9,6 +9,7 @@ import PageHeader from '../../components/PageHeader';
 import Button from '@/app/components/Button';
 import Input from '@/app/components/Input';
 import Alert from '../../components/Alert';
+import Loading from '../../components/Loading';
 
 // Dashboard component
 function AdminDashboard() {
@@ -173,14 +174,7 @@ function AdminDashboard() {
       </div>
 
       {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {[...Array(12)].map((_, i) => (
-            <div key={i} className="bg-[#1a2e20]/50 rounded-lg p-6 animate-pulse">
-              <div className="h-4 bg-gray-700 rounded w-1/2 mb-4"></div>
-              <div className="h-8 bg-gray-700 rounded w-1/3"></div>
-            </div>
-          ))}
-        </div>
+        <Loading />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {allQuickLinks.map((link) => (
@@ -430,8 +424,8 @@ function AdminLogin({ onLoginSuccess }) {
               Username <span className="text-red-500">*</span>
             </label>
             <div className="relative group">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <i className="fas fa-user text-gray-300 group-focus-within:text-[#e8c547] transition-colors duration-300"></i>
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                <i className="fas fa-user text-[#e8c547]/70 group-focus-within:text-[#e8c547] transition-colors duration-300"></i>
               </div>
               <input
                 id="username"
@@ -441,7 +435,7 @@ function AdminLogin({ onLoginSuccess }) {
                 required
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 rounded-lg bg-[#1a2e20]/80 backdrop-blur-sm border border-[#243e2b]/50 text-white focus:outline-none focus:ring-2 focus:ring-[#e8c547]/50 focus:border-[#e8c547] transition-all duration-300"
+                className="w-full pl-10 pr-4 py-3 rounded-lg bg-[#1a2e20] border border-[#243e2b]/50 text-white focus:outline-none focus:ring-2 focus:ring-[#e8c547]/50 focus:border-[#e8c547] transition-all duration-300"
                 placeholder="Enter your username"
                 disabled={isLoggingIn || loginDisabled}
               />
@@ -453,8 +447,8 @@ function AdminLogin({ onLoginSuccess }) {
               Password <span className="text-red-500">*</span>
             </label>
             <div className="relative group">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <i className="fas fa-lock text-gray-300 group-focus-within:text-[#e8c547] transition-colors duration-300"></i>
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                <i className="fas fa-lock text-gray-400 group-focus-within:text-[#e8c547] transition-colors duration-300"></i>
               </div>
               <input
                 id="password"
@@ -464,14 +458,14 @@ function AdminLogin({ onLoginSuccess }) {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-10 pr-10 py-3 rounded-lg bg-[#1a2e20]/80 backdrop-blur-sm border border-[#243e2b]/50 text-white focus:outline-none focus:ring-2 focus:ring-[#e8c547]/50 focus:border-[#e8c547] transition-all duration-300"
+                className="w-full pl-10 pr-10 py-3 rounded-lg bg-[#1a2e20] border border-[#243e2b]/50 text-white focus:outline-none focus:ring-2 focus:ring-[#e8c547]/50 focus:border-[#e8c547] transition-all duration-300"
                 placeholder="Enter your password"
                 disabled={isLoggingIn || loginDisabled}
               />
               <button
                 type="button"
                 onClick={togglePasswordVisibility}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-[#e8c547] transition-colors duration-300"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-[#e8c547] transition-colors duration-300 z-10"
               >
                 <i className={showPassword ? "fas fa-eye-slash" : "fas fa-eye"}></i>
               </button>

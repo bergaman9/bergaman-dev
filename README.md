@@ -1,6 +1,6 @@
 # 🐉 Bergaman Portfolio - The Dragon's Domain
 
-[![Version](https://img.shields.io/badge/version-2.5.5-blue.svg)](https://github.com/bergaman9/bergaman-dev)
+[![Version](https://img.shields.io/badge/version-2.5.13-blue.svg)](https://github.com/bergaman9/bergaman-dev)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/bergaman9/bergaman-dev/blob/main/LICENSE)
 [![Next.js](https://img.shields.io/badge/Next.js-15.3.3-black.svg)](https://nextjs.org/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-green.svg)](https://www.mongodb.com/)
@@ -18,7 +18,8 @@ Bergaman Portal is a personal portfolio, blog, and recommendation platform built
 - **Recommendation System**: Share your favorite games, books, and movies
 - **Admin Dashboard**: Manage all content through an intuitive admin interface
 - **Comment System**: Allow visitors to comment on blog posts
-- **Contact Form**: Let visitors reach out to you
+- **Contact Form**: Let visitors reach out to you with full reply system
+- **Reply System**: Bidirectional messaging between admin and users
 - **Newsletter**: Collect subscriber emails and send campaigns
 - **User Authentication**: Secure admin access with JWT
 - **Admin Logs**: Track all admin activities with detailed logging
@@ -118,7 +119,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 🌟 **Live Demo**
 
-- **🚀 Current Version (v2.5.5)**: [bergaman.dev](https://bergaman.dev)
+- **🚀 Current Version (v2.5.13)**: [bergaman.dev](https://bergaman.dev)
 - **🕰️ Legacy Version (v1.0.0)**: [bergaman-v1.vercel.app](https://bergaman-v1.vercel.app/)
 
 ## ✨ **Key Features**
@@ -258,7 +259,7 @@ bergaman-dev/
 
 ### **Admin Panel Access**
 1. Navigate to `/admin`
-2. Enter credentials: `bergasoft` / `tE0&5A3&DBb!c55dm98&`
+2. Enter your admin credentials (configured in environment variables)
 3. Access the dragon-themed dashboard
 
 ### **Content Management**
@@ -303,6 +304,11 @@ bergaman-dev/
 ### **Comments System**
 - `GET /api/admin/comments` - List comments
 - `PUT /api/admin/comments/[id]` - Moderate comment
+
+### **Contact & Reply System**
+- `GET /api/contacts/[id]` - Get contact details (public)
+- `POST /api/contacts/reply` - Send reply to conversation (public)
+- `POST /api/admin/contacts/[id]/reply` - Admin reply to contact
 
 ### **Newsletter System**
 - `POST /api/newsletter/subscribe` - Subscribe to newsletter
@@ -391,7 +397,17 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📊 **Version History**
 
-### **v2.5.5** (Current)
+### **v2.5.13** (Current)
+- 💬 **Contact Reply System**: Full bidirectional messaging between admin and users
+- 🔔 **Real-time Notifications**: Admin notifications for user replies
+- 📧 **Email Integration**: Automated email notifications for replies
+- 🎨 **Enhanced UI Components**: Improved modal system with backdrop click
+- 📊 **Real System Stats**: Live memory usage and session tracking
+- 🔢 **Version Management**: Removed 'v' prefix from all version displays
+- 🎯 **Admin Improvements**: Better conversation tracking and status management
+- 🔒 **Security Enhancements**: Rate limiting for public reply endpoints
+
+### **v2.5.5** (Previous)
 - 🛠️ Fixed initialization errors in Next.js server components
 - 🔧 Improved version handling in dynamic environments
 - 🚀 Updated to Next.js 15.3.3 with Turbopack support

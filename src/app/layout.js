@@ -4,9 +4,9 @@ export const dynamic = 'force-dynamic';
 import { Inter } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
-import { Analytics } from '@vercel/analytics/next';
 import { SITE_CONFIG, SEO_DEFAULTS, APP_VERSION } from '../lib/constants';
 import LayoutWrapper from './components/LayoutWrapper';
+import ImageWithFallback from './components/ImageWithFallback';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -120,14 +120,15 @@ export default function RootLayout({ children }) {
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
         <meta name="referrer" content="strict-origin-when-cross-origin" />
         <meta name="format-detection" content="telephone=no" />
+        <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black" />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} ${inter.className} antialiased min-h-screen text-[#d1d5db] flex flex-col`}>
+        <ImageWithFallback />
         <LayoutWrapper>
           {children}
         </LayoutWrapper>
-        <Analytics />
         
         {/* Structured Data */}
         <script

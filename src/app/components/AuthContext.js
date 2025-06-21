@@ -57,7 +57,7 @@ export default function AuthProvider({ children }) {
       
       if (res.ok && data.success) {
         setIsAuthenticated(true);
-        setUser(data.user || { username });
+        setUser(data.user || { username, role: 'admin' });
         
         // Admin etkinliğini logla
         await logActivity('login', `User ${username} logged in successfully`);
@@ -95,7 +95,7 @@ export default function AuthProvider({ children }) {
       
       if (res.ok && data.authenticated) {
         setIsAuthenticated(true);
-        setUser(data.user || { username: 'Admin' });
+        setUser(data.user || { username: data.username || 'Admin', role: data.role || 'admin' });
         
         // CSRF token oluştur
         const newCsrfToken = `${data.username}-${Date.now()}`;

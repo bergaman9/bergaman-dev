@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import Button from "./Button";
 
-export default function Header({ showHomeLink = false }) {
+export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAdminDropdownOpen, setIsAdminDropdownOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -95,7 +95,7 @@ export default function Header({ showHomeLink = false }) {
 
   // Navigation links
   const navigationItems = [
-    ...(showHomeLink ? [{ href: "/", label: "Home", icon: "fas fa-home" }] : []),
+    { href: "/", label: "Home", icon: "fas fa-home" },
     { href: "/about", label: "About", icon: "fas fa-user" },
     { href: "/portfolio", label: "Portfolio", icon: "fas fa-briefcase" },
     { href: "/recommendations", label: "Recs", icon: "fas fa-heart" },
@@ -106,7 +106,7 @@ export default function Header({ showHomeLink = false }) {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-[#0a1a0f] via-[#0e1b12] to-[#1a2e1a]/20 backdrop-blur-md border-b border-[#3e503e]/60">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-8 py-4">
-        <div className="flex justify-between items-center">
+        <div className="flex items-center justify-between">
           {/* Logo with Dragon Icon */}
           <Link href="/" className="flex items-center space-x-3 group">
             <div className="relative">
@@ -121,26 +121,26 @@ export default function Header({ showHomeLink = false }) {
             </div>
           </Link>
 
-          {/* Right Side - Navigation and Admin */}
-          <div className="flex items-center space-x-4 md:space-x-8">
-            {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center space-x-1">
-              {navigationItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-300 font-medium ${
-                    isActive(item.href)
-                      ? 'text-[#e8c547] bg-[#e8c547]/10 font-semibold'
-                      : 'text-gray-300 hover:text-[#e8c547] hover:bg-[#e8c547]/10'
-                  }`}
-                >
-                  <i className={`${item.icon} text-sm`}></i>
-                  <span>{item.label}</span>
-                </Link>
-              ))}
-            </nav>
+          {/* Desktop Navigation - Center when authenticated */}
+          <nav className={`hidden md:flex items-center space-x-1 ${isAuthenticated ? 'absolute left-1/2 transform -translate-x-1/2' : ''}`}>
+            {navigationItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-300 font-medium ${
+                  isActive(item.href)
+                    ? 'text-[#e8c547] bg-[#e8c547]/10 font-semibold'
+                    : 'text-gray-300 hover:text-[#e8c547] hover:bg-[#e8c547]/10'
+                }`}
+              >
+                <i className={`${item.icon} text-sm`}></i>
+                <span>{item.label}</span>
+              </Link>
+            ))}
+          </nav>
 
+          {/* Right Side - Admin and Mobile Menu */}
+          <div className="flex items-center space-x-4">
             {/* Admin Status (Desktop) - Only show if authenticated */}
             {isAuthenticated && (
               <div className="hidden md:block">

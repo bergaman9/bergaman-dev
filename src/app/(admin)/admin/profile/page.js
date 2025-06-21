@@ -3,12 +3,14 @@
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import ImageUpload from '@/components/ImageUpload';
+import toast from 'react-hot-toast';
 
 export default function AdminProfile() {
   const [profile, setProfile] = useState({
     name: 'Bergaman',
     email: 'contact@bergaman.dev',
     bio: 'Electrical & Electronics Engineer specializing in full-stack development and AI technologies.',
+    about: '',
     avatar: '/images/profile/profile.png',
     role: 'Administrator',
     preferences: {
@@ -34,17 +36,75 @@ export default function AdminProfile() {
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState('general');
 
+  // Fetch settings on mount
+  useEffect(() => {
+    fetchSettings();
+  }, []);
+
+  const fetchSettings = async () => {
+    try {
+      const response = await fetch('/api/admin/settings');
+      if (response.ok) {
+        const settings = await response.json();
+        if (settings.authorProfile) {
+          setProfile(prev => ({
+            ...prev,
+            name: settings.authorProfile.name || prev.name,
+            bio: settings.authorProfile.bio || prev.bio,
+            about: settings.authorProfile.about || prev.about,
+            avatar: settings.authorProfile.avatar || prev.avatar,
+            social: settings.authorProfile.social || prev.social,
+            preferences: {
+              ...prev.preferences,
+              showAuthorBio: settings.authorProfile.showAuthorBio !== undefined ? settings.authorProfile.showAuthorBio : prev.preferences.showAuthorBio
+            }
+          }));
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching settings:', error);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      alert('Profile updated successfully!');
+      // Get current settings
+      const settingsResponse = await fetch('/api/admin/settings');
+      const currentSettings = await settingsResponse.json();
+
+      // Update author profile in settings
+      const updatedSettings = {
+        ...currentSettings,
+        authorProfile: {
+          name: profile.name,
+          bio: profile.bio,
+          about: profile.about,
+          avatar: profile.avatar,
+          showAuthorBio: profile.preferences.showAuthorBio,
+          social: profile.social
+        }
+      };
+
+      // Save settings
+      const response = await fetch('/api/admin/settings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedSettings),
+      });
+
+      if (response.ok) {
+        toast.success('Profile updated successfully!');
+      } else {
+        throw new Error('Failed to update profile');
+      }
     } catch (error) {
       console.error('Error updating profile:', error);
-      alert('Failed to update profile');
+      toast.error('Failed to update profile');
     } finally {
       setSaving(false);
     }
@@ -170,6 +230,23 @@ export default function AdminProfile() {
                       className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-white focus:border-[#e8c547] focus:outline-none transition-colors duration-300 resize-vertical"
                       placeholder="Tell us about yourself..."
                     />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      About Section
+                      <span className="text-xs text-gray-400 ml-2">(Displayed on blog posts)</span>
+                    </label>
+                    <textarea
+                      value={profile.about}
+                      onChange={(e) => setProfile(prev => ({ ...prev, about: e.target.value }))}
+                      rows={6}
+                      className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-white focus:border-[#e8c547] focus:outline-none transition-colors duration-300 resize-vertical"
+                      placeholder="Write a detailed about section that will appear at the end of your blog posts. Leave empty to hide."
+                    />
+                    <p className="text-xs text-gray-400 mt-1">
+                      This content will be displayed as your author information on blog posts
+                    </p>
                   </div>
 
                   <div>

@@ -18,8 +18,12 @@ const ContactSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['new', 'read', 'replied'],
+    enum: ['new', 'read', 'replied', 'active', 'closed'],
     default: 'new'
+  },
+  lastActivity: {
+    type: Date,
+    default: Date.now
   },
   adminReply: {
     type: String,
@@ -35,25 +39,34 @@ const ContactSchema = new mongoose.Schema({
   },
   // Nested conversation thread
   replies: [{
+    _id: {
+      type: mongoose.Schema.Types.ObjectId,
+      default: mongoose.Types.ObjectId
+    },
     message: {
       type: String,
       required: true
     },
-    isFromAdmin: {
-      type: Boolean,
-      default: false
+    type: {
+      type: String,
+      enum: ['admin', 'user'],
+      required: true
     },
     senderName: {
       type: String,
       required: true
     },
-    senderEmail: {
+    email: {
       type: String,
       required: true
     },
-    timestamp: {
+    createdAt: {
       type: Date,
       default: Date.now
+    },
+    read: {
+      type: Boolean,
+      default: false
     },
     ipAddress: String,
     userAgent: String

@@ -10,8 +10,10 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const category = searchParams.get('category');
     const featured = searchParams.get('featured');
+    const limit = searchParams.get('limit');
 
-    let query = { status: 'active' }; // Always filter by active status
+    // Include all project statuses
+    let query = {};
     
     if (category && category !== 'all') {
       query.category = category;
@@ -24,8 +26,15 @@ export async function GET(request) {
     console.log('Portfolio query:', query);
     
     // Get portfolio items with proper sorting
-    const portfolios = await Portfolio.find(query)
+    let portfolioQuery = Portfolio.find(query)
       .sort({ featured: -1, order: 1, createdAt: -1 });
+    
+    // Apply limit if specified
+    if (limit && !isNaN(limit)) {
+      portfolioQuery = portfolioQuery.limit(parseInt(limit));
+    }
+    
+    const portfolios = await portfolioQuery;
     
     console.log(`Found ${portfolios.length} portfolio items`);
 

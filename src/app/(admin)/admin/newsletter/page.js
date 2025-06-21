@@ -3,6 +3,9 @@
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import PageHeader from '../../../components/PageHeader';
+import Modal from '../../../components/Modal';
+import Input from '../../../components/Input';
+import Select from '../../../components/Select';
 
 export default function AdminNewsletter() {
   const [activeTab, setActiveTab] = useState('subscribers');
@@ -177,12 +180,13 @@ export default function AdminNewsletter() {
   };
 
   return (
-    <div className="min-h-screen text-[#e2e8f0]">
-      <Head>
-        <title>Newsletter Management - Admin Panel</title>
-      </Head>
+    <>
+      <div className="min-h-screen text-[#e2e8f0]">
+        <Head>
+          <title>Newsletter Management - Admin Panel</title>
+        </Head>
 
-      <main className="space-y-6">
+        <main className="space-y-6">
         {/* Page Header */}
         <PageHeader
           title="Newsletter Management"
@@ -392,58 +396,40 @@ export default function AdminNewsletter() {
             )}
           </div>
         </div>
+        </main>
+      </div>
 
-        {/* Create Campaign Modal */}
-        {showCreateCampaign && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-[#0a1a0f]/95 backdrop-blur-md border border-[#3e503e]/50 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-              
-              {/* Modal Header */}
-              <div className="p-6 border-b border-[#3e503e]/30">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-xl font-bold text-[#e8c547]">
-                    <i className="fas fa-plus mr-2"></i>
-                    Create Newsletter Campaign
-                  </h3>
-                  <button
-                    onClick={() => setShowCreateCampaign(false)}
-                    className="text-gray-400 hover:text-[#e8c547] transition-colors"
-                  >
-                    <i className="fas fa-times text-xl"></i>
-                  </button>
-                </div>
-              </div>
-
-              {/* Modal Content */}
-              <div className="p-6 space-y-6">
-                
-                {/* Basic Info */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-[#e8c547] mb-2">
-                      Campaign Title
-                    </label>
-                    <input
-                      type="text"
-                      value={campaignData.title}
-                      onChange={(e) => setCampaignData({...campaignData, title: e.target.value})}
-                      className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#e2e8f0] placeholder-gray-400 focus:border-[#e8c547] focus:outline-none"
-                      placeholder="Enter campaign title"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-[#e8c547] mb-2">
-                      Email Subject
-                    </label>
-                    <input
-                      type="text"
-                      value={campaignData.subject}
-                      onChange={(e) => setCampaignData({...campaignData, subject: e.target.value})}
-                      className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#e2e8f0] placeholder-gray-400 focus:border-[#e8c547] focus:outline-none"
-                      placeholder="Enter email subject"
-                    />
-                  </div>
-                </div>
+      {/* Create Campaign Modal */}
+      <Modal
+        isOpen={showCreateCampaign}
+        onClose={() => setShowCreateCampaign(false)}
+        title="Create Newsletter Campaign"
+        icon="fas fa-plus"
+        size="xl"
+        variant="modern"
+        hideFooter={true}
+        zIndex={99999}
+      >
+        <div className="space-y-6">
+          {/* Basic Info */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Input
+              label="Campaign Title"
+              value={campaignData.title}
+              onChange={(e) => setCampaignData({...campaignData, title: e.target.value})}
+              placeholder="Enter campaign title"
+              icon="fas fa-heading"
+              required
+            />
+            <Input
+              label="Email Subject"
+              value={campaignData.subject}
+              onChange={(e) => setCampaignData({...campaignData, subject: e.target.value})}
+              placeholder="Enter email subject"
+              icon="fas fa-envelope"
+              required
+            />
+          </div>
 
                 {/* Content */}
                 <div>
@@ -459,52 +445,45 @@ export default function AdminNewsletter() {
                   />
                 </div>
 
-                {/* Target Audience */}
-                <div>
-                  <h4 className="text-lg font-semibold text-[#e8c547] mb-4">Target Audience</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-2">
-                        Subscriber Status
-                      </label>
-                      <select
-                        value={campaignData.targetAudience.status}
-                        onChange={(e) => setCampaignData({
-                          ...campaignData,
-                          targetAudience: {...campaignData.targetAudience, status: e.target.value}
-                        })}
-                        className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#e2e8f0] focus:border-[#e8c547] focus:outline-none"
-                      >
-                        <option value="active">Active Only</option>
-                        <option value="all">All Subscribers</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Modal Footer */}
-              <div className="p-6 border-t border-[#3e503e]/30 flex items-center justify-end space-x-4">
-                <button
-                  onClick={() => setShowCreateCampaign(false)}
-                  className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleCreateCampaign}
-                  disabled={!campaignData.title || !campaignData.subject || !campaignData.content}
-                  className="px-6 py-2 bg-[#e8c547] text-[#0e1b12] rounded-lg font-medium hover:bg-[#d4b445] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <i className="fas fa-save mr-2"></i>
-                  Create Campaign
-                </button>
-              </div>
+          {/* Target Audience */}
+          <div>
+            <h4 className="text-lg font-semibold text-[#e8c547] mb-4">Target Audience</h4>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Select
+                label="Subscriber Status"
+                value={campaignData.targetAudience.status}
+                onChange={(e) => setCampaignData({
+                  ...campaignData,
+                  targetAudience: {...campaignData.targetAudience, status: e.target.value}
+                })}
+                options={[
+                  { value: 'active', label: 'Active Only' },
+                  { value: 'all', label: 'All Subscribers' }
+                ]}
+                icon="fas fa-users"
+              />
             </div>
           </div>
-        )}
 
-      </main>
-    </div>
+          {/* Modal Footer */}
+          <div className="mt-6 flex items-center justify-end space-x-4">
+            <button
+              onClick={() => setShowCreateCampaign(false)}
+              className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleCreateCampaign}
+              disabled={!campaignData.title || !campaignData.subject || !campaignData.content}
+              className="px-6 py-2 bg-[#e8c547] text-[#0e1b12] rounded-lg font-medium hover:bg-[#d4b445] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <i className="fas fa-save mr-2"></i>
+              Create Campaign
+            </button>
+          </div>
+        </div>
+      </Modal>
+    </>
   );
 } 

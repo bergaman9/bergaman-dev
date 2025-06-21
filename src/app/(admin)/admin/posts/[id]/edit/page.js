@@ -6,6 +6,8 @@ import Link from 'next/link';
 import Head from 'next/head';
 import MarkdownEditor from '@/components/MarkdownEditor';
 import ImageUpload from '@/components/ImageUpload';
+import Card from '@/components/Card';
+import Select from '@/components/Select';
 
 export default function EditPost() {
   const params = useParams();
@@ -114,13 +116,15 @@ export default function EditPost() {
 
   const handleTitleChange = (e) => {
     const title = e.target.value;
+    const autoMetaTitle = title.length > 60 ? title.substring(0, 60) + '...' : title;
+    
     setPost(prev => ({
       ...prev,
       title,
       slug: generateSlug(title),
       seo: {
         ...prev?.seo,
-        metaTitle: title
+        metaTitle: prev?.seo?.metaTitle || autoMetaTitle
       }
     }));
   };
@@ -227,25 +231,24 @@ export default function EditPost() {
         <title>Edit Post - Admin Panel</title>
         <meta name="robots" content="noindex, nofollow" />
       </Head>
-      <div className="min-h-screen bg-gradient-to-b from-[#0e1b12] to-[#1a2e1a] text-[#d1d5db] p-6">
-        <div className="max-w-5xl mx-auto">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h1 className="text-3xl font-bold gradient-text mb-2">
-                <i className="fas fa-edit mr-3"></i>
-                Edit Post
-              </h1>
-              <p className="text-gray-400">Update your blog post content</p>
-            </div>
-            <Link
-              href="/admin/posts"
-              className="bg-gray-600/30 hover:bg-gray-600/50 text-white px-4 py-2 rounded-lg transition-colors duration-300 border border-gray-600/50"
-            >
-              <i className="fas fa-arrow-left mr-2"></i>
-              Back to Posts
-            </Link>
+      <div className="admin-content-wrapper">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-bold gradient-text mb-2">
+              <i className="fas fa-edit mr-3"></i>
+              Edit Post
+            </h1>
+            <p className="text-gray-400">Update your blog post content</p>
           </div>
+          <Link
+            href="/admin/posts"
+            className="bg-gray-600/30 hover:bg-gray-600/50 text-white px-4 py-2 rounded-lg transition-colors duration-300 border border-gray-600/50"
+          >
+            <i className="fas fa-arrow-left mr-2"></i>
+            Back to Posts
+          </Link>
+        </div>
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -253,7 +256,7 @@ export default function EditPost() {
               {/* Main Content */}
               <div className="lg:col-span-2 space-y-6">
                 {/* Title */}
-                <div className="bg-[#1a2e1a]/70 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg shadow-lg">
+                <Card showImage={false}>
                   <label className="block text-sm font-medium text-[#e8c547] mb-2">
                     Title *
                   </label>
@@ -264,10 +267,10 @@ export default function EditPost() {
                     className="w-full px-4 py-3 bg-[#0e1b12]/70 border border-[#3e503e] rounded-lg text-white focus:border-[#e8c547] focus:outline-none transition-colors duration-300"
                     required
                   />
-                </div>
+                </Card>
 
                 {/* Slug */}
-                <div className="bg-[#1a2e1a]/70 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg shadow-lg">
+                <Card showImage={false}>
                   <label className="block text-sm font-medium text-[#e8c547] mb-2">
                     Slug *
                   </label>
@@ -278,24 +281,36 @@ export default function EditPost() {
                     className="w-full px-4 py-3 bg-[#0e1b12]/70 border border-[#3e503e] rounded-lg text-white focus:border-[#e8c547] focus:outline-none transition-colors duration-300"
                     required
                   />
-                </div>
+                </Card>
 
                 {/* Description */}
-                <div className="bg-[#1a2e1a]/70 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg shadow-lg">
+                <Card showImage={false}>
                   <label className="block text-sm font-medium text-[#e8c547] mb-2">
                     Description *
                   </label>
                   <textarea
                     value={post?.description || ''}
-                    onChange={(e) => setPost(prev => ({ ...prev, description: e.target.value }))}
+                    onChange={(e) => {
+                      const description = e.target.value;
+                      const autoMetaDescription = description.length > 160 ? description.substring(0, 160) + '...' : description;
+                      
+                      setPost(prev => ({
+                        ...prev,
+                        description,
+                        seo: {
+                          ...prev?.seo,
+                          metaDescription: prev?.seo?.metaDescription || autoMetaDescription
+                        }
+                      }));
+                    }}
                     rows={3}
                     className="w-full px-4 py-3 bg-[#0e1b12]/70 border border-[#3e503e] rounded-lg text-white focus:border-[#e8c547] focus:outline-none transition-colors duration-300 resize-vertical"
                     required
                   />
-                </div>
+                </Card>
 
                 {/* Content */}
-                <div className="bg-[#1a2e1a]/70 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg shadow-lg">
+                <Card showImage={false}>
                   <label className="block text-sm font-medium text-[#e8c547] mb-2">
                     Content * (Markdown Editor)
                   </label>
@@ -305,13 +320,13 @@ export default function EditPost() {
                     placeholder="Write your blog post content here... You can use Markdown formatting."
                     className="w-full"
                   />
-                </div>
+                </Card>
               </div>
 
               {/* Sidebar */}
               <div className="space-y-6">
                 {/* Publish Settings */}
-                <div className="bg-[#1a2e1a]/70 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg shadow-lg">
+                <Card showImage={false}>
                   <h3 className="text-lg font-semibold text-[#e8c547] mb-4">Publish Settings</h3>
                   
                   <div className="space-y-4">
@@ -335,10 +350,10 @@ export default function EditPost() {
                       <span className="text-gray-300">Featured</span>
                     </label>
                   </div>
-                </div>
+                </Card>
 
                 {/* Visibility & Security Settings */}
-                <div className="bg-[#1a2e1a]/70 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg shadow-lg">
+                <Card showImage={false}>
                   <h3 className="text-lg font-semibold text-[#e8c547] mb-4">
                     <i className="fas fa-shield-alt mr-2"></i>
                     Visibility & Security
@@ -350,16 +365,16 @@ export default function EditPost() {
                       <label className="block text-sm font-medium text-gray-300 mb-2">
                         Post Visibility
                       </label>
-                      <select
+                      <Select
                         value={post?.visibility || 'public'}
                         onChange={(e) => setPost(prev => ({ ...prev, visibility: e.target.value }))}
-                        className="w-full px-4 py-3 bg-[#0e1b12]/70 border border-[#3e503e] rounded-lg text-white focus:border-[#e8c547] focus:outline-none"
+                        className="w-full"
                       >
                         <option value="public">🌍 Public - Anyone can view</option>
                         <option value="password">🔒 Password Protected</option>
                         <option value="members">👥 Members Only</option>
                         <option value="private">🔐 Private - Only admins</option>
-                      </select>
+                      </Select>
                     </div>
 
                     {/* Password Field (show only if password protected) */}
@@ -401,28 +416,28 @@ export default function EditPost() {
                       </div>
                     )}
                   </div>
-                </div>
+                </Card>
 
                 {/* Category */}
-                <div className="bg-[#1a2e1a]/70 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg shadow-lg">
+                <Card showImage={false}>
                   <label className="block text-sm font-medium text-[#e8c547] mb-2">
                     Category
                   </label>
-                  <select
+                  <Select
                     value={post?.category || 'technology'}
                     onChange={(e) => setPost(prev => ({ ...prev, category: e.target.value }))}
-                    className="w-full px-4 py-3 bg-[#0e1b12]/70 border border-[#3e503e] rounded-lg text-white focus:border-[#e8c547] focus:outline-none transition-colors duration-300"
+                    className="w-full"
                   >
                     {categories.map(category => (
                       <option key={category} value={category}>
                         {formatCategoryName(category)}
                       </option>
                     ))}
-                  </select>
-                </div>
+                  </Select>
+                </Card>
 
                 {/* Tags */}
-                <div className="bg-[#1a2e1a]/70 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg shadow-lg">
+                <Card showImage={false}>
                   <label className="block text-sm font-medium text-[#e8c547] mb-2">
                     Tags
                   </label>
@@ -468,10 +483,10 @@ export default function EditPost() {
                       <p className="text-gray-500 text-sm italic">No tags added yet</p>
                     )}
                   </div>
-                </div>
+                </Card>
 
                 {/* Featured Image */}
-                <div className="bg-[#1a2e1a]/70 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg shadow-lg">
+                <Card showImage={false}>
                   <label className="block text-sm font-medium text-[#e8c547] mb-2">
                     Featured Image
                   </label>
@@ -480,10 +495,10 @@ export default function EditPost() {
                     currentImage={post?.image}
                     className="w-full"
                   />
-                </div>
+                </Card>
 
                 {/* SEO Settings */}
-                <div className="bg-[#1a2e1a]/70 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg shadow-lg">
+                <Card showImage={false}>
                   <h3 className="text-lg font-semibold text-[#e8c547] mb-4">SEO Settings</h3>
                   
                   <div className="space-y-4">
@@ -498,8 +513,12 @@ export default function EditPost() {
                           ...prev,
                           seo: { ...prev?.seo, metaTitle: e.target.value }
                         }))}
+                        placeholder={post?.title ? `Auto: ${post.title.substring(0, 60)}${post.title.length > 60 ? '...' : ''}` : 'Enter meta title'}
                         className="w-full px-4 py-2 bg-[#0e1b12]/70 border border-[#3e503e] rounded-lg text-white focus:border-[#e8c547] focus:outline-none transition-colors duration-300"
                       />
+                      <p className="text-xs text-gray-400 mt-1">
+                        {post?.seo?.metaTitle ? `${post.seo.metaTitle.length}/60 characters` : 'Leave empty to use post title (max 60 chars)'}
+                      </p>
                     </div>
                     
                     <div>
@@ -512,12 +531,16 @@ export default function EditPost() {
                           ...prev,
                           seo: { ...prev?.seo, metaDescription: e.target.value }
                         }))}
+                        placeholder={post?.description ? `Auto: ${post.description.substring(0, 160)}${post.description.length > 160 ? '...' : ''}` : 'Enter meta description'}
                         rows={3}
                         className="w-full px-4 py-2 bg-[#0e1b12]/70 border border-[#3e503e] rounded-lg text-white focus:border-[#e8c547] focus:outline-none transition-colors duration-300 resize-vertical"
                       />
+                      <p className="text-xs text-gray-400 mt-1">
+                        {post?.seo?.metaDescription ? `${post.seo.metaDescription.length}/160 characters` : 'Leave empty to use post description (max 160 chars)'}
+                      </p>
                     </div>
                   </div>
-                </div>
+                </Card>
               </div>
             </div>
 
@@ -548,7 +571,6 @@ export default function EditPost() {
               </button>
             </div>
           </form>
-        </div>
       </div>
     </>
   );

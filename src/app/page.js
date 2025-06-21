@@ -16,6 +16,8 @@ import Button from './components/Button';
 import BlogPostCard from './components/BlogPostCard';
 import ProjectCard from './components/ProjectCard';
 import RecommendationCard from './components/RecommendationCard';
+import Modal from "./components/Modal";
+import PageContainer from "./components/PageContainer";
 
 export default function Home() {
   const [blogPosts, setBlogPosts] = useState([]);
@@ -188,7 +190,7 @@ export default function Home() {
   const fetchFeaturedProjects = async () => {
     try {
       setLoadingProjects(true);
-      const response = await fetch('/api/portfolio?featured=true&limit=4', {
+      const response = await fetch('/api/portfolio?featured=true&limit=3', {
         cache: 'no-store',
         headers: {
           'Cache-Control': 'no-cache'
@@ -232,7 +234,7 @@ export default function Home() {
       <main className="flex-grow">
         <div className="bg-grid-pattern-dark">
           <div className="page-container">
-            <div className="page-content pt-12">
+            <div className="page-content pt-4">
               {/* Hero Section - Enhanced */}
               <section className="text-center py-16 md:py-24 fade-in relative">
                 {/* Background Pattern */}

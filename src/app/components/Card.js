@@ -16,6 +16,7 @@ export default function Card({
   imagePosition = "top",
   imageHeight = "h-48",
   imageOverlay = false,
+  showImage = true,
   title,
   titleSize = "lg",
   subtitle,
@@ -199,7 +200,7 @@ export default function Card({
       {header && <div className="p-3 border-b border-[#3e503e]/30">{header}</div>}
       
       {/* Image positioning */}
-      {imagePosition === 'top' && imageComponent}
+      {imagePosition === 'top' && showImage && imageComponent}
       
       <div className="p-4">
         {/* Icon and title row */}
@@ -247,7 +248,7 @@ export default function Card({
       </div>
       
       {/* Image at bottom if specified */}
-      {imagePosition === 'bottom' && imageComponent}
+      {imagePosition === 'bottom' && showImage && imageComponent}
       
       {/* Footer section */}
       {footer && <div className="p-3 border-t border-[#3e503e]/30">{footer}</div>}

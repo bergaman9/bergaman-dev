@@ -4,12 +4,14 @@ import { useState, useEffect } from 'react';
 import AdminHeader from './components/AdminHeader';
 import AdminFooter from './components/AdminFooter';
 import { useRouter, usePathname } from 'next/navigation';
-import AuthProvider from '../components/AuthContext';
+import AuthProvider, { AuthContext } from '../components/AuthContext';
+import { useContext } from 'react';
 
-export default function AdminLayout({ children }) {
+// Inner component that uses AuthContext
+function AdminLayoutInner({ children }) {
   const router = useRouter();
   const pathname = usePathname();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { isAuthenticated, logout: authLogout } = useContext(AuthContext);
   const [isLoading, setIsLoading] = useState(true);
   const [username, setUsername] = useState(null);
   
@@ -24,32 +26,24 @@ export default function AdminLayout({ children }) {
           headers: {
             'Content-Type': 'application/json',
           },
-          credentials: 'include', // Cookie'leri dahil et
+          credentials: 'include',
         });
         
         const data = await res.json();
         
         if (res.ok && data.authenticated) {
-          setIsAuthenticated(true);
-          setUsername(data.username);
-          // Store auth status in localStorage for header
-          localStorage.setItem('adminAuth', 'true');
-          localStorage.setItem('adminUser', JSON.stringify({ username: data.username }));
-          window.dispatchEvent(new CustomEvent('adminAuthChange'));
+          setUsername(data.username || data.user?.username || 'Admin');
         } else {
-          // Eğer ana admin sayfasında değilsek ve kimlik doğrulama başarısızsa, ana admin sayfasına yönlendir
+          // If not authenticated and not on login page, redirect to login
           if (!isMainAdminPage) {
             router.push('/admin');
           }
-          setIsAuthenticated(false);
         }
       } catch (error) {
         console.error('Auth check error:', error);
-        // Hata durumunda ana admin sayfasına yönlendir
         if (!isMainAdminPage) {
           router.push('/admin');
         }
-        setIsAuthenticated(false);
       } finally {
         setIsLoading(false);
       }
@@ -58,24 +52,25 @@ export default function AdminLayout({ children }) {
     checkAuth();
   }, [pathname, router, isMainAdminPage]);
 
-  // Logout fonksiyonu
+  // Logout function
   const handleLogout = async () => {
     try {
-      // Cookie'yi temizle
-      document.cookie = "admin_session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      // Call API to logout
+      await fetch('/api/admin/auth', {
+        method: 'DELETE',
+        credentials: 'include',
+      });
       
-      // Clear localStorage
-      localStorage.removeItem('adminAuth');
-      localStorage.removeItem('adminUser');
-      window.dispatchEvent(new CustomEvent('adminAuthChange'));
+      // Call context logout
+      if (authLogout) {
+        await authLogout();
+      }
       
-      // Kimlik doğrulama durumunu güncelle
-      setIsAuthenticated(false);
-      
-      // Ana admin sayfasına yönlendir
+      // Redirect to login page
       router.push('/admin');
     } catch (error) {
       console.error('Logout error:', error);
+      router.push('/admin');
     }
   };
 
@@ -87,17 +82,31 @@ export default function AdminLayout({ children }) {
     );
   }
 
-  // Only show header/footer if authenticated
-  // On main admin page, don't show header/footer if not authenticated (login screen)
+  // Show header/footer only if authenticated
   const showHeaderFooter = isAuthenticated;
 
+  // If not authenticated and on admin pages (not login), show nothing
+  if (!isAuthenticated && !isMainAdminPage) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-[#0a1a0f]">
+        <div className="text-center">
+          <i className="fas fa-lock text-4xl text-[#e8c547] mb-4"></i>
+          <p className="text-gray-400">Redirecting to login...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <AuthProvider>
-      <div className="min-h-screen flex flex-col bg-gradient-to-br from-[#0a1a0f] via-[#0e1b12] to-[#0a1a0f]">
-        {showHeaderFooter && <AdminHeader activeTab={pathname.split('/')[2] || 'dashboard'} username={username} onLogout={handleLogout} />}
-      
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-[#0a1a0f] via-[#0e1b12] to-[#0a1a0f]">
+      {showHeaderFooter && <AdminHeader activeTab={pathname.split('/')[2] || 'dashboard'} username={username} onLogout={handleLogout} />}
+    
       <main className="flex-grow">
-        {(isAuthenticated || isMainAdminPage) ? (
+        {/* For login page, don't wrap content */}
+        {isMainAdminPage && !isAuthenticated ? (
+          children
+        ) : (
+          // For other admin pages, use the wrapper
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="bg-[#0e1b12]/80 backdrop-blur-sm rounded-xl shadow-xl border border-[#3e503e]/20 overflow-hidden">
               <div className="admin-content-wrapper p-6">
@@ -105,15 +114,19 @@ export default function AdminLayout({ children }) {
               </div>
             </div>
           </div>
-        ) : (
-          <div className="w-full px-4">
-            {children}
-          </div>
         )}
       </main>
       
       {showHeaderFooter && <AdminFooter />}
-      </div>
+    </div>
+  );
+}
+
+// Main layout component that provides AuthContext
+export default function AdminLayout({ children }) {
+  return (
+    <AuthProvider>
+      <AdminLayoutInner>{children}</AdminLayoutInner>
       {/* Global admin styles */}
       <style jsx global>{`
         .admin-content {

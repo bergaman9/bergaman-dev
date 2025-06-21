@@ -18,11 +18,9 @@ function LayoutContent({ children }) {
   const isAdminPage = pathname?.startsWith('/admin');
   
   // Show home link when not on home page
-  const showHomeLink = pathname !== '/';
-
   return (
     <>
-      {!isAdminPage && <Header showHomeLink={showHomeLink} />}
+      {!isAdminPage && <Header />}
       {/* Add padding-top to account for fixed header */}
       <main className={!isAdminPage ? "pt-20" : ""}>{children}</main>
       {!isAdminPage && <Footer />}
