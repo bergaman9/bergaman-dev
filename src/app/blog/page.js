@@ -50,17 +50,18 @@ export default function Blog() {
   const fetchPosts = async () => {
     try {
       const params = new URLSearchParams({
-        published: 'true',
         page: currentPage.toString(),
         limit: postsPerPage.toString(),
         ...(selectedCategory !== 'all' && { category: selectedCategory }),
         ...(searchTerm && { search: searchTerm })
       });
 
-      const response = await fetch(`/api/admin/posts?${params}`);
+      const response = await fetch(`/api/posts?${params}`);
       const data = await response.json();
       
-      if (data.posts) {
+      console.log('Blog API response:', data);
+      
+      if (data.success && data.posts) {
         // Filter out non-public posts for regular visitors
         const visiblePosts = data.posts.filter(post => {
           if (isAdminMode) return true; // Admin can see all posts
@@ -89,9 +90,15 @@ export default function Blog() {
         
         setPosts(postsWithCommentCount);
         setTotalPosts(data.pagination?.total || visiblePosts.length);
+      } else {
+        console.error('Blog API error:', data);
+        setPosts([]);
+        setTotalPosts(0);
       }
     } catch (error) {
       console.error('Error fetching posts:', error);
+      setPosts([]);
+      setTotalPosts(0);
     } finally {
       setLoading(false);
     }

@@ -1,49 +1,67 @@
 import { NextResponse } from 'next/server';
-import mongoose from 'mongoose';
 import BlogPost from '../../../models/BlogPost';
 import { connectDB } from '../../../lib/mongodb';
 
-// GET - Fetch published blog posts (public access)
+// GET - Fetch public blog posts
 export async function GET(request) {
   try {
+    console.log('Connecting to database...');
     await connectDB();
+    console.log('Database connected successfully');
     
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page')) || 1;
     const limit = parseInt(searchParams.get('limit')) || 10;
     const category = searchParams.get('category');
-    const featured = searchParams.get('featured');
     const search = searchParams.get('search');
     const slug = searchParams.get('slug');
     
-    // Build query - only published posts for public access
-    let query = { published: true };
+    // Build query - only show published and public posts
+    let query = { 
+      published: true,
+      $or: [
+        { visibility: 'public' },
+        { visibility: { $exists: false } }
+      ]
+    };
     
-    if (category) query.category = category;
-    if (featured !== null) query.featured = featured === 'true';
+    if (category && category !== 'all') query.category = category;
     if (slug) query.slug = slug;
     if (search) {
-      query.$or = [
-        { title: { $regex: search, $options: 'i' } },
-        { description: { $regex: search, $options: 'i' } },
-        { tags: { $in: [new RegExp(search, 'i')] } }
+      query.$and = [
+        query.$or ? { $or: query.$or } : {},
+        {
+          $or: [
+            { title: { $regex: search, $options: 'i' } },
+            { description: { $regex: search, $options: 'i' } },
+            { tags: { $in: [new RegExp(search, 'i')] } }
+          ]
+        }
       ];
+      delete query.$or;
     }
+    
+    console.log('Query:', JSON.stringify(query));
     
     // Calculate skip
     const skip = (page - 1) * limit;
     
     // Fetch posts with pagination
+    console.log('Fetching posts...');
     const posts = await BlogPost.find(query)
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
       .lean();
     
+    console.log(`Found ${posts.length} posts`);
+    
     // Get total count for pagination
     const total = await BlogPost.countDocuments(query);
+    console.log(`Total posts matching query: ${total}`);
     
     return NextResponse.json({
+      success: true,
       posts,
       pagination: {
         page,
@@ -56,27 +74,17 @@ export async function GET(request) {
     });
     
   } catch (error) {
-    console.error('Error fetching posts:', error);
+    console.error('Error in /api/posts:', error);
     
-    // Provide more specific error messages
-    let errorMessage = 'Failed to fetch posts';
-    let statusCode = 500;
-    
-    if (error.message.includes('ECONNREFUSED')) {
-      errorMessage = 'Database connection refused. Please check if MongoDB is running.';
-    } else if (error.message.includes('MONGODB_URI')) {
-      errorMessage = 'Database configuration error. Please check your MongoDB connection string.';
-    } else if (error.message.includes('timeout')) {
-      errorMessage = 'Database connection timeout. Please try again.';
-    }
-    
-    return NextResponse.json(
-      { 
-        error: errorMessage,
-        details: error.message,
-        timestamp: new Date().toISOString()
-      },
-      { status: statusCode }
-    );
+    return NextResponse.json({
+      success: false,
+      error: 'Failed to fetch posts',
+      details: error.message,
+      timestamp: new Date().toISOString(),
+      env: {
+        hasMongoUri: !!process.env.MONGODB_URI,
+        nodeEnv: process.env.NODE_ENV
+      }
+    }, { status: 500 });
   }
 } 
