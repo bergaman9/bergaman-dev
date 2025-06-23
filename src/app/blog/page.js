@@ -38,10 +38,9 @@ export default function Blog() {
 
   const fetchSettings = async () => {
     try {
-      const response = await fetch('/api/admin/settings');
-      const data = await response.json();
-      setSettings(data);
-      setPostsPerPage(data.blogPostsPerPage || 9);
+      // Skip admin settings for public blog page
+      setSettings({ blogPostsPerPage: 9 });
+      setPostsPerPage(9);
     } catch (error) {
       console.error('Error fetching settings:', error);
     }
@@ -56,7 +55,12 @@ export default function Blog() {
         ...(searchTerm && { search: searchTerm })
       });
 
-      const response = await fetch(`/api/posts?${params}`);
+      const response = await fetch(`/api/posts?${params}`, {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache'
+        }
+      });
       const data = await response.json();
       
       console.log('Blog API response:', data);

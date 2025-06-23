@@ -42,6 +42,14 @@ const nextConfig = {
   // Güvenlik için varsayılan ayarlar
   poweredByHeader: false, // X-Powered-By başlığını kaldır
   compress: true, // Yanıtları sıkıştır
+  async rewrites() {
+    return [
+      {
+        source: '/uploads/:path*',
+        destination: '/api/uploads/:path*'
+      }
+    ];
+  },
   async headers() {
     return [
       {

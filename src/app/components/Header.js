@@ -121,8 +121,8 @@ export default function Header() {
             </div>
           </Link>
 
-          {/* Desktop Navigation - Center when authenticated */}
-          <nav className={`hidden md:flex items-center space-x-1 ${isAuthenticated ? 'absolute left-1/2 transform -translate-x-1/2' : ''}`}>
+          {/* Desktop Navigation - Center when authenticated, right when not */}
+          <nav className={`hidden md:flex items-center space-x-1 ${isAuthenticated ? 'absolute left-1/2 transform -translate-x-1/2' : 'ml-auto mr-4'}`}>
             {navigationItems.map((item) => (
               <Link
                 key={item.href}
