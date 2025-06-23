@@ -21,11 +21,17 @@ export default function CommentSystem({ postSlug, onCommentCountUpdate }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch settings
-        const settingsResponse = await fetch('/api/admin/settings');
-        if (settingsResponse.ok) {
-          const settingsData = await settingsResponse.json();
-          setSettings(settingsData);
+        // Fetch settings (only if admin)
+        const adminAuth = localStorage.getItem('adminAuth');
+        if (adminAuth === 'true') {
+          const settingsResponse = await fetch('/api/admin/settings');
+          if (settingsResponse.ok) {
+            const settingsData = await settingsResponse.json();
+            setSettings(settingsData);
+          }
+        } else {
+          // Set default settings for non-admin users (allow comments by default)
+          setSettings({ allowComments: true, moderateComments: false });
         }
 
         // Fetch comments

@@ -27,13 +27,22 @@ export default function Contact() {
 
   const fetchSettings = async () => {
     try {
-      const response = await fetch('/api/admin/settings');
-      if (response.ok) {
-        const data = await response.json();
-        setSettings(data);
+      // Check if user is admin before trying to fetch settings
+      const adminAuth = localStorage.getItem('adminAuth');
+      if (adminAuth === 'true') {
+        const response = await fetch('/api/admin/settings');
+        if (response.ok) {
+          const data = await response.json();
+          setSettings(data);
+        }
+      } else {
+        // Set default settings for non-admin users (allow contact form by default)
+        setSettings({ allowContactForm: true });
       }
     } catch (error) {
       console.error('Error fetching settings:', error);
+      // Default to allowing contact form on error
+      setSettings({ allowContactForm: true });
     } finally {
       setLoading(false);
     }

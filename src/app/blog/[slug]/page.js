@@ -39,7 +39,7 @@ export default function BlogPost() {
   const fetchPost = async () => {
     try {
       // First try to find by slug in MongoDB
-      const response = await fetch(`/api/admin/posts?slug=${params.slug}`);
+      const response = await fetch(`/api/posts?slug=${params.slug}`);
       const data = await response.json();
       
       if (data.posts && data.posts.length > 0) {
@@ -102,15 +102,19 @@ export default function BlogPost() {
 
   const incrementViews = async (postId) => {
     try {
-      await fetch(`/api/admin/posts/${postId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          views: (post?.views || 0) + 1
-        })
-      });
+      // Only increment views if user is admin (since public API doesn't support updates)
+      const adminAuth = localStorage.getItem('adminAuth');
+      if (adminAuth === 'true') {
+        await fetch(`/api/admin/posts/${postId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            views: (post?.views || 0) + 1
+          })
+        });
+      }
     } catch (error) {
       console.error('Error incrementing views:', error);
     }
@@ -138,18 +142,21 @@ export default function BlogPost() {
     localStorage.setItem(`likes_${params.slug}`, newLikes.toString());
     localStorage.setItem(`liked_${params.slug}`, 'true');
 
-    // Update likes in MongoDB
+    // Update likes in MongoDB (only if admin)
     if (post) {
       try {
-        await fetch(`/api/admin/posts/${post._id}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            likes: newLikes
-          })
-        });
+        const adminAuth = localStorage.getItem('adminAuth');
+        if (adminAuth === 'true') {
+          await fetch(`/api/admin/posts/${post._id}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              likes: newLikes
+            })
+          });
+        }
       } catch (error) {
         console.error('Error updating likes:', error);
       }
@@ -206,15 +213,34 @@ export default function BlogPost() {
 
   const fetchAuthorProfile = async () => {
     try {
-      const response = await fetch('/api/admin/settings');
-      if (response.ok) {
-        const settings = await response.json();
-        if (settings.authorProfile) {
-          setAuthorProfile(settings.authorProfile);
+      // Try to fetch settings, but don't fail if not authenticated
+      const adminAuth = localStorage.getItem('adminAuth');
+      if (adminAuth === 'true') {
+        const response = await fetch('/api/admin/settings');
+        if (response.ok) {
+          const settings = await response.json();
+          if (settings.authorProfile) {
+            setAuthorProfile(settings.authorProfile);
+          }
         }
+      } else {
+        // Set default author profile for non-admin users
+        setAuthorProfile({
+          name: 'Bergaman',
+          about: 'Electrical & Electronics Engineer specializing in full-stack development and AI technologies.',
+          avatar: '/images/profile/profile.png',
+          showAuthorBio: true
+        });
       }
     } catch (error) {
       console.error('Error fetching author profile:', error);
+      // Set default profile on error
+      setAuthorProfile({
+        name: 'Bergaman',
+        about: 'Electrical & Electronics Engineer specializing in full-stack development and AI technologies.',
+        avatar: '/images/profile/profile.png',
+        showAuthorBio: true
+      });
     }
   };
 
