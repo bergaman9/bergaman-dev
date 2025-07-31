@@ -17,10 +17,27 @@ export default function MarkdownRenderer({ content, className = "" }) {
       const match = /language-(\w+)/.exec(className || '');
       const language = match ? match[1] : '';
       
+      if (inline) {
+        return (
+          <code className="not-prose bg-[#1f2937] text-[#e8c547] px-2 py-0.5 rounded text-sm" {...props}>
+            {children}
+          </code>
+        );
+      }
+
       return (
-        <code className={inline ? "not-prose bg-[#1f2937] text-[#e8c547] px-2 py-0.5 rounded text-sm" : ""} {...props}>
-          {children}
-        </code>
+        <div className="relative my-4">
+          {language && (
+            <div className="absolute top-2 right-2 text-xs text-gray-400 bg-black/50 px-2 py-1 rounded z-10">
+              {language}
+            </div>
+          )}
+          <pre className={`${language ? `hljs language-${language}` : ''} p-4 rounded-lg overflow-auto bg-gray-900`}>
+            <code className={language ? `language-${language}` : ''} {...props}>
+              {String(children).replace(/\n$/, '')}
+            </code>
+          </pre>
+        </div>
       );
     },
     
@@ -93,27 +110,40 @@ export default function MarkdownRenderer({ content, className = "" }) {
 
 // Global styles for code blocks
 const codeStyles = `
-  pre {
+  .prose pre {
     margin: 1em 0;
     padding: 1em;
     border-radius: 0.5em;
     background-color: #0e1b12 !important;
+    border: 1px solid #3e503e30;
     overflow-x: auto;
   }
   
-  pre code {
+  .prose pre code {
     background: none !important;
     color: inherit !important;
     padding: 0 !important;
     font-size: inherit !important;
   }
   
-  :not(pre) > code {
+  .prose *:not(pre) > code {
     background-color: #1f2937 !important;
     color: #e8c547 !important;
     padding: 0.2em 0.4em !important;
     border-radius: 0.375rem !important;
     font-size: 0.875em !important;
     white-space: pre-wrap !important;
+  }
+
+  .prose > *:first-child {
+    margin-top: 0 !important;
+  }
+
+  .prose > *:last-child {
+    margin-bottom: 0 !important;
+  }
+
+  .prose p {
+    margin: 1.5em 0;
   }
 `; 
