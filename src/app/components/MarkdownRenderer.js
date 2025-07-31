@@ -17,27 +17,10 @@ export default function MarkdownRenderer({ content, className = "" }) {
       const match = /language-(\w+)/.exec(className || '');
       const language = match ? match[1] : '';
       
-      if (inline) {
-        return (
-          <code className="bg-[#e8c547]/20 text-[#e8c547] px-1.5 py-0.5 rounded-md text-sm" {...props}>
-            {children}
-          </code>
-        );
-      }
-
       return (
-        <div className="relative my-4">
-          {language && (
-            <div className="absolute top-2 right-2 text-xs text-gray-400 bg-black/50 px-2 py-1 rounded z-10">
-              {language}
-            </div>
-          )}
-          <pre className={`${language ? `hljs language-${language}` : ''} p-4 rounded-lg overflow-auto bg-gray-50 dark:bg-gray-900`}>
-            <code className={language ? `language-${language}` : ''} {...props}>
-              {String(children).replace(/\n$/, '')}
-            </code>
-          </pre>
-        </div>
+        <code className={inline ? "not-prose bg-[#1f2937] text-[#e8c547] px-2 py-0.5 rounded text-sm" : ""} {...props}>
+          {children}
+        </code>
       );
     },
     
@@ -79,23 +62,9 @@ export default function MarkdownRenderer({ content, className = "" }) {
           max-width: 100%;
           color: #fff;
         }
-        .prose pre {
-          background-color: #0e1b12 !important;
-          border: 1px solid #3e503e30;
-        }
-        .prose code {
-          background-color: #1f2937;
-          color: #e8c547;
-          padding: 0.2em 0.4em;
-          border-radius: 0.375rem;
-          font-size: 0.875em;
-        }
-        .prose pre code {
-          background-color: transparent;
-          padding: 0;
-          color: inherit;
-          font-size: inherit;
-        }
+        
+        ${codeStyles}
+        
         .prose img {
           margin: 2em 0;
           border-radius: 0.5rem;
@@ -120,4 +89,31 @@ export default function MarkdownRenderer({ content, className = "" }) {
       `}</style>
     </article>
   );
-} 
+}
+
+// Global styles for code blocks
+const codeStyles = `
+  pre {
+    margin: 1em 0;
+    padding: 1em;
+    border-radius: 0.5em;
+    background-color: #0e1b12 !important;
+    overflow-x: auto;
+  }
+  
+  pre code {
+    background: none !important;
+    color: inherit !important;
+    padding: 0 !important;
+    font-size: inherit !important;
+  }
+  
+  :not(pre) > code {
+    background-color: #1f2937 !important;
+    color: #e8c547 !important;
+    padding: 0.2em 0.4em !important;
+    border-radius: 0.375rem !important;
+    font-size: 0.875em !important;
+    white-space: pre-wrap !important;
+  }
+`; 
