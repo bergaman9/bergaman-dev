@@ -66,7 +66,7 @@ export default function MarkdownRenderer({ content, className = "" }) {
   };
 
   return (
-    <div className={`markdown-content ${className}`}>
+    <article className={`prose prose-invert max-w-none ${className}`}>
       <ReactMarkdown
         components={components}
         remarkPlugins={[remarkGfm]}
@@ -74,6 +74,50 @@ export default function MarkdownRenderer({ content, className = "" }) {
       >
         {content}
       </ReactMarkdown>
-    </div>
+      <style jsx global>{`
+        .prose {
+          max-width: 100%;
+          color: #fff;
+        }
+        .prose pre {
+          background-color: #0e1b12 !important;
+          border: 1px solid #3e503e30;
+        }
+        .prose code {
+          background-color: #1f2937;
+          color: #e8c547;
+          padding: 0.2em 0.4em;
+          border-radius: 0.375rem;
+          font-size: 0.875em;
+        }
+        .prose pre code {
+          background-color: transparent;
+          padding: 0;
+          color: inherit;
+          font-size: inherit;
+        }
+        .prose img {
+          margin: 2em 0;
+          border-radius: 0.5rem;
+        }
+        .prose a {
+          color: #e8c547;
+          text-decoration: none;
+        }
+        .prose a:hover {
+          text-decoration: underline;
+        }
+        .prose blockquote {
+          border-left-color: #3e503e;
+          background-color: #1f293750;
+        }
+        .prose h1, .prose h2, .prose h3, .prose h4 {
+          color: #fff;
+        }
+        .prose ul, .prose ol {
+          padding-left: 1.5em;
+        }
+      `}</style>
+    </article>
   );
 } 
