@@ -2,22 +2,46 @@
 const config = {
   siteUrl: process.env.SITE_URL || 'https://bergaman.dev',
   generateRobotsTxt: true,
-  exclude: ['/admin/*', '/api/*'],
+  exclude: [
+    '/admin/*',
+    '/api/*',
+    '/404',
+    '/500',
+    '/maintenance',
+    '/test-webhook'
+  ],
   robotsTxtOptions: {
     policies: [
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/admin/', '/api/']
+        disallow: [
+          '/admin/',
+          '/api/',
+          '/404',
+          '/500',
+          '/maintenance',
+          '/test-webhook'
+        ]
       }
     ],
     additionalSitemaps: [
       'https://bergaman.dev/sitemap.xml',
     ],
   },
+  generateIndexSitemap: true,
   changefreq: 'daily',
-  priority: 0.7,
+  priority: {
+    '/': 1.0,
+    '/blog': 0.9,
+    '/portfolio': 0.8,
+    '/about': 0.7,
+    '/contact': 0.6,
+    '/blog/*': 0.8,
+    '/portfolio/*': 0.7,
+  },
   sitemapSize: 5000,
+  autoLastmod: true,
   generateIndexSitemap: false,
   transform: async (config, path) => {
     // Custom priority for different pages

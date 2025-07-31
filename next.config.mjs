@@ -17,6 +17,10 @@ const nextConfig = {
     NEXT_PUBLIC_APP_VERSION: process.env.NEXT_PUBLIC_APP_VERSION || version,
     MONGODB_URI: process.env.MONGODB_URI || 'mongodb://localhost:27017/bergaman-dev',
   },
+  poweredByHeader: false,
+  compress: true,
+  productionBrowserSourceMaps: false,
+  reactStrictMode: true,
   images: {
     remotePatterns: [
       {

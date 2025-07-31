@@ -15,27 +15,29 @@ export default function MarkdownRenderer({ content, className = "" }) {
     // Code blocks with syntax highlighting
     code({ node, inline, className, children, ...props }) {
       const match = /language-(\w+)/.exec(className || '');
-      const language = match ? match[1] : null;
-
-      if (!inline && language) {
+      const language = match ? match[1] : '';
+      
+      if (inline) {
         return (
-          <div className="relative my-4">
+          <code className="bg-[#e8c547]/20 text-[#e8c547] px-1.5 py-0.5 rounded-md text-sm" {...props}>
+            {children}
+          </code>
+        );
+      }
+
+      return (
+        <div className="relative my-4">
+          {language && (
             <div className="absolute top-2 right-2 text-xs text-gray-400 bg-black/50 px-2 py-1 rounded z-10">
               {language}
             </div>
-            <pre className={`hljs language-${language} p-4 rounded-lg overflow-auto`}>
-              <code className={`language-${language}`} {...props}>
-                {String(children).replace(/\n$/, '')}
-              </code>
-            </pre>
-          </div>
-        );
-      }
-      
-      return (
-        <code className="bg-[#e8c547]/20 text-[#e8c547] px-1.5 py-0.5 rounded-md text-sm">
-          {children}
-        </code>
+          )}
+          <pre className={`${language ? `hljs language-${language}` : ''} p-4 rounded-lg overflow-auto bg-gray-50 dark:bg-gray-900`}>
+            <code className={language ? `language-${language}` : ''} {...props}>
+              {String(children).replace(/\n$/, '')}
+            </code>
+          </pre>
+        </div>
       );
     },
     
@@ -60,9 +62,7 @@ export default function MarkdownRenderer({ content, className = "" }) {
           </p>
         )}
       </div>
-    ),
-
-    // Add other custom components as needed
+    )
   };
 
   return (
