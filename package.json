@@ -58,7 +58,7 @@
     "mongoose": "^8.15.2",
     "next": "^15.0.3",
     "next-sitemap": "^4.2.3",
-    "nodemailer": "^7.0.3",
+    "nodemailer": "^7.0.11",
     "prismjs": "^1.30.0",
     "react": "^18",
     "react-circular-progressbar": "^2.2.0",
