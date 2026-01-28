@@ -13,6 +13,7 @@ import Badge from '../components/Badge';
 import SafeImage from '../components/SafeImage';
 import Select from '../components/Select';
 import PageContainer from '../components/PageContainer';
+import MiniAppCard from '../components/MiniAppCard';
 
 export default function Portfolio() {
   const [portfolioItems, setPortfolioItems] = useState([]);
@@ -23,6 +24,9 @@ export default function Portfolio() {
   const [viewMode, setViewMode] = useState('grid'); // grid or list
   const [sortBy, setSortBy] = useState('newest');
   const [searchTerm, setSearchTerm] = useState('');
+
+  // Mini Apps Accordion State (default: 'vocabulary')
+  const [activeMiniApp, setActiveMiniApp] = useState('vocabulary');
 
   useEffect(() => {
     fetchPortfolios();
@@ -203,9 +207,9 @@ export default function Portfolio() {
         />
 
         {/* Skeleton Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 animate-pulse">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 animate-pulse">
           {[...Array(6)].map((_, index) => (
-            <div key={index} className="bg-[#0e1b12]/95 border border-[#2e3d29]/30 rounded-xl h-[400px] flex flex-col">
+            <div key={index} className="bg-[#0e1b12]/95 border border-[#2e3d29]/30 rounded-[2rem] h-[400px] flex flex-col">
               {/* Skeleton Image */}
               <div className="h-48 bg-gradient-to-r from-[#2e3d29] via-[#3e503e] to-[#2e3d29] bg-[length:200%_100%] animate-[shimmer_2s_infinite] rounded-t-xl"></div>
 
@@ -389,229 +393,310 @@ export default function Portfolio() {
         </div>
       </div>
 
-      {/* Projects Display */}
-      {portfolioItems.length === 0 ? (
-        <div className="text-center py-20">
-          <div className="mb-8">
-            <i className="fas fa-folder-open text-6xl text-gray-600 mb-4"></i>
-            <h3 className="text-2xl font-bold text-gray-400 mb-2">No Projects Yet</h3>
-            <p className="text-gray-500">Portfolio projects will appear here once they're added.</p>
-          </div>
-        </div>
-      ) : filteredPortfolios.length === 0 ? (
-        <div className="text-center py-20">
-          <div className="mb-8">
-            <i className="fas fa-search text-6xl text-gray-600 mb-4"></i>
-            <h3 className="text-2xl font-bold text-gray-400 mb-2">No Projects Found</h3>
-            <p className="text-gray-500 mb-4">
-              {searchTerm
-                ? `No projects match "${searchTerm}" in the selected category.`
-                : 'No projects match the selected category.'
-              }
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              {searchTerm && (
-                <Button
-                  onClick={() => setSearchTerm('')}
-                  variant="secondary"
-                  icon="fas fa-times"
-                >
-                  Clear Search
-                </Button>
-              )}
-              <Button
-                onClick={() => setActiveCategory('all')}
-                variant="primary"
-                icon="fas fa-th-large"
-              >
-                View All Projects
-              </Button>
+      {/* Portfolio Grid with Sidebar */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        {/* Main Projects Section */}
+        <div className="lg:col-span-2">
+          {portfolioItems.length === 0 ? (
+            <div className="text-center py-20">
+              <div className="mb-8">
+                <i className="fas fa-folder-open text-6xl text-gray-600 mb-4"></i>
+                <h3 className="text-2xl font-bold text-gray-400 mb-2">No Projects Yet</h3>
+                <p className="text-gray-500">Portfolio projects will appear here once they're added.</p>
+              </div>
             </div>
-          </div>
-        </div>
-      ) : (
-        <>
-          {/* Results Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-3">
-            <p className="text-gray-400">
-              Showing <span className="text-[#e8c547] font-semibold">{filteredPortfolios.length}</span> project{filteredPortfolios.length !== 1 ? 's' : ''}
-              {activeCategory !== 'all' && (
-                <span> in <span className="text-[#e8c547]">{categoryConfig[activeCategory]?.name}</span></span>
-              )}
-              {searchTerm && (
-                <span> matching "<span className="text-[#e8c547]">{searchTerm}</span>"</span>
-              )}
-            </p>
-          </div>
+          ) : filteredPortfolios.length === 0 ? (
+            <div className="text-center py-20">
+              <div className="mb-8">
+                <i className="fas fa-search text-6xl text-gray-600 mb-4"></i>
+                <h3 className="text-2xl font-bold text-gray-400 mb-2">No Projects Found</h3>
+                <p className="text-gray-500 mb-4">
+                  {searchTerm
+                    ? `No projects match "${searchTerm}" in the selected category.`
+                    : 'No projects match the selected category.'
+                  }
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  {searchTerm && (
+                    <Button
+                      onClick={() => setSearchTerm('')}
+                      variant="secondary"
+                      icon="fas fa-times"
+                    >
+                      Clear Search
+                    </Button>
+                  )}
+                  <Button
+                    onClick={() => setActiveCategory('all')}
+                    variant="primary"
+                    icon="fas fa-th-large"
+                  >
+                    View All Projects
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <>
+              {/* Results Header */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-3">
+                <p className="text-gray-400">
+                  Showing <span className="text-[#e8c547] font-semibold">{filteredPortfolios.length}</span> project{filteredPortfolios.length !== 1 ? 's' : ''}
+                  {activeCategory !== 'all' && (
+                    <span> in <span className="text-[#e8c547]">{categoryConfig[activeCategory]?.name}</span></span>
+                  )}
+                  {searchTerm && (
+                    <span> matching "<span className="text-[#e8c547]">{searchTerm}</span>"</span>
+                  )}
+                </p>
+              </div>
 
-          {/* Projects Grid/List */}
-          <div className={`
-            ${viewMode === 'grid'
-              ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'
-              : 'space-y-6'
-            }
-            animate-fadeIn
-          `}>
-            {sortedPortfolios.map((project, index) => {
-              return (
-                <div
-                  key={project._id}
-                  className="animate-slideInUp"
-                  style={{
-                    animationDelay: `${Math.min(index * 50, 500)}ms`
-                  }}
-                >
-                  {viewMode === 'grid' ? (
-                    <ProjectCard project={project} />
-                  ) : (
-                    // List View
-                    <Card className="p-6 hover:border-[#e8c547]/30 transition-all duration-300">
-                      <div className="flex flex-col lg:flex-row gap-6">
-                        {/* Image */}
-                        <div className="lg:w-1/3">
-                          <div className="relative h-48 lg:h-full rounded-lg overflow-hidden bg-[#0a1a0f] cursor-pointer"
-                            onClick={() => openModal(project)}>
-                            <SafeImage
-                              src={project.image || '/images/portfolio/default.svg'}
-                              alt={project.title}
-                              fill
-                              className="object-cover hover:scale-105 transition-transform duration-300"
-                            />
+              {/* Projects Grid/List */}
+              <div className={`
+                ${viewMode === 'grid'
+                  ? 'grid grid-cols-1 sm:grid-cols-2 gap-6'
+                  : 'space-y-6'
+                }
+                animate-fadeIn
+              `}>
+                {sortedPortfolios.map((project, index) => {
+                  return (
+                    <div
+                      key={project._id}
+                      className="animate-slideInUp"
+                      style={{
+                        animationDelay: `${Math.min(index * 50, 500)}ms`
+                      }}
+                    >
+                      {viewMode === 'grid' ? (
+                        <ProjectCard project={project} />
+                      ) : (
+                        // List View
+                        <Card className="p-6 hover:border-[#e8c547]/30 transition-all duration-300">
+                          <div className="flex flex-col lg:flex-row gap-6">
+                            {/* Image */}
+                            <div className="lg:w-1/3">
+                              <div className="relative h-48 lg:h-full rounded-lg overflow-hidden bg-[#0a1a0f] cursor-pointer"
+                                onClick={() => openModal(project)}>
+                                <SafeImage
+                                  src={project.image || '/images/portfolio/default.svg'}
+                                  alt={project.title}
+                                  fill
+                                  className="object-cover hover:scale-105 transition-transform duration-300"
+                                />
 
-                            {/* Status Badge */}
-                            <div className="absolute top-3 right-3">
-                              <Badge
-                                variant={
-                                  project.status === 'active' ? 'success' :
-                                    project.status === 'completed' ? 'warning' :
-                                      'secondary'
-                                }
-                                size="sm"
-                              >
-                                <i className={`mr-1 text-xs ${project.status === 'active' ? 'fas fa-circle' :
-                                  project.status === 'completed' ? 'fas fa-check-circle' :
-                                    'fas fa-pause-circle'
-                                  }`}></i>
-                                {project.status === 'active' ? 'Active' :
-                                  project.status === 'completed' ? 'Completed' :
-                                    project.status === 'in_progress' ? 'In Progress' :
-                                      'Planned'}
-                              </Badge>
+                                /* Status Badge */
+                                <div className="absolute top-3 right-3">
+                                  <Badge
+                                    variant={
+                                      project.status === 'active' ? 'success' :
+                                        project.status === 'completed' ? 'warning' :
+                                          'secondary'
+                                    }
+                                    size="sm"
+                                  >
+                                    <i className={`mr-1 text-xs ${project.status === 'active' ? 'fas fa-circle' :
+                                      project.status === 'completed' ? 'fas fa-check-circle' :
+                                        'fas fa-pause-circle'
+                                      }`}></i>
+                                    {project.status === 'active' ? 'Active' :
+                                      project.status === 'completed' ? 'Completed' :
+                                        project.status === 'in_progress' ? 'In Progress' :
+                                          'Planned'}
+                                  </Badge>
+                                </div>
+                              </div>
                             </div>
-                          </div>
-                        </div>
 
-                        {/* Content */}
-                        <div className="lg:w-2/3 flex flex-col">
-                          <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-3 gap-2">
-                            <div className="flex-1">
-                              <h3 className="text-xl font-semibold text-[#e8c547] mb-2">
-                                {project.title}
-                              </h3>
-                              <div className="flex flex-wrap items-center gap-3 text-sm text-gray-400">
-                                <span>
-                                  <i className={`${categoryConfig[project.category]?.icon || 'fas fa-folder'} mr-1`}></i>
-                                  {project.category}
-                                </span>
-                                {project.createdAt && (
-                                  <span>
-                                    <i className="fas fa-calendar mr-1"></i>
-                                    {new Date(project.createdAt).getFullYear()}
+                            {/* Content */}
+                            <div className="lg:w-2/3 flex flex-col">
+                              <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-3 gap-2">
+                                <div className="flex-1">
+                                  <h3 className="text-xl font-semibold text-[#e8c547] mb-2">
+                                    {project.title}
+                                  </h3>
+                                  <div className="flex flex-wrap items-center gap-3 text-sm text-gray-400">
+                                    <span>
+                                      <i className={`${categoryConfig[project.category]?.icon || 'fas fa-folder'} mr-1`}></i>
+                                      {project.category}
+                                    </span>
+                                    {project.createdAt && (
+                                      <span>
+                                        <i className="fas fa-calendar mr-1"></i>
+                                        {new Date(project.createdAt).getFullYear()}
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                                {project.featured && (
+                                  <Badge variant="warning" icon="fas fa-star">
+                                    Featured
+                                  </Badge>
+                                )}
+                              </div>
+
+                              <p className="text-gray-300 mb-4 flex-1 line-clamp-3">
+                                {project.description}
+                              </p>
+
+                              {/* Technologies */}
+                              {project.technologies && project.technologies.length > 0 && (
+                                <div className="flex flex-wrap gap-2 mb-4">
+                                  {project.technologies.slice(0, 6).map((tech, techIndex) => (
+                                    <Badge key={techIndex} variant="secondary" size="sm">
+                                      {tech}
+                                    </Badge>
+                                  ))}
+                                  {project.technologies.length > 6 && (
+                                    <Badge variant="secondary" size="sm">
+                                      +{project.technologies.length - 6} more
+                                    </Badge>
+                                  )}
+                                </div>
+                              )}
+
+                              {/* Links */}
+                              <div className="flex flex-wrap items-center gap-4">
+                                {project.liveUrl && (
+                                  <a
+                                    href={project.liveUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center text-gray-400 hover:text-[#e8c547] transition-colors"
+                                  >
+                                    <i className="fas fa-external-link-alt mr-2"></i>
+                                    Live Demo
+                                  </a>
+                                )}
+                                {project.githubUrl && (
+                                  <a
+                                    href={project.githubUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center text-gray-400 hover:text-[#e8c547] transition-colors"
+                                  >
+                                    <i className="fab fa-github mr-2"></i>
+                                    Source Code
+                                  </a>
+                                )}
+                                {project.demoUrl && (
+                                  <a
+                                    href={project.demoUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center text-gray-400 hover:text-[#e8c547] transition-colors"
+                                  >
+                                    <i className="fas fa-play-circle mr-2"></i>
+                                    Demo
+                                  </a>
+                                )}
+                                {!project.liveUrl && !project.githubUrl && !project.demoUrl && (
+                                  <span className="text-gray-500 text-sm italic">
+                                    No links available
                                   </span>
                                 )}
                               </div>
                             </div>
-                            {project.featured && (
-                              <Badge variant="warning" icon="fas fa-star">
-                                Featured
-                              </Badge>
-                            )}
                           </div>
+                        </Card>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
 
-                          <p className="text-gray-300 mb-4 flex-1 line-clamp-3">
-                            {project.description}
-                          </p>
-
-                          {/* Technologies */}
-                          {project.technologies && project.technologies.length > 0 && (
-                            <div className="flex flex-wrap gap-2 mb-4">
-                              {project.technologies.slice(0, 6).map((tech, techIndex) => (
-                                <Badge key={techIndex} variant="secondary" size="sm">
-                                  {tech}
-                                </Badge>
-                              ))}
-                              {project.technologies.length > 6 && (
-                                <Badge variant="secondary" size="sm">
-                                  +{project.technologies.length - 6} more
-                                </Badge>
-                              )}
-                            </div>
-                          )}
-
-                          {/* Links */}
-                          <div className="flex flex-wrap items-center gap-4">
-                            {project.liveUrl && (
-                              <a
-                                href={project.liveUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center text-gray-400 hover:text-[#e8c547] transition-colors"
-                              >
-                                <i className="fas fa-external-link-alt mr-2"></i>
-                                Live Demo
-                              </a>
-                            )}
-                            {project.githubUrl && (
-                              <a
-                                href={project.githubUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center text-gray-400 hover:text-[#e8c547] transition-colors"
-                              >
-                                <i className="fab fa-github mr-2"></i>
-                                Source Code
-                              </a>
-                            )}
-                            {project.demoUrl && (
-                              <a
-                                href={project.demoUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center text-gray-400 hover:text-[#e8c547] transition-colors"
-                              >
-                                <i className="fas fa-play-circle mr-2"></i>
-                                Demo
-                              </a>
-                            )}
-                            {!project.liveUrl && !project.githubUrl && !project.demoUrl && (
-                              <span className="text-gray-500 text-sm italic">
-                                No links available
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </Card>
-                  )}
+              {/* Back to Top Button */}
+              {sortedPortfolios.length > 6 && (
+                <div className="flex justify-center mt-12">
+                  <Button
+                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                    variant="secondary"
+                    icon="fas fa-arrow-up"
+                  >
+                    Back to Top
+                  </Button>
                 </div>
-              );
-            })}
-          </div>
-
-          {/* Back to Top Button */}
-          {sortedPortfolios.length > 6 && (
-            <div className="flex justify-center mt-12">
-              <Button
-                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                variant="secondary"
-                icon="fas fa-arrow-up"
-              >
-                Back to Top
-              </Button>
-            </div>
+              )}
+            </>
           )}
-        </>
-      )}
+
+        </div>
+
+        {/* Sidebar for Mini Apps */}
+        <aside className="lg:col-span-1 border-t lg:border-t-0 lg:border-l border-[#3e503e]/30 pt-8 lg:pt-0 lg:pl-8">
+          <div className="sticky top-24">
+            <h3 className="font-bold text-[#e8c547] mb-6 flex items-center gap-2 text-lg">
+              <i className="fas fa-microchip"></i> Mini Tools & Apps
+            </h3>
+
+            <div className="space-y-4">
+              {/* Vocabulary Vault (Active) */}
+              <MiniAppCard
+                title="Vocabulary Vault"
+                description="Master 25,000+ words. Track your learning progress anonymously with a persistent Vault Key."
+                image="/images/vocabulary-vault-banner.png"
+                icon="fas fa-key"
+                href="/vocabulary"
+                status="active"
+                theme="gold"
+                badge="New"
+                isOpen={activeMiniApp === 'vocabulary'}
+                onClick={() => setActiveMiniApp(activeMiniApp === 'vocabulary' ? null : 'vocabulary')}
+              />
+
+              {/* Financial Portfolio (Active) */}
+              <MiniAppCard
+                title="Financial Portfolio"
+                description="Track your assets across stocks, crypto, forex, and gold with real-time market data."
+                icon="fas fa-wallet"
+                href="/finance"
+                status="active"
+                theme="blue"
+                isOpen={activeMiniApp === 'finance'}
+                onClick={() => setActiveMiniApp(activeMiniApp === 'finance' ? null : 'finance')}
+              />
+
+              {/* Code Snippets (Coming Soon) */}
+              <MiniAppCard
+                title="Snippet Vault"
+                description="A curated collection of useful regex patterns, hooks, and utility functions."
+                icon="fas fa-code"
+                status="coming_soon"
+                theme="blue"
+                isOpen={activeMiniApp === 'snippets'}
+                onClick={() => setActiveMiniApp(activeMiniApp === 'snippets' ? null : 'snippets')}
+              />
+
+              {/* Pomodoro Timer (Coming Soon) */}
+              <MiniAppCard
+                title="Focus Timer"
+                description="Customizable Pomodoro timer with ambient sounds for deep work sessions."
+                icon="fas fa-hourglass-half"
+                status="coming_soon"
+                theme="red"
+                isOpen={activeMiniApp === 'pomodoro'}
+                onClick={() => setActiveMiniApp(activeMiniApp === 'pomodoro' ? null : 'pomodoro')}
+              />
+
+              {/* Color Palette (Coming Soon) */}
+              <MiniAppCard
+                title="Palette Generator"
+                description="Generate beautiful color schemes and export to Tailwind CSS config."
+                icon="fas fa-palette"
+                status="coming_soon"
+                theme="pink"
+                isOpen={activeMiniApp === 'palette'}
+                onClick={() => setActiveMiniApp(activeMiniApp === 'palette' ? null : 'palette')}
+              />
+            </div>
+
+            <div className="mt-8 p-4 rounded-xl bg-[#1a2e1a]/20 border border-[#3e503e]/20 text-center">
+              <p className="text-xs text-gray-500 italic">More tools are being crafted...</p>
+            </div>
+          </div>
+        </aside>
+      </div>
 
       {/* Image Modal */}
       {selectedModal && (

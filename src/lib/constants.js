@@ -182,7 +182,7 @@ export const SECURITY = {
 
   // Güvenlik başlıkları
   HEADERS: {
-    CONTENT_SECURITY_POLICY: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data: blob: https: http:; font-src 'self' data: https://cdnjs.cloudflare.com; connect-src 'self' https://*.vercel-insights.com",
+    CONTENT_SECURITY_POLICY: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://open.spotify.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data: blob: https: http:; font-src 'self' data: https://cdnjs.cloudflare.com; connect-src 'self' https://*.vercel-insights.com; frame-src 'self' https://open.spotify.com",
     XSS_PROTECTION: '1; mode=block',
     FRAME_OPTIONS: 'SAMEORIGIN',
     CONTENT_TYPE_OPTIONS: 'nosniff',

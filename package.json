@@ -44,6 +44,7 @@
     "axios": "^1.10.0",
     "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.2",
+    "chart.js": "^4.5.1",
     "cors": "^2.8.5",
     "critters": "^0.0.23",
     "cross-env": "^7.0.3",
@@ -53,6 +54,8 @@
     "helmet": "^8.1.0",
     "highlight.js": "^11.11.1",
     "jose": "^6.0.11",
+    "jspdf": "^4.0.0",
+    "jspdf-autotable": "^5.0.7",
     "marked": "^15.0.12",
     "mongodb": "^6.17.0",
     "mongoose": "^8.15.2",
@@ -61,6 +64,7 @@
     "nodemailer": "^7.0.3",
     "prismjs": "^1.30.0",
     "react": "^19.2.4",
+    "react-chartjs-2": "^5.3.1",
     "react-circular-progressbar": "^2.2.0",
     "react-dom": "^19.2.4",
     "react-hot-toast": "^2.5.2",
@@ -69,7 +73,8 @@
     "react-simple-image-viewer": "^1.2.2",
     "rehype-highlight": "^7.0.2",
     "rehype-raw": "^7.0.0",
-    "remark-gfm": "^4.0.1"
+    "remark-gfm": "^4.0.1",
+    "xlsx": "^0.18.5"
   },
   "overrides": {
     "react": "$react",

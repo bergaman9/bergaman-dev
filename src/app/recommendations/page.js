@@ -116,9 +116,10 @@ export default function RecommendationsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 py-12">
-          <Loading />
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <i className="fas fa-circle-notch fa-spin text-4xl text-[#e8c547] mb-4"></i>
+          <p className="text-gray-400">Loading recommendations...</p>
         </div>
       </div>
     );
@@ -217,15 +218,18 @@ export default function RecommendationsPage() {
           </div>
 
           {/* Sort Dropdown */}
-          {/* Sort Dropdown */}
-          <Select
-            options={sortOptions}
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            label="Sort by:"
-            variant="primary"
-            icon="fas fa-sort"
-          />
+          <div className="flex items-center gap-3">
+            <span className="text-gray-400 text-sm font-medium whitespace-nowrap">Sort by:</span>
+            <div className="w-48">
+              <Select
+                options={sortOptions}
+                value={sortBy}
+                onChange={(value) => setSortBy(value)}
+                variant="primary"
+                icon="fas fa-sort"
+              />
+            </div>
+          </div>
         </div>
 
         {/* Content Area */}

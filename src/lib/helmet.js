@@ -18,7 +18,8 @@ export function getHelmetHeaders() {
         styleSrc: ["'self'", "'unsafe-inline'"],
         imgSrc: ["'self'", "data:", "blob:", "https:", "http:"],
         fontSrc: ["'self'", "data:"],
-        connectSrc: ["'self'", "https://*.vercel-insights.com"]
+        connectSrc: ["'self'", "https://*.vercel-insights.com"],
+        frameSrc: ["'self'", "https://open.spotify.com"]
       }
     },
     xssFilter: true,

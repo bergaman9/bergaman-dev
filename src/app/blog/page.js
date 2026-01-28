@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 import Head from 'next/head';
 import Link from "next/link";
 import BlogImageGenerator from "../components/BlogImageGenerator";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import ImageModal from '../components/ImageModal';
@@ -28,6 +28,20 @@ export default function Blog() {
   const [settings, setSettings] = useState(null);
   const { isAdminMode, exitEditMode } = useAdminMode();
   const searchParams = useSearchParams();
+  const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
+  const categoryDropdownRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (categoryDropdownRef.current && !categoryDropdownRef.current.contains(event.target)) {
+        setIsCategoryDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const categories = ['all', 'technology', 'ai', 'web-development', 'tutorial', 'programming'];
 
@@ -36,6 +50,7 @@ export default function Blog() {
     const tagFromUrl = searchParams.get('tag');
     if (tagFromUrl) {
       setSelectedTag(tagFromUrl);
+      setCurrentPage(1);
     }
   }, [searchParams]);
 
@@ -63,6 +78,7 @@ export default function Blog() {
         page: currentPage.toString(),
         limit: postsPerPage.toString(),
         ...(selectedCategory !== 'all' && { category: selectedCategory }),
+        ...(selectedTag && { tag: selectedTag }),
         ...(searchTerm && { search: searchTerm })
       });
 
@@ -77,18 +93,12 @@ export default function Blog() {
       console.log('Blog API response:', data);
 
       if (data.success && data.posts) {
-        // Filter out non-public posts for regular visitors
+        // Filter out non-public posts for regular visitors (if API returns any)
+        // Note: API already filters for public, but we keep this for admin/extra safety
         let visiblePosts = data.posts.filter(post => {
           if (isAdminMode) return true; // Admin can see all posts
           return post.visibility === 'public' || !post.visibility;
         });
-
-        // Filter by tag if selectedTag is set
-        if (selectedTag) {
-          visiblePosts = visiblePosts.filter(post =>
-            post.tags && post.tags.some(tag => tag.toLowerCase() === selectedTag.toLowerCase())
-          );
-        }
 
         // Fetch comment count for each post
         const postsWithCommentCount = await Promise.all(
@@ -222,196 +232,202 @@ export default function Blog() {
           ]}
         />
 
-        {/* Search and Filter */}
-        <section className="content-section slide-in-left">
-          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg">
-            <div className="flex flex-col md:flex-row gap-4">
+        {/* Main Content */}
+        <div className="w-full">
+          {/* Search and Filter */}
+          <section className="mb-8 slide-in-left">
+            <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg">
+              <div className="flex flex-col md:flex-row gap-4">
 
-              {/* Search Bar */}
-              <div className="flex-1 relative">
-                <i className="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-[#e8c547]"></i>
-                <input
-                  type="text"
-                  placeholder="Search posts..."
-                  value={searchTerm}
-                  onChange={handleSearchChange}
-                  className="w-full pl-12 pr-4 py-4 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] placeholder-gray-500 focus:border-[#e8c547] focus:ring-1 focus:ring-[#e8c547]/30 focus:outline-none transition-all duration-300 text-base"
-                />
-              </div>
-
-              {/* Category Filter */}
-              <div className="md:w-64 relative">
-                <i className="fas fa-filter absolute left-4 top-1/2 transform -translate-y-1/2 text-[#e8c547] pointer-events-none z-10"></i>
-                <select
-                  value={selectedCategory}
-                  onChange={handleCategoryChange}
-                  className="w-full pl-12 pr-4 py-4 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] focus:border-[#e8c547] focus:ring-1 focus:ring-[#e8c547]/30 focus:outline-none transition-all duration-300 text-base appearance-none cursor-pointer"
-                  style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23e8c547'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '1.5rem' }}
-                >
-                  {categories.map(category => (
-                    <option key={category} value={category} className="bg-[#0e1b12] text-[#d1d5db]">
-                      {formatCategoryName(category)}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            {/* Active Tag Filter */}
-            {selectedTag && (
-              <div className="mt-4 flex items-center gap-2">
-                <span className="text-sm text-gray-400">Filtering by tag:</span>
-                <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#e8c547]/20 text-[#e8c547] text-sm rounded-full border border-[#e8c547]/50">
-                  <i className="fas fa-tag text-xs"></i>
-                  #{selectedTag}
-                  <button
-                    onClick={() => setSelectedTag('')}
-                    className="ml-1 hover:text-white transition-colors"
-                    title="Clear tag filter"
-                  >
-                    <i className="fas fa-times text-xs"></i>
-                  </button>
-                </span>
-              </div>
-            )}
-          </div>
-        </section>
-
-        {/* Blog Posts */}
-        <section className="section-spacing slide-in-right">
-          {loading ? (
-            <div className="text-center py-16">
-              <i className="fas fa-spinner fa-spin text-4xl text-[#e8c547] mb-4"></i>
-              <p className="text-gray-400">Loading blog posts...</p>
-            </div>
-          ) : posts.length === 0 ? (
-            <div className="text-center py-16">
-              <i className="fas fa-search text-4xl text-gray-400 mb-4"></i>
-              <p className="text-gray-400">
-                {searchTerm || selectedCategory !== 'all'
-                  ? 'No posts found matching your criteria.'
-                  : 'No blog posts available yet.'}
-              </p>
-              {(searchTerm || selectedCategory !== 'all') && (
-                <button
-                  onClick={() => {
-                    setSearchTerm('');
-                    setSelectedCategory('all');
-                  }}
-                  className="mt-4 text-[#e8c547] hover:text-[#d4b445] transition-colors"
-                >
-                  Clear filters
-                </button>
-              )}
-            </div>
-          ) : (
-            <div className="card-grid card-grid-3">
-              {posts.map(post => (
-                <div key={post._id} className="relative">
-                  {isAdminMode && post.visibility !== 'public' && (
-                    <div
-                      className="absolute top-2 left-2 z-10 bg-yellow-500 text-black text-xs font-bold px-2 py-1 rounded"
-                      title={post.visibility === 'private' ? 'Private post' : 'Unlisted post'}
-                    >
-                      {post.visibility === 'private' ? <i className="fas fa-lock"></i> : <i className="fas fa-eye-slash"></i>}
-                    </div>
-                  )}
-                  {isAdminMode && (
-                    <div className="absolute top-2 right-2 z-10 flex gap-2">
-                      <Link
-                        href={`/admin/posts/${post._id}/edit`}
-                        className="bg-blue-600 text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-blue-700 transition-colors"
-                        title="Edit Post"
-                      >
-                        <i className="fas fa-edit text-sm"></i>
-                      </Link>
-                    </div>
-                  )}
-                  <BlogPostCard
-                    post={post}
-                    formatDate={formatDate}
-                    formatCategoryName={formatCategoryName}
-                    openModal={openModal}
+                {/* Search Bar */}
+                <div className="flex-1 relative">
+                  <i className="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-[#e8c547]"></i>
+                  <input
+                    type="text"
+                    placeholder="Search posts..."
+                    value={searchTerm}
+                    onChange={handleSearchChange}
+                    className="w-full pl-12 pr-4 py-4 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] placeholder-gray-500 focus:border-[#e8c547] focus:ring-1 focus:ring-[#e8c547]/30 focus:outline-none transition-all duration-300 text-base"
                   />
                 </div>
-              ))}
-            </div>
-          )}
-        </section>
 
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <section className="mb-8 fade-in">
-            <div className="flex justify-center items-center space-x-2">
-              {/* Previous Button */}
-              <button
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-                className={`px-4 py-2 rounded-lg border transition-all duration-300 ${currentPage === 1
-                  ? 'border-[#3e503e] text-gray-500 cursor-not-allowed'
-                  : 'border-[#e8c547] text-[#e8c547] hover:bg-[#e8c547] hover:text-[#0e1b12]'
-                  }`}
-              >
-                <i className="fas fa-chevron-left mr-2"></i>
-                Previous
-              </button>
+                {/* Category Filter */}
+                <div className="md:w-64 relative" ref={categoryDropdownRef}>
+                  <button
+                    onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
+                    className="w-full pl-12 pr-4 py-4 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] focus:border-[#e8c547] focus:ring-1 focus:ring-[#e8c547]/30 focus:outline-none transition-all duration-300 text-base text-left flex items-center justify-between"
+                  >
+                    <i className="fas fa-filter absolute left-4 text-[#e8c547]"></i>
+                    <span className="truncate mr-2">{formatCategoryName(selectedCategory)}</span>
+                    <i className={`fas fa-chevron-down text-[#e8c547] transition-transform duration-300 ${isCategoryDropdownOpen ? 'rotate-180' : ''}`}></i>
+                  </button>
 
-              {/* Page Numbers */}
-              <div className="flex space-x-1">
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
-                  // Show first page, last page, current page, and pages around current
-                  const showPage =
-                    page === 1 ||
-                    page === totalPages ||
-                    (page >= currentPage - 1 && page <= currentPage + 1);
-
-                  if (!showPage) {
-                    // Show ellipsis
-                    if (page === currentPage - 2 || page === currentPage + 2) {
-                      return (
-                        <span key={page} className="px-3 py-2 text-gray-400">
-                          ...
-                        </span>
-                      );
-                    }
-                    return null;
-                  }
-
-                  return (
-                    <button
-                      key={page}
-                      onClick={() => handlePageChange(page)}
-                      className={`px-4 py-2 rounded-lg border transition-all duration-300 ${currentPage === page
-                        ? 'bg-[#e8c547] text-[#0e1b12] border-[#e8c547]'
-                        : 'border-[#3e503e] text-gray-300 hover:border-[#e8c547] hover:text-[#e8c547]'
-                        }`}
-                    >
-                      {page}
-                    </button>
-                  );
-                })}
+                  {isCategoryDropdownOpen && (
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-[#0e1b12] border border-[#3e503e] rounded-lg shadow-xl z-50 max-h-60 overflow-y-auto custom-scrollbar">
+                      {categories.map(category => (
+                        <button
+                          key={category}
+                          onClick={() => {
+                            handleCategoryChange({ target: { value: category } });
+                            setIsCategoryDropdownOpen(false);
+                          }}
+                          className={`w-full text-left px-4 py-3 hover:bg-[#2e3d29] transition-colors flex items-center justify-between ${selectedCategory === category ? 'text-[#e8c547] bg-[#2e3d29]/50' : 'text-[#d1d5db]'
+                            }`}
+                        >
+                          <span>{formatCategoryName(category)}</span>
+                          {selectedCategory === category && <i className="fas fa-check text-xs"></i>}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
 
-              {/* Next Button */}
-              <button
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                className={`px-4 py-2 rounded-lg border transition-all duration-300 ${currentPage === totalPages
-                  ? 'border-[#3e503e] text-gray-500 cursor-not-allowed'
-                  : 'border-[#e8c547] text-[#e8c547] hover:bg-[#e8c547] hover:text-[#0e1b12]'
-                  }`}
-              >
-                Next
-                <i className="fas fa-chevron-right ml-2"></i>
-              </button>
-            </div>
-
-            {/* Page Info */}
-            <div className="text-center mt-4 text-sm text-gray-400">
-              Page {currentPage} of {totalPages} • {totalPosts} total posts
+              {/* Active Tag Filter */}
+              {selectedTag && (
+                <div className="mt-4 flex items-center gap-2">
+                  <span className="text-sm text-gray-400">Filtering by tag:</span>
+                  <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#e8c547]/20 text-[#e8c547] text-sm rounded-full border border-[#e8c547]/50">
+                    <i className="fas fa-tag text-xs"></i>
+                    #{selectedTag}
+                    <button
+                      onClick={() => setSelectedTag('')}
+                      className="ml-1 hover:text-white transition-colors"
+                      title="Clear tag filter"
+                    >
+                      <i className="fas fa-times text-xs"></i>
+                    </button>
+                  </span>
+                </div>
+              )}
             </div>
           </section>
-        )}
+
+          {/* Blog Posts */}
+          <section className="section-spacing slide-in-right">
+            {loading ? (
+              <div className="text-center py-16">
+                <i className="fas fa-circle-notch fa-spin text-4xl text-[#e8c547] mb-4"></i>
+                <p className="text-gray-400">Loading blog posts...</p>
+              </div>
+            ) : posts.length === 0 ? (
+              <div className="text-center py-16">
+                <i className="fas fa-search text-4xl text-gray-400 mb-4"></i>
+                <p className="text-gray-400">
+                  {searchTerm || selectedCategory !== 'all'
+                    ? 'No posts found matching your criteria.'
+                    : 'No blog posts available yet.'}
+                </p>
+                {(searchTerm || selectedCategory !== 'all') && (
+                  <button
+                    onClick={() => {
+                      setSearchTerm('');
+                      setSelectedCategory('all');
+                    }}
+                    className="mt-4 text-[#e8c547] hover:text-[#d4b445] transition-colors"
+                  >
+                    Clear filters
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div className="card-grid card-grid-3">
+                {posts.map(post => (
+                  <div key={post._id} className="relative">
+                    {isAdminMode && post.visibility !== 'public' && (
+                      <div
+                        className="absolute top-2 left-2 z-10 bg-yellow-500 text-black text-xs font-bold px-2 py-1 rounded"
+                        title={post.visibility === 'private' ? 'Private post' : 'Unlisted post'}
+                      >
+                        {post.visibility === 'private' ? <i className="fas fa-lock"></i> : <i className="fas fa-eye-slash"></i>}
+                      </div>
+                    )}
+                    {isAdminMode && (
+                      <div className="absolute top-2 right-2 z-10 flex gap-2">
+                        <Link
+                          href={`/admin/posts/${post._id}/edit`}
+                          className="bg-blue-600 text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-blue-700 transition-colors"
+                          title="Edit Post"
+                        >
+                          <i className="fas fa-edit text-sm"></i>
+                        </Link>
+                      </div>
+                    )}
+                    <BlogPostCard
+                      post={post}
+                      formatDate={formatDate}
+                      formatCategoryName={formatCategoryName}
+                      openModal={openModal}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <section className="mb-8 fade-in">
+              <div className="flex justify-center items-center space-x-2">
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className={`px-4 py-2 rounded-lg border transition-all duration-300 ${currentPage === 1
+                    ? 'border-[#3e503e] text-gray-500 cursor-not-allowed'
+                    : 'border-[#e8c547] text-[#e8c547] hover:bg-[#e8c547] hover:text-[#0e1b12]'
+                    }`}
+                >
+                  <i className="fas fa-chevron-left mr-2"></i>
+                  Previous
+                </button>
+
+                <div className="flex space-x-1">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                    const showPage =
+                      page === 1 ||
+                      page === totalPages ||
+                      (page >= currentPage - 1 && page <= currentPage + 1);
+
+                    if (!showPage) {
+                      if (page === currentPage - 2 || page === currentPage + 2) {
+                        return <span key={page} className="px-3 py-2 text-gray-400">...</span>;
+                      }
+                      return null;
+                    }
+
+                    return (
+                      <button
+                        key={page}
+                        onClick={() => handlePageChange(page)}
+                        className={`px-4 py-2 rounded-lg border transition-all duration-300 ${currentPage === page
+                          ? 'bg-[#e8c547] text-[#0e1b12] border-[#e8c547]'
+                          : 'border-[#3e503e] text-gray-300 hover:border-[#e8c547] hover:text-[#e8c547]'
+                          }`}
+                      >
+                        {page}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className={`px-4 py-2 rounded-lg border transition-all duration-300 ${currentPage === totalPages
+                    ? 'border-[#3e503e] text-gray-500 cursor-not-allowed'
+                    : 'border-[#e8c547] text-[#e8c547] hover:bg-[#e8c547] hover:text-[#0e1b12]'
+                    }`}
+                >
+                  Next
+                  <i className="fas fa-chevron-right ml-2"></i>
+                </button>
+              </div>
+              <div className="text-center mt-4 text-sm text-gray-400">
+                Page {currentPage} of {totalPages} • {totalPosts} total posts
+              </div>
+            </section>
+          )}
+        </div>
 
         {/* Newsletter Section */}
         <section className="mb-12 fade-in">

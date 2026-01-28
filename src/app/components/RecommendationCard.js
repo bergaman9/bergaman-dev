@@ -74,13 +74,13 @@ const categoryConfig = {
 const getSpotifyEmbedId = (url) => {
   if (!url) return null;
 
-  const trackMatch = url.match(/spotify\.com\/track\/([a-zA-Z0-9]+)/);
+  const trackMatch = url.match(/\/track\/([^\/?]+)/);
   if (trackMatch) return { type: 'track', id: trackMatch[1] };
 
-  const albumMatch = url.match(/spotify\.com\/album\/([a-zA-Z0-9]+)/);
+  const albumMatch = url.match(/\/album\/([^\/?]+)/);
   if (albumMatch) return { type: 'album', id: albumMatch[1] };
 
-  const playlistMatch = url.match(/spotify\.com\/playlist\/([a-zA-Z0-9]+)/);
+  const playlistMatch = url.match(/\/playlist\/([^\/?]+)/);
   if (playlistMatch) return { type: 'playlist', id: playlistMatch[1] };
 
   return null;
@@ -740,23 +740,25 @@ export default function RecommendationCard({
 
   // Handle Spotify embed
   const getSpotifyEmbed = (url) => {
-    if (!url || !url.toLowerCase().includes('spotify.com')) return null;
+    if (!url || !url.toString().toLowerCase().includes('spotify.com')) return null;
 
     // Handle different Spotify URL formats including international URLs (intl-tr, intl-de, etc.)
-    // Track URL - permissive regex
-    const trackMatch = url.match(/spotify\.com.*?\/track\/([a-zA-Z0-9]+)/i);
+    // We search for /track/, /album/, /playlist/ segments regardless of what comes before (like /intl-tr/)
+
+    // Track URL
+    const trackMatch = url.match(/\/track\/([^\/?]+)/i);
     if (trackMatch) {
       return `https://open.spotify.com/embed/track/${trackMatch[1]}?utm_source=generator&theme=0`;
     }
 
     // Playlist URL
-    const playlistMatch = url.match(/spotify\.com.*?\/playlist\/([a-zA-Z0-9]+)/i);
+    const playlistMatch = url.match(/\/playlist\/([^\/?]+)/i);
     if (playlistMatch) {
       return `https://open.spotify.com/embed/playlist/${playlistMatch[1]}?utm_source=generator&theme=0`;
     }
 
     // Album URL
-    const albumMatch = url.match(/spotify\.com.*?\/album\/([a-zA-Z0-9]+)/i);
+    const albumMatch = url.match(/\/album\/([^\/?]+)/i);
     if (albumMatch) {
       return `https://open.spotify.com/embed/album/${albumMatch[1]}?utm_source=generator&theme=0`;
     }
@@ -826,7 +828,7 @@ export default function RecommendationCard({
               height="152"
               frameBorder="0"
               allowTransparency="true"
-              allow="encrypted-media"
+              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
               className="w-full"
               loading="lazy"
             ></iframe>
@@ -937,7 +939,13 @@ export default function RecommendationCard({
 
   // Music Card - Spotify Embed
   if (recommendation.category === 'music') {
-    const musicUrl = recommendation.link || recommendation.url;
+    let musicUrl = recommendation.link || recommendation.url;
+
+    // Fallback: If no URL is provided but the title looks like a Spotify URL, use the title
+    if (!musicUrl && recommendation.title && recommendation.title.includes('spotify.com')) {
+      musicUrl = recommendation.title;
+    }
+
     const spotifyEmbed = getSpotifyEmbed(musicUrl);
 
     return (
@@ -963,7 +971,9 @@ export default function RecommendationCard({
               </div>
             </div>
             <div className="flex-1">
-              <h3 className="text-xl font-semibold text-gray-200 mb-1">{recommendation.title}</h3>
+              <h3 className="text-xl font-semibold text-gray-200 mb-1">
+                {recommendation.title && recommendation.title.includes('http') ? 'Spotify Track' : recommendation.title}
+              </h3>
               {recommendation.author && (
                 <p className="text-sm text-gray-400">{recommendation.author}</p>
               )}

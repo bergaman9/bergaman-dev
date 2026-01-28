@@ -119,22 +119,7 @@ export default function ProjectCard({ project, isAdmin = false, onEdit, onDelete
             </div>
           )}
 
-          {/* Status Badge - Icon Only */}
-          <div className="absolute top-4 right-4 z-10">
-            <Tooltip content={displayProject.status === 'in_progress' ? 'In Progress' : displayProject.status.charAt(0).toUpperCase() + displayProject.status.slice(1)} position="left">
-              <span className={`
-                flex items-center justify-center w-8 h-8 rounded-full shadow-lg border border-white/10 backdrop-blur-md
-                ${displayProject.status === 'active' ? 'bg-green-500 text-white shadow-green-500/30' :
-                  displayProject.status === 'completed' ? 'bg-blue-600 text-white shadow-blue-600/30' :
-                    'bg-gray-700 text-gray-300'}
-              `}>
-                <i className={`text-sm ${displayProject.status === 'active' ? 'fas fa-circle animate-pulse text-[10px]' :
-                    displayProject.status === 'completed' ? 'fas fa-check' :
-                      'fas fa-tools'
-                  }`}></i>
-              </span>
-            </Tooltip>
-          </div>
+
 
           {/* Featured Ribbon - Icon Only */}
           {displayProject.featured && (

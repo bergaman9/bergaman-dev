@@ -7,6 +7,7 @@ import "./globals.css";
 import { SITE_CONFIG, SEO_DEFAULTS, APP_VERSION } from '../lib/constants';
 import LayoutWrapper from './components/LayoutWrapper';
 import ImageWithFallback from './components/ImageWithFallback';
+import { VocabularyProvider } from '@/context/VocabularyContext';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -92,29 +93,29 @@ export default function RootLayout({ children }) {
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
         <link rel="manifest" href="/site.webmanifest" />
         <meta name="theme-color" content={SITE_CONFIG.themeColor} />
-        
+
         {/* FontAwesome */}
-        <link 
-          rel="stylesheet" 
+        <link
+          rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
           integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
           crossOrigin="anonymous"
           referrerPolicy="no-referrer"
         />
         {/* Additional FontAwesome for web fonts */}
-        <link 
-          rel="preload" 
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/webfonts/fa-solid-900.woff2" 
-          as="font" 
-          type="font/woff2" 
-          crossOrigin="anonymous" 
+        <link
+          rel="preload"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/webfonts/fa-solid-900.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
         />
-        <link 
-          rel="preload" 
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/webfonts/fa-brands-400.woff2" 
-          as="font" 
-          type="font/woff2" 
-          crossOrigin="anonymous" 
+        <link
+          rel="preload"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/webfonts/fa-brands-400.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
         />
         {/* Güvenlik meta etiketleri */}
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
@@ -126,10 +127,12 @@ export default function RootLayout({ children }) {
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} ${inter.className} antialiased min-h-screen text-[#d1d5db] flex flex-col`}>
         <ImageWithFallback />
-        <LayoutWrapper>
-          {children}
-        </LayoutWrapper>
-        
+        <VocabularyProvider>
+          <LayoutWrapper>
+            {children}
+          </LayoutWrapper>
+        </VocabularyProvider>
+
         {/* Structured Data */}
         <script
           type="application/ld+json"
