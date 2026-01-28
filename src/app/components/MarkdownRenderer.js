@@ -15,7 +15,7 @@ export default function MarkdownRenderer({ content, className = "" }) {
     code({ inline, className, children, ...props }) {
       if (inline) {
         return (
-          <code className="not-prose bg-[#1f2937] text-[#e8c547] px-2 py-0.5 rounded text-sm" {...props}>
+          <code className="not-prose bg-[#0e1b12] text-[#e8c547] px-2 py-1 rounded text-sm font-mono border border-[#3e503e] inline-block" {...props}>
             {children}
           </code>
         );
@@ -28,7 +28,7 @@ export default function MarkdownRenderer({ content, className = "" }) {
         </pre>
       );
     }
-    
+
   };
 
   return (
@@ -93,12 +93,15 @@ const codeStyles = `
   }
   
   .prose *:not(pre) > code {
-    background-color: #1f2937 !important;
+    background-color: #0e1b12 !important;
     color: #e8c547 !important;
-    padding: 0.2em 0.4em !important;
+    padding: 0.25rem 0.5rem !important;
     border-radius: 0.375rem !important;
     font-size: 0.875em !important;
-    white-space: pre-wrap !important;
+    font-family: 'Courier New', monospace !important;
+    white-space: nowrap !important;
+    border: 1px solid #3e503e !important;
+    display: inline-block !important;
   }
 
   .prose > *:first-child {
