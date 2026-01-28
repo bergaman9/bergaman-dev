@@ -41,10 +41,10 @@ export default function BlogPost() {
       // First try to find by slug in MongoDB
       const response = await fetch(`/api/posts?slug=${params.slug}`);
       const data = await response.json();
-      
+
       if (data.posts && data.posts.length > 0) {
         const fetchedPost = data.posts[0];
-        
+
         // Check post visibility
         if (fetchedPost.visibility === 'private') {
           // Check if user is admin
@@ -123,7 +123,7 @@ export default function BlogPost() {
   const loadLikes = () => {
     const savedLikes = localStorage.getItem(`likes_${params.slug}`);
     const userLiked = localStorage.getItem(`liked_${params.slug}`);
-    
+
     if (savedLikes) {
       setLikes(parseInt(savedLikes));
     }
@@ -138,7 +138,7 @@ export default function BlogPost() {
     const newLikes = likes + 1;
     setLikes(newLikes);
     setHasLiked(true);
-    
+
     localStorage.setItem(`likes_${params.slug}`, newLikes.toString());
     localStorage.setItem(`liked_${params.slug}`, 'true');
 
@@ -176,7 +176,7 @@ export default function BlogPost() {
   };
 
   const formatCategoryName = (category) => {
-    switch(category) {
+    switch (category) {
       case 'ai': return 'AI';
       case 'web-development': return 'Web Development';
       case 'technology': return 'Technology';
@@ -288,7 +288,7 @@ export default function BlogPost() {
               <i className="fas fa-lock text-4xl text-[#e8c547] mb-6"></i>
               <h1 className="text-2xl font-bold text-gray-300 mb-4">Protected Post</h1>
               <p className="text-gray-400 mb-6">This post is password protected. Please enter the password to continue.</p>
-              
+
               <form onSubmit={handlePasswordSubmit} className="space-y-4">
                 <div>
                   <input
@@ -311,7 +311,7 @@ export default function BlogPost() {
                   Access Post
                 </button>
               </form>
-              
+
               <div className="mt-6">
                 <Link
                   href="/blog"
@@ -371,11 +371,11 @@ export default function BlogPost() {
               {post.readTime ? post.readTime.replace(' read', '') : '5 min'}
             </span>
           </div>
-          
+
           <h1 className="text-4xl md:text-5xl font-bold gradient-text mb-6 leading-tight">
             {post.title}
           </h1>
-          
+
           <p className="text-xl text-gray-300 mb-8">
             {post.description}
           </p>
@@ -392,12 +392,12 @@ export default function BlogPost() {
                 onClick={() => openModal(post.image, post.title)}
               />
             ) : (
-              <div className="cursor-pointer w-full" onClick={() => {}}>
-                <BlogImageGenerator 
-                  title={post.title} 
-                  category={post.category} 
-                  width={800} 
-                  height={400} 
+              <div className="cursor-pointer w-full" onClick={() => { }}>
+                <BlogImageGenerator
+                  title={post.title}
+                  category={post.category}
+                  width={800}
+                  height={400}
                   className="w-full h-64 md:h-96"
                 />
               </div>
@@ -427,32 +427,31 @@ export default function BlogPost() {
         </article>
 
         {/* Post Meta - Moved here */}
-        <div className="flex items-center justify-between py-4 border-t border-b border-[#3e503e] mb-8">
-          <div className="flex items-center space-x-6 text-sm text-gray-400">
-            <span>
-              <i className="fas fa-user mr-1"></i>
-              {post.author || 'Bergaman'}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between py-4 px-4 bg-[#2e3d29]/30 border border-[#3e503e]/50 rounded-lg mb-8 gap-4">
+          <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-sm">
+            <span className="flex items-center text-[#e8c547]">
+              <i className="fas fa-user mr-2"></i>
+              <span className="text-gray-200">{post.author || 'Bergaman'}</span>
             </span>
-            <span>
-              <i className="fas fa-eye mr-1"></i>
-              {post.views || 0} views
+            <span className="flex items-center text-[#e8c547]">
+              <i className="fas fa-eye mr-2"></i>
+              <span className="text-gray-200">{post.views || 0} views</span>
             </span>
-            <span>
-              <i className="fas fa-comments mr-1"></i>
-              {commentCount} comments
+            <span className="flex items-center text-[#e8c547]">
+              <i className="fas fa-comments mr-2"></i>
+              <span className="text-gray-200">{commentCount} comments</span>
             </span>
           </div>
-          
+
           <button
             onClick={handleLike}
             disabled={hasLiked}
-            className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-300 ${
-              hasLiked
-                ? 'bg-red-600/20 text-red-400 cursor-not-allowed'
-                : 'bg-red-600/10 text-red-400 hover:bg-red-600/20 hover:scale-105'
-            }`}
+            className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-300 ${hasLiked
+                ? 'bg-[#e8c547]/20 text-[#e8c547] cursor-not-allowed'
+                : 'bg-[#e8c547]/10 text-[#e8c547] hover:bg-[#e8c547]/20 hover:scale-105'
+              }`}
           >
-            <i className={`fas fa-heart ${hasLiked ? 'text-red-500' : ''}`}></i>
+            <i className={`fas fa-heart ${hasLiked ? 'text-[#e8c547]' : ''}`}></i>
             <span>{likes || post.likes || 0}</span>
           </button>
         </div>
@@ -460,15 +459,19 @@ export default function BlogPost() {
         {/* Tags */}
         {post.tags && post.tags.length > 0 && (
           <div className="mb-12">
-            <h3 className="text-lg font-semibold text-[#e8c547] mb-4">Tags</h3>
+            <h3 className="text-lg font-semibold text-[#e8c547] mb-4 flex items-center">
+              <i className="fas fa-tags mr-2"></i>
+              Tags
+            </h3>
             <div className="flex flex-wrap gap-2">
               {post.tags.map((tag, index) => (
-                <span
+                <Link
                   key={index}
-                  className="px-3 py-1 bg-[#3e503e]/50 text-gray-300 text-sm rounded-full"
+                  href={`/blog?tag=${encodeURIComponent(tag)}`}
+                  className="px-3 py-1.5 bg-[#3e503e]/50 text-gray-300 text-sm rounded-full border border-[#3e503e] hover:bg-[#e8c547]/20 hover:text-[#e8c547] hover:border-[#e8c547]/50 transition-all duration-300"
                 >
                   #{tag}
-                </span>
+                </Link>
               ))}
             </div>
           </div>

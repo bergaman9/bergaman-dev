@@ -118,13 +118,15 @@ export default function MarkdownRenderer({ content, className = "" }) {
         <blockquote
           style={{
             borderLeft: '4px solid #e8c547',
-            paddingLeft: '1rem',
             margin: '1rem 0',
-            fontStyle: 'italic',
-            color: '#9ca3af',
+            fontStyle: 'normal',
+            color: '#d1d5db',
             backgroundColor: '#2e3d29',
             padding: '0.75rem 1rem',
             borderRadius: '0 8px 8px 0',
+            maxWidth: '100%',
+            overflowWrap: 'break-word',
+            wordBreak: 'break-word',
           }}
           {...props}
         >
@@ -133,11 +135,10 @@ export default function MarkdownRenderer({ content, className = "" }) {
       );
     },
 
-    // Table elements
     table({ children, ...props }) {
       return (
         <div style={{ overflowX: 'auto', margin: '1rem 0' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid #3e503e' }} {...props}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', borderRadius: '8px', overflow: 'hidden' }} {...props}>
             {children}
           </table>
         </div>
@@ -146,14 +147,17 @@ export default function MarkdownRenderer({ content, className = "" }) {
     thead({ children, ...props }) {
       return <thead style={{ backgroundColor: '#2e3d29' }} {...props}>{children}</thead>;
     },
+    tbody({ children, ...props }) {
+      return <tbody {...props}>{children}</tbody>;
+    },
     th({ children, ...props }) {
-      return <th style={{ padding: '0.75rem', textAlign: 'left', color: '#e8c547', fontWeight: '600', borderBottom: '1px solid #3e503e' }} {...props}>{children}</th>;
+      return <th style={{ padding: '0.75rem 1rem', textAlign: 'left', color: '#e8c547', fontWeight: '600', borderBottom: '2px solid #3e503e', backgroundColor: '#2e3d29' }} {...props}>{children}</th>;
     },
     td({ children, ...props }) {
-      return <td style={{ padding: '0.75rem', borderBottom: '1px solid #3e503e50', color: '#d1d5db' }} {...props}>{children}</td>;
+      return <td style={{ padding: '0.75rem 1rem', color: '#d1d5db', borderBottom: '1px solid #3e503e30' }} {...props}>{children}</td>;
     },
     tr({ children, ...props }) {
-      return <tr style={{ transition: 'background-color 0.2s' }} {...props}>{children}</tr>;
+      return <tr style={{ backgroundColor: 'transparent', transition: 'background-color 0.2s' }} onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#3e503e20'} onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'} {...props}>{children}</tr>;
     },
 
     // Horizontal rule

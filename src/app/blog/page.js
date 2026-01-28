@@ -7,6 +7,7 @@ import Head from 'next/head';
 import Link from "next/link";
 import BlogImageGenerator from "../components/BlogImageGenerator";
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import ImageModal from '../components/ImageModal';
 import { useAdminMode } from '../../hooks/useAdminMode';
@@ -19,14 +20,24 @@ export default function Blog() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedTag, setSelectedTag] = useState('');
   const [modalImage, setModalImage] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [postsPerPage, setPostsPerPage] = useState(9);
   const [totalPosts, setTotalPosts] = useState(0);
   const [settings, setSettings] = useState(null);
   const { isAdminMode, exitEditMode } = useAdminMode();
+  const searchParams = useSearchParams();
 
   const categories = ['all', 'technology', 'ai', 'web-development', 'tutorial', 'programming'];
+
+  // Read tag from URL on mount
+  useEffect(() => {
+    const tagFromUrl = searchParams.get('tag');
+    if (tagFromUrl) {
+      setSelectedTag(tagFromUrl);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     fetchSettings();
@@ -34,7 +45,7 @@ export default function Blog() {
 
   useEffect(() => {
     fetchPosts();
-  }, [currentPage, postsPerPage, searchTerm, selectedCategory]);
+  }, [currentPage, postsPerPage, searchTerm, selectedCategory, selectedTag]);
 
   const fetchSettings = async () => {
     try {
@@ -62,15 +73,22 @@ export default function Blog() {
         }
       });
       const data = await response.json();
-      
+
       console.log('Blog API response:', data);
-      
+
       if (data.success && data.posts) {
         // Filter out non-public posts for regular visitors
-        const visiblePosts = data.posts.filter(post => {
+        let visiblePosts = data.posts.filter(post => {
           if (isAdminMode) return true; // Admin can see all posts
           return post.visibility === 'public' || !post.visibility;
         });
+
+        // Filter by tag if selectedTag is set
+        if (selectedTag) {
+          visiblePosts = visiblePosts.filter(post =>
+            post.tags && post.tags.some(tag => tag.toLowerCase() === selectedTag.toLowerCase())
+          );
+        }
 
         // Fetch comment count for each post
         const postsWithCommentCount = await Promise.all(
@@ -91,7 +109,7 @@ export default function Blog() {
             }
           })
         );
-        
+
         setPosts(postsWithCommentCount);
         setTotalPosts(data.pagination?.total || visiblePosts.length);
       } else {
@@ -135,7 +153,7 @@ export default function Blog() {
   };
 
   const formatCategoryName = (category) => {
-    switch(category) {
+    switch (category) {
       case 'ai': return 'AI';
       case 'web-development': return 'Web Development';
       case 'technology': return 'Technology';
@@ -175,7 +193,7 @@ export default function Blog() {
           </button>
         </div>
       )}
-      
+
       <Head>
         <title>Blog - Bergaman | Tech Insights & Development Stories</title>
         <meta name="description" content="Explore Bergaman's blog featuring insights on web development, AI, technology trends, and programming tutorials. Stay updated with the latest in tech." />
@@ -191,7 +209,7 @@ export default function Blog() {
       </Head>
 
       <main className={isAdminMode ? 'pt-12' : ''}>
-        
+
         {/* Page Header */}
         <PageHeader
           title="Blog"
@@ -208,34 +226,54 @@ export default function Blog() {
         <section className="content-section slide-in-left">
           <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg">
             <div className="flex flex-col md:flex-row gap-4">
-              
+
               {/* Search Bar */}
               <div className="flex-1 relative">
-                <i className="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <i className="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-[#e8c547]"></i>
                 <input
                   type="text"
                   placeholder="Search posts..."
                   value={searchTerm}
                   onChange={handleSearchChange}
-                  className="w-full pl-10 pr-4 py-4 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] placeholder-gray-400 focus:border-[#e8c547]/50 focus:outline-none transition-colors duration-300 text-base"
+                  className="w-full pl-12 pr-4 py-4 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] placeholder-gray-500 focus:border-[#e8c547] focus:ring-1 focus:ring-[#e8c547]/30 focus:outline-none transition-all duration-300 text-base"
                 />
               </div>
 
               {/* Category Filter */}
-              <div className="md:w-64">
+              <div className="md:w-64 relative">
+                <i className="fas fa-filter absolute left-4 top-1/2 transform -translate-y-1/2 text-[#e8c547] pointer-events-none z-10"></i>
                 <select
                   value={selectedCategory}
                   onChange={handleCategoryChange}
-                  className="w-full px-4 py-4 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] focus:border-[#e8c547]/50 focus:outline-none transition-colors duration-300 text-base"
+                  className="w-full pl-12 pr-4 py-4 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] focus:border-[#e8c547] focus:ring-1 focus:ring-[#e8c547]/30 focus:outline-none transition-all duration-300 text-base appearance-none cursor-pointer"
+                  style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23e8c547'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '1.5rem' }}
                 >
                   {categories.map(category => (
-                    <option key={category} value={category}>
+                    <option key={category} value={category} className="bg-[#0e1b12] text-[#d1d5db]">
                       {formatCategoryName(category)}
                     </option>
                   ))}
                 </select>
               </div>
             </div>
+
+            {/* Active Tag Filter */}
+            {selectedTag && (
+              <div className="mt-4 flex items-center gap-2">
+                <span className="text-sm text-gray-400">Filtering by tag:</span>
+                <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#e8c547]/20 text-[#e8c547] text-sm rounded-full border border-[#e8c547]/50">
+                  <i className="fas fa-tag text-xs"></i>
+                  #{selectedTag}
+                  <button
+                    onClick={() => setSelectedTag('')}
+                    className="ml-1 hover:text-white transition-colors"
+                    title="Clear tag filter"
+                  >
+                    <i className="fas fa-times text-xs"></i>
+                  </button>
+                </span>
+              </div>
+            )}
           </div>
         </section>
 
@@ -250,8 +288,8 @@ export default function Blog() {
             <div className="text-center py-16">
               <i className="fas fa-search text-4xl text-gray-400 mb-4"></i>
               <p className="text-gray-400">
-                {searchTerm || selectedCategory !== 'all' 
-                  ? 'No posts found matching your criteria.' 
+                {searchTerm || selectedCategory !== 'all'
+                  ? 'No posts found matching your criteria.'
                   : 'No blog posts available yet.'}
               </p>
               {(searchTerm || selectedCategory !== 'all') && (
@@ -271,7 +309,7 @@ export default function Blog() {
               {posts.map(post => (
                 <div key={post._id} className="relative">
                   {isAdminMode && post.visibility !== 'public' && (
-                    <div 
+                    <div
                       className="absolute top-2 left-2 z-10 bg-yellow-500 text-black text-xs font-bold px-2 py-1 rounded"
                       title={post.visibility === 'private' ? 'Private post' : 'Unlisted post'}
                     >
@@ -289,7 +327,7 @@ export default function Blog() {
                       </Link>
                     </div>
                   )}
-                  <BlogPostCard 
+                  <BlogPostCard
                     post={post}
                     formatDate={formatDate}
                     formatCategoryName={formatCategoryName}
@@ -309,11 +347,10 @@ export default function Blog() {
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
-                className={`px-4 py-2 rounded-lg border transition-all duration-300 ${
-                  currentPage === 1
-                    ? 'border-[#3e503e] text-gray-500 cursor-not-allowed'
-                    : 'border-[#e8c547] text-[#e8c547] hover:bg-[#e8c547] hover:text-[#0e1b12]'
-                }`}
+                className={`px-4 py-2 rounded-lg border transition-all duration-300 ${currentPage === 1
+                  ? 'border-[#3e503e] text-gray-500 cursor-not-allowed'
+                  : 'border-[#e8c547] text-[#e8c547] hover:bg-[#e8c547] hover:text-[#0e1b12]'
+                  }`}
               >
                 <i className="fas fa-chevron-left mr-2"></i>
                 Previous
@@ -323,11 +360,11 @@ export default function Blog() {
               <div className="flex space-x-1">
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
                   // Show first page, last page, current page, and pages around current
-                  const showPage = 
-                    page === 1 || 
-                    page === totalPages || 
+                  const showPage =
+                    page === 1 ||
+                    page === totalPages ||
                     (page >= currentPage - 1 && page <= currentPage + 1);
-                  
+
                   if (!showPage) {
                     // Show ellipsis
                     if (page === currentPage - 2 || page === currentPage + 2) {
@@ -344,11 +381,10 @@ export default function Blog() {
                     <button
                       key={page}
                       onClick={() => handlePageChange(page)}
-                      className={`px-4 py-2 rounded-lg border transition-all duration-300 ${
-                        currentPage === page
-                          ? 'bg-[#e8c547] text-[#0e1b12] border-[#e8c547]'
-                          : 'border-[#3e503e] text-gray-300 hover:border-[#e8c547] hover:text-[#e8c547]'
-                      }`}
+                      className={`px-4 py-2 rounded-lg border transition-all duration-300 ${currentPage === page
+                        ? 'bg-[#e8c547] text-[#0e1b12] border-[#e8c547]'
+                        : 'border-[#3e503e] text-gray-300 hover:border-[#e8c547] hover:text-[#e8c547]'
+                        }`}
                     >
                       {page}
                     </button>
@@ -360,11 +396,10 @@ export default function Blog() {
               <button
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
-                className={`px-4 py-2 rounded-lg border transition-all duration-300 ${
-                  currentPage === totalPages
-                    ? 'border-[#3e503e] text-gray-500 cursor-not-allowed'
-                    : 'border-[#e8c547] text-[#e8c547] hover:bg-[#e8c547] hover:text-[#0e1b12]'
-                }`}
+                className={`px-4 py-2 rounded-lg border transition-all duration-300 ${currentPage === totalPages
+                  ? 'border-[#3e503e] text-gray-500 cursor-not-allowed'
+                  : 'border-[#e8c547] text-[#e8c547] hover:bg-[#e8c547] hover:text-[#0e1b12]'
+                  }`}
               >
                 Next
                 <i className="fas fa-chevron-right ml-2"></i>
@@ -387,11 +422,11 @@ export default function Blog() {
                 Join the Dragon's Domain
               </h2>
               <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-                Get exclusive insights on AI, blockchain, and full-stack development. 
+                Get exclusive insights on AI, blockchain, and full-stack development.
                 Join fellow developers in the dragon's lair for weekly technical updates and project showcases.
               </p>
             </div>
-            
+
             <div className="flex justify-center space-x-6 mb-6 text-sm text-gray-400">
               <div className="flex items-center">
                 <i className="fas fa-check text-green-400 mr-2"></i>
