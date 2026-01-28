@@ -11,28 +11,185 @@ export default function MarkdownRenderer({ content, className = "" }) {
     return null;
   }
 
+  // Custom component renderers
   const components = {
-    code({ inline, className, children, ...props }) {
-      if (inline) {
+    // Handle code blocks and inline code
+    code({ node, inline, className: codeClassName, children, ...props }) {
+      const match = /language-(\w+)/.exec(codeClassName || '');
+      const isInline = inline || (!match && !codeClassName);
+
+      if (isInline) {
+        // Inline code - rendered as simple span-like element
         return (
-          <code className="not-prose bg-[#0e1b12] text-[#e8c547] px-2 py-1 rounded text-sm font-mono border border-[#3e503e] inline-block" {...props}>
+          <code
+            style={{
+              backgroundColor: '#1a2e1a',
+              color: '#e8c547',
+              padding: '2px 6px',
+              borderRadius: '4px',
+              fontSize: '0.9em',
+              fontFamily: "'Fira Code', 'Courier New', monospace",
+              border: '1px solid #3e503e',
+            }}
+            {...props}
+          >
             {children}
           </code>
         );
       }
+
+      // Code block
       return (
-        <pre>
-          <code className={className} {...props}>
-            {children}
-          </code>
+        <code className={codeClassName} {...props}>
+          {children}
+        </code>
+      );
+    },
+
+    // Pre element wrapper for code blocks
+    pre({ children, ...props }) {
+      return (
+        <pre
+          style={{
+            backgroundColor: '#0e1b12',
+            border: '1px solid #3e503e',
+            borderRadius: '8px',
+            padding: '1rem',
+            margin: '1rem 0',
+            overflowX: 'auto',
+          }}
+          {...props}
+        >
+          {children}
         </pre>
       );
-    }
+    },
 
+    // Headings
+    h1({ children, ...props }) {
+      return <h1 style={{ color: '#e8c547', fontSize: '2rem', fontWeight: 'bold', margin: '1.5rem 0 1rem' }} {...props}>{children}</h1>;
+    },
+    h2({ children, ...props }) {
+      return <h2 style={{ color: '#e8c547', fontSize: '1.5rem', fontWeight: 'bold', margin: '1.25rem 0 0.75rem' }} {...props}>{children}</h2>;
+    },
+    h3({ children, ...props }) {
+      return <h3 style={{ color: '#e8c547', fontSize: '1.25rem', fontWeight: 'bold', margin: '1rem 0 0.5rem' }} {...props}>{children}</h3>;
+    },
+    h4({ children, ...props }) {
+      return <h4 style={{ color: '#e8c547', fontSize: '1.1rem', fontWeight: 'bold', margin: '0.75rem 0 0.5rem' }} {...props}>{children}</h4>;
+    },
+
+    // Paragraph
+    p({ children, ...props }) {
+      return <p style={{ margin: '1rem 0', lineHeight: '1.7', color: '#d1d5db' }} {...props}>{children}</p>;
+    },
+
+    // Links
+    a({ children, href, ...props }) {
+      return (
+        <a
+          href={href}
+          style={{ color: '#e8c547', textDecoration: 'none' }}
+          onMouseOver={(e) => e.target.style.textDecoration = 'underline'}
+          onMouseOut={(e) => e.target.style.textDecoration = 'none'}
+          target={href?.startsWith('http') ? '_blank' : undefined}
+          rel={href?.startsWith('http') ? 'noopener noreferrer' : undefined}
+          {...props}
+        >
+          {children}
+        </a>
+      );
+    },
+
+    // Lists
+    ul({ children, ...props }) {
+      return <ul style={{ margin: '1rem 0', paddingLeft: '1.5rem', listStyleType: 'disc', color: '#d1d5db' }} {...props}>{children}</ul>;
+    },
+    ol({ children, ...props }) {
+      return <ol style={{ margin: '1rem 0', paddingLeft: '1.5rem', listStyleType: 'decimal', color: '#d1d5db' }} {...props}>{children}</ol>;
+    },
+    li({ children, ...props }) {
+      return <li style={{ margin: '0.5rem 0', lineHeight: '1.6' }} {...props}>{children}</li>;
+    },
+
+    // Blockquote
+    blockquote({ children, ...props }) {
+      return (
+        <blockquote
+          style={{
+            borderLeft: '4px solid #e8c547',
+            paddingLeft: '1rem',
+            margin: '1rem 0',
+            fontStyle: 'italic',
+            color: '#9ca3af',
+            backgroundColor: '#2e3d29',
+            padding: '0.75rem 1rem',
+            borderRadius: '0 8px 8px 0',
+          }}
+          {...props}
+        >
+          {children}
+        </blockquote>
+      );
+    },
+
+    // Table elements
+    table({ children, ...props }) {
+      return (
+        <div style={{ overflowX: 'auto', margin: '1rem 0' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid #3e503e' }} {...props}>
+            {children}
+          </table>
+        </div>
+      );
+    },
+    thead({ children, ...props }) {
+      return <thead style={{ backgroundColor: '#2e3d29' }} {...props}>{children}</thead>;
+    },
+    th({ children, ...props }) {
+      return <th style={{ padding: '0.75rem', textAlign: 'left', color: '#e8c547', fontWeight: '600', borderBottom: '1px solid #3e503e' }} {...props}>{children}</th>;
+    },
+    td({ children, ...props }) {
+      return <td style={{ padding: '0.75rem', borderBottom: '1px solid #3e503e50', color: '#d1d5db' }} {...props}>{children}</td>;
+    },
+    tr({ children, ...props }) {
+      return <tr style={{ transition: 'background-color 0.2s' }} {...props}>{children}</tr>;
+    },
+
+    // Horizontal rule
+    hr({ ...props }) {
+      return <hr style={{ border: 'none', borderTop: '1px solid #3e503e', margin: '2rem 0' }} {...props} />;
+    },
+
+    // Strong and emphasis
+    strong({ children, ...props }) {
+      return <strong style={{ fontWeight: '700', color: '#ffffff' }} {...props}>{children}</strong>;
+    },
+    em({ children, ...props }) {
+      return <em style={{ fontStyle: 'italic', color: '#9ca3af' }} {...props}>{children}</em>;
+    },
+
+    // Images
+    img({ src, alt, ...props }) {
+      return (
+        <img
+          src={src}
+          alt={alt}
+          style={{
+            maxWidth: '100%',
+            height: 'auto',
+            borderRadius: '8px',
+            margin: '1.5rem 0',
+            border: '1px solid #3e503e',
+          }}
+          {...props}
+        />
+      );
+    },
   };
 
   return (
-    <article className={`prose prose-invert max-w-none ${className}`}>
+    <div className={`markdown-rendered ${className}`}>
       <ReactMarkdown
         components={components}
         remarkPlugins={[remarkGfm]}
@@ -40,79 +197,6 @@ export default function MarkdownRenderer({ content, className = "" }) {
       >
         {content}
       </ReactMarkdown>
-      <style jsx global>{`
-        .prose {
-          max-width: 100%;
-          color: #fff;
-        }
-        
-        ${codeStyles}
-        
-        .prose img {
-          margin: 2em 0;
-          border-radius: 0.5rem;
-        }
-        .prose a {
-          color: #e8c547;
-          text-decoration: none;
-        }
-        .prose a:hover {
-          text-decoration: underline;
-        }
-        .prose blockquote {
-          border-left-color: #3e503e;
-          background-color: #1f293750;
-        }
-        .prose h1, .prose h2, .prose h3, .prose h4 {
-          color: #fff;
-        }
-        .prose ul, .prose ol {
-          padding-left: 1.5em;
-        }
-      `}</style>
-    </article>
+    </div>
   );
 }
-
-// Global styles for code blocks
-const codeStyles = `
-  .prose pre {
-    margin: 1em 0;
-    padding: 1em;
-    border-radius: 0.5em;
-    background-color: #0e1b12 !important;
-    border: 1px solid #3e503e30;
-    overflow-x: auto;
-  }
-  
-  .prose pre code {
-    background: none !important;
-    color: inherit !important;
-    padding: 0 !important;
-    font-size: inherit !important;
-  }
-  
-  .prose *:not(pre) > code {
-    background-color: #0e1b12 !important;
-    color: #e8c547 !important;
-    padding: 0.25rem 0.5rem !important;
-    border-radius: 0.375rem !important;
-    font-size: 0.875em !important;
-    font-family: 'Courier New', monospace !important;
-    white-space: nowrap !important;
-    border: 1px solid #3e503e !important;
-    display: inline-block !important;
-  }
-
-  .prose > *:first-child {
-    margin-top: 0 !important;
-  }
-
-  .prose > *:last-child {
-    margin-bottom: 0 !important;
-  }
-
-  .prose p {
-    margin: 1.5em 0;
-  }
-`; 
