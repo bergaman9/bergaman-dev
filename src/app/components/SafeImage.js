@@ -3,10 +3,10 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 
-const SafeImage = ({ 
-  src, 
-  fallbackSrc = '/images/portfolio/default.svg', 
-  alt = '', 
+const SafeImage = ({
+  src,
+  fallbackSrc = '/images/portfolio/default.svg',
+  alt = '',
   width,
   height,
   className = '',
@@ -19,7 +19,7 @@ const SafeImage = ({
   onError,
   objectFit = 'cover',
   showLoader = false,
-  ...rest 
+  ...rest
 }) => {
   const [imgSrc, setImgSrc] = useState(src);
   const [error, setError] = useState(false);
@@ -37,14 +37,14 @@ const SafeImage = ({
   const handleError = (e) => {
     console.warn(`Image load error for: ${imgSrc}`);
     console.warn('Error details:', e);
-    
+
     if (!hasAttemptedFallback && imgSrc !== fallbackSrc) {
       console.log(`Switching to fallback image: ${fallbackSrc}`);
       setError(true);
       setImgSrc(fallbackSrc);
       setIsLoading(false);
       setHasAttemptedFallback(true);
-      
+
       // Call custom onError handler if provided
       if (onError) {
         onError(e);
@@ -68,12 +68,12 @@ const SafeImage = ({
       console.log('No source provided, using fallback:', fallbackSrc);
       return fallbackSrc;
     }
-    
+
     // If error occurred and we have a fallback, use fallback
     if (error && fallbackSrc && imgSrc !== fallbackSrc) {
       return fallbackSrc;
     }
-    
+
     // Otherwise use the current imgSrc
     return imgSrc;
   };
@@ -84,20 +84,19 @@ const SafeImage = ({
   const isFill = rest.fill;
 
   return (
-    <div className={`relative overflow-hidden ${className}`} style={!isFill ? { width, height } : {}}>
+    <div
+      className={`relative overflow-hidden ${isFill ? 'w-full h-full' : ''} ${className}`}
+      style={!isFill ? { width, height } : {}}
+    >
       {isLoading && showLoader && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-800/20 rounded z-10">
           <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#e8c547]"></div>
         </div>
       )}
-      
+
       {/* Show debug info in development */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="absolute top-0 left-0 z-20 bg-black/50 text-white text-xs p-1 rounded">
-          {error ? 'Fallback' : 'Original'}
-        </div>
-      )}
-      
+
+
       <Image
         src={validSrc}
         alt={alt}

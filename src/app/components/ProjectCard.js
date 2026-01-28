@@ -4,221 +4,233 @@ import Tooltip from './Tooltip';
 import SafeImage from './SafeImage';
 
 export default function ProjectCard({ project, isAdmin = false, onEdit, onDelete }) {
-  const placeholderImages = {
-    'Web Development': '/images/portfolio/web-placeholder.svg',
-    'Mobile App': '/images/portfolio/mobile-placeholder.svg',
-    'AI/ML': '/images/portfolio/ai-placeholder.svg',
-    'Design': '/images/portfolio/design-placeholder.svg',
-    'Desktop App': '/images/portfolio/desktop-placeholder.svg',
-    'Game Development': '/images/portfolio/game-placeholder.svg',
-    'IoT': '/images/portfolio/iot-placeholder.svg',
-    'Bot Development': '/images/portfolio/bot-placeholder.svg',
-    'Branding': '/images/portfolio/brand-placeholder.svg',
-    'default': '/images/portfolio/default.svg'
+  // Temporary Overrides (Hotfix)
+  const displayProject = { ...project };
+
+  if (displayProject.title?.includes('Contro Bot')) {
+    displayProject.liveUrl = 'https://www.contro.space';
+  }
+
+  if (displayProject.title?.includes('Ligroup')) {
+    displayProject.status = 'completed';
+    displayProject.liveUrl = null; // Mark inactive
+  }
+
+  // Smart Link Configuration
+  const getLinkConfig = (url) => {
+    if (!url) return null;
+
+    // Contro Space specific
+    if (url.includes('contro.space')) return {
+      label: 'Dashboard',
+      icon: 'fas fa-columns',
+      color: 'bg-indigo-500 hover:bg-indigo-400 text-white shadow-lg shadow-indigo-500/20'
+    };
+
+    if (url.includes('github.com')) return {
+      label: 'Source',
+      icon: 'fab fa-github',
+      color: 'bg-white/10 hover:bg-white/20 text-white'
+    };
+
+    if (url.includes('youtube.com') || url.includes('youtu.be')) return {
+      label: 'Watch',
+      icon: 'fab fa-youtube',
+      color: 'bg-red-600 hover:bg-red-500 text-white shadow-lg shadow-red-600/20'
+    };
+
+    if (url.includes('figma.com')) return {
+      label: 'Design',
+      icon: 'fab fa-figma',
+      color: 'bg-purple-600 hover:bg-purple-500 text-white'
+    };
+
+    // Default
+    return {
+      label: 'Visit',
+      icon: 'fas fa-external-link-alt',
+      color: 'bg-[#e8c547] hover:bg-[#ffe066] text-black font-semibold shadow-lg shadow-[#e8c547]/20'
+    };
   };
 
-  const getPlaceholderImage = (category) => {
-    return placeholderImages[category] || placeholderImages.default;
-  };
-
-  const categoryIcons = {
-    'Web Development': 'fas fa-globe',
-    'Mobile App': 'fas fa-mobile-alt',
-    'AI/ML': 'fas fa-brain',
-    'Design': 'fas fa-palette',
-    'Desktop App': 'fas fa-desktop',
-    'Game Development': 'fas fa-gamepad',
-    'IoT': 'fas fa-microchip',
-    'Bot Development': 'fas fa-robot',
-    'Branding': 'fas fa-trademark',
-    'default': 'fas fa-folder'
+  const getCategoryGradient = (category) => {
+    const gradients = {
+      'Web Development': 'from-blue-900/40 to-cyan-900/40',
+      'Mobile App': 'from-purple-900/40 to-pink-900/40',
+      'AI/ML': 'from-green-900/40 to-emerald-900/40',
+      'Design': 'from-yellow-900/40 to-orange-900/40',
+      'Desktop App': 'from-orange-900/40 to-red-900/40',
+      'Game Development': 'from-pink-900/40 to-rose-900/40',
+      'IoT': 'from-teal-900/40 to-cyan-900/40',
+      'Bot Development': 'from-indigo-900/40 to-purple-900/40',
+      'Branding': 'from-red-900/40 to-pink-900/40',
+      'default': 'from-gray-900/40 to-slate-900/40'
+    };
+    return gradients[category] || gradients.default;
   };
 
   const getCategoryIcon = (category) => {
-    return categoryIcons[category] || categoryIcons.default;
+    const icons = {
+      'Web Development': 'fas fa-globe',
+      'Mobile App': 'fas fa-mobile-alt',
+      'AI/ML': 'fas fa-brain',
+      'Design': 'fas fa-palette',
+      'Desktop App': 'fas fa-desktop',
+      'Game Development': 'fas fa-gamepad',
+      'IoT': 'fas fa-microchip',
+      'Bot Development': 'fas fa-robot',
+      'Branding': 'fas fa-trademark',
+      'default': 'fas fa-folder'
+    };
+    return icons[category] || icons.default;
   };
 
-  const statusColors = {
-    active: 'bg-green-500/80',
-    completed: 'bg-[#e8c547]/80',
-    in_progress: 'bg-yellow-500/80',
-    planned: 'bg-gray-500/80'
-  };
-
-  const statusLabels = {
-    active: 'Active',
-    completed: 'Completed',
-    in_progress: 'In Progress',
-    planned: 'Planned'
-  };
-
-  // Format date if available
-  const formattedDate = project.createdAt 
-    ? new Date(project.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })
+  const formattedDate = displayProject.createdAt
+    ? new Date(displayProject.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long' })
     : null;
 
-  // Debug log for image path
-  console.log('Project image path:', project.image, 'for project:', project.title);
+  // Pre-calculate link configs
+  const mainAction = displayProject.liveUrl ? { url: displayProject.liveUrl, ...getLinkConfig(displayProject.liveUrl) } :
+    displayProject.demoUrl ? { url: displayProject.demoUrl, ...getLinkConfig(displayProject.demoUrl) } : null;
+
+  const secondaryAction = displayProject.githubUrl ? { url: displayProject.githubUrl, ...getLinkConfig(displayProject.githubUrl) } : null;
 
   return (
-    <div className="bg-[#0e1b12]/95 border border-[#2e3d29]/30 rounded-xl hover:border-[#e8c547]/30 transition-all duration-300 group h-full flex flex-col min-h-[400px]">
-      {/* Image Container with fixed height */}
-      <div className="relative h-48 overflow-hidden bg-[#0a1a0f] rounded-t-xl flex-shrink-0">
-        <SafeImage
-          src={project.image}
-          fallbackSrc={getPlaceholderImage(project.category)}
-          alt={project.title || 'Project image'}
-          fill
-          className="object-cover group-hover:scale-110 transition-transform duration-500"
-          showLoader={true}
-          priority={false}
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-        />
-        
-        {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0e1b12]/60 via-transparent to-transparent"></div>
-        
-        {/* Status Badge */}
-        <div className="absolute top-3 right-3 z-10">
-          <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium text-white backdrop-blur-sm border border-white/20 ${statusColors[project.status] || statusColors.planned}`}>
-            <i className={`mr-1 text-xs ${
-              project.status === 'active' ? 'fas fa-circle' :
-              project.status === 'completed' ? 'fas fa-check-circle' :
-              project.status === 'in_progress' ? 'fas fa-clock' :
-              'fas fa-pause-circle'
-            }`}></i>
-            {statusLabels[project.status] || 'Planned'}
-          </span>
+    <div className="group h-full flex flex-col relative rounded-[2rem] overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-[#e8c547]/10">
+
+      {/* Dynamic Background Glow */}
+      <div className={`absolute -inset-1 bg-gradient-to-br ${getCategoryGradient(displayProject.category)} opacity-0 group-hover:opacity-30 blur-2xl transition-opacity duration-500`}></div>
+
+      {/* Glass Container */}
+      <div className="relative h-full flex flex-col bg-[#0e1b12]/70 backdrop-blur-xl border border-white/10 rounded-[2rem] overflow-hidden shadow-sm group-hover:border-[#e8c547]/30 transition-all duration-300">
+
+        {/* Image Section */}
+        <div className="relative h-56 overflow-hidden bg-[#050a07]">
+          {displayProject.image ? (
+            <SafeImage
+              src={displayProject.image}
+              alt={displayProject.title}
+              fill
+              className="object-cover transition-transform duration-700 group-hover:scale-105"
+            />
+          ) : (
+            <div className={`w-full h-full bg-gradient-to-br ${getCategoryGradient(displayProject.category)} flex items-center justify-center group-hover:scale-105 transition-transform duration-700`}>
+              <i className={`${getCategoryIcon(displayProject.category)} text-6xl text-white/10 group-hover:text-white/20 transition-colors duration-300`}></i>
+            </div>
+          )}
+
+          {/* Status Badge - Icon Only */}
+          <div className="absolute top-4 right-4 z-10">
+            <Tooltip content={displayProject.status === 'in_progress' ? 'In Progress' : displayProject.status.charAt(0).toUpperCase() + displayProject.status.slice(1)} position="left">
+              <span className={`
+                flex items-center justify-center w-8 h-8 rounded-full shadow-lg border border-white/10 backdrop-blur-md
+                ${displayProject.status === 'active' ? 'bg-green-500 text-white shadow-green-500/30' :
+                  displayProject.status === 'completed' ? 'bg-blue-600 text-white shadow-blue-600/30' :
+                    'bg-gray-700 text-gray-300'}
+              `}>
+                <i className={`text-sm ${displayProject.status === 'active' ? 'fas fa-circle animate-pulse text-[10px]' :
+                    displayProject.status === 'completed' ? 'fas fa-check' :
+                      'fas fa-tools'
+                  }`}></i>
+              </span>
+            </Tooltip>
+          </div>
+
+          {/* Featured Ribbon - Icon Only */}
+          {displayProject.featured && (
+            <div className="absolute top-4 left-4 z-10">
+              <Tooltip content="Featured Project" position="right">
+                <div className="bg-black/60 backdrop-blur-md border border-[#e8c547]/30 text-[#e8c547] w-8 h-8 rounded-full flex items-center justify-center shadow-lg shadow-black/20">
+                  <i className="fas fa-star text-xs"></i>
+                </div>
+              </Tooltip>
+            </div>
+          )}
         </div>
 
-        {/* Featured Badge */}
-        {project.featured && (
-          <div className="absolute top-3 left-3 z-10">
-            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-[#e8c547]/90 text-black backdrop-blur-sm border border-[#e8c547]/50">
-              <i className="fas fa-star mr-1 text-xs"></i>
-              Featured
+        {/* Content Area */}
+        <div className="flex-1 p-6 flex flex-col">
+          {/* Category & Date */}
+          <div className="flex items-center justify-between text-xs text-gray-400 mb-3">
+            <span className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-white/5 border border-white/5">
+              <i className={`${getCategoryIcon(displayProject.category)} text-[#e8c547]`}></i>
+              {displayProject.category}
             </span>
+            {formattedDate && <span>{formattedDate}</span>}
           </div>
-        )}
 
-        {/* Category Icon */}
-        <div className="absolute bottom-3 left-3 z-10">
-          <div className="w-10 h-10 bg-[#0e1b12]/80 backdrop-blur-sm rounded-lg flex items-center justify-center border border-[#e8c547]/30">
-            <i className={`${getCategoryIcon(project.category)} text-[#e8c547] text-sm`}></i>
-          </div>
-        </div>
-      </div>
-
-      {/* Content with flex layout for equal height cards */}
-      <div className="p-6 flex-1 flex flex-col">
-        {/* Title and Category */}
-        <div className="mb-3">
-          <h3 className="text-lg font-semibold text-[#e8c547] mb-1 line-clamp-2 leading-tight">
-            {project.title}
+          {/* Title */}
+          <h3 className="text-xl font-bold text-white mb-2 group-hover:text-[#e8c547] transition-colors line-clamp-1">
+            {displayProject.title}
           </h3>
-          <div className="flex items-center text-xs text-gray-400">
-            <i className={`${getCategoryIcon(project.category)} mr-1`}></i>
-            <span>{project.category}</span>
-            {formattedDate && (
-              <>
-                <span className="mx-2">•</span>
-                <i className="fas fa-calendar mr-1"></i>
-                <span>{formattedDate}</span>
-              </>
-            )}
-          </div>
-        </div>
 
-        {/* Description with flex-grow to push content to bottom */}
-        <p className="text-sm text-gray-300 mb-4 line-clamp-3 flex-grow leading-relaxed">
-          {project.description}
-        </p>
+          {/* Description */}
+          <p className="text-sm text-gray-400 leading-relaxed mb-6 line-clamp-3 flex-grow">
+            {displayProject.description}
+          </p>
 
-        {/* Tech Stack */}
-        {project.technologies && project.technologies.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-4">
-            {project.technologies.slice(0, 4).map((tech, index) => (
-              <span
-                key={index}
-                className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-[#2e3d29]/40 text-gray-300 border border-[#3e503e]/30 hover:bg-[#3e503e]/40 transition-colors"
-              >
+          {/* Technologies */}
+          <div className="flex flex-wrap gap-2 mb-6">
+            {displayProject.technologies?.slice(0, 3).map((tech, i) => (
+              <span key={i} className="px-2 py-1 text-xs font-medium text-gray-300 bg-white/5 rounded border border-white/5">
                 {tech}
               </span>
             ))}
-            {project.technologies.length > 4 && (
-              <Tooltip content={`Additional technologies: ${project.technologies.slice(4).join(', ')}`} position="top" variant="dark">
-                <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-[#e8c547]/20 text-[#e8c547] cursor-help hover:bg-[#e8c547]/30 transition-colors border border-[#e8c547]/30">
-                  +{project.technologies.length - 4}
+            {displayProject.technologies?.length > 3 && (
+              <Tooltip
+                content={displayProject.technologies.slice(3).join(', ')}
+                position="top"
+              >
+                <span className="cursor-help px-2 py-1 text-xs font-medium text-gray-400 bg-transparent rounded border border-white/10 hover:border-white/30 hover:text-white transition-colors">
+                  +{displayProject.technologies.length - 3}
                 </span>
               </Tooltip>
             )}
           </div>
-        )}
 
-        {/* Links and Actions - Always at bottom */}
-        <div className="flex items-center justify-between mt-auto pt-4 border-t border-[#3e503e]/30">
-          <div className="flex items-center space-x-3">
-            {project.liveUrl && (
+          {/* Actions */}
+          <div className="flex items-center gap-3 pt-4 border-t border-white/5 mt-auto">
+            {mainAction ? (
               <a
-                href={project.liveUrl}
+                href={mainAction.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center w-8 h-8 text-gray-400 hover:text-[#e8c547] hover:bg-[#e8c547]/10 rounded-lg transition-all duration-300"
-                title="View Live Demo"
+                className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl transition-all duration-300 ${mainAction.color}`}
               >
-                <i className="fas fa-external-link-alt text-sm"></i>
+                <i className={mainAction.icon}></i>
+                <span className="font-semibold text-sm">{mainAction.label}</span>
               </a>
+            ) : (
+              <div className="flex-1 py-2.5 text-center text-sm text-gray-500 bg-white/5 rounded-xl border border-white/5 cursor-not-allowed">
+                Coming Soon
+              </div>
             )}
-            {project.githubUrl && (
+
+            {secondaryAction && (
               <a
-                href={project.githubUrl}
+                href={secondaryAction.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center w-8 h-8 text-gray-400 hover:text-[#e8c547] hover:bg-[#e8c547]/10 rounded-lg transition-all duration-300"
-                title="View Source Code"
+                className={`w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-300 ${secondaryAction.color} border border-white/5`}
               >
-                <i className="fab fa-github text-sm"></i>
+                <i className={`${secondaryAction.icon} text-lg`}></i>
               </a>
             )}
-            {project.demoUrl && (
-              <a
-                href={project.demoUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center w-8 h-8 text-gray-400 hover:text-[#e8c547] hover:bg-[#e8c547]/10 rounded-lg transition-all duration-300"
-                title="View Demo"
-              >
-                <i className="fas fa-play-circle text-sm"></i>
-              </a>
-            )}
-            {!project.liveUrl && !project.githubUrl && !project.demoUrl && (
-              <span className="text-gray-500 text-xs italic">
-                No preview available
-              </span>
+
+            {/* Admin Controls */}
+            {isAdmin && (
+              <div className="flex gap-2 ml-auto pl-2 border-l border-white/10">
+                <button onClick={() => onEdit(displayProject)} className="text-gray-400 hover:text-[#e8c547]">
+                  <i className="fas fa-edit"></i>
+                </button>
+                <button onClick={() => onDelete(displayProject._id)} className="text-gray-400 hover:text-red-400">
+                  <i className="fas fa-trash"></i>
+                </button>
+              </div>
             )}
           </div>
-
-          {/* Admin Actions */}
-          {isAdmin && (
-            <div className="flex items-center space-x-1">
-              <button
-                onClick={() => onEdit(project)}
-                className="flex items-center justify-center w-8 h-8 text-gray-400 hover:text-[#e8c547] hover:bg-[#e8c547]/10 rounded-lg transition-all duration-300"
-                title="Edit Project"
-              >
-                <i className="fas fa-edit text-sm"></i>
-              </button>
-              <button
-                onClick={() => onDelete(project._id)}
-                className="flex items-center justify-center w-8 h-8 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all duration-300"
-                title="Delete Project"
-              >
-                <i className="fas fa-trash text-sm"></i>
-              </button>
-            </div>
-          )}
         </div>
       </div>
     </div>
   );
-} 
+}

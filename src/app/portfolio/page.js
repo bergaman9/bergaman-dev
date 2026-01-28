@@ -37,14 +37,14 @@ export default function Portfolio() {
           'Cache-Control': 'no-cache'
         }
       });
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-      
+
       const data = await response.json();
       console.log("Portfolio API response:", data);
-      
+
       if (data.success && data.portfolios) {
         setPortfolioItems(data.portfolios);
       } else {
@@ -64,14 +64,14 @@ export default function Portfolio() {
   // Filter portfolios based on active category and search
   const filteredPortfolios = portfolioItems.filter(item => {
     const matchesCategory = activeCategory === 'all' || item.category === activeCategory;
-    const matchesSearch = !searchTerm || 
+    const matchesSearch = !searchTerm ||
       item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.technologies?.some(tech => tech.toLowerCase().includes(searchTerm.toLowerCase()));
-    
+
     return matchesCategory && matchesSearch;
   });
-  
+
   // Sort portfolios
   const sortedPortfolios = [...filteredPortfolios].sort((a, b) => {
     switch (sortBy) {
@@ -95,69 +95,69 @@ export default function Portfolio() {
 
   // Category configurations with updated names and icons
   const categoryConfig = {
-    'Web Development': { 
-      name: 'Web', 
-      icon: 'fas fa-globe', 
+    'Web Development': {
+      name: 'Web',
+      icon: 'fas fa-globe',
       description: 'Modern web applications and websites',
       color: 'from-blue-500 to-cyan-500'
     },
-    'Mobile App': { 
-      name: 'Mobile', 
-      icon: 'fas fa-mobile-alt', 
+    'Mobile App': {
+      name: 'Mobile',
+      icon: 'fas fa-mobile-alt',
       description: 'Mobile applications for iOS and Android',
       color: 'from-purple-500 to-pink-500'
     },
-    'AI/ML': { 
-      name: 'AI', 
-      icon: 'fas fa-brain', 
+    'AI/ML': {
+      name: 'AI',
+      icon: 'fas fa-brain',
       description: 'Artificial intelligence and ML projects',
       color: 'from-green-500 to-emerald-500'
     },
-    'Desktop App': { 
-      name: 'Desktop', 
-      icon: 'fas fa-desktop', 
+    'Desktop App': {
+      name: 'Desktop',
+      icon: 'fas fa-desktop',
       description: 'Desktop software and applications',
       color: 'from-orange-500 to-red-500'
     },
-    'Game Development': { 
-      name: 'Games', 
-      icon: 'fas fa-gamepad', 
+    'Game Development': {
+      name: 'Games',
+      icon: 'fas fa-gamepad',
       description: 'Games and interactive experiences',
       color: 'from-pink-500 to-rose-500'
     },
-    'Bot Development': { 
-      name: 'Bots', 
-      icon: 'fas fa-robot', 
+    'Bot Development': {
+      name: 'Bots',
+      icon: 'fas fa-robot',
       description: 'Automated solutions and Discord bots',
       color: 'from-indigo-500 to-purple-500'
     },
-    'IoT': { 
-      name: 'IoT', 
-      icon: 'fas fa-microchip', 
+    'IoT': {
+      name: 'IoT',
+      icon: 'fas fa-microchip',
       description: 'Internet of Things devices and solutions',
       color: 'from-teal-500 to-cyan-500'
     },
-    'Design': { 
-      name: 'Design', 
-      icon: 'fas fa-palette', 
+    'Design': {
+      name: 'Design',
+      icon: 'fas fa-palette',
       description: 'Visual design and digital artwork',
       color: 'from-yellow-500 to-orange-500'
     },
-    'Branding': { 
-      name: 'Branding', 
-      icon: 'fas fa-trademark', 
+    'Branding': {
+      name: 'Branding',
+      icon: 'fas fa-trademark',
       description: 'Branding and identity design',
       color: 'from-red-500 to-pink-500'
     },
-    'Other': { 
-      name: 'Other', 
-      icon: 'fas fa-code', 
+    'Other': {
+      name: 'Other',
+      icon: 'fas fa-code',
       description: 'Miscellaneous projects and experiments',
       color: 'from-gray-500 to-gray-600'
     },
-    'all': { 
-      name: 'All Projects', 
-      icon: 'fas fa-th-large', 
+    'all': {
+      name: 'All Projects',
+      icon: 'fas fa-th-large',
       description: 'All projects across categories',
       color: 'from-[#e8c547] to-[#d4b445]'
     }
@@ -196,37 +196,37 @@ export default function Portfolio() {
   if (loading) {
     return (
       <PageContainer>
-        <PageHeader 
+        <PageHeader
           title="Portfolio"
           subtitle="Loading my projects and work..."
           icon="fas fa-briefcase"
         />
-        
+
         {/* Skeleton Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 animate-pulse">
           {[...Array(6)].map((_, index) => (
             <div key={index} className="bg-[#0e1b12]/95 border border-[#2e3d29]/30 rounded-xl h-[400px] flex flex-col">
               {/* Skeleton Image */}
               <div className="h-48 bg-gradient-to-r from-[#2e3d29] via-[#3e503e] to-[#2e3d29] bg-[length:200%_100%] animate-[shimmer_2s_infinite] rounded-t-xl"></div>
-              
+
               {/* Skeleton Content */}
               <div className="p-6 flex-1 flex flex-col">
                 {/* Skeleton Title */}
                 <div className="h-6 bg-gradient-to-r from-[#2e3d29] via-[#3e503e] to-[#2e3d29] bg-[length:200%_100%] animate-[shimmer_2s_infinite] rounded mb-3"></div>
-                
+
                 {/* Skeleton Description */}
                 <div className="space-y-2 mb-4 flex-grow">
                   <div className="h-4 bg-gradient-to-r from-[#2e3d29] via-[#3e503e] to-[#2e3d29] bg-[length:200%_100%] animate-[shimmer_2s_infinite] rounded"></div>
                   <div className="h-4 bg-gradient-to-r from-[#2e3d29] via-[#3e503e] to-[#2e3d29] bg-[length:200%_100%] animate-[shimmer_2s_infinite] rounded w-3/4"></div>
                 </div>
-                
+
                 {/* Skeleton Tags */}
                 <div className="flex gap-2 mb-4">
                   <div className="h-6 w-16 bg-gradient-to-r from-[#2e3d29] via-[#3e503e] to-[#2e3d29] bg-[length:200%_100%] animate-[shimmer_2s_infinite] rounded"></div>
                   <div className="h-6 w-12 bg-gradient-to-r from-[#2e3d29] via-[#3e503e] to-[#2e3d29] bg-[length:200%_100%] animate-[shimmer_2s_infinite] rounded"></div>
                   <div className="h-6 w-20 bg-gradient-to-r from-[#2e3d29] via-[#3e503e] to-[#2e3d29] bg-[length:200%_100%] animate-[shimmer_2s_infinite] rounded"></div>
                 </div>
-                
+
                 {/* Skeleton Actions */}
                 <div className="flex justify-between items-center pt-4 border-t border-[#3e503e]/30">
                   <div className="flex gap-3">
@@ -245,7 +245,7 @@ export default function Portfolio() {
   if (error) {
     return (
       <PageContainer>
-        <PageHeader 
+        <PageHeader
           title="Portfolio"
           subtitle={`Error: ${error}`}
           icon="fas fa-briefcase"
@@ -265,29 +265,29 @@ export default function Portfolio() {
   return (
     <PageContainer className="page-scrollbar">
       {/* Header */}
-      <PageHeader 
+      <PageHeader
         title="Portfolio"
         subtitle="A showcase of my projects, from web applications to automation solutions"
         icon="fas fa-briefcase"
         variant="large"
         stats={[
-          { 
-            label: "Total Projects", 
+          {
+            label: "Total Projects",
             value: portfolioItems.length,
             icon: "fas fa-folder-open"
           },
-          { 
-            label: "Completed", 
+          {
+            label: "Completed",
             value: portfolioItems.filter(item => item.status === 'completed').length,
             icon: "fas fa-check-circle"
           },
-          { 
-            label: "Active", 
+          {
+            label: "Active",
             value: portfolioItems.filter(item => item.status === 'active').length,
             icon: "fas fa-circle"
           },
-          { 
-            label: "Featured", 
+          {
+            label: "Featured",
             value: portfolioItems.filter(item => item.featured).length,
             icon: "fas fa-star"
           }
@@ -325,23 +325,12 @@ export default function Portfolio() {
           <Select
             options={sortOptions}
             value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
+            onChange={(value) => setSortBy(value)}
             className="min-w-[140px] h-12"
             variant="secondary"
           />
-          
-          <Button
-            onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
-            variant="secondary"
-            size="md"
-            icon={viewMode === 'grid' ? 'fas fa-list' : 'fas fa-th'}
-            title={viewMode === 'grid' ? 'Switch to List View' : 'Switch to Grid View'}
-            className="h-12 px-4"
-          >
-            <span className="hidden sm:inline">
-              {viewMode === 'grid' ? 'List' : 'Grid'}
-            </span>
-          </Button>
+
+
         </div>
       </div>
 
@@ -353,18 +342,18 @@ export default function Portfolio() {
             Explore by Category
           </h2>
           <p className="text-gray-400">
-            {activeCategory === 'all' 
-              ? 'All projects across categories' 
+            {activeCategory === 'all'
+              ? 'All projects across categories'
               : categoryConfig[activeCategory]?.description
             }
           </p>
         </div>
-        
+
         <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
           {categories.map((category) => {
             const config = categoryConfig[category] || { name: category, icon: 'fas fa-folder' };
             const isActive = activeCategory === category;
-            
+
             return (
               <button
                 key={category}
@@ -372,8 +361,8 @@ export default function Portfolio() {
                 className={`
                   relative group px-3 sm:px-4 py-2 rounded-lg font-medium transition-all duration-300
                   transform hover:scale-105 hover:-translate-y-0.5 text-sm sm:text-base
-                  ${isActive 
-                    ? 'bg-gradient-to-r ' + config.color + ' text-white shadow-lg' 
+                  ${isActive
+                    ? 'bg-gradient-to-r ' + config.color + ' text-white shadow-lg'
                     : 'bg-[#1a2e1a]/50 text-gray-300 hover:bg-[#2e3d29]/50 border border-[#3e503e]/30'
                   }
                 `}
@@ -381,15 +370,15 @@ export default function Portfolio() {
                 <span className="flex items-center gap-2">
                   <i className={`${config.icon} ${isActive ? 'animate-pulse' : ''} text-xs sm:text-sm`}></i>
                   <span className="hidden sm:inline">{config.name}</span>
-                  <Badge 
-                    size="sm" 
+                  <Badge
+                    size="sm"
                     variant={isActive ? "light" : "secondary"}
                     className="text-xs"
                   >
                     {categoryStats[category]}
                   </Badge>
                 </span>
-                
+
                 {/* Hover effect */}
                 {!isActive && (
                   <div className={`absolute inset-0 rounded-lg bg-gradient-to-r ${config.color} opacity-0 group-hover:opacity-20 transition-opacity duration-300`}></div>
@@ -415,7 +404,7 @@ export default function Portfolio() {
             <i className="fas fa-search text-6xl text-gray-600 mb-4"></i>
             <h3 className="text-2xl font-bold text-gray-400 mb-2">No Projects Found</h3>
             <p className="text-gray-500 mb-4">
-              {searchTerm 
+              {searchTerm
                 ? `No projects match "${searchTerm}" in the selected category.`
                 : 'No projects match the selected category.'
               }
@@ -457,8 +446,8 @@ export default function Portfolio() {
 
           {/* Projects Grid/List */}
           <div className={`
-            ${viewMode === 'grid' 
-              ? 'grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6' 
+            ${viewMode === 'grid'
+              ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'
               : 'space-y-6'
             }
             animate-fadeIn
@@ -467,7 +456,7 @@ export default function Portfolio() {
               return (
                 <div
                   key={project._id}
-                  className="animate-slideInUp w-full"
+                  className="animate-slideInUp"
                   style={{
                     animationDelay: `${Math.min(index * 50, 500)}ms`
                   }}
@@ -481,38 +470,37 @@ export default function Portfolio() {
                         {/* Image */}
                         <div className="lg:w-1/3">
                           <div className="relative h-48 lg:h-full rounded-lg overflow-hidden bg-[#0a1a0f] cursor-pointer"
-                               onClick={() => openModal(project)}>
+                            onClick={() => openModal(project)}>
                             <SafeImage
                               src={project.image || '/images/portfolio/default.svg'}
                               alt={project.title}
                               fill
                               className="object-cover hover:scale-105 transition-transform duration-300"
                             />
-                            
+
                             {/* Status Badge */}
                             <div className="absolute top-3 right-3">
-                              <Badge 
+                              <Badge
                                 variant={
                                   project.status === 'active' ? 'success' :
-                                  project.status === 'completed' ? 'warning' :
-                                  'secondary'
+                                    project.status === 'completed' ? 'warning' :
+                                      'secondary'
                                 }
                                 size="sm"
                               >
-                                <i className={`mr-1 text-xs ${
-                                  project.status === 'active' ? 'fas fa-circle' :
+                                <i className={`mr-1 text-xs ${project.status === 'active' ? 'fas fa-circle' :
                                   project.status === 'completed' ? 'fas fa-check-circle' :
-                                  'fas fa-pause-circle'
-                                }`}></i>
+                                    'fas fa-pause-circle'
+                                  }`}></i>
                                 {project.status === 'active' ? 'Active' :
-                                 project.status === 'completed' ? 'Completed' :
-                                 project.status === 'in_progress' ? 'In Progress' :
-                                 'Planned'}
+                                  project.status === 'completed' ? 'Completed' :
+                                    project.status === 'in_progress' ? 'In Progress' :
+                                      'Planned'}
                               </Badge>
                             </div>
                           </div>
                         </div>
-                        
+
                         {/* Content */}
                         <div className="lg:w-2/3 flex flex-col">
                           <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-3 gap-2">
@@ -539,11 +527,11 @@ export default function Portfolio() {
                               </Badge>
                             )}
                           </div>
-                          
+
                           <p className="text-gray-300 mb-4 flex-1 line-clamp-3">
                             {project.description}
                           </p>
-                          
+
                           {/* Technologies */}
                           {project.technologies && project.technologies.length > 0 && (
                             <div className="flex flex-wrap gap-2 mb-4">
@@ -559,7 +547,7 @@ export default function Portfolio() {
                               )}
                             </div>
                           )}
-                          
+
                           {/* Links */}
                           <div className="flex flex-wrap items-center gap-4">
                             {project.liveUrl && (
@@ -609,7 +597,7 @@ export default function Portfolio() {
               );
             })}
           </div>
-          
+
           {/* Back to Top Button */}
           {sortedPortfolios.length > 6 && (
             <div className="flex justify-center mt-12">

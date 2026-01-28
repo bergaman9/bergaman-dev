@@ -19,7 +19,7 @@ export default function Header() {
     const checkAuth = () => {
       const adminAuth = localStorage.getItem('adminAuth');
       const adminUser = localStorage.getItem('adminUser');
-      
+
       if (adminAuth === 'true' && adminUser) {
         setIsAuthenticated(true);
         try {
@@ -98,7 +98,7 @@ export default function Header() {
     { href: "/", label: "Home", icon: "fas fa-home" },
     { href: "/about", label: "About", icon: "fas fa-user" },
     { href: "/portfolio", label: "Portfolio", icon: "fas fa-briefcase" },
-    { href: "/recommendations", label: "Recs", icon: "fas fa-heart" },
+    { href: "/recommendations", label: "Picks", icon: "fas fa-heart" },
     { href: "/blog", label: "Blog", icon: "fas fa-blog" },
     { href: "/contact", label: "Contact", icon: "fas fa-envelope" }
   ];
@@ -127,11 +127,10 @@ export default function Header() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-300 font-medium ${
-                  isActive(item.href)
+                className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-300 font-medium ${isActive(item.href)
                     ? 'text-[#e8c547] bg-[#e8c547]/10 font-semibold'
                     : 'text-gray-300 hover:text-[#e8c547] hover:bg-[#e8c547]/10'
-                }`}
+                  }`}
               >
                 <i className={`${item.icon} text-sm`}></i>
                 <span>{item.label}</span>
@@ -167,7 +166,7 @@ export default function Header() {
                           <p className="text-sm font-medium text-[#e8c547]">{user?.username || 'Admin'}</p>
                           <p className="text-xs text-gray-400">Administrator</p>
                         </div>
-                        
+
                         <Link
                           href="/admin"
                           className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-300 hover:text-[#e8c547] hover:bg-[#e8c547]/10 transition-colors duration-300"
@@ -176,7 +175,7 @@ export default function Header() {
                           <i className="fas fa-tachometer-alt"></i>
                           <span>Control Panel</span>
                         </Link>
-                        
+
                         <Link
                           href="/admin/posts"
                           className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-300 hover:text-[#e8c547] hover:bg-[#e8c547]/10 transition-colors duration-300"
@@ -185,7 +184,7 @@ export default function Header() {
                           <i className="fas fa-edit"></i>
                           <span>Manage Posts</span>
                         </Link>
-                        
+
                         <Link
                           href="/admin/portfolio"
                           className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-300 hover:text-[#e8c547] hover:bg-[#e8c547]/10 transition-colors duration-300"
@@ -194,7 +193,7 @@ export default function Header() {
                           <i className="fas fa-briefcase"></i>
                           <span>Portfolio</span>
                         </Link>
-                        
+
                         <Link
                           href="/admin/recommendations"
                           className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-300 hover:text-[#e8c547] hover:bg-[#e8c547]/10 transition-colors duration-300"
@@ -203,7 +202,7 @@ export default function Header() {
                           <i className="fas fa-heart"></i>
                           <span>Recommendations</span>
                         </Link>
-                        
+
                         <Link
                           href="/admin/settings"
                           className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-300 hover:text-[#e8c547] hover:bg-[#e8c547]/10 transition-colors duration-300"
@@ -212,7 +211,7 @@ export default function Header() {
                           <i className="fas fa-cog"></i>
                           <span>Settings</span>
                         </Link>
-                        
+
                         <div className="border-t border-[#3e503e]/30 mt-1 pt-1">
                           <button
                             onClick={handleLogout}
@@ -242,8 +241,8 @@ export default function Header() {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <nav 
-            ref={mobileMenuRef} 
+          <nav
+            ref={mobileMenuRef}
             className="md:hidden absolute top-full left-0 right-0 bg-gradient-to-b from-[#0e1b12] to-[#1a2e1a] backdrop-blur-md border-b border-[#3e503e]/30 shadow-xl"
           >
             <div className="px-4 py-4">
@@ -253,11 +252,10 @@ export default function Header() {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-300 ${
-                      isActive(item.href)
+                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-300 ${isActive(item.href)
                         ? 'text-[#e8c547] bg-[#e8c547]/10 font-semibold'
                         : 'text-gray-300 hover:text-[#e8c547] hover:bg-[#e8c547]/10'
-                    }`}
+                      }`}
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <i className={`${item.icon} text-sm`}></i>
@@ -277,7 +275,7 @@ export default function Header() {
                         <p className="text-xs text-gray-400">Administrator</p>
                       </div>
                     </div>
-                    
+
                     <Link
                       href="/admin"
                       className="flex items-center space-x-3 px-4 py-2 text-gray-300 hover:text-[#e8c547] hover:bg-[#e8c547]/10 rounded-lg transition-all duration-300"
@@ -286,7 +284,7 @@ export default function Header() {
                       <i className="fas fa-tachometer-alt"></i>
                       <span>Control Panel</span>
                     </Link>
-                    
+
                     <Link
                       href="/admin/posts"
                       className="flex items-center space-x-3 px-4 py-2 text-gray-300 hover:text-[#e8c547] hover:bg-[#e8c547]/10 rounded-lg transition-all duration-300"
@@ -295,7 +293,7 @@ export default function Header() {
                       <i className="fas fa-edit"></i>
                       <span>Manage Posts</span>
                     </Link>
-                    
+
                     <Link
                       href="/admin/portfolio"
                       className="flex items-center space-x-3 px-4 py-2 text-gray-300 hover:text-[#e8c547] hover:bg-[#e8c547]/10 rounded-lg transition-all duration-300"
@@ -304,7 +302,7 @@ export default function Header() {
                       <i className="fas fa-briefcase"></i>
                       <span>Portfolio</span>
                     </Link>
-                    
+
                     <Link
                       href="/admin/recommendations"
                       className="flex items-center space-x-3 px-4 py-2 text-gray-300 hover:text-[#e8c547] hover:bg-[#e8c547]/10 rounded-lg transition-all duration-300"
@@ -313,7 +311,7 @@ export default function Header() {
                       <i className="fas fa-heart"></i>
                       <span>Recommendations</span>
                     </Link>
-                    
+
                     <button
                       onClick={handleLogout}
                       className="flex items-center space-x-3 w-full px-4 py-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-all duration-300 mt-2"

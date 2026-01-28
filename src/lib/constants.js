@@ -157,7 +157,7 @@ export const SECURITY = {
       path: '/',
     },
   },
-  
+
   // Rate limiting
   RATE_LIMIT: {
     MAX_LOGIN_ATTEMPTS: process.env.RATE_LIMIT_MAX ? parseInt(process.env.RATE_LIMIT_MAX) : 5,
@@ -165,13 +165,13 @@ export const SECURITY = {
     API_LIMIT: process.env.API_RATE_LIMIT ? parseInt(process.env.API_RATE_LIMIT) : 100,
     API_WINDOW: process.env.API_RATE_LIMIT_WINDOW_MS ? parseInt(process.env.API_RATE_LIMIT_WINDOW_MS) : 60 * 1000, // 1 dakika (ms)
   },
-  
+
   // JWT ayarları
   JWT: {
     ALGORITHM: 'HS256',
     SECRET: process.env.JWT_SECRET || 'bergaman-secret-key-please-change-in-production',
   },
-  
+
   // Şifre güvenliği
   PASSWORD: {
     MIN_LENGTH: 12,
@@ -179,10 +179,10 @@ export const SECURITY = {
     HASH_KEYLEN: 64,
     HASH_DIGEST: 'sha512',
   },
-  
+
   // Güvenlik başlıkları
   HEADERS: {
-    CONTENT_SECURITY_POLICY: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data: blob:; font-src 'self' data: https://cdnjs.cloudflare.com; connect-src 'self' https://*.vercel-insights.com",
+    CONTENT_SECURITY_POLICY: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data: blob: https: http:; font-src 'self' data: https://cdnjs.cloudflare.com; connect-src 'self' https://*.vercel-insights.com",
     XSS_PROTECTION: '1; mode=block',
     FRAME_OPTIONS: 'SAMEORIGIN',
     CONTENT_TYPE_OPTIONS: 'nosniff',
@@ -190,17 +190,17 @@ export const SECURITY = {
     HSTS: 'max-age=31536000; includeSubDomains',
     PERMISSIONS_POLICY: 'camera=(), microphone=(), geolocation=()',
   },
-  
+
   // Korunan rotalar
   PROTECTED_ROUTES: {
     ADMIN: ['/admin/dashboard', '/admin/portfolio', '/admin/posts', '/api/admin/portfolio', '/api/admin/posts'],
     PUBLIC: ['/admin', '/api/admin/auth'],
   },
-  
+
   // CORS ayarları
   CORS: {
-    ALLOWED_ORIGINS: process.env.CORS_ALLOWED_ORIGINS ? 
-      process.env.CORS_ALLOWED_ORIGINS.split(',') : 
+    ALLOWED_ORIGINS: process.env.CORS_ALLOWED_ORIGINS ?
+      process.env.CORS_ALLOWED_ORIGINS.split(',') :
       ['http://localhost:3000', 'https://bergaman.dev'],
     ALLOWED_METHODS: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     ALLOWED_HEADERS: ['Content-Type', 'Authorization', 'X-CSRF-Token'],
@@ -240,4 +240,3 @@ export default {
   SKILLS
 };
 
- 

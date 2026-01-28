@@ -43,13 +43,13 @@ export default function RecommendationsPage() {
     try {
       setLoading(true);
       const response = await fetch('/api/recommendations');
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-      
+
       const data = await response.json();
-      
+
       if (data.success && data.recommendations) {
         // Remove duplicates by _id
         const uniqueRecommendations = data.recommendations.filter((item, index, self) =>
@@ -117,9 +117,9 @@ export default function RecommendationsPage() {
   if (loading) {
     return (
       <div className="min-h-screen">
-              <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 py-12">
-        <Loading />
-      </div>
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 py-12">
+          <Loading />
+        </div>
       </div>
     );
   }
@@ -128,7 +128,7 @@ export default function RecommendationsPage() {
     <div className="min-h-screen">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 py-12">
         <PageHeader
-          title="My Recommendations"
+          title="My Picks"
           subtitle="Curated collection of movies, games, books, music, and more"
           icon="fas fa-heart"
           variant="large"
@@ -142,23 +142,20 @@ export default function RecommendationsPage() {
               onClick={() => setActiveCategory(cat.id)}
               className={`
                 p-4 rounded-lg transition-all duration-300 text-center
-                ${activeCategory === cat.id 
-                  ? 'bg-[#e8c547]/20 border-2 border-[#e8c547] shadow-lg shadow-[#e8c547]/20' 
+                ${activeCategory === cat.id
+                  ? 'bg-[#e8c547]/20 border-2 border-[#e8c547] shadow-lg shadow-[#e8c547]/20'
                   : 'bg-[#2e3d29]/30 border border-[#3e503e]/30 hover:border-[#e8c547]/50'
                 }
               `}
             >
-              <i className={`${cat.icon} text-2xl mb-2 block ${
-                activeCategory === cat.id ? 'text-[#e8c547]' : 'text-gray-400'
-              }`}></i>
-              <div className={`text-sm font-medium ${
-                activeCategory === cat.id ? 'text-[#e8c547]' : 'text-gray-300'
-              }`}>
+              <i className={`${cat.icon} text-2xl mb-2 block ${activeCategory === cat.id ? 'text-[#e8c547]' : 'text-gray-400'
+                }`}></i>
+              <div className={`text-sm font-medium ${activeCategory === cat.id ? 'text-[#e8c547]' : 'text-gray-300'
+                }`}>
                 {cat.label}
               </div>
-              <div className={`text-lg font-bold mt-1 ${
-                activeCategory === cat.id ? 'text-[#e8c547]' : 'text-gray-400'
-              }`}>
+              <div className={`text-lg font-bold mt-1 ${activeCategory === cat.id ? 'text-[#e8c547]' : 'text-gray-400'
+                }`}>
                 {stats[cat.id] || 0}
               </div>
             </button>
@@ -173,22 +170,20 @@ export default function RecommendationsPage() {
               <>
                 <button
                   onClick={() => setView('masonry')}
-                  className={`p-2 rounded transition-all ${
-                    view === 'masonry' 
-                      ? 'bg-[#e8c547]/20 text-[#e8c547]' 
-                      : 'text-gray-400 hover:text-[#e8c547]'
-                  }`}
+                  className={`p-2 rounded transition-all ${view === 'masonry'
+                    ? 'bg-[#e8c547]/20 text-[#e8c547]'
+                    : 'text-gray-400 hover:text-[#e8c547]'
+                    }`}
                   title="Masonry View"
                 >
                   <i className="fas fa-th-large text-lg"></i>
                 </button>
                 <button
                   onClick={() => setView('showcase')}
-                  className={`p-2 rounded transition-all ${
-                    view === 'showcase' 
-                      ? 'bg-[#e8c547]/20 text-[#e8c547]' 
-                      : 'text-gray-400 hover:text-[#e8c547]'
-                  }`}
+                  className={`p-2 rounded transition-all ${view === 'showcase'
+                    ? 'bg-[#e8c547]/20 text-[#e8c547]'
+                    : 'text-gray-400 hover:text-[#e8c547]'
+                    }`}
                   title="Showcase View"
                 >
                   <i className="fas fa-layer-group text-lg"></i>
@@ -199,22 +194,20 @@ export default function RecommendationsPage() {
               <>
                 <button
                   onClick={() => setView('grid')}
-                  className={`p-2 rounded transition-all ${
-                    view === 'grid' 
-                      ? 'bg-[#e8c547]/20 text-[#e8c547]' 
-                      : 'text-gray-400 hover:text-[#e8c547]'
-                  }`}
+                  className={`p-2 rounded transition-all ${view === 'grid'
+                    ? 'bg-[#e8c547]/20 text-[#e8c547]'
+                    : 'text-gray-400 hover:text-[#e8c547]'
+                    }`}
                   title="Grid View"
                 >
                   <i className="fas fa-th text-lg"></i>
                 </button>
                 <button
                   onClick={() => setView('list')}
-                  className={`p-2 rounded transition-all ${
-                    view === 'list' 
-                      ? 'bg-[#e8c547]/20 text-[#e8c547]' 
-                      : 'text-gray-400 hover:text-[#e8c547]'
-                  }`}
+                  className={`p-2 rounded transition-all ${view === 'list'
+                    ? 'bg-[#e8c547]/20 text-[#e8c547]'
+                    : 'text-gray-400 hover:text-[#e8c547]'
+                    }`}
                   title="List View"
                 >
                   <i className="fas fa-list text-lg"></i>
@@ -224,19 +217,15 @@ export default function RecommendationsPage() {
           </div>
 
           {/* Sort Dropdown */}
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-gray-400">Sort by:</span>
-            <Select
-              options={sortOptions.map(opt => ({ 
-                value: opt.value, 
-                label: opt.label,
-                icon: opt.icon 
-              }))}
-              value={sortBy}
-              onChange={(value) => setSortBy(value)}
-              variant="primary"
-            />
-          </div>
+          {/* Sort Dropdown */}
+          <Select
+            options={sortOptions}
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            label="Sort by:"
+            variant="primary"
+            icon="fas fa-sort"
+          />
         </div>
 
         {/* Content Area */}
@@ -269,11 +258,10 @@ export default function RecommendationsPage() {
                     View all {stats[group.category.id]} →
                   </button>
                 </div>
-                <div className={`grid gap-6 ${
-                  group.category.id === 'link' 
-                    ? 'grid-cols-1 lg:grid-cols-2' 
-                    : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
-                }`}>
+                <div className={`grid gap-6 ${group.category.id === 'link'
+                  ? 'grid-cols-1 lg:grid-cols-2'
+                  : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+                  }`}>
                   {group.items.map((item) => (
                     <RecommendationCard
                       key={item._id}
@@ -291,8 +279,8 @@ export default function RecommendationsPage() {
               // Masonry view - optimized for mixed content
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-auto">
                 {sortedRecommendations.map((item) => (
-                  <div 
-                    key={item._id} 
+                  <div
+                    key={item._id}
                     className="h-fit"
                   >
                     <RecommendationCard
@@ -305,8 +293,8 @@ export default function RecommendationsPage() {
             ) : (
               // Regular grid view
               <div className={
-                view === 'list' 
-                  ? 'space-y-4' 
+                view === 'list'
+                  ? 'space-y-4'
                   : activeCategory === 'link'
                     ? 'grid grid-cols-1 lg:grid-cols-2 gap-6'
                     : activeCategory === 'book'

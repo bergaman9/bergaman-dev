@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Images Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #111;
+            color: white;
+        }
+        .image-test {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #333;
+            border-radius: 8px;
+        }
+        img {
+            max-width: 400px;
+            height: auto;
+            display: block;
+            margin: 10px 0;
+            border: 2px solid #e8c547;
+        }
+        .error {
+            color: #ff4444;
+        }
+        .success {
+            color: #44ff44;
+        }
+    </style>
+</head>
+<body>
+    <h1>Project Images Test</h1>
+    <p>Testing project image loading from /images/projects/</p>
+    
+    <div class="image-test">
+        <h3>Contro Bot</h3>
+        <p id="contro-status">Loading...</p>
+        <img src="/images/projects/contro.png" alt="Contro Bot" 
+             onload="document.getElementById('contro-status').innerHTML='✅ Loaded'; document.getElementById('contro-status').className='success'"
+             onerror="document.getElementById('contro-status').innerHTML='❌ Failed to load'; document.getElementById('contro-status').className='error'">
+    </div>
+
+    <div class="image-test">
+        <h3>Contro Dashboard</h3>
+        <p id="dashboard-status">Loading...</p>
+        <img src="/images/projects/contro-dashboard.png" alt="Contro Dashboard" 
+             onload="document.getElementById('dashboard-status').innerHTML='✅ Loaded'; document.getElementById('dashboard-status').className='success'"
+             onerror="document.getElementById('dashboard-status').innerHTML='❌ Failed to load'; document.getElementById('dashboard-status').className='error'">
+    </div>
+
+    <div class="image-test">
+        <h3>Timekeepers</h3>
+        <p id="timekeepers-status">Loading...</p>
+        <img src="/images/projects/timekeepers.png" alt="Timekeepers" 
+             onload="document.getElementById('timekeepers-status').innerHTML='✅ Loaded'; document.getElementById('timekeepers-status').className='success'"
+             onerror="document.getElementById('timekeepers-status').innerHTML='❌ Failed to load'; document.getElementById('timekeepers-status').className='error'">
+    </div>
+
+    <div class="image-test">
+        <h3>Ligroup</h3>
+        <p id="ligroup-status">Loading...</p>
+        <img src="/images/projects/ligroup.png" alt="Ligroup" 
+             onload="document.getElementById('ligroup-status').innerHTML='✅ Loaded'; document.getElementById('ligroup-status').className='success'"
+             onerror="document.getElementById('ligroup-status').innerHTML='❌ Failed to load'; document.getElementById('ligroup-status').className='error'">
+    </div>
+
+    <div class="image-test">
+        <h3>AI Projects</h3>
+        <p id="ai-status">Loading...</p>
+        <img src="/images/projects/ai-projects.png" alt="AI Projects" 
+             onload="document.getElementById('ai-status').innerHTML='✅ Loaded'; document.getElementById('ai-status').className='success'"
+             onerror="document.getElementById('ai-status').innerHTML='❌ Failed to load'; document.getElementById('ai-status').className='error'">
+    </div>
+
+    <div class="image-test">
+        <h3>Generative AI</h3>
+        <p id="genai-status">Loading...</p>
+        <img src="/images/projects/generative-ai.png" alt="Generative AI" 
+             onload="document.getElementById('genai-status').innerHTML='✅ Loaded'; document.getElementById('genai-status').className='success'"
+             onerror="document.getElementById('genai-status').innerHTML='❌ Failed to load'; document.getElementById('genai-status').className='error'">
+    </div>
+
+    <div class="image-test">
+        <h3>IAQ</h3>
+        <p id="iaq-status">Loading...</p>
+        <img src="/images/projects/iaq.jpg" alt="IAQ" 
+             onload="document.getElementById('iaq-status').innerHTML='✅ Loaded'; document.getElementById('iaq-status').className='success'"
+             onerror="document.getElementById('iaq-status').innerHTML='❌ Failed to load'; document.getElementById('iaq-status').className='error'">
+    </div>
+</body>
+</html>
