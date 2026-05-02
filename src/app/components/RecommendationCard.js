@@ -195,16 +195,16 @@ const GameCard = ({ recommendation, onEdit, onDelete, isAdmin = false }) => {
   return (
     <div className={`bg-gradient-to-br ${config.color} backdrop-blur-md border ${config.borderColor} rounded-xl overflow-hidden transition-all duration-300 group shadow-lg hover:shadow-purple-500/20`}>
       {/* Game Cover with Overlay */}
-      <div className="relative h-64 overflow-hidden">
+      <div className="relative aspect-[2/3] overflow-hidden bg-[#0e1b12]">
         <Image
           src={imageSrc}
           alt={recommendation.title}
           fill
           sizes="(max-width: 768px) 100vw, 33vw"
-          className="object-cover group-hover:scale-110 transition-transform duration-500"
+          className="object-contain p-4 transition-transform duration-500 group-hover:scale-[1.03]"
           onError={() => setImageError(true)}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0e1b12] via-[#0e1b12]/50 to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0e1b12] via-transparent to-transparent pointer-events-none"></div>
 
         {/* Game UI Elements */}
         <div className="absolute top-3 left-3 right-3 flex justify-between items-start">
@@ -1215,14 +1215,14 @@ export default function RecommendationCard({
       )}
 
       {/* Image Section */}
-      <div className="relative h-48 bg-[#0e1b12] overflow-hidden">
+      <div className="relative aspect-[2/3] bg-[#0e1b12] overflow-hidden">
         {recommendation.image && !imageError ? (
           <Image
             src={recommendation.image}
             alt={recommendation.title}
             fill
             sizes="(max-width: 768px) 100vw, 33vw"
-            className="object-cover"
+            className="object-contain p-4"
             onError={handleImageError}
           />
         ) : (
