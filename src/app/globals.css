@@ -273,8 +273,16 @@ body::-webkit-scrollbar-corner {
   }
 
   .mini-app-nav-item {
+    display: inline-flex;
+    align-items: center;
     border: 1px solid transparent;
     color: #9ca3af;
+    line-height: 1;
+  }
+
+  .mini-app-nav-item i {
+    line-height: 1;
+    transform: translateY(1px);
   }
 
   .mini-app-nav-item:hover {
