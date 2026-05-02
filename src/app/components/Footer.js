@@ -75,7 +75,7 @@ export default function Footer() {
         ></div>
       </div>
 
-      <div className="page-content py-8 sm:py-12 relative z-10">
+      <div className="page-content pb-4 pt-8 sm:pt-12 relative z-10">
 
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 mb-8">
