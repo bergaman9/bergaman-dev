@@ -13,6 +13,7 @@ import ImageUpload from '@/app/components/ImageUpload';
 import Modal from '@/app/components/Modal';
 import Card from '@/app/components/Card';
 import Badge from '@/app/components/Badge';
+import MarkdownRenderer from '@/app/components/MarkdownRenderer';
 
 export default function NewPost() {
   const router = useRouter();
@@ -114,7 +115,7 @@ export default function NewPost() {
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    
+
     if (name.startsWith('seo.')) {
       const seoField = name.split('.')[1];
       setFormData(prev => ({
@@ -173,7 +174,7 @@ export default function NewPost() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!formData.title || !formData.content) {
       toast.error('Please fill in all required fields');
       return;
@@ -336,7 +337,7 @@ export default function NewPost() {
                     Add
                   </Button>
                 </div>
-                
+
                 {formData.tags.length > 0 && (
                   <div className="flex flex-wrap gap-2">
                     {formData.tags.map((tag, index) => (
@@ -581,7 +582,7 @@ export default function NewPost() {
               className="w-full h-64 object-cover rounded-lg"
             />
           )}
-          
+
           <div>
             <h1 className="text-3xl font-bold text-[#e8c547] mb-2">{formData.title || 'Untitled Post'}</h1>
             <div className="flex items-center gap-4 text-sm text-gray-400 mb-4">
@@ -606,10 +607,14 @@ export default function NewPost() {
           )}
 
           <div className="prose prose-invert max-w-none">
-            <div dangerouslySetInnerHTML={{ __html: formData.content || '<p>No content yet...</p>' }} />
+            {formData.content ? (
+              <MarkdownRenderer content={formData.content} />
+            ) : (
+              <p>No content yet...</p>
+            )}
           </div>
         </div>
       </Modal>
     </div>
   );
-} 
+}

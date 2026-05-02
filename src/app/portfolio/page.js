@@ -14,6 +14,8 @@ import SafeImage from '../components/SafeImage';
 import Select from '../components/Select';
 import PageContainer from '../components/PageContainer';
 import MiniAppCard from '../components/MiniAppCard';
+import { PageSkeleton, SkeletonBox, SkeletonCard } from '../components/Skeleton';
+import { MINI_APPS } from '@/lib/miniApps';
 
 export default function Portfolio() {
   const [portfolioItems, setPortfolioItems] = useState([]);
@@ -200,48 +202,41 @@ export default function Portfolio() {
   if (loading) {
     return (
       <PageContainer>
-        <PageHeader
+        <PageSkeleton
           title="Portfolio"
-          subtitle="Loading my projects and work..."
+          subtitle="Explore my projects, tools, and experiments"
           icon="fas fa-briefcase"
-        />
-
-        {/* Skeleton Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 animate-pulse">
-          {[...Array(6)].map((_, index) => (
-            <div key={index} className="bg-[#0e1b12]/95 border border-[#2e3d29]/30 rounded-[2rem] h-[400px] flex flex-col">
-              {/* Skeleton Image */}
-              <div className="h-48 bg-gradient-to-r from-[#2e3d29] via-[#3e503e] to-[#2e3d29] bg-[length:200%_100%] animate-[shimmer_2s_infinite] rounded-t-xl"></div>
-
-              {/* Skeleton Content */}
-              <div className="p-6 flex-1 flex flex-col">
-                {/* Skeleton Title */}
-                <div className="h-6 bg-gradient-to-r from-[#2e3d29] via-[#3e503e] to-[#2e3d29] bg-[length:200%_100%] animate-[shimmer_2s_infinite] rounded mb-3"></div>
-
-                {/* Skeleton Description */}
-                <div className="space-y-2 mb-4 flex-grow">
-                  <div className="h-4 bg-gradient-to-r from-[#2e3d29] via-[#3e503e] to-[#2e3d29] bg-[length:200%_100%] animate-[shimmer_2s_infinite] rounded"></div>
-                  <div className="h-4 bg-gradient-to-r from-[#2e3d29] via-[#3e503e] to-[#2e3d29] bg-[length:200%_100%] animate-[shimmer_2s_infinite] rounded w-3/4"></div>
-                </div>
-
-                {/* Skeleton Tags */}
-                <div className="flex gap-2 mb-4">
-                  <div className="h-6 w-16 bg-gradient-to-r from-[#2e3d29] via-[#3e503e] to-[#2e3d29] bg-[length:200%_100%] animate-[shimmer_2s_infinite] rounded"></div>
-                  <div className="h-6 w-12 bg-gradient-to-r from-[#2e3d29] via-[#3e503e] to-[#2e3d29] bg-[length:200%_100%] animate-[shimmer_2s_infinite] rounded"></div>
-                  <div className="h-6 w-20 bg-gradient-to-r from-[#2e3d29] via-[#3e503e] to-[#2e3d29] bg-[length:200%_100%] animate-[shimmer_2s_infinite] rounded"></div>
-                </div>
-
-                {/* Skeleton Actions */}
-                <div className="flex justify-between items-center pt-4 border-t border-[#3e503e]/30">
-                  <div className="flex gap-3">
-                    <div className="h-8 w-8 bg-gradient-to-r from-[#2e3d29] via-[#3e503e] to-[#2e3d29] bg-[length:200%_100%] animate-[shimmer_2s_infinite] rounded-lg"></div>
-                    <div className="h-8 w-8 bg-gradient-to-r from-[#2e3d29] via-[#3e503e] to-[#2e3d29] bg-[length:200%_100%] animate-[shimmer_2s_infinite] rounded-lg"></div>
-                  </div>
-                </div>
+          controls={
+            <div className="space-y-8">
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                {Array.from({ length: 10 }).map((_, index) => (
+                  <SkeletonBox key={index} className="h-16" />
+                ))}
+              </div>
+              <div className="flex flex-col md:flex-row gap-4">
+                <SkeletonBox className="h-11 flex-1" />
+                <SkeletonBox className="h-11 w-full md:w-48" />
+                <SkeletonBox className="h-11 w-full md:w-32" />
               </div>
             </div>
-          ))}
-        </div>
+          }
+          gridClassName="grid grid-cols-1 lg:grid-cols-3 gap-8"
+          itemCount={1}
+          renderItem={() => (
+            <>
+              <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {Array.from({ length: 6 }).map((_, index) => (
+                  <SkeletonCard key={index} imageHeight="h-48" rows={3} className="rounded-[2rem]" />
+                ))}
+              </div>
+              <div className="space-y-4">
+                {Array.from({ length: 5 }).map((_, index) => (
+                  <SkeletonCard key={index} showImage={false} rows={2} footer={false} />
+                ))}
+              </div>
+            </>
+          )}
+        />
       </PageContainer>
     );
   }
@@ -631,64 +626,14 @@ export default function Portfolio() {
             </h3>
 
             <div className="space-y-4">
-              {/* Vocabulary Vault (Active) */}
-              <MiniAppCard
-                title="Vocabulary Vault"
-                description="Master 25,000+ words. Track your learning progress anonymously with a persistent Vault Key."
-                image="/images/vocabulary-vault-banner.png"
-                icon="fas fa-key"
-                href="/vocabulary"
-                status="active"
-                theme="gold"
-                badge="New"
-                isOpen={activeMiniApp === 'vocabulary'}
-                onClick={() => setActiveMiniApp(activeMiniApp === 'vocabulary' ? null : 'vocabulary')}
-              />
-
-              {/* Financial Portfolio (Active) */}
-              <MiniAppCard
-                title="Financial Portfolio"
-                description="Track your assets across stocks, crypto, forex, and gold with real-time market data."
-                icon="fas fa-wallet"
-                href="/finance"
-                status="active"
-                theme="blue"
-                isOpen={activeMiniApp === 'finance'}
-                onClick={() => setActiveMiniApp(activeMiniApp === 'finance' ? null : 'finance')}
-              />
-
-              {/* Code Snippets (Coming Soon) */}
-              <MiniAppCard
-                title="Snippet Vault"
-                description="A curated collection of useful regex patterns, hooks, and utility functions."
-                icon="fas fa-code"
-                status="coming_soon"
-                theme="blue"
-                isOpen={activeMiniApp === 'snippets'}
-                onClick={() => setActiveMiniApp(activeMiniApp === 'snippets' ? null : 'snippets')}
-              />
-
-              {/* Pomodoro Timer (Coming Soon) */}
-              <MiniAppCard
-                title="Focus Timer"
-                description="Customizable Pomodoro timer with ambient sounds for deep work sessions."
-                icon="fas fa-hourglass-half"
-                status="coming_soon"
-                theme="red"
-                isOpen={activeMiniApp === 'pomodoro'}
-                onClick={() => setActiveMiniApp(activeMiniApp === 'pomodoro' ? null : 'pomodoro')}
-              />
-
-              {/* Color Palette (Coming Soon) */}
-              <MiniAppCard
-                title="Palette Generator"
-                description="Generate beautiful color schemes and export to Tailwind CSS config."
-                icon="fas fa-palette"
-                status="coming_soon"
-                theme="pink"
-                isOpen={activeMiniApp === 'palette'}
-                onClick={() => setActiveMiniApp(activeMiniApp === 'palette' ? null : 'palette')}
-              />
+              {MINI_APPS.map((app) => (
+                <MiniAppCard
+                  key={app.id}
+                  {...app}
+                  isOpen={activeMiniApp === app.id}
+                  onClick={() => setActiveMiniApp(activeMiniApp === app.id ? null : app.id)}
+                />
+              ))}
             </div>
 
             <div className="mt-8 p-4 rounded-xl bg-[#1a2e1a]/20 border border-[#3e503e]/20 text-center">
@@ -713,7 +658,7 @@ export default function Portfolio() {
           from { opacity: 0; }
           to { opacity: 1; }
         }
-        
+
         @keyframes slideInUp {
           from {
             opacity: 0;
@@ -724,16 +669,16 @@ export default function Portfolio() {
             transform: translateY(0);
           }
         }
-        
+
         .animate-fadeIn {
           animation: fadeIn 0.5s ease-out forwards;
         }
-        
+
         .animate-slideInUp {
           opacity: 0;
           animation: slideInUp 0.6s ease-out forwards;
         }
-        
+
         .line-clamp-3 {
           display: -webkit-box;
           -webkit-line-clamp: 3;
@@ -746,13 +691,13 @@ export default function Portfolio() {
           display: grid;
           align-items: stretch;
         }
-        
+
         /* Ensure consistent card heights */
         .grid > div {
           display: flex;
           flex-direction: column;
         }
-        
+
         /* Image loading placeholder */
         .image-loading {
           background: linear-gradient(
@@ -764,7 +709,7 @@ export default function Portfolio() {
           background-size: 200% 100%;
           animation: loading-shimmer 2s infinite;
         }
-        
+
         @keyframes loading-shimmer {
           0% {
             background-position: -200% 0;
@@ -773,7 +718,7 @@ export default function Portfolio() {
             background-position: 200% 0;
           }
         }
-        
+
         @keyframes shimmer {
           0% {
             background-position: -200% 0;

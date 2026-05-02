@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import PageHeader from '../../../components/PageHeader';
+import { SkeletonCard } from '@/app/components/Skeleton';
 import Modal from '../../../components/Modal';
 import { toast } from 'react-hot-toast';
 
@@ -15,7 +16,7 @@ export default function AdminContacts() {
   const [replyMessage, setReplyMessage] = useState('');
   const [sendingReply, setSendingReply] = useState(false);
   const [expandedContact, setExpandedContact] = useState(null);
-  
+
   // Filters
   const [statusFilter, setStatusFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
@@ -37,30 +38,30 @@ export default function AdminContacts() {
       });
 
       console.log('Fetching contacts with params:', params.toString());
-      
+
       const response = await fetch(`/api/admin/contacts?${params}`);
-      
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
         throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
       }
-      
+
       const data = await response.json();
       console.log('Received data:', data);
 
       setContacts(data.contacts || []);
       setStatistics(data.statistics || {});
       setPagination(data.pagination || {});
-      
+
     } catch (error) {
       console.error('Error fetching contacts:', error.message);
       console.error('Full error:', error);
-      
+
       // Set empty data on error
       setContacts([]);
       setStatistics({});
       setPagination({});
-      
+
       // Show user-friendly error message
       alert(`Failed to load contacts: ${error.message}`);
     } finally {
@@ -98,7 +99,7 @@ export default function AdminContacts() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           message: replyMessage,
           isFromAdmin: true,
           senderName: 'Admin',
@@ -176,13 +177,13 @@ export default function AdminContacts() {
 
   // Filter contacts based on search and status
   const filteredContacts = contacts.filter(contact => {
-    const matchesSearch = !searchTerm || 
+    const matchesSearch = !searchTerm ||
       contact.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       contact.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       contact.message.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     const matchesStatus = statusFilter === 'all' || contact.status === statusFilter;
-    
+
     return matchesSearch && matchesStatus;
   });
 
@@ -217,7 +218,7 @@ export default function AdminContacts() {
       {/* Filters */}
       <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg">
         <div className="flex flex-col md:flex-row gap-4">
-          
+
           {/* Search */}
           <div className="flex-1">
             <div className="relative">
@@ -259,9 +260,10 @@ export default function AdminContacts() {
       {/* Contacts Table */}
       <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 rounded-lg overflow-hidden">
         {loading ? (
-          <div className="p-8 text-center">
-            <i className="fas fa-spinner fa-spin text-2xl text-[#e8c547] mb-4"></i>
-            <p className="text-gray-400">Loading contacts...</p>
+          <div className="space-y-4 p-6" aria-busy="true">
+            {Array.from({ length: 5 }).map((_, index) => (
+              <SkeletonCard key={index} showImage={false} rows={3} footer={false} />
+            ))}
           </div>
         ) : contacts.length === 0 ? (
           <div className="p-8 text-center">
@@ -285,7 +287,7 @@ export default function AdminContacts() {
                           </span>
                         </div>
                         <p className="text-gray-300 mb-3 line-clamp-2">{contact.message}</p>
-                        
+
                         {/* Show conversation thread if exists */}
                         {contact.replies && contact.replies.length > 0 && (
                           <div className="mb-3">
@@ -302,7 +304,7 @@ export default function AdminContacts() {
                                 <i className={`fas fa-chevron-${expandedContact === contact._id ? 'up' : 'down'} ml-1`}></i>
                               </button>
                             </div>
-                            
+
                             {/* Show latest reply preview */}
                             {!expandedContact || expandedContact !== contact._id ? (
                               <div className={`${contact.replies[contact.replies.length - 1].type === 'admin' ? 'bg-[#2e3d29]/50 border-green-500' : 'bg-[#0e1b12]/50 border-blue-500'} border-l-4 p-3 rounded-r`}>
@@ -320,11 +322,11 @@ export default function AdminContacts() {
                               /* Full conversation thread */
                               <div className="space-y-3 max-h-96 overflow-y-auto">
                                 {contact.replies.map((reply, index) => (
-                                  <div 
-                                    key={reply._id || index} 
+                                  <div
+                                    key={reply._id || index}
                                     className={`p-3 rounded-lg border-l-4 ${
-                                      reply.type === 'admin' 
-                                        ? 'bg-green-900/20 border-green-500 ml-4' 
+                                      reply.type === 'admin'
+                                        ? 'bg-green-900/20 border-green-500 ml-4'
                                         : 'bg-blue-900/20 border-blue-500 mr-4'
                                     }`}
                                   >
@@ -358,7 +360,7 @@ export default function AdminContacts() {
                             )}
                           </div>
                         )}
-                        
+
                         {/* Show legacy reply if exists and no new replies */}
                         {contact.adminReply && (!contact.replies || contact.replies.length === 0) && (
                           <div className="bg-[#2e3d29]/50 border-l-4 border-green-500 p-3 mb-3 rounded-r">
@@ -369,7 +371,7 @@ export default function AdminContacts() {
                             <p className="text-gray-300 text-sm line-clamp-2">{contact.adminReply}</p>
                           </div>
                         )}
-                        
+
                         <div className="flex items-center space-x-4 text-xs text-gray-500">
                           <span>
                             <i className="fas fa-calendar mr-1"></i>
@@ -389,18 +391,23 @@ export default function AdminContacts() {
                           )}
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center space-x-2 ml-4">
                         <button
                           onClick={() => {
-                            // Copy reply link to clipboard
-                            const replyLink = `${window.location.origin}/contact/reply/${contact._id}`;
+                            const replyLink = contact.replyUrl;
+                            if (!replyLink) {
+                              toast.error('Secure reply link is not available for this contact.');
+                              return;
+                            }
+
                             navigator.clipboard.writeText(replyLink).then(() => {
-                              toast.success('Reply link copied to clipboard!');
+                              toast.success('Secure reply link copied to clipboard!');
                             });
                           }}
                           className="text-purple-400 hover:text-purple-300 transition-colors p-2 rounded hover:bg-[#2e3d29]/50"
                           title="Copy Reply Link"
+                          aria-label={`Copy secure reply link for ${contact.name}`}
                         >
                           <i className="fas fa-link"></i>
                         </button>
@@ -413,10 +420,11 @@ export default function AdminContacts() {
                           }}
                           className="text-blue-400 hover:text-blue-300 transition-colors p-2 rounded hover:bg-[#2e3d29]/50"
                           title={contact.adminReply ? "Edit Reply" : "Reply"}
+                          aria-label={`${contact.adminReply ? 'Edit reply' : 'Reply'} to ${contact.name}`}
                         >
                           <i className={`fas ${contact.adminReply ? 'fa-edit' : 'fa-reply'}`}></i>
                         </button>
-                        
+
                         <select
                           value={contact.status}
                           onChange={(e) => handleStatusChange(contact._id, e.target.value)}
@@ -428,11 +436,12 @@ export default function AdminContacts() {
                           <option value="active">Active</option>
                           <option value="closed">Closed</option>
                         </select>
-                        
+
                         <button
                           onClick={() => handleDelete(contact._id)}
                           className="text-red-400 hover:text-red-300 transition-colors p-2 rounded hover:bg-red-600/10"
                           title="Delete"
+                          aria-label={`Delete contact from ${contact.name}`}
                         >
                           <i className="fas fa-trash"></i>
                         </button>
@@ -457,11 +466,11 @@ export default function AdminContacts() {
                   >
                     Previous
                   </button>
-                  
+
                   <span className="text-sm text-gray-400">
                     Page {pagination.page} of {pagination.pages}
                   </span>
-                  
+
                   <button
                     onClick={() => setCurrentPage(Math.min(pagination.pages, currentPage + 1))}
                     disabled={currentPage === pagination.pages}
@@ -494,7 +503,7 @@ export default function AdminContacts() {
     >
       {selectedContact && (
         <div className="space-y-6">
-            
+
             {/* Contact Info */}
             <div className="bg-[#0e1b12] border border-[#3e503e] rounded-lg p-4 mb-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -507,7 +516,7 @@ export default function AdminContacts() {
                   <p className="text-[#d1d5db]">{selectedContact.email}</p>
                 </div>
               </div>
-              
+
               <div className="mb-4">
                 <span className="text-sm text-gray-400">Original Message:</span>
                 <div className="mt-2 p-3 bg-[#2e3d29]/50 border-l-4 border-[#e8c547] rounded">
@@ -534,11 +543,11 @@ export default function AdminContacts() {
                 </h4>
                 <div className="space-y-3 max-h-64 overflow-y-auto">
                   {selectedContact.replies.map((reply, index) => (
-                    <div 
-                      key={reply._id || index} 
+                    <div
+                      key={reply._id || index}
                       className={`p-3 rounded-lg border-l-4 ${
-                        reply.type === 'admin' 
-                          ? 'bg-green-900/20 border-green-500 ml-4' 
+                        reply.type === 'admin'
+                          ? 'bg-green-900/20 border-green-500 ml-4'
                           : 'bg-blue-900/20 border-blue-500 mr-4'
                       }`}
                     >
@@ -623,7 +632,7 @@ export default function AdminContacts() {
               >
                 {sendingReply ? (
                   <>
-                    <i className="fas fa-spinner fa-spin mr-2"></i>
+                    <i className="fas fa-hourglass-half mr-2"></i>
                     Sending...
                   </>
                 ) : (
@@ -639,4 +648,4 @@ export default function AdminContacts() {
       </Modal>
     </>
   );
-} 
+}

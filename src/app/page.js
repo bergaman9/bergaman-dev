@@ -18,6 +18,7 @@ import ProjectCard from './components/ProjectCard';
 import RecommendationCard from './components/RecommendationCard';
 import Modal from "./components/Modal";
 import PageContainer from "./components/PageContainer";
+import { SkeletonCard } from './components/Skeleton';
 
 export default function Home() {
   const [blogPosts, setBlogPosts] = useState([]);
@@ -65,33 +66,33 @@ export default function Home() {
 
   // Interests data
   const interests = [
-    { 
-      name: "Artificial Intelligence", 
+    {
+      name: "Artificial Intelligence",
       icon: "fas fa-robot",
       description: "Machine learning, neural networks, and AI applications"
     },
-    { 
-      name: "Embedded Systems", 
+    {
+      name: "Embedded Systems",
       icon: "fas fa-microchip",
       description: "Arduino, IoT devices, and hardware-software integration"
     },
-    { 
-      name: "Full Stack Development", 
+    {
+      name: "Full Stack Development",
       icon: "fas fa-code",
       description: "Modern web applications with React, Node.js, and databases"
     },
-    { 
-      name: "Cybersecurity", 
+    {
+      name: "Cybersecurity",
       icon: "fas fa-shield-alt",
       description: "Security protocols, ethical hacking, and system protection"
     },
-    { 
-      name: "Blockchain Technology", 
+    {
+      name: "Blockchain Technology",
       icon: "fas fa-link",
       description: "Cryptocurrency, smart contracts, and decentralized systems"
     },
-    { 
-      name: "Robotics", 
+    {
+      name: "Robotics",
       icon: "fas fa-cogs",
       description: "Automation, control systems, and robotic applications"
     }
@@ -131,7 +132,7 @@ export default function Home() {
     try {
       const response = await fetch('/api/posts?limit=3');
       const data = await response.json();
-      
+
       if (data.posts) {
         // Fetch comment count for each post
         const postsWithCommentCount = await Promise.all(
@@ -152,7 +153,7 @@ export default function Home() {
             }
           })
         );
-        
+
         setBlogPosts(postsWithCommentCount);
       }
     } catch (error) {
@@ -167,13 +168,13 @@ export default function Home() {
     try {
       setLoadingRecommendations(true);
       const response = await fetch('/api/recommendations');
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-      
+
       const data = await response.json();
-      
+
       if (data.success && data.recommendations) {
         // Shuffle array and pick 3 random items
         const shuffled = [...data.recommendations].sort(() => 0.5 - Math.random());
@@ -196,13 +197,13 @@ export default function Home() {
           'Cache-Control': 'no-cache'
         }
       });
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-      
+
       const data = await response.json();
-      
+
       if (data.success && data.portfolios) {
         setFeaturedProjects(data.portfolios);
       } else {
@@ -233,10 +234,10 @@ export default function Home() {
 
       <main className="flex-grow">
         <div className="bg-grid-pattern-dark">
-          <div className="page-container">
-            <div className="page-content pt-4">
+          <div className="home-page-container">
+            <div className="page-content">
               {/* Hero Section - Enhanced */}
-              <section className="text-center py-16 md:py-24 fade-in relative">
+              <section className="text-center pt-6 pb-16 md:pt-10 md:pb-24 fade-in relative">
                 {/* Background Pattern */}
                 <div className="absolute inset-0 opacity-5">
                   <div className="absolute inset-0" style={{
@@ -249,7 +250,7 @@ export default function Home() {
                   <div className="relative">
                     {/* Animated Background Effects */}
                     <div className="absolute inset-0 bg-gradient-to-r from-[#e8c547]/15 to-[#f4d76b]/15 rounded-full blur-2xl animate-pulse scale-125"></div>
-                    
+
                     {/* Main Profile Image */}
                     <div className="relative w-48 h-48 sm:w-56 sm:h-56 lg:w-64 lg:h-64">
                       <Image
@@ -260,7 +261,7 @@ export default function Home() {
                         height={256}
                         priority
                       />
-                      
+
                       {/* Floating Skills - Enhanced positioning */}
                       <FloatingSkills />
                     </div>
@@ -274,11 +275,11 @@ export default function Home() {
                       Bergaman
                     </span>
                   </h1>
-                  
+
                   <p className="text-xl md:text-2xl text-gray-300 mb-6 font-light">
                     The Dragon's Domain
                   </p>
-                  
+
                   <div className="flex flex-wrap justify-center items-center gap-3 text-gray-400 mb-6">
                     <span className="flex items-center gap-2">
                       <i className="fas fa-bolt text-[#e8c547]"></i>
@@ -295,12 +296,12 @@ export default function Home() {
                       AI Enthusiast
                     </span>
                   </div>
-                  
+
                   <p className="text-lg text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
-                    Crafting innovative technical solutions with the strength and wisdom of a dragon. 
+                    Crafting innovative technical solutions with the strength and wisdom of a dragon.
                     Specializing in embedded systems, web development, and artificial intelligence.
                   </p>
-                  
+
                   {/* CTA Buttons - Enhanced */}
                   <div className="flex flex-wrap gap-4 justify-center">
                     <Button href="/portfolio" size="lg" className="group">
@@ -331,7 +332,11 @@ export default function Home() {
                   Latest Blog Posts
                 </h2>
                 {loading ? (
-                  <div className="text-center py-8"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#e8c547] mx-auto mb-4"></div><p className="text-gray-400">Loading...</p></div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {Array.from({ length: 3 }).map((_, index) => (
+                      <SkeletonCard key={index} imageHeight="h-48" rows={3} />
+                    ))}
+                  </div>
                 ) : blogPosts && blogPosts.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {blogPosts.map((post) => (
@@ -373,9 +378,10 @@ export default function Home() {
                   Featured Projects
                 </h2>
                 {loadingProjects ? (
-                  <div className="text-center py-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#e8c547] mx-auto mb-4"></div>
-                    <p className="text-gray-400">Loading projects...</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {Array.from({ length: 3 }).map((_, index) => (
+                      <SkeletonCard key={index} imageHeight="h-48" rows={3} />
+                    ))}
                   </div>
                 ) : featuredProjects.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -399,11 +405,12 @@ export default function Home() {
                   <i className="fas fa-thumbs-up mr-3"></i>
                   My Recommendations
                 </h2>
-                
+
                 {loadingRecommendations ? (
-                  <div className="text-center py-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#e8c547] mx-auto mb-4"></div>
-                    <p className="text-gray-400">Loading recommendations...</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {Array.from({ length: 3 }).map((_, index) => (
+                      <SkeletonCard key={index} imageHeight="h-56" rows={3} />
+                    ))}
                   </div>
                 ) : recommendations.length > 0 ? (
                   <>
@@ -448,7 +455,7 @@ export default function Home() {
                                 <span className="text-[#e8c547] font-semibold">{skill.level}%</span>
                               </div>
                               <div className="w-full bg-[#0e1b12] rounded-full h-2">
-                                <div 
+                                <div
                                   className="bg-gradient-to-r from-[#e8c547] to-[#f4d76b] h-2 rounded-full transition-all duration-1000 ease-out"
                                   style={{ width: `${skill.level}%` }}
                                 ></div>

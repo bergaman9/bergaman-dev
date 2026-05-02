@@ -6,6 +6,7 @@ import Head from 'next/head';
 import PageHeader from '../../../components/PageHeader';
 import Input from '../../../components/Input';
 import Select from '../../../components/Select';
+import { SkeletonCard } from '@/app/components/Skeleton';
 
 export default function AdminPosts() {
   const [posts, setPosts] = useState([]);
@@ -32,15 +33,13 @@ export default function AdminPosts() {
 
   const fetchUserRole = async () => {
     try {
-      // For now, we'll check if the user is the main admin
-      // In a real app, this would come from authentication
-      const adminAuth = localStorage.getItem('adminAuth');
-      if (adminAuth === 'true') {
-        // Check if it's the main admin (bergasoft) or a member
-        // For simplicity, we'll assume main admin for now
-        // You can extend this to check against members collection
-        setUserRole('admin');
-      }
+      const response = await fetch('/api/admin/auth', {
+        method: 'GET',
+        credentials: 'include',
+        cache: 'no-store',
+      });
+      const data = await response.json();
+      setUserRole(response.ok && data.authenticated ? (data.user?.role || 'admin') : 'editor');
     } catch (error) {
       console.error('Error fetching user role:', error);
       setUserRole('editor'); // Default to editor for safety
@@ -123,11 +122,11 @@ export default function AdminPosts() {
   const handleExportPosts = async () => {
     try {
       setLoading(true);
-      
+
       // Fetch all posts for export
       const response = await fetch('/api/admin/posts?limit=1000');
       const data = await response.json();
-      
+
       if (data.posts) {
         // Create export data
         const exportData = {
@@ -153,7 +152,7 @@ export default function AdminPosts() {
         const blob = new Blob([JSON.stringify(exportData, null, 2)], {
           type: 'application/json'
         });
-        
+
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
@@ -179,10 +178,10 @@ export default function AdminPosts() {
 
     try {
       setLoading(true);
-      
+
       const fileContent = await file.text();
       const importData = JSON.parse(fileContent);
-      
+
       // Validate import data
       if (!importData.posts || !Array.isArray(importData.posts)) {
         throw new Error('Invalid import file format');
@@ -218,13 +217,13 @@ export default function AdminPosts() {
 
       // Refresh posts list
       await fetchPosts();
-      
+
       alert(
         `Import completed!\n` +
         `Successfully imported: ${importedCount} posts\n` +
         `Failed: ${errorCount} posts`
       );
-      
+
     } catch (error) {
       console.error('Error importing posts:', error);
       alert('Failed to import posts. Please check the file format.');
@@ -308,11 +307,12 @@ export default function AdminPosts() {
               Posts ({pagination.total})
             </h2>
           </div>
-          
+
           {loading ? (
-            <div className="p-8 text-center text-gray-400">
-              <i className="fas fa-spinner fa-spin text-4xl mb-4 block"></i>
-              <p>Loading posts...</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-6" aria-busy="true">
+              {Array.from({ length: 6 }).map((_, index) => (
+                <SkeletonCard key={index} imageHeight="h-40" rows={3} />
+              ))}
             </div>
           ) : posts.length === 0 ? (
             <div className="p-8 text-center text-gray-400">
@@ -459,7 +459,7 @@ export default function AdminPosts() {
                 )}
               </div>
               <div className="flex items-center space-x-4">
-                <button 
+                <button
                   onClick={handleExportPosts}
                   className="text-gray-400 hover:text-[#e8c547] transition-colors duration-300"
                 >
@@ -468,7 +468,7 @@ export default function AdminPosts() {
                 </button>
                 {userRole === 'admin' && (
                   <>
-                    <button 
+                    <button
                       onClick={() => document.getElementById('importFileBottom').click()}
                       className="text-gray-400 hover:text-[#e8c547] transition-colors duration-300"
                     >
@@ -491,4 +491,4 @@ export default function AdminPosts() {
       </div>
     </>
   );
-} 
+}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { SkeletonBox, SkeletonText } from './Skeleton';
 
 // Email validation
 const isValidEmail = (email) => {
@@ -167,9 +168,14 @@ export default function CommentSystem({ postSlug, onCommentCountUpdate }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch settings (only if admin)
-        const adminAuth = localStorage.getItem('adminAuth');
-        if (adminAuth === 'true') {
+        const authResponse = await fetch('/api/admin/auth', {
+          method: 'GET',
+          credentials: 'include',
+          cache: 'no-store',
+        }).catch(() => null);
+        const authData = authResponse?.ok ? await authResponse.json() : null;
+
+        if (authData?.authenticated) {
           const settingsResponse = await fetch('/api/admin/settings');
           if (settingsResponse.ok) {
             const settingsData = await settingsResponse.json();
@@ -382,9 +388,16 @@ export default function CommentSystem({ postSlug, onCommentCountUpdate }) {
   if (loading) {
     return (
       <div className="mt-12 mb-8 bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg">
-        <div className="text-center py-8">
-          <i className="fas fa-spinner fa-spin text-2xl text-[#e8c547] mb-2"></i>
-          <p className="text-gray-400">Loading comments...</p>
+        <div className="py-2" aria-busy="true">
+          <SkeletonBox className="mb-5 h-7 w-44" />
+          <div className="space-y-4">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <div key={index} className="rounded-lg border border-[#3e503e]/30 bg-[#0e1b12]/40 p-4">
+                <SkeletonBox className="mb-3 h-5 w-40" />
+                <SkeletonText lines={2} />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -519,7 +532,7 @@ export default function CommentSystem({ postSlug, onCommentCountUpdate }) {
           >
             {isSubmitting ? (
               <>
-                <i className="fas fa-spinner fa-spin mr-2"></i>
+                <i className="fas fa-hourglass-half mr-2"></i>
                 Posting...
               </>
             ) : (

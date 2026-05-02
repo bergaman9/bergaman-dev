@@ -8,6 +8,7 @@ import Card from '@/app/components/Card';
 import Button from '@/app/components/Button';
 import Input from '@/app/components/Input';
 import Badge from '@/app/components/Badge';
+import { SkeletonBox, SkeletonText } from '@/app/components/Skeleton';
 
 export default function ContactReply() {
   const params = useParams();
@@ -52,7 +53,7 @@ export default function ContactReply() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!formData.message.trim()) {
       toast.error('Please enter a message');
       return;
@@ -96,8 +97,24 @@ export default function ContactReply() {
     return (
       <div className="min-h-screen page-container">
         <div className="page-content pt-4 pb-8">
-          <div className="flex justify-center items-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#e8c547]"></div>
+          <PageHeader
+            title="Reply to Conversation"
+            subtitle="Continue your conversation with the admin"
+            icon="fas fa-reply"
+          />
+          <div className="max-w-4xl mx-auto space-y-6" aria-busy="true">
+            <Card className="p-6">
+              <SkeletonBox className="mb-5 h-7 w-56" />
+              <div className="space-y-4">
+                <SkeletonBox className="h-28 w-full" />
+                <SkeletonBox className="h-24 w-full" />
+              </div>
+            </Card>
+            <Card className="p-6">
+              <SkeletonBox className="mb-5 h-7 w-40" />
+              <SkeletonText lines={4} />
+              <SkeletonBox className="mt-5 h-11 w-36" />
+            </Card>
           </div>
         </div>
       </div>
@@ -124,7 +141,7 @@ export default function ContactReply() {
               <i className="fas fa-history mr-2"></i>
               Conversation History
             </h3>
-            
+
             <div className="space-y-4">
               {/* Original Message */}
               <div className="bg-[#0e1b12]/50 rounded-lg p-4 border-l-4 border-[#e8c547]">
@@ -224,7 +241,7 @@ export default function ContactReply() {
                   <i className="fas fa-info-circle mr-1"></i>
                   The admin will be notified of your reply
                 </p>
-                
+
                 <Button
                   type="submit"
                   variant="primary"
@@ -254,4 +271,4 @@ export default function ContactReply() {
       </div>
     </div>
   );
-} 
+}

@@ -103,7 +103,7 @@ const experiences = [
     type: "internship"
   },
   {
-    title: "Intern", 
+    title: "Intern",
     company: "Birfen Elektrik&Elektronik",
     period: "Aug 2022 - Sep 2022",
     description: "Workshop internship at a panel production and automation company in Yalova, Turkey. Gained hands-on experience with electrical panels, automation systems, and electronic components.",
@@ -215,14 +215,47 @@ const personalInterests = [
   }
 ];
 
+const getExperienceIcon = (type) => {
+  switch (type) {
+    case "personal":
+      return "fas fa-rocket";
+    case "freelance":
+      return "fas fa-laptop-code";
+    case "internship":
+      return "fas fa-tools";
+    default:
+      return "fas fa-briefcase";
+  }
+};
+
+const getExperienceTypeLabel = (type) => {
+  switch (type) {
+    case "personal":
+      return "Venture";
+    case "freelance":
+      return "Freelance";
+    case "internship":
+      return "Internship";
+    default:
+      return "Experience";
+  }
+};
+
+const getSkillLevelLabel = (level) => {
+  if (level >= 90) return "Expert";
+  if (level >= 75) return "Advanced";
+  if (level >= 60) return "Solid";
+  return "Learning";
+};
+
 export default function About() {
   const [modalImage, setModalImage] = useState(null);
 
   const openModal = (imageSrc, imageAlt) => {
     if (!imageSrc) return; // Don't open modal if no image source
-    setModalImage({ 
-      src: imageSrc, 
-      alt: imageAlt || 'Image preview' 
+    setModalImage({
+      src: imageSrc,
+      alt: imageAlt || 'Image preview'
     });
   };
 
@@ -247,7 +280,7 @@ export default function About() {
       </Head>
 
       <main>
-        
+
         {/* Page Header */}
         <PageHeader
           title="About Me"
@@ -262,7 +295,7 @@ export default function About() {
             <div className="relative">
               {/* Animated Background Effects */}
               <div className="absolute inset-0 bg-gradient-to-r from-[#e8c547]/20 to-[#f4d76b]/20 rounded-full blur-3xl animate-pulse scale-125"></div>
-              
+
               {/* Main Profile Image */}
               <div className="relative w-48 h-48 sm:w-56 sm:h-56">
                 <Image
@@ -273,7 +306,7 @@ export default function About() {
                   height={224}
                   priority
                 />
-                
+
                 {/* Floating Skills */}
                 <FloatingSkills />
               </div>
@@ -292,23 +325,23 @@ export default function About() {
               <p>
                 Hi, I'm <span className="text-[#e8c547] font-semibold">Ömer (Bergaman)</span>! I'm an <span className="text-[#e8c547] font-semibold">Electrical & Electronics Engineer</span> based in <span className="text-[#e8c547] font-semibold">İstanbul, Turkey</span>. My journey in the tech world began with a passion for video games, which sparked my curiosity about computers. This early interest led me to pursue a degree in <span className="text-[#e8c547] font-semibold">Electrical and Electronics Engineering at Istinye University</span> (2019-2024).
               </p>
-              
+
               <p>
                 However, during my studies, I realized that the future and opportunities were shifting toward software. So, I took the initiative to teach myself programming and started developing my skills in the field of software engineering. Today, I specialize in <span className="text-[#e8c547] font-semibold">full-stack development, artificial intelligence, and blockchain technologies</span>.
               </p>
-              
+
               <p>
                 I'm a constant learner, always exploring new domains and seeking innovative ways to apply my knowledge. My journey is one of continual improvement, always challenging myself with new, impactful projects to work on. In addition to my technical skills, I have a <span className="text-[#e8c547] font-semibold">strong foundation in mathematics</span> that helps me solve complex problems effectively.
               </p>
-              
+
               <p>
                 I also enjoy working with my hands, honing skills like soldering and mechanical repairs, and have a growing interest in the <span className="text-[#e8c547] font-semibold">Internet of Things (IoT) and electric vehicles</span>. I am always eager to learn and improve, not just in my technical skills but in my personal growth as well.
               </p>
-              
+
               <p>
                 I'm excited to contribute to the ever-evolving world of technology, building the future while adapting to the continuous advancements in the digital world.
               </p>
-              
+
               <div className="mt-8 p-6 bg-[#e8c547]/10 border-l-4 border-[#e8c547] rounded-r-lg">
                 <p className="text-[#e8c547] font-semibold italic text-center">
                   "Crafting technology inspired by the strength and wisdom of a dragon."
@@ -324,31 +357,58 @@ export default function About() {
             <i className="fas fa-code text-[#e8c547]"></i>
             Technical Skills
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {skillCategories.map((category, index) => (
-              <div key={index} className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg hover:border-[#e8c547]/30 transition-all duration-300">
-                <div className="flex items-center mb-4">
-                  <i className={`${category.icon} text-[#e8c547] text-2xl mr-3`}></i>
-                  <h3 className="text-xl font-semibold text-[#e8c547]">{category.title}</h3>
-                </div>
-                <div className="space-y-3">
-                  {category.skills.map((skill, skillIndex) => (
-                    <div key={skillIndex}>
-                      <div className="flex justify-between mb-1">
-                        <span className="text-gray-300">{skill.name}</span>
-                        <span className="text-[#e8c547] font-semibold">{skill.level}%</span>
-                      </div>
-                      <div className="w-full bg-[#0e1b12] rounded-full h-2">
-                        <div 
-                          className="bg-gradient-to-r from-[#e8c547] to-[#f4d76b] h-2 rounded-full transition-all duration-1000 ease-out"
-                          style={{ width: `${skill.level}%` }}
-                        ></div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+            {skillCategories.map((category, index) => {
+              const averageLevel = Math.round(
+                category.skills.reduce((total, skill) => total + skill.level, 0) / category.skills.length
+              );
+
+              return (
+                <div key={index} className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-5 sm:p-6 rounded-lg hover:border-[#e8c547]/35 transition-all duration-300">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#e8c547]/10 border border-[#e8c547]/25">
+                        <i className={`${category.icon} text-[#e8c547] text-xl`}></i>
+                      </span>
+                      <div className="min-w-0">
+                        <h3 className="text-xl font-semibold text-[#e8c547] truncate">{category.title}</h3>
+                        <p className="text-sm text-gray-400">{category.skills.length} focused skills</p>
                       </div>
                     </div>
-                  ))}
+                    <div className="shrink-0 rounded-full border border-[#e8c547]/25 bg-[#e8c547]/10 px-3 py-1 text-sm font-semibold text-[#e8c547]">
+                      {averageLevel}% avg
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    {category.skills.map((skill, skillIndex) => (
+                      <div key={skillIndex} className="group">
+                        <div className="mb-2 flex items-center justify-between gap-3">
+                          <div className="min-w-0">
+                            <span className="block truncate text-gray-200 font-medium">{skill.name}</span>
+                            <span className="text-xs uppercase tracking-wide text-gray-500">{getSkillLevelLabel(skill.level)}</span>
+                          </div>
+                          <span className="shrink-0 text-[#e8c547] font-semibold">{skill.level}%</span>
+                        </div>
+                        <div
+                          className="h-2.5 w-full overflow-hidden rounded-full bg-[#0e1b12] ring-1 ring-[#3e503e]/45"
+                          role="progressbar"
+                          aria-label={`${skill.name} proficiency`}
+                          aria-valuenow={skill.level}
+                          aria-valuemin="0"
+                          aria-valuemax="100"
+                        >
+                          <div
+                            className="h-full rounded-full bg-gradient-to-r from-[#d4b445] via-[#e8c547] to-[#f4d76b] shadow-[0_0_14px_rgba(232,197,71,0.22)] transition-all duration-700 ease-out group-hover:shadow-[0_0_18px_rgba(232,197,71,0.34)]"
+                            style={{ width: `${skill.level}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
 
@@ -358,26 +418,29 @@ export default function About() {
             <i className="fas fa-briefcase text-[#e8c547]"></i>
             Professional Experience
           </h2>
-          <div className="relative max-w-4xl mx-auto">
-            {/* Timeline Line */}
-            <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-[#e8c547] to-[#d4b445]"></div>
-            
-            <div className="space-y-12">
+          <div className="relative">
+            <div className="hidden lg:block absolute left-[109px] top-6 bottom-6 w-px bg-gradient-to-b from-[#e8c547]/80 via-[#e8c547]/35 to-[#d4b445]/70"></div>
+
+            <div className="space-y-5">
               {experiences.map((exp, index) => (
-                <div key={index} className="relative flex items-start">
-                  {/* Timeline Dot */}
-                  <div className="absolute left-6 w-4 h-4 bg-[#e8c547] rounded-full border-4 border-[#0e1b12] z-10 shadow-lg shadow-[#e8c547]/25"></div>
-                  
-                  {/* Content */}
-                  <div className="ml-20 bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg w-full hover:border-[#e8c547]/30 transition-all duration-300">
-                    <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-4">
-                      <div className="flex-1">
-                        <h3 className="text-xl font-semibold text-[#e8c547] mb-2">{exp.title}</h3>
-                        <p className="text-gray-300 font-medium text-lg mb-1">{exp.company}</p>
-                        <span className="text-gray-400 text-sm bg-[#e8c547]/10 px-3 py-1 rounded-full inline-block">
-                          <i className="fas fa-calendar-alt mr-2"></i>
-                          {exp.period}
-                        </span>
+                <article key={index} className="relative grid grid-cols-1 lg:grid-cols-[220px_minmax(0,1fr)] gap-4 lg:gap-8 bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-5 sm:p-6 rounded-lg hover:border-[#e8c547]/35 transition-all duration-300">
+                  <div className="relative z-10 flex items-start gap-4 lg:block">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-[#e8c547]/35 bg-[#0e1b12] shadow-lg shadow-[#e8c547]/10 lg:mx-auto lg:mb-4">
+                      <i className={`${getExperienceIcon(exp.type)} text-[#e8c547] text-lg`}></i>
+                    </div>
+                    <div className="min-w-0 lg:text-center">
+                      <span className="inline-flex items-center rounded-full bg-[#e8c547]/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[#e8c547] border border-[#e8c547]/20">
+                        {getExperienceTypeLabel(exp.type)}
+                      </span>
+                      <p className="mt-2 text-sm text-gray-400 leading-relaxed">{exp.period}</p>
+                    </div>
+                  </div>
+
+                  <div className="min-w-0">
+                    <div className="flex flex-col xl:flex-row xl:items-start xl:justify-between gap-3 mb-4">
+                      <div className="min-w-0">
+                        <h3 className="text-2xl font-semibold text-[#e8c547] leading-tight">{exp.title}</h3>
+                        <p className="text-gray-200 font-medium text-lg mt-1">{exp.company}</p>
                       </div>
                     </div>
                     <p className="text-gray-300 mb-4 leading-relaxed">{exp.description}</p>
@@ -389,53 +452,48 @@ export default function About() {
                       ))}
                     </div>
                   </div>
-                </div>
+                </article>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Education Section - Timeline Design */}
+        {/* Education Section */}
         <section className="mb-16 slide-in-right">
           <h2 className="text-3xl font-bold gradient-text mb-8 text-center flex items-center justify-center gap-3">
             <i className="fas fa-graduation-cap text-[#e8c547]"></i>
             Education
           </h2>
-          <div className="relative max-w-4xl mx-auto">
-            {/* Timeline Line */}
-            <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-[#e8c547] to-[#d4b445]"></div>
-            
-            <div className="space-y-12">
-              {education.map((edu, index) => (
-                <div key={index} className="relative flex items-start">
-                  {/* Timeline Dot */}
-                  <div className="absolute left-6 w-4 h-4 bg-[#e8c547] rounded-full border-4 border-[#0e1b12] z-10 shadow-lg shadow-[#e8c547]/25"></div>
-                  
-                  {/* Content */}
-                  <div className="ml-20 bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg w-full hover:border-[#e8c547]/30 transition-all duration-300">
-                    <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-4">
-                      <div className="flex-1">
-                        <h3 className="text-xl font-semibold text-[#e8c547] mb-2">{edu.title}</h3>
-                        <p className="text-gray-300 font-medium text-lg mb-1">{edu.institution}</p>
-                        <p className="text-gray-400 mb-2">{edu.field}</p>
-                        <span className="text-gray-400 text-sm bg-[#e8c547]/10 px-3 py-1 rounded-full inline-block">
-                          <i className="fas fa-calendar-alt mr-2"></i>
-                          {edu.period}
-                        </span>
-                      </div>
-                    </div>
-                    <p className="text-gray-300 mb-4 leading-relaxed">{edu.description}</p>
-                    <div className="flex flex-wrap gap-2">
-                      {edu.achievements.map((achievement, achIndex) => (
-                        <span key={achIndex} className="px-3 py-1 bg-[#e8c547]/20 text-[#e8c547] text-sm rounded-full border border-[#e8c547]/30">
-                          {achievement}
-                        </span>
-                      ))}
-                    </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {education.map((edu, index) => (
+              <article key={index} className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg hover:border-[#e8c547]/35 transition-all duration-300">
+                <div className="flex items-start gap-4 mb-5">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-[#e8c547]/10 border border-[#e8c547]/25">
+                    <i className={`${index === 0 ? "fas fa-university" : "fas fa-school"} text-[#e8c547] text-xl`}></i>
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="text-2xl font-semibold text-[#e8c547] leading-tight">{edu.title}</h3>
+                    <p className="text-gray-200 font-medium text-lg mt-1">{edu.institution}</p>
+                    <p className="text-gray-400 mt-1">{edu.field}</p>
                   </div>
                 </div>
-              ))}
-            </div>
+
+                <div className="mb-5 inline-flex items-center rounded-full bg-[#e8c547]/10 px-3 py-1 text-sm text-gray-300 border border-[#e8c547]/20">
+                  <i className="fas fa-calendar-alt mr-2 text-[#e8c547]"></i>
+                  {edu.period}
+                </div>
+
+                <p className="text-gray-300 mb-5 leading-relaxed">{edu.description}</p>
+
+                <div className="flex flex-wrap gap-2">
+                  {edu.achievements.map((achievement, achIndex) => (
+                    <span key={achIndex} className="px-3 py-1 bg-[#e8c547]/20 text-[#e8c547] text-sm rounded-full border border-[#e8c547]/30">
+                      {achievement}
+                    </span>
+                  ))}
+                </div>
+              </article>
+            ))}
           </div>
         </section>
 
@@ -481,18 +539,18 @@ export default function About() {
               Let's Connect!
             </h2>
             <p className="text-gray-300 mb-6 max-w-2xl mx-auto">
-              I'm always excited to discuss new opportunities, collaborate on interesting projects, 
+              I'm always excited to discuss new opportunities, collaborate on interesting projects,
               or simply chat about technology and innovation. Feel free to reach out!
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button 
+              <Button
                 href="/contact"
                 size="lg"
               >
                 <i className="fas fa-envelope mr-2"></i>
                 Get In Touch
               </Button>
-              <Button 
+              <Button
                 href="/portfolio"
                 variant="secondary"
                 size="lg"

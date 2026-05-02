@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Button from './Button';
+import { SkeletonBox } from './Skeleton';
 
 export default function Modal({
   isOpen,
@@ -38,7 +39,7 @@ export default function Modal({
   const modalRef = useRef(null);
   const [isAnimating, setIsAnimating] = useState(true);
   const [mounted, setMounted] = useState(false);
-  
+
   // Mount/unmount effect
   useEffect(() => {
     setMounted(true);
@@ -50,7 +51,7 @@ export default function Modal({
     if (isOpen) {
       // Start with animation state
       setIsAnimating(true);
-      
+
       // Small delay to ensure the component is mounted before starting animation
       const timer = setTimeout(() => {
         setIsAnimating(false);
@@ -60,12 +61,12 @@ export default function Modal({
       if (preventScroll) {
         // Store current scroll position
         const scrollY = window.scrollY;
-        
+
         // Apply overflow hidden to body with padding to prevent layout shift
         const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
         document.body.style.overflow = 'hidden';
         document.body.style.paddingRight = `${scrollbarWidth}px`;
-        
+
         // Store scroll position as data attribute for restoration
         document.body.setAttribute('data-scroll-y', scrollY);
       }
@@ -74,13 +75,13 @@ export default function Modal({
     } else {
       // When closing, immediately set animating to true
       setIsAnimating(true);
-      
+
       // Restore body scroll
       if (preventScroll) {
         // Remove overflow and padding
         document.body.style.overflow = '';
         document.body.style.paddingRight = '';
-        
+
         // Restore scroll position if it was stored
         const scrollY = document.body.getAttribute('data-scroll-y');
         if (scrollY) {
@@ -90,7 +91,7 @@ export default function Modal({
       }
     }
   }, [isOpen, preventScroll]);
-  
+
   // Ensure modal is centered and visible
   useEffect(() => {
     if (isOpen && modalRef.current) {
@@ -101,7 +102,56 @@ export default function Modal({
       }
     }
   }, [isOpen]);
-  
+
+  useEffect(() => {
+    if (!isOpen || !modalRef.current) return;
+
+    const previouslyFocused = document.activeElement;
+    const focusableSelector = [
+      'a[href]',
+      'button:not([disabled])',
+      'textarea:not([disabled])',
+      'input:not([disabled])',
+      'select:not([disabled])',
+      '[tabindex]:not([tabindex="-1"])'
+    ].join(',');
+
+    const getFocusable = () => Array.from(modalRef.current?.querySelectorAll(focusableSelector) || []);
+    const focusable = getFocusable();
+    (focusable[0] || modalRef.current).focus();
+
+    const handleTabKey = (event) => {
+      if (event.key !== 'Tab') return;
+
+      const items = getFocusable();
+      if (items.length === 0) {
+        event.preventDefault();
+        modalRef.current.focus();
+        return;
+      }
+
+      const first = items[0];
+      const last = items[items.length - 1];
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener('keydown', handleTabKey);
+
+    return () => {
+      document.removeEventListener('keydown', handleTabKey);
+      if (previouslyFocused && typeof previouslyFocused.focus === 'function') {
+        previouslyFocused.focus();
+      }
+    };
+  }, [isOpen]);
+
   // Handle escape key press
   useEffect(() => {
     const handleEscKey = (e) => {
@@ -109,14 +159,14 @@ export default function Modal({
         onClose();
       }
     };
-    
+
     document.addEventListener('keydown', handleEscKey);
-    
+
     return () => {
       document.removeEventListener('keydown', handleEscKey);
     };
   }, [isOpen, onClose, closeOnEsc]);
-  
+
   // Handle outside click
   const handleBackdropClick = (e) => {
     // Only close if the click was directly on the backdrop, not on any child elements
@@ -128,9 +178,9 @@ export default function Modal({
       }
     }
   };
-  
+
   if (!isOpen || !mounted) return null;
-  
+
   // Size classes
   const sizeClasses = {
     xs: "max-w-xs",
@@ -142,7 +192,7 @@ export default function Modal({
     "3xl": "max-w-7xl",
     full: "max-w-full mx-4"
   };
-  
+
   // Variant classes
   const variantClasses = {
     default: "bg-[#2e3d29]/90 backdrop-blur-md border border-[#3e503e]/50 text-white",
@@ -161,7 +211,7 @@ export default function Modal({
     frosted: "bg-white/15 backdrop-blur-xl border border-white/20 text-white shadow-lg",
     glow: "bg-[#2e3d29]/70 backdrop-blur-md border border-[#e8c547]/20 text-white shadow-[0_0_15px_rgba(232,197,71,0.3)]"
   };
-  
+
   // Position classes (not used when wrapper is present)
   const positionClasses = {
     center: "",
@@ -174,10 +224,10 @@ export default function Modal({
     "bottom-left": "",
     "bottom-right": ""
   };
-  
+
   // Use the actual position from props
   const actualPosition = position;
-  
+
   // Animation classes
   const animationClasses = {
     fade: isAnimating ? "opacity-0" : "opacity-100",
@@ -186,7 +236,7 @@ export default function Modal({
     slideUp: isAnimating ? "translate-y-full" : "translate-y-0",
     none: ""
   };
-  
+
   // Rounded classes
   const roundedClasses = {
     none: "rounded-none",
@@ -198,7 +248,7 @@ export default function Modal({
     "3xl": "rounded-3xl",
     full: "rounded-full"
   };
-  
+
   // Icon color classes
   const iconColorClasses = {
     primary: "text-[#e8c547]",
@@ -210,14 +260,14 @@ export default function Modal({
     dark: "text-gray-900",
     light: "text-gray-100"
   };
-  
+
   // Title alignment classes
   const titleAlignClasses = {
     left: "text-left",
     center: "text-center",
     right: "text-right"
   };
-  
+
   // Footer alignment classes
   const footerAlignClasses = {
     start: "justify-start",
@@ -227,20 +277,24 @@ export default function Modal({
     around: "justify-around",
     evenly: "justify-evenly"
   };
-  
+
   return createPortal(
-    <div 
+    <div
       className={`fixed inset-0 z-[99999] bg-black/${backdropOpacity} backdrop-blur-sm transition-opacity duration-200 ${isAnimating ? 'opacity-0' : 'opacity-100'}`}
       onClick={handleBackdropClick}
     >
       <div className="fixed inset-0 overflow-y-auto" onClick={handleBackdropClick}>
         <div className="flex min-h-full items-center justify-center p-4" onClick={handleBackdropClick}>
-          <div 
+          <div
             ref={modalRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={title ? "modal-title" : undefined}
+            tabIndex={-1}
             className={`
-              ${variantClasses[variant]} 
-              ${!fullScreen ? sizeClasses[size] : 'w-full h-full m-0'} 
-              ${roundedClasses[fullScreen ? 'none' : rounded]} 
+              ${variantClasses[variant]}
+              ${!fullScreen ? sizeClasses[size] : 'w-full h-full m-0'}
+              ${roundedClasses[fullScreen ? 'none' : rounded]}
               ${animationClasses[animation]}
               ${fullScreen ? 'fixed inset-0' : 'relative'}
               shadow-xl transform transition-all duration-200 ease-out ${className}
@@ -249,10 +303,10 @@ export default function Modal({
         {/* Loading overlay */}
         {loading && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-lg z-10">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#e8c547]"></div>
+            <SkeletonBox className="h-20 w-48" />
           </div>
         )}
-        
+
         {/* Modal header */}
         {!hideHeader && (header || title) && (
           <div className={`px-6 py-4 border-b border-[#3e503e]/30 ${titleAlign ? titleAlignClasses[titleAlign] : ''}`}>
@@ -264,7 +318,7 @@ export default function Modal({
                   </div>
                 )}
                 <div>
-                  <h3 className="text-lg font-medium text-[#e8c547]">{title}</h3>
+                  <h3 id="modal-title" className="text-lg font-medium text-[#e8c547]">{title}</h3>
                   {subtitle && <p className="mt-1 text-sm text-gray-300">{subtitle}</p>}
                 </div>
               </div>
@@ -272,7 +326,7 @@ export default function Modal({
             {showCloseButton && (
               <button
                 onClick={onClose}
-                className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors duration-200 focus:outline-none"
+                className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c547] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0e1b12]"
                 aria-label="Close"
               >
                 <i className="fas fa-times text-lg"></i>
@@ -280,12 +334,12 @@ export default function Modal({
             )}
           </div>
         )}
-        
+
         {/* Modal body */}
         <div className={`px-6 py-4 ${scrollable ? 'overflow-y-auto modal-scrollbar' : ''} ${fullScreen ? 'flex-grow' : ''}`} style={{ maxHeight: fullScreen ? 'none' : 'calc(80vh - 8rem)' }}>
           {children}
         </div>
-        
+
         {/* Modal footer */}
         {!hideFooter && (footer || (
           <div className={`px-6 py-4 border-t border-[#3e503e]/30 flex ${footerAlignClasses[footerAlign]} gap-3`}>
@@ -303,4 +357,4 @@ export default function Modal({
     </div>,
     document.body
   );
-} 
+}

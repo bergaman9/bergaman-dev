@@ -1,28 +1,32 @@
 import { NextResponse } from 'next/server';
 import { connectDB } from '../../../../lib/mongodb';
 import bcrypt from 'bcryptjs';
+import {
+  clampString,
+  jsonError,
+  readJsonLimited,
+  validateEmail,
+  validateEnum,
+} from '../../../../lib/serverSecurity';
 
-// Member model schema (we'll store in a members collection)
-const memberSchema = {
-  name: String,
-  email: String,
-  password: String, // hashed
-  role: String, // 'admin' or 'editor'
-  status: String, // 'active' or 'inactive'
-  createdAt: Date,
-  updatedAt: Date
-};
+const MEMBER_ROLES = ['admin', 'editor'];
+
+async function getMembersCollection() {
+  const connection = await connectDB();
+  const db = connection?.db || connection?.connection?.db;
+
+  if (!db) {
+    throw Object.assign(new Error('Database connection is not available'), { status: 503 });
+  }
+
+  return db.collection('members');
+}
 
 export async function GET() {
   try {
-    await connectDB();
-    const { MongoClient } = require('mongodb');
-    const client = new MongoClient(process.env.MONGODB_URI || 'mongodb://localhost:27017/bergaman-dev');
-    await client.connect();
-    const db = client.db();
-    const members = await db.collection('members').find({}).sort({ createdAt: -1 }).toArray();
-    await client.close();
-    
+    const membersCollection = await getMembersCollection();
+    const members = await membersCollection.find({}).sort({ createdAt: -1 }).toArray();
+
     // Remove password from response
     const sanitizedMembers = members.map(member => {
       const { password, ...memberWithoutPassword } = member;
@@ -32,26 +36,26 @@ export async function GET() {
     return NextResponse.json(sanitizedMembers);
   } catch (error) {
     console.error('Error fetching members:', error);
-    return NextResponse.json({ error: 'Failed to fetch members' }, { status: 500 });
+    return jsonError(error, 500);
   }
 }
 
 export async function POST(request) {
   try {
-    const { name, email, password, role = 'editor' } = await request.json();
+    const body = await readJsonLimited(request, { maxBytes: 8 * 1024 });
+    const name = clampString(body.name, 120);
+    const email = clampString(body.email, 254).toLowerCase();
+    const password = clampString(body.password, 256);
+    const role = validateEnum(body.role || 'editor', MEMBER_ROLES, 'role');
 
-    if (!name || !email || !password) {
-      return NextResponse.json({ error: 'Name, email, and password are required' }, { status: 400 });
+    if (!name || !validateEmail(email) || password.length < 12) {
+      return NextResponse.json({ error: 'Name, valid email, and a 12+ character password are required' }, { status: 400 });
     }
 
-    await connectDB();
-    const { MongoClient } = require('mongodb');
-    const client = new MongoClient(process.env.MONGODB_URI || 'mongodb://localhost:27017/bergaman-dev');
-    await client.connect();
-    const db = client.db();
-    
+    const membersCollection = await getMembersCollection();
+
     // Check if member already exists
-    const existingMember = await db.collection('members').findOne({ email });
+    const existingMember = await membersCollection.findOne({ email });
     if (existingMember) {
       return NextResponse.json({ error: 'Member with this email already exists' }, { status: 400 });
     }
@@ -69,9 +73,8 @@ export async function POST(request) {
       updatedAt: new Date()
     };
 
-    const result = await db.collection('members').insertOne(newMember);
-    await client.close();
-    
+    const result = await membersCollection.insertOne(newMember);
+
     // Return member without password
     const { password: _, ...memberWithoutPassword } = newMember;
     memberWithoutPassword._id = result.insertedId;
@@ -79,6 +82,6 @@ export async function POST(request) {
     return NextResponse.json(memberWithoutPassword, { status: 201 });
   } catch (error) {
     console.error('Error creating member:', error);
-    return NextResponse.json({ error: 'Failed to create member' }, { status: 500 });
+    return jsonError(error, 500);
   }
-} 
+}

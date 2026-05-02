@@ -1,16 +1,49 @@
 import { NextResponse } from 'next/server';
 import { connectDB } from '../../../../lib/mongodb';
+import { jsonError, pickAllowedFields, readJsonLimited } from '../../../../lib/serverSecurity';
+
+const SETTINGS_FIELDS = [
+  'siteName',
+  'siteDescription',
+  'adminEmail',
+  'allowComments',
+  'moderateComments',
+  'allowContactForm',
+  'maintenanceMode',
+  'analyticsEnabled',
+  'backupFrequency',
+  'seoEnabled',
+  'socialMediaEnabled',
+  'newsletterEnabled',
+  'darkModeEnabled',
+  'compressionEnabled',
+  'cacheEnabled',
+  'blogPostsPerPage',
+  'blogShowExcerpts',
+  'blogAllowGuestComments',
+  'blogRequireApproval',
+  'allowPasswordProtected',
+  'allowMemberOnly',
+  'defaultPostVisibility',
+  'authorProfile',
+];
+
+async function getSettingsCollection() {
+  const connection = await connectDB();
+  const db = connection?.db || connection?.connection?.db;
+
+  if (!db) {
+    throw Object.assign(new Error('Database connection is not available'), { status: 503 });
+  }
+
+  return db.collection('settings');
+}
 
 export async function GET() {
   try {
-    await connectDB();
-    const { MongoClient } = require('mongodb');
-    const client = new MongoClient(process.env.MONGODB_URI || 'mongodb://localhost:27017/bergaman-dev');
-    await client.connect();
-    const db = client.db();
-    const settings = await db.collection('settings').findOne({ type: 'site' });
-    await client.close();
-    
+    const settingsCollection = await getSettingsCollection();
+    const settings = await settingsCollection.findOne({ type: 'site' });
+
     if (!settings) {
       // Return default settings if none exist
       const defaultSettings = {
@@ -61,22 +94,19 @@ export async function GET() {
     return NextResponse.json(settingsData);
   } catch (error) {
     console.error('Error fetching settings:', error);
-    return NextResponse.json({ error: 'Failed to fetch settings' }, { status: 500 });
+    return jsonError(error, 500);
   }
 }
 
 export async function POST(request) {
   try {
-    const settingsData = await request.json();
-    await connectDB();
-    const { MongoClient } = require('mongodb');
-    const client = new MongoClient(process.env.MONGODB_URI || 'mongodb://localhost:27017/bergaman-dev');
-    await client.connect();
-    const db = client.db();
-    
+    const body = await readJsonLimited(request, { maxBytes: 64 * 1024 });
+    const settingsData = pickAllowedFields(body, SETTINGS_FIELDS);
+    const settingsCollection = await getSettingsCollection();
+
     // Check if settings exist
-    const existingSettings = await db.collection('settings').findOne({ type: 'site' });
-    
+    const existingSettings = await settingsCollection.findOne({ type: 'site' });
+
     if (existingSettings) {
       // Update existing settings (exclude createdAt to avoid conflict)
       const updateData = {
@@ -84,14 +114,13 @@ export async function POST(request) {
         type: 'site',
         updatedAt: new Date()
       };
-      
-      const result = await db.collection('settings').updateOne(
+
+      const result = await settingsCollection.updateOne(
         { type: 'site' },
         { $set: updateData }
       );
-      await client.close();
-      
-      return NextResponse.json({ 
+
+      return NextResponse.json({
         message: 'Settings updated successfully',
         modified: result.modifiedCount > 0
       });
@@ -103,17 +132,16 @@ export async function POST(request) {
         createdAt: new Date(),
         updatedAt: new Date()
       };
-      
-      const result = await db.collection('settings').insertOne(settingsDocument);
-      await client.close();
-      
-      return NextResponse.json({ 
+
+      const result = await settingsCollection.insertOne(settingsDocument);
+
+      return NextResponse.json({
         message: 'Settings created successfully',
         inserted: result.insertedId ? true : false
       });
     }
   } catch (error) {
     console.error('Error saving settings:', error);
-    return NextResponse.json({ error: 'Failed to save settings' }, { status: 500 });
+    return jsonError(error, 500);
   }
-} 
+}

@@ -113,6 +113,7 @@ const BookCard = ({ recommendation, onEdit, onDelete, isAdmin = false }) => {
             src={imageSrc}
             alt={recommendation.title}
             fill
+            sizes="(max-width: 640px) 100vw, 33vw"
             className="object-contain p-4"
             onError={() => setImageError(true)}
           />
@@ -199,6 +200,7 @@ const GameCard = ({ recommendation, onEdit, onDelete, isAdmin = false }) => {
           src={imageSrc}
           alt={recommendation.title}
           fill
+          sizes="(max-width: 768px) 100vw, 33vw"
           className="object-cover group-hover:scale-110 transition-transform duration-500"
           onError={() => setImageError(true)}
         />
@@ -290,6 +292,7 @@ const MovieCard = ({ recommendation, onEdit, onDelete, isAdmin = false }) => {
           src={imageSrc}
           alt={recommendation.title}
           fill
+          sizes="(max-width: 768px) 100vw, 33vw"
           className="object-cover group-hover:scale-105 transition-transform duration-500"
           onError={() => setImageError(true)}
         />
@@ -398,7 +401,7 @@ const MusicCard = ({ recommendation, onEdit, onDelete, isAdmin = false }) => {
           <div className="relative h-64 bg-gradient-to-br from-gray-900 to-black overflow-hidden">
             <div className="absolute inset-0 flex items-center justify-center">
               {/* Vinyl Record */}
-              <div className="relative w-48 h-48 rounded-full bg-black shadow-2xl animate-spin-slow">
+          <div className="relative w-48 h-48 rounded-full bg-black shadow-2xl animate-record-spin">
                 <div className="absolute inset-4 rounded-full bg-gray-900"></div>
                 <div className="absolute inset-8 rounded-full bg-black"></div>
                 <div className="absolute inset-12 rounded-full overflow-hidden">
@@ -626,6 +629,7 @@ const SeriesCard = ({ recommendation, onEdit, onDelete, isAdmin = false }) => {
             src={imageSrc}
             alt={recommendation.title}
             fill
+            sizes="(max-width: 768px) 100vw, 33vw"
             className="object-cover group-hover:scale-105 transition-transform duration-500"
             onError={() => setImageError(true)}
           />
@@ -1038,6 +1042,7 @@ export default function RecommendationCard({
               src={recommendation.image}
               alt={recommendation.title}
               fill
+              sizes="(max-width: 768px) 100vw, 33vw"
               className="object-cover"
               onError={handleImageError}
             />
@@ -1130,6 +1135,7 @@ export default function RecommendationCard({
                   src={recommendation.image}
                   alt={recommendation.title}
                   fill
+                  sizes="(max-width: 768px) 100vw, 33vw"
                   className="object-cover"
                   onError={handleImageError}
                 />
@@ -1215,6 +1221,7 @@ export default function RecommendationCard({
             src={recommendation.image}
             alt={recommendation.title}
             fill
+            sizes="(max-width: 768px) 100vw, 33vw"
             className="object-cover"
             onError={handleImageError}
           />

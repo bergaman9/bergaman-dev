@@ -15,6 +15,7 @@ import Checkbox from '@/app/components/Checkbox';
 import { useRouter } from 'next/navigation';
 import PageHeader from '@/app/components/PageHeader';
 import RecommendationCard from '../../../components/RecommendationCard';
+import { SkeletonCard } from '@/app/components/Skeleton';
 
 export default function AdminRecommendationsPage() {
   const [recommendations, setRecommendations] = useState([]);
@@ -140,13 +141,13 @@ export default function AdminRecommendationsPage() {
     try {
       setLoading(true);
       const response = await fetch('/api/admin/recommendations');
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const data = await response.json();
-      
+
       if (data.success) {
         setRecommendations(data.recommendations || []);
       } else {
@@ -163,7 +164,7 @@ export default function AdminRecommendationsPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Ensure required fields have default values
     const submissionData = {
       ...formData,
@@ -171,14 +172,14 @@ export default function AdminRecommendationsPage() {
       genre: formData.genre || 'General',
       recommendation: formData.recommendation || 'Recommended',
     };
-    
+
     try {
-      const url = editingRecommendation 
+      const url = editingRecommendation
         ? `/api/admin/recommendations/${editingRecommendation._id}`
         : '/api/admin/recommendations';
-      
+
       const method = editingRecommendation ? 'PUT' : 'POST';
-      
+
       const response = await fetch(url, {
         method,
         headers: {
@@ -205,19 +206,19 @@ export default function AdminRecommendationsPage() {
 
   const handleUploadImage = async (file) => {
     if (!file) return null;
-    
+
     try {
       setUploadingImage(true);
       const formData = new FormData();
       formData.append('file', file);
-      
+
       const response = await fetch('/api/media', {
         method: 'POST',
         body: formData
       });
-      
+
       const data = await response.json();
-      
+
       if (data.success) {
         return data.url;
       } else {
@@ -238,7 +239,7 @@ export default function AdminRecommendationsPage() {
     if (e) {
       e.preventDefault();
       e.stopPropagation();
-      
+
       // Doğrudan modal pozisyonunu ayarlamak yerine sadece düzenleme modunu açıyoruz
       setEditingRecommendation(recommendation);
       setFormData({
@@ -259,12 +260,12 @@ export default function AdminRecommendationsPage() {
         status: recommendation.status,
         order: recommendation.order || 0
       });
-      
+
       // Modal'ı hemen açıyoruz
       setShowModal(true);
       return;
     }
-    
+
     setEditingRecommendation(recommendation);
     setFormData({
       title: recommendation.title,
@@ -283,7 +284,7 @@ export default function AdminRecommendationsPage() {
       status: recommendation.status,
       order: recommendation.order || 0
     });
-    
+
     setShowModal(true);
   };
 
@@ -341,14 +342,14 @@ export default function AdminRecommendationsPage() {
   // Fetch Spotify data
   const fetchSpotifyData = async (url) => {
     if (!url || !url.includes('spotify.com')) return;
-    
+
     // Extract Spotify ID from URL
     const match = url.match(/(?:track|album|playlist)\/([a-zA-Z0-9]+)/);
     if (!match) return;
-    
+
     const spotifyId = match[1];
     const type = url.includes('/track/') ? 'track' : url.includes('/album/') ? 'album' : 'playlist';
-    
+
     try {
       // For now, just use the embed image
       const embedUrl = `https://open.spotify.com/embed/${type}/${spotifyId}`;
@@ -357,7 +358,7 @@ export default function AdminRecommendationsPage() {
         image: `https://i.scdn.co/image/${spotifyId}`, // Placeholder - would need Spotify API
         description: `Spotify ${type}`,
       }));
-      
+
       toast.success('Spotify information loaded');
     } catch (error) {
       console.error('Error fetching Spotify data:', error);
@@ -368,16 +369,16 @@ export default function AdminRecommendationsPage() {
   // Fetch favicon for links
   const fetchFavicon = async (url) => {
     if (!url) return;
-    
+
     try {
       const domain = new URL(url).hostname;
       const faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=256`;
-      
+
       setFormData(prev => ({
         ...prev,
         image: faviconUrl,
       }));
-      
+
       toast.success('Favicon loaded');
     } catch (error) {
       console.error('Error fetching favicon:', error);
@@ -406,7 +407,7 @@ export default function AdminRecommendationsPage() {
     if (filter === 'active' && item.status === 'active') return true;
     if (filter === 'draft' && item.status === 'draft') return true;
     if (filter === 'archived' && item.status === 'archived') return true;
-    
+
     // Category filters
     if (filter === 'movie' && item.category === 'movie') return true;
     if (filter === 'game' && item.category === 'game') return true;
@@ -414,11 +415,11 @@ export default function AdminRecommendationsPage() {
     if (filter === 'series' && item.category === 'series') return true;
     if (filter === 'music' && item.category === 'music') return true;
     if (filter === 'link' && item.category === 'link') return true;
-    
+
     return false;
   }).filter(item => {
     if (!searchTerm) return true;
-    
+
     const searchLower = searchTerm.toLowerCase();
     return (
       item.title?.toLowerCase().includes(searchLower) ||
@@ -447,7 +448,7 @@ export default function AdminRecommendationsPage() {
       setFilter(key);
       return;
     }
-    
+
     setFilter(key);
   };
 
@@ -468,7 +469,7 @@ export default function AdminRecommendationsPage() {
     { value: 'Thriller', label: 'Thriller' },
     { value: 'Western', label: 'Western' }
   ];
-  
+
   const bookGenres = [
     { value: 'Biography', label: 'Biography' },
     { value: 'Business', label: 'Business' },
@@ -486,7 +487,7 @@ export default function AdminRecommendationsPage() {
     { value: 'Self-Help', label: 'Self-Help' },
     { value: 'Thriller', label: 'Thriller' }
   ];
-  
+
   const gameGenres = [
     { value: 'Action', label: 'Action' },
     { value: 'Adventure', label: 'Adventure' },
@@ -688,7 +689,7 @@ export default function AdminRecommendationsPage() {
           }
         ]}
       />
-      
+
       {/* Filter Tabs */}
       <div className="flex flex-wrap gap-2 mb-6">
         <button
@@ -705,7 +706,7 @@ export default function AdminRecommendationsPage() {
             {stats.movie}
           </span>
         </button>
-        
+
         <button
           onClick={() => handleStatFilter('game')}
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center space-x-2 ${
@@ -720,7 +721,7 @@ export default function AdminRecommendationsPage() {
             {stats.game}
           </span>
         </button>
-        
+
         <button
           onClick={() => handleStatFilter('book')}
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center space-x-2 ${
@@ -735,7 +736,7 @@ export default function AdminRecommendationsPage() {
             {stats.book}
           </span>
         </button>
-        
+
         <button
           onClick={() => handleStatFilter('series')}
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center space-x-2 ${
@@ -750,7 +751,7 @@ export default function AdminRecommendationsPage() {
             {stats.series}
           </span>
         </button>
-        
+
         <button
           onClick={() => handleStatFilter('music')}
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center space-x-2 ${
@@ -765,7 +766,7 @@ export default function AdminRecommendationsPage() {
             {stats.music}
           </span>
         </button>
-        
+
         <button
           onClick={() => handleStatFilter('link')}
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center space-x-2 ${
@@ -781,7 +782,7 @@ export default function AdminRecommendationsPage() {
           </span>
         </button>
       </div>
-      
+
       {/* Search Bar */}
       <div className="mb-6">
         <div className="relative">
@@ -797,11 +798,13 @@ export default function AdminRecommendationsPage() {
           </div>
         </div>
       </div>
-      
+
       {/* Recommendations Grid */}
       {loading ? (
-        <div className="flex justify-center items-center py-20">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#e8c547]"></div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" aria-busy="true">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <SkeletonCard key={index} imageHeight="h-56" rows={3} />
+          ))}
         </div>
       ) : filteredRecommendations.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -820,16 +823,16 @@ export default function AdminRecommendationsPage() {
           <div className="text-center">
             <h3 className="text-xl font-medium text-gray-400 mb-2">No recommendations found</h3>
             <p className="text-gray-500">
-              {filter !== 'movie' 
+              {filter !== 'movie'
                 ? `No ${filter} recommendations found. Try a different filter or add a new one.`
-                : searchTerm 
+                : searchTerm
                   ? `No results found for "${searchTerm}". Try a different search term.`
                   : 'No recommendations found. Add a new recommendation to get started.'}
             </p>
           </div>
         </div>
       )}
-      
+
       {/* Modal */}
       <Modal
         isOpen={showModal}
@@ -858,7 +861,7 @@ export default function AdminRecommendationsPage() {
                   Basic Information
                 </h3>
               </div>
-              
+
               <div className="mb-4">
                 <Input
                   label="Title"
@@ -869,7 +872,7 @@ export default function AdminRecommendationsPage() {
                   required
                 />
               </div>
-              
+
               <div className="mb-4">
                 <Select
                   label="Category"
@@ -883,7 +886,7 @@ export default function AdminRecommendationsPage() {
                   required
                 />
               </div>
-              
+
               <div className="mb-4">
                 <Input
                   label="Year"
@@ -894,7 +897,7 @@ export default function AdminRecommendationsPage() {
                   placeholder="Year of release"
                 />
               </div>
-              
+
               <div className="mb-4">
                 <Input
                   label="Description"
@@ -905,7 +908,7 @@ export default function AdminRecommendationsPage() {
                   required
                 />
               </div>
-              
+
               {/* Rating - Only for movies, series, games, and books */}
               {formData.category !== 'link' && formData.category !== 'music' && (
                 <div className="space-y-2">
@@ -958,7 +961,7 @@ export default function AdminRecommendationsPage() {
                   Media & Details
                 </h3>
               </div>
-              
+
               {/* Image */}
               <div className="space-y-4">
                 {formData.image && (
@@ -979,7 +982,7 @@ export default function AdminRecommendationsPage() {
                     />
                   </div>
                 )}
-                
+
                 <Input
                   label="Image URL"
                   name="image"
@@ -988,7 +991,7 @@ export default function AdminRecommendationsPage() {
                   placeholder="Enter image URL or upload an image"
                   icon="fas fa-link"
                 />
-                
+
                 <div className="flex gap-2">
                   <div className="relative flex-1">
                     <input
@@ -1017,7 +1020,7 @@ export default function AdminRecommendationsPage() {
                       {uploadingImage ? 'Uploading...' : 'Upload Image'}
                     </Button>
                   </div>
-                  
+
                   <Button
                     variant="secondary"
                     size="sm"
@@ -1028,7 +1031,7 @@ export default function AdminRecommendationsPage() {
                   </Button>
                 </div>
               </div>
-              
+
               {/* Personal Recommendation */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -1044,7 +1047,7 @@ export default function AdminRecommendationsPage() {
                   required
                 />
               </div>
-              
+
               <Input
                 label="Display Order"
                 name="order"
@@ -1081,7 +1084,7 @@ export default function AdminRecommendationsPage() {
           </div>
         </form>
       </Modal>
-      
+
       {/* Image Selector Modal */}
       <Modal
         isOpen={showImageSelector}
@@ -1102,8 +1105,8 @@ export default function AdminRecommendationsPage() {
               type="button"
               onClick={() => setFilter('all')}
               className={`px-3 py-1.5 text-sm rounded-lg transition-all ${
-                filter === 'all' 
-                  ? 'bg-[#e8c547]/20 text-[#e8c547] border border-[#e8c547]/30' 
+                filter === 'all'
+                  ? 'bg-[#e8c547]/20 text-[#e8c547] border border-[#e8c547]/30'
                   : 'bg-[#2e3d29]/30 text-gray-300 hover:text-[#e8c547]'
               }`}
             >
@@ -1115,8 +1118,8 @@ export default function AdminRecommendationsPage() {
                 type="button"
                 onClick={() => setFilter(category)}
                 className={`px-3 py-1.5 text-sm rounded-lg transition-all capitalize flex items-center gap-2 ${
-                  filter === category 
-                    ? 'bg-[#e8c547]/20 text-[#e8c547] border border-[#e8c547]/30' 
+                  filter === category
+                    ? 'bg-[#e8c547]/20 text-[#e8c547] border border-[#e8c547]/30'
                     : 'bg-[#2e3d29]/30 text-gray-300 hover:text-[#e8c547]'
                 }`}
               >
@@ -1128,7 +1131,7 @@ export default function AdminRecommendationsPage() {
 
           {/* Image Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 max-h-[400px] overflow-y-auto p-1 modal-scrollbar">
-            {(filter === 'all' 
+            {(filter === 'all'
               ? getAllImages()
               : predefinedImages[filter] || []
             ).map((img, index) => (
@@ -1156,7 +1159,7 @@ export default function AdminRecommendationsPage() {
             ))}
           </div>
         </div>
-        
+
         <div className="flex justify-end mt-6 pt-4 border-t border-[#3e503e]/30">
           <Button
             variant="secondary"

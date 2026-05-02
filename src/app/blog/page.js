@@ -14,6 +14,7 @@ import { useAdminMode } from '../../hooks/useAdminMode';
 import BlogPostCard from '../components/BlogPostCard';
 import PageHeader from '../components/PageHeader';
 import PageContainer from '../components/PageContainer';
+import { SkeletonCard } from '../components/Skeleton';
 
 export default function Blog() {
   const [posts, setPosts] = useState([]);
@@ -306,9 +307,10 @@ export default function Blog() {
           {/* Blog Posts */}
           <section className="section-spacing slide-in-right">
             {loading ? (
-              <div className="text-center py-16">
-                <i className="fas fa-circle-notch fa-spin text-4xl text-[#e8c547] mb-4"></i>
-                <p className="text-gray-400">Loading blog posts...</p>
+              <div className="card-grid card-grid-3">
+                {Array.from({ length: postsPerPage }).map((_, index) => (
+                  <SkeletonCard key={index} imageHeight="h-48" rows={3} />
+                ))}
               </div>
             ) : posts.length === 0 ? (
               <div className="text-center py-16">

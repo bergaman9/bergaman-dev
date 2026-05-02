@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { SECURITY } from '@/lib/constants';
 import { useRouter } from 'next/navigation';
 
@@ -14,7 +14,7 @@ export default function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [csrfToken, setCsrfToken] = useState(null);
   const [sessionExpiry, setSessionExpiry] = useState(null);
-  const [refreshTimer, setRefreshTimer] = useState(null);
+  const refreshTimerRef = useRef(null);
   const router = useRouter();
 
   // Admin etkinliklerini logla - moved up before being used
@@ -33,14 +33,14 @@ export default function AuthProvider({ children }) {
         }),
         credentials: 'include'
       });
-      
+
       return res.ok;
     } catch (error) {
       console.error('Log activity error:', error);
       return false;
     }
   };
-  
+
   // Giriş işlemi - now logActivity is defined before this uses it
   const login = async (username, password) => {
     try {
@@ -52,25 +52,25 @@ export default function AuthProvider({ children }) {
         body: JSON.stringify({ username, password }),
         credentials: 'include',
       });
-      
+
       const data = await res.json();
-      
+
       if (res.ok && data.success) {
         setIsAuthenticated(true);
         setUser(data.user || { username, role: 'admin' });
-        
+
         // Admin etkinliğini logla
         await logActivity('login', `User ${username} logged in successfully`);
-        
+
         return { success: true };
       } else {
         // Başarısız giriş denemesini logla
         await logActivity('failed_login', `Failed login attempt for user ${username}`, { ip: data.ip || 'unknown' });
-        
-        return { 
-          success: false, 
-          error: data.message || 'Giriş başarısız', 
-          remainingAttempts: data.remainingAttempts 
+
+        return {
+          success: false,
+          error: data.error || data.message || 'Giriş başarısız',
+          remainingAttempts: data.remainingAttempts
         };
       }
     } catch (error) {
@@ -90,49 +90,30 @@ export default function AuthProvider({ children }) {
         },
         credentials: 'include',
       });
-      
+
       const data = await res.json();
-      
+
       if (res.ok && data.authenticated) {
         setIsAuthenticated(true);
         setUser(data.user || { username: data.username || 'Admin', role: data.role || 'admin' });
-        
+
         // CSRF token oluştur
         const newCsrfToken = `${data.username}-${Date.now()}`;
         setCsrfToken(newCsrfToken);
-        
-        // Session süresini hesapla (JWT'nin exp değerinden)
-        const tokenParts = document.cookie
-          .split('; ')
-          .find(row => row.startsWith(`${SECURITY.SESSION.COOKIE_NAME}=`))
-          ?.split('=')[1];
-          
-        if (tokenParts) {
-          try {
-            // JWT'nin payload kısmını decode et (imza kontrolü yapmadan)
-            const payload = JSON.parse(atob(tokenParts.split('.')[1]));
-            const expiryTime = payload.exp * 1000; // saniyeden milisaniyeye çevir
-            setSessionExpiry(expiryTime);
-            
-            // Session yenileme zamanlayıcısını ayarla
-            // Session'ın son 5 dakikasında yenile
-            const timeUntilRefresh = Math.max(0, expiryTime - Date.now() - SECURITY.SESSION.REFRESH_BEFORE);
-            
-            if (refreshTimer) clearTimeout(refreshTimer);
-            
-            const timer = setTimeout(() => {
-              refreshSession();
-            }, timeUntilRefresh);
-            
-            setRefreshTimer(timer);
-          } catch (e) {
-            console.error('JWT decode error:', e);
+
+        if (data.expiresAt) {
+          setSessionExpiry(data.expiresAt);
+          const timeUntilRefresh = Math.max(0, data.expiresAt - Date.now() - SECURITY.SESSION.REFRESH_BEFORE);
+
+          if (refreshTimerRef.current) {
+            clearTimeout(refreshTimerRef.current);
           }
+
+          refreshTimerRef.current = setTimeout(() => {
+            checkAuth();
+          }, timeUntilRefresh);
         }
-        
-        // Admin etkinliğini logla
-        await logActivity('login', `User ${data.username} logged in successfully`);
-        
+
         return true;
       } else {
         setIsAuthenticated(false);
@@ -150,24 +131,7 @@ export default function AuthProvider({ children }) {
     } finally {
       setLoading(false);
     }
-  }, [refreshTimer, router]);
-
-  // Session yenileme
-  const refreshSession = useCallback(async () => {
-    try {
-      // Mevcut session'ı kontrol et
-      const authStatus = await checkAuth();
-      
-      // Eğer oturum hala açıksa, yeni bir login isteği gönder
-      if (authStatus && user) {
-        // Kullanıcı bilgileri ile yeni bir oturum aç
-        // Bu, yeni bir JWT token oluşturacak
-        await login(user.username, ''); // Şifre olmadan özel bir yenileme endpoint'i kullanılabilir
-      }
-    } catch (error) {
-      console.error('Session refresh error:', error);
-    }
-  }, [checkAuth, user, login]);
+  }, [router]);
 
   // Çıkış işlemi
   const logout = async () => {
@@ -176,7 +140,7 @@ export default function AuthProvider({ children }) {
       if (isAuthenticated && user) {
         await logActivity('logout', `User ${user.username} logged out`);
       }
-      
+
       const res = await fetch('/api/admin/auth', {
         method: 'DELETE',
         headers: {
@@ -184,12 +148,16 @@ export default function AuthProvider({ children }) {
         },
         credentials: 'include',
       });
-      
+
       if (res.ok) {
         setIsAuthenticated(false);
         setUser(null);
         setCsrfToken(null);
         setSessionExpiry(null);
+        if (refreshTimerRef.current) {
+          clearTimeout(refreshTimerRef.current);
+          refreshTimerRef.current = null;
+        }
         router.push('/admin'); // Çıkış yapınca login sayfasına yönlendir
         return true;
       } else {
@@ -213,13 +181,13 @@ export default function AuthProvider({ children }) {
         'Pragma': 'no-cache'
       }
     };
-    
+
     // CSRF token ekle (sadece mutasyon işlemleri için)
     const method = options.method || 'GET';
     if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(method.toUpperCase()) && csrfToken) {
       defaultOptions.headers['X-CSRF-Token'] = csrfToken;
     }
-    
+
     // Ayarları birleştir
     const fetchOptions = {
       ...defaultOptions,
@@ -229,14 +197,14 @@ export default function AuthProvider({ children }) {
         ...(options.headers || {})
       }
     };
-    
+
     try {
       const response = await fetch(url, fetchOptions);
-      
+
       // 401 hatası durumunda oturumu kontrol et
       if (response.status === 401) {
         await checkAuth();
-        
+
         // Eğer hala oturum açıksa, isteği tekrar dene
         if (isAuthenticated) {
           return fetch(url, {
@@ -248,7 +216,7 @@ export default function AuthProvider({ children }) {
           });
         }
       }
-      
+
       return response;
     } catch (error) {
       console.error('Secure fetch error:', error);
@@ -259,14 +227,15 @@ export default function AuthProvider({ children }) {
   // Sayfa yüklendiğinde auth durumunu kontrol et
   useEffect(() => {
     checkAuth();
-    
+
     // Component unmount olduğunda zamanlayıcıyı temizle
     return () => {
-      if (refreshTimer) {
-        clearTimeout(refreshTimer);
+      if (refreshTimerRef.current) {
+        clearTimeout(refreshTimerRef.current);
+        refreshTimerRef.current = null;
       }
     };
-  }, [checkAuth, refreshTimer]);
+  }, [checkAuth]);
 
   // Kullanıcı bilgilerini güncelle
   const updateUser = async (userData) => {
@@ -279,15 +248,15 @@ export default function AuthProvider({ children }) {
         body: JSON.stringify(userData),
         credentials: 'include',
       });
-      
+
       const data = await res.json();
-      
+
       if (res.ok) {
         setUser(prev => ({ ...prev, ...userData }));
-        
+
         // Profil güncelleme işlemini logla
         await logActivity('profile_update', `User ${user.username} updated their profile`);
-        
+
         return { success: true };
       } else {
         return { success: false, error: data.message || 'Güncelleme başarısız' };
@@ -309,13 +278,13 @@ export default function AuthProvider({ children }) {
         body: JSON.stringify({ currentPassword, newPassword }),
         credentials: 'include',
       });
-      
+
       const data = await res.json();
-      
+
       if (res.ok) {
         // Şifre değiştirme işlemini logla
         await logActivity('password_change', `User ${user.username} changed their password`);
-        
+
         return { success: true };
       } else {
         return { success: false, error: data.message || 'Şifre değiştirme başarısız' };
@@ -351,4 +320,4 @@ export function useAuth() {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-} 
+}

@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
 import { SignJWT } from 'jose';
 import { SECURITY } from '@/lib/constants';
-import { 
-  verifyPassword, 
-  hashPasswordWithPbkdf2, 
-  isValidSession 
+import {
+  verifyPassword,
+  hashPasswordWithPbkdf2,
+  isValidSession
 } from '@/lib/userInfo';
 import {
   checkIPRateLimit,
@@ -13,57 +13,37 @@ import {
   withRateLimit
 } from '@/lib/rateLimit';
 import { getSecurityHeadersObject } from '@/lib/helmet';
+import { getJwtSecret, normalizeClientIp, readJsonLimited, verifyAdminSession } from '@/lib/serverSecurity';
+import crypto from 'crypto';
 
-// IP adresi bazlı rate limiting için hafıza içi depolama
-// Not: Gerçek bir uygulamada Redis gibi bir çözüm kullanılmalıdır
-const loginAttempts = new Map();
-const lockedAccounts = new Map();
-
-// Gerçek bir uygulamada bu bilgiler veritabanında saklanmalıdır
 const ADMIN_USER = {
   username: process.env.ADMIN_USERNAME || 'admin',
-  // Password should be set in environment variables
-  password: process.env.ADMIN_PASSWORD,
-  salt: process.env.ADMIN_PASSWORD_SALT || 'bergaman-salt-please-change-in-production'
+  passwordHash: process.env.ADMIN_PASSWORD_HASH || process.env.ADMIN_PASSWORD,
+  pbkdf2Hash: process.env.ADMIN_PASSWORD_PBKDF2_HASH,
+  salt: process.env.ADMIN_PASSWORD_SALT
 };
 
-/**
- * Rate limiting kontrolü
- * @param {string} ip - IP adresi
- * @returns {Object} - Rate limit durumu
- */
-function checkRateLimit(ip) {
-  // IP bazlı giriş denemelerini kontrol et
-  const attempts = loginAttempts.get(ip) || 0;
-  
-  // Hesap kilitli mi kontrol et
-  const lockedUntil = lockedAccounts.get(ip);
-  if (lockedUntil && lockedUntil > Date.now()) {
-    const remainingTime = Math.ceil((lockedUntil - Date.now()) / 1000 / 60);
-    return {
-      allowed: false,
-      message: `Too many login attempts. Account locked for ${remainingTime} minutes.`
-    };
+async function verifyAdminPassword(password) {
+  if (!password) return false;
+
+  if (ADMIN_USER.passwordHash?.startsWith('$2')) {
+    return verifyPassword(password, ADMIN_USER.passwordHash);
   }
-  
-  // Kilidi kaldır (süresi dolduysa)
-  if (lockedUntil) {
-    lockedAccounts.delete(ip);
+
+  if (ADMIN_USER.pbkdf2Hash && ADMIN_USER.salt) {
+    const candidateHash = hashPasswordWithPbkdf2(password, ADMIN_USER.salt);
+    const expected = Buffer.from(ADMIN_USER.pbkdf2Hash, 'hex');
+    const candidate = Buffer.from(candidateHash, 'hex');
+    return expected.length === candidate.length && crypto.timingSafeEqual(expected, candidate);
   }
-  
-  // Maksimum deneme sayısını kontrol et
-  if (attempts >= SECURITY.RATE_LIMIT.MAX_LOGIN_ATTEMPTS) {
-    // Hesabı kilitle
-    lockedAccounts.set(ip, Date.now() + SECURITY.RATE_LIMIT.LOCKOUT_DURATION);
-    loginAttempts.delete(ip); // Deneme sayacını sıfırla
-    
-    return {
-      allowed: false,
-      message: `Too many login attempts. Account locked for ${Math.ceil(SECURITY.RATE_LIMIT.LOCKOUT_DURATION / 60000)} minutes.`
-    };
+
+  if (process.env.NODE_ENV !== 'production' && ADMIN_USER.passwordHash) {
+    console.warn('Using plaintext ADMIN_PASSWORD fallback in development. Set ADMIN_PASSWORD_HASH before production.');
+    return password === ADMIN_USER.passwordHash;
   }
-  
-  return { allowed: true };
+
+  console.error('Admin password hash is not configured securely');
+  return false;
 }
 
 /**
@@ -76,7 +56,7 @@ async function createToken(payload) {
     .setProtectedHeader({ alg: SECURITY.JWT.ALGORITHM })
     .setIssuedAt()
     .setExpirationTime(Math.floor((Date.now() + SECURITY.SESSION.DURATION) / 1000))
-    .sign(new TextEncoder().encode(SECURITY.JWT.SECRET));
+    .sign(new TextEncoder().encode(getJwtSecret()));
 }
 
 /**
@@ -84,15 +64,14 @@ async function createToken(payload) {
  */
 async function handleLogin(request) {
   try {
-    // IP adresini al (gerçek bir uygulamada X-Forwarded-For başlığı kontrol edilmelidir)
-    const ip = request.headers.get('x-forwarded-for') || 'unknown-ip';
-    
+    const ip = normalizeClientIp(request);
+
     // Rate limiting kontrolü
     const rateLimitCheck = await checkIPRateLimit(ip, 'login');
     if (!rateLimitCheck.allowed) {
-      return NextResponse.json({ 
-        error: rateLimitCheck.message 
-      }, { 
+      return NextResponse.json({
+        error: rateLimitCheck.message
+      }, {
         status: 429,
         headers: {
           'Retry-After': (SECURITY.RATE_LIMIT.LOCKOUT_DURATION / 1000).toString(),
@@ -102,87 +81,72 @@ async function handleLogin(request) {
         }
       });
     }
-    
-    const { username, password } = await request.json();
 
-    // Şifre kontrolü - basit karşılaştırma
-    let isPasswordValid = false;
-    
-    // Environment variable kontrolü
-    if (!ADMIN_USER.password) {
-      console.error('ADMIN_PASSWORD environment variable is not set');
-      console.error('ADMIN_USER:', { username: ADMIN_USER.username, hasPassword: !!ADMIN_USER.password });
-      return NextResponse.json({ 
-        error: 'Server configuration error' 
-      }, { 
+    const { username, password } = await readJsonLimited(request, { maxBytes: 4 * 1024 });
+
+    if (!ADMIN_USER.passwordHash && !ADMIN_USER.pbkdf2Hash) {
+      console.error('Admin password hash environment variable is not set');
+      return NextResponse.json({
+        error: 'Server configuration error'
+      }, {
         status: 500,
         headers: getSecurityHeadersObject()
       });
     }
-    
-    // Debug log
-    console.log('Login attempt:', { 
-      username, 
-      expectedUsername: ADMIN_USER.username,
-      passwordMatch: password === ADMIN_USER.password 
-    });
-    
-    // Kullanıcı adı ve şifre kontrolü
-    if (username === ADMIN_USER.username && password === ADMIN_USER.password) {
-      isPasswordValid = true;
-    }
-    
+
+    const isPasswordValid = username === ADMIN_USER.username && await verifyAdminPassword(password);
+
     if (isPasswordValid) {
       // Başarılı giriş - deneme sayacını sıfırla
       resetAttempts(ip, 'login');
-      
+
       // Login başarılı - console log
-      console.log(`Admin login successful: ${username} at ${new Date().toISOString()}`);
-      
+      console.info(`Admin login successful for ${username} at ${new Date().toISOString()}`);
+
       // TODO: Admin log oluşturma işlemi daha sonra eklenecek
       // Şu an middleware token kontrolü yüzünden log oluşturamıyoruz
-      
+
       // Session için JWT oluştur
       const sessionData = {
         username: username,
         role: 'admin'
       };
-      
+
       // JWT token oluştur
       const token = await createToken(sessionData);
-      
+
       // Session cookie'sini ayarla
-      const response = NextResponse.json({ 
+      const response = NextResponse.json({
         success: true,
         message: 'Authentication successful',
         user: {
           username: username,
           role: 'admin'
         }
-      }, { 
+      }, {
         status: 200,
         headers: getSecurityHeadersObject()
       });
-      
+
       response.cookies.set({
         name: SECURITY.SESSION.COOKIE_NAME,
         value: token,
         ...SECURITY.SESSION.COOKIE_OPTIONS,
         maxAge: SECURITY.SESSION.DURATION / 1000 // saniye cinsinden
       });
-      
+
       return response;
     } else {
       // Başarısız giriş - deneme sayacını artır
       const record = recordFailedAttempt(ip, 'login');
-      
+
       // Kalan deneme sayısını hesapla
       const remainingAttempts = SECURITY.RATE_LIMIT.MAX_LOGIN_ATTEMPTS - record.count;
-      
-      return NextResponse.json({ 
+
+      return NextResponse.json({
         error: 'Invalid credentials',
         remainingAttempts
-      }, { 
+      }, {
         status: 401,
         headers: {
           'X-RateLimit-Limit': SECURITY.RATE_LIMIT.MAX_LOGIN_ATTEMPTS.toString(),
@@ -193,7 +157,7 @@ async function handleLogin(request) {
     }
   } catch (error) {
     console.error('Authentication error:', error);
-    return NextResponse.json({ error: 'Authentication failed' }, { 
+    return NextResponse.json({ error: 'Authentication failed' }, {
       status: 500,
       headers: getSecurityHeadersObject()
     });
@@ -207,50 +171,55 @@ async function checkSession(request) {
   try {
     // Session cookie'sini kontrol et
     const session = request.cookies.get(SECURITY.SESSION.COOKIE_NAME);
-    
+
     if (!session || !session.value) {
-      return NextResponse.json({ authenticated: false }, { 
-        status: 401,
-        headers: getSecurityHeadersObject()
+      return NextResponse.json({ authenticated: false }, {
+        status: 200,
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate',
+          ...getSecurityHeadersObject()
+        }
       });
     }
-    
+
     try {
-      // JWT token'ı decode et
-      const tokenParts = session.value.split('.');
-      if (tokenParts.length !== 3) {
-        throw new Error('Invalid token format');
+      const auth = await verifyAdminSession(request);
+      if (!auth.valid) {
+        throw new Error(auth.error || 'Invalid session');
       }
-      
-      // JWT payload kısmını çöz
-      const payload = JSON.parse(Buffer.from(tokenParts[1], 'base64').toString());
-      
+
+      const payload = auth.payload;
+
       // Session geçerliliğini kontrol et
       if (!isValidSession(payload)) {
         // Geçersiz veya süresi dolmuş token
-        const response = NextResponse.json({ 
-          authenticated: false, 
+        const response = NextResponse.json({
+          authenticated: false,
           error: 'Invalid or expired session'
-        }, { 
-          status: 401,
-          headers: getSecurityHeadersObject()
+        }, {
+          status: 200,
+          headers: {
+            'Cache-Control': 'no-store, no-cache, must-revalidate',
+            ...getSecurityHeadersObject()
+          }
         });
-        
+
         // Geçersiz cookie'yi temizle
         response.cookies.delete(SECURITY.SESSION.COOKIE_NAME);
         return response;
       }
-      
+
       // Session geçerli
-      return NextResponse.json({ 
+      return NextResponse.json({
         authenticated: true,
         username: payload.username,
         role: payload.role,
+        expiresAt: payload.exp ? payload.exp * 1000 : null,
         user: {
           username: payload.username,
           role: payload.role || 'admin'
         }
-      }, { 
+      }, {
         status: 200,
         headers: {
           'Cache-Control': 'no-store, no-cache, must-revalidate',
@@ -259,23 +228,26 @@ async function checkSession(request) {
       });
     } catch (error) {
       console.error('Token decode error:', error);
-      
+
       // Geçersiz token
-      const response = NextResponse.json({ 
-        authenticated: false, 
+      const response = NextResponse.json({
+        authenticated: false,
         error: 'Invalid token format'
-      }, { 
-        status: 401,
-        headers: getSecurityHeadersObject()
+      }, {
+        status: 200,
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate',
+          ...getSecurityHeadersObject()
+        }
       });
-      
+
       // Geçersiz cookie'yi temizle
       response.cookies.delete(SECURITY.SESSION.COOKIE_NAME);
       return response;
     }
   } catch (error) {
     console.error('Session validation error:', error);
-    return NextResponse.json({ authenticated: false, error: 'Session validation failed' }, { 
+    return NextResponse.json({ authenticated: false, error: 'Session validation failed' }, {
       status: 401,
       headers: getSecurityHeadersObject()
     });
@@ -288,19 +260,19 @@ async function checkSession(request) {
 async function handleLogout(request) {
   try {
     // Session cookie'sini temizle
-    const response = NextResponse.json({ 
+    const response = NextResponse.json({
       success: true,
       message: 'Logged out successfully'
-    }, { 
+    }, {
       status: 200,
       headers: getSecurityHeadersObject()
     });
-    
+
     response.cookies.delete(SECURITY.SESSION.COOKIE_NAME);
     return response;
   } catch (error) {
     console.error('Logout error:', error);
-    return NextResponse.json({ error: 'Logout failed' }, { 
+    return NextResponse.json({ error: 'Logout failed' }, {
       status: 500,
       headers: getSecurityHeadersObject()
     });
@@ -313,12 +285,9 @@ export const POST = withRateLimit(handleLogin, {
   windowMs: SECURITY.RATE_LIMIT.LOCKOUT_DURATION
 });
 
-export const GET = withRateLimit(checkSession, {
-  limit: SECURITY.RATE_LIMIT.API_LIMIT,
-  windowMs: SECURITY.RATE_LIMIT.API_WINDOW
-});
+export const GET = checkSession;
 
 export const DELETE = withRateLimit(handleLogout, {
   limit: SECURITY.RATE_LIMIT.API_LIMIT,
   windowMs: SECURITY.RATE_LIMIT.API_WINDOW
-}); 
+});

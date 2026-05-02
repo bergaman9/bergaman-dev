@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
-import Button from "./Button";
+import { ACTIVE_MINI_APPS, getMiniAppByPathname, getMiniAppTheme } from "@/lib/miniApps";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -13,21 +13,30 @@ export default function Header() {
   const pathname = usePathname();
   const dropdownRef = useRef(null);
   const mobileMenuRef = useRef(null);
+  const activeMiniApp = getMiniAppByPathname(pathname);
 
   // Check authentication status
   useEffect(() => {
-    const checkAuth = () => {
-      const adminAuth = localStorage.getItem('adminAuth');
-      const adminUser = localStorage.getItem('adminUser');
+    let cancelled = false;
 
-      if (adminAuth === 'true' && adminUser) {
-        setIsAuthenticated(true);
-        try {
-          setUser(JSON.parse(adminUser));
-        } catch {
-          setUser({ username: 'Admin' });
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/admin/auth', {
+          method: 'GET',
+          credentials: 'include',
+          cache: 'no-store',
+        });
+        const data = await response.json();
+        if (!cancelled && response.ok && data.authenticated) {
+          setIsAuthenticated(true);
+          setUser(data.user || { username: data.username || 'Admin', role: 'admin' });
+          return;
         }
-      } else {
+      } catch {
+        // Treat network/auth failures as logged out in the public header.
+      }
+
+      if (!cancelled) {
         setIsAuthenticated(false);
         setUser(null);
       }
@@ -36,22 +45,14 @@ export default function Header() {
     // Initial check
     checkAuth();
 
-    // Listen for auth changes
-    const handleStorageChange = (e) => {
-      if (e.key === 'adminAuth' || e.key === 'adminUser') {
-        checkAuth();
-      }
-    };
-
     const handleAuthChange = () => {
       checkAuth();
     };
 
-    window.addEventListener('storage', handleStorageChange);
     window.addEventListener('adminAuthChange', handleAuthChange);
 
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
+      cancelled = true;
       window.removeEventListener('adminAuthChange', handleAuthChange);
     };
   }, []);
@@ -77,9 +78,11 @@ export default function Header() {
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
-  const handleLogout = () => {
-    localStorage.removeItem('adminAuth');
-    localStorage.removeItem('adminUser');
+  const handleLogout = async () => {
+    await fetch('/api/admin/auth', {
+      method: 'DELETE',
+      credentials: 'include',
+    }).catch(() => {});
     setIsAuthenticated(false);
     setUser(null);
     setIsAdminDropdownOpen(false);
@@ -98,14 +101,105 @@ export default function Header() {
     { href: "/", label: "Home", icon: "fas fa-home" },
     { href: "/about", label: "About", icon: "fas fa-user" },
     { href: "/portfolio", label: "Portfolio", icon: "fas fa-briefcase" },
-    { href: "/recommendations", label: "Picks", icon: "fas fa-heart" },
+    { href: "/picks", label: "Picks", icon: "fas fa-heart" },
     { href: "/blog", label: "Blog", icon: "fas fa-blog" },
     { href: "/contact", label: "Contact", icon: "fas fa-envelope" }
   ];
 
+  if (activeMiniApp) {
+    const miniTheme = getMiniAppTheme(activeMiniApp);
+
+    return (
+      <header className="mini-app-chrome mini-app-header fixed left-0 right-0 top-0 z-50 border-b backdrop-blur-xl" style={miniTheme.cssVars}>
+        <div className="mini-app-header-inner page-content">
+          <div className="flex items-center justify-between gap-4">
+            <Link href="/portfolio" className="group flex min-w-0 items-center gap-3">
+              <span className="mini-app-icon-box relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border">
+                <i className={`${activeMiniApp.icon} mini-app-accent text-lg`}></i>
+              </span>
+              <span className="min-w-0">
+                <span className="mini-app-muted block text-xs font-semibold uppercase tracking-[0.18em]">Mini App</span>
+                <span className="mini-app-accent block truncate text-xl font-bold">{activeMiniApp.title}</span>
+              </span>
+            </Link>
+
+            <nav className="hidden items-center gap-2 lg:flex">
+              {ACTIVE_MINI_APPS.map((app) => (
+                <Link
+                  key={app.id}
+                  href={app.href}
+                  className={`mini-app-nav-item flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-300 ${pathname === app.href ? 'mini-app-nav-item-active' : ''}`}
+                >
+                  <i className={`${app.icon} text-xs`}></i>
+                  <span>{app.shortTitle}</span>
+                </Link>
+              ))}
+            </nav>
+
+            <div className="flex shrink-0 items-center gap-2">
+              <Link
+                href="/portfolio"
+                className="mini-app-nav-item hidden rounded-lg px-3 py-2 text-sm font-medium transition-all duration-300 sm:inline-flex"
+              >
+                <i className="fas fa-arrow-left mr-2 text-xs"></i>
+                Portfolio
+              </Link>
+              {isAuthenticated && (
+                <Link
+                  href="/admin"
+                  className="mini-app-nav-item mini-app-nav-item-active hidden rounded-lg px-3 py-2 text-sm font-medium transition-all duration-300 lg:inline-flex"
+                >
+                  <i className="fas fa-crown mr-2 text-xs"></i>
+                  Admin
+                </Link>
+              )}
+              <button
+                onClick={toggleMenu}
+                className="mini-app-accent rounded-lg p-2 transition-colors duration-300 hover:bg-white/10 lg:hidden"
+                aria-label="Toggle mini app navigation"
+                aria-expanded={isMenuOpen}
+              >
+                <i className={`fas ${isMenuOpen ? 'fa-times' : 'fa-bars'} text-xl transition-transform duration-300 ${isMenuOpen ? 'rotate-90' : ''}`}></i>
+              </button>
+            </div>
+          </div>
+
+          {isMenuOpen && (
+            <nav
+              ref={mobileMenuRef}
+              className="mini-app-chrome absolute left-0 right-0 top-full border-b px-4 py-4 shadow-xl backdrop-blur-xl lg:hidden"
+            >
+              <div className="flex flex-col gap-2">
+                {ACTIVE_MINI_APPS.map((app) => (
+                  <Link
+                    key={app.id}
+                    href={app.href}
+                    className={`mini-app-nav-item flex items-center gap-3 rounded-lg px-4 py-3 transition-all duration-300 ${pathname === app.href ? 'mini-app-nav-item-active' : ''}`}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <i className={app.icon}></i>
+                    <span className="font-medium">{app.title}</span>
+                  </Link>
+                ))}
+                <Link
+                  href="/portfolio"
+                  className="mini-app-nav-item mt-2 flex items-center gap-3 rounded-lg px-4 py-3 transition-all duration-300"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <i className="fas fa-arrow-left"></i>
+                  <span className="font-medium">Back to Portfolio</span>
+                </Link>
+              </div>
+            </nav>
+          )}
+        </div>
+      </header>
+    );
+  }
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-[#0a1a0f] via-[#0e1b12] to-[#1a2e1a]/20 backdrop-blur-md border-b border-[#3e503e]/60">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-8 py-4">
+      <div className="page-content py-4">
         <div className="flex items-center justify-between">
           {/* Logo with Dragon Icon */}
           <Link href="/" className="flex items-center space-x-3 group">
@@ -122,12 +216,12 @@ export default function Header() {
           </Link>
 
           {/* Desktop Navigation - Center when authenticated, right when not */}
-          <nav className={`hidden md:flex items-center space-x-1 ${isAuthenticated ? 'absolute left-1/2 transform -translate-x-1/2' : 'ml-auto mr-4'}`}>
+          <nav className={`hidden lg:flex flex-1 min-w-0 items-center gap-1 pl-4 ${isAuthenticated ? 'justify-center' : 'justify-end'}`}>
             {navigationItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-300 font-medium ${isActive(item.href)
+                className={`flex items-center space-x-2 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-300 xl:px-4 ${isActive(item.href)
                     ? 'text-[#e8c547] bg-[#e8c547]/10 font-semibold'
                     : 'text-gray-300 hover:text-[#e8c547] hover:bg-[#e8c547]/10'
                   }`}
@@ -139,14 +233,17 @@ export default function Header() {
           </nav>
 
           {/* Right Side - Admin and Mobile Menu */}
-          <div className="flex items-center space-x-4">
+          <div className="flex shrink-0 items-center space-x-4">
             {/* Admin Status (Desktop) - Only show if authenticated */}
             {isAuthenticated && (
-              <div className="hidden md:block">
+              <div className="hidden lg:block">
                 <div className="relative" ref={dropdownRef}>
                   <button
                     onClick={() => setIsAdminDropdownOpen(!isAdminDropdownOpen)}
                     className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-gradient-to-r from-[#e8c547]/20 to-[#d4b445]/20 border border-[#e8c547]/30 hover:border-[#e8c547]/50 transition-all duration-300"
+                    aria-expanded={isAdminDropdownOpen}
+                    aria-haspopup="menu"
+                    aria-label="Open admin menu"
                   >
                     <div className="w-6 h-6 bg-gradient-to-br from-[#e8c547] to-[#d4b445] rounded-full flex items-center justify-center">
                       <i className="fas fa-crown text-[#0e1b12] text-xs"></i>
@@ -216,6 +313,7 @@ export default function Header() {
                           <button
                             onClick={handleLogout}
                             className="flex items-center space-x-3 w-full px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors duration-300"
+                            aria-label="Logout from admin session"
                           >
                             <i className="fas fa-sign-out-alt"></i>
                             <span>Logout</span>
@@ -231,8 +329,9 @@ export default function Header() {
             {/* Mobile Menu Button */}
             <button
               onClick={toggleMenu}
-              className="md:hidden text-[#e8c547] hover:text-[#f4d76b] transition-colors duration-300 p-2 rounded-lg hover:bg-[#e8c547]/10"
+              className="lg:hidden text-[#e8c547] hover:text-[#f4d76b] transition-colors duration-300 p-2 rounded-lg hover:bg-[#e8c547]/10"
               aria-label="Toggle navigation menu"
+              aria-expanded={isMenuOpen}
             >
               <i className={`fas ${isMenuOpen ? 'fa-times' : 'fa-bars'} text-xl transition-transform duration-300 ${isMenuOpen ? 'rotate-90' : ''}`}></i>
             </button>
@@ -243,7 +342,7 @@ export default function Header() {
         {isMenuOpen && (
           <nav
             ref={mobileMenuRef}
-            className="md:hidden absolute top-full left-0 right-0 bg-gradient-to-b from-[#0e1b12] to-[#1a2e1a] backdrop-blur-md border-b border-[#3e503e]/30 shadow-xl"
+            className="lg:hidden absolute top-full left-0 right-0 bg-gradient-to-b from-[#0e1b12] to-[#1a2e1a] backdrop-blur-md border-b border-[#3e503e]/30 shadow-xl"
           >
             <div className="px-4 py-4">
               <div className="flex flex-col space-y-2">
@@ -315,6 +414,7 @@ export default function Header() {
                     <button
                       onClick={handleLogout}
                       className="flex items-center space-x-3 w-full px-4 py-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-all duration-300 mt-2"
+                      aria-label="Logout from admin session"
                     >
                       <i className="fas fa-sign-out-alt"></i>
                       <span>Logout</span>

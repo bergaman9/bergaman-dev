@@ -1,17 +1,14 @@
 name: Release and Version Management
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   version-and-release:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -41,7 +38,7 @@ jobs:
       run: |
         # Check commit messages for version bump indicators
         COMMITS=$(git log --oneline $(git describe --tags --abbrev=0)..HEAD 2>/dev/null || git log --oneline)
-        
+
         if echo "$COMMITS" | grep -i "BREAKING CHANGE\|major:"; then
           echo "bump=major" >> $GITHUB_OUTPUT
           echo "Version bump: major"
@@ -119,13 +116,13 @@ jobs:
       run: |
         PREVIOUS_TAG=$(git describe --tags --abbrev=0 HEAD~1 2>/dev/null || echo "")
         NEW_VERSION=${{ steps.new_version.outputs.version }}
-        
+
         if [ -n "$PREVIOUS_TAG" ]; then
           CHANGELOG=$(git log --pretty=format:"- %s (%h)" $PREVIOUS_TAG..HEAD)
         else
           CHANGELOG=$(git log --pretty=format:"- %s (%h)" --max-count=10)
         fi
-        
+
         echo "changelog<<EOF" >> $GITHUB_OUTPUT
         echo "$CHANGELOG" >> $GITHUB_OUTPUT
         echo "EOF" >> $GITHUB_OUTPUT
@@ -140,12 +137,12 @@ jobs:
         release_name: Release ${{ steps.new_version.outputs.version }}
         body: |
           ## Changes in ${{ steps.new_version.outputs.version }}
-          
+
           ${{ steps.changelog.outputs.changelog }}
-          
+
           ## 🚀 Deployment
           This release has been automatically deployed to production.
-          
+
           ## 🐉 Bergaman Portfolio
           Visit the live site: [bergaman.dev](https://bergaman.dev)
         draft: false
@@ -157,4 +154,4 @@ jobs:
         echo "🚀 Deployment would happen here"
         echo "Version ${{ steps.new_version.outputs.version }} ready for deployment"
         # Add your deployment commands here
-        # For example: npm run deploy or trigger Vercel deployment 
+        # For example: npm run deploy or trigger Vercel deployment

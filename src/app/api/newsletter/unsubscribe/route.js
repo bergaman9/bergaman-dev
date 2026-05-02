@@ -1,14 +1,24 @@
 import { NextResponse } from 'next/server';
 import { connectDB } from '../../../../lib/mongodb';
 import Newsletter from '../../../../models/Newsletter';
+import { withRateLimit } from '@/lib/rateLimit';
+import { readJsonLimited, validateEmail } from '@/lib/serverSecurity';
 
-export async function POST(request) {
+async function handler(request) {
   try {
-    const { email } = await request.json();
+    const { email } = await readJsonLimited(request, { maxBytes: 4 * 1024 });
+    const safeEmail = typeof email === 'string' ? email.trim().toLowerCase().slice(0, 120) : '';
 
-    if (!email) {
+    if (!safeEmail) {
       return NextResponse.json(
         { error: 'Email is required' },
+        { status: 400 }
+      );
+    }
+
+    if (!validateEmail(safeEmail)) {
+      return NextResponse.json(
+        { error: 'Please enter a valid email address' },
         { status: 400 }
       );
     }
@@ -16,8 +26,8 @@ export async function POST(request) {
     await connectDB();
 
     // Find subscriber
-    const subscriber = await Newsletter.findOne({ email: email.toLowerCase() });
-    
+    const subscriber = await Newsletter.findOne({ email: safeEmail });
+
     if (!subscriber) {
       return NextResponse.json(
         { error: 'Email not found in our newsletter list' },
@@ -47,4 +57,9 @@ export async function POST(request) {
       { status: 500 }
     );
   }
-} 
+}
+
+export const POST = withRateLimit(handler, {
+  limit: 5,
+  windowMs: 60 * 1000,
+});

@@ -1,21 +1,25 @@
 import { NextResponse } from 'next/server';
-import connectDB from '@/lib/mongodb';
+import { connectDB } from '@/lib/mongodb';
 import Suggestion from '@/models/Suggestion';
+import { clampString, readJsonLimited, validateEnum } from '@/lib/serverSecurity';
+
+const SUGGESTION_STATUSES = ['pending', 'under-review', 'in-progress', 'completed', 'rejected'];
+const SUGGESTION_CATEGORIES = ['feature', 'bug', 'improvement', 'project', 'other'];
 
 export async function GET(request) {
   try {
     await connectDB();
-    
+
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status');
-    const category = searchParams.get('category');
-    
+    const category = clampString(searchParams.get('category'), 80);
+
     let filter = {};
-    if (status && status !== 'all') filter.status = status;
-    if (category && category !== 'all') filter.category = category;
-    
+    if (status && status !== 'all') filter.status = validateEnum(status, SUGGESTION_STATUSES, 'status');
+    if (category && category !== 'all') filter.category = validateEnum(category, SUGGESTION_CATEGORIES, 'category');
+
     const suggestions = await Suggestion.find(filter).sort({ createdAt: -1 });
-    
+
     return NextResponse.json({
       success: true,
       data: suggestions
@@ -32,18 +36,18 @@ export async function GET(request) {
 export async function POST(request) {
   try {
     await connectDB();
-    
-    const data = await request.json();
-    
+
+    const data = await readJsonLimited(request, { maxBytes: 16 * 1024 });
+
     const suggestion = new Suggestion({
       ...data,
       submittedAt: new Date(),
       votes: 0,
       status: 'pending'
     });
-    
+
     await suggestion.save();
-    
+
     return NextResponse.json({
       success: true,
       data: suggestion
@@ -55,4 +59,4 @@ export async function POST(request) {
       { status: 500 }
     );
   }
-} 
+}

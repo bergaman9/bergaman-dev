@@ -1,68 +1,31 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
-
-// Basit JSON dosya tabanlı veritabanı
-const dbPath = path.join(process.cwd(), 'data', 'likes.json');
-
-// Veritabanı dosyasını oluştur
-function ensureDbExists() {
-  const dir = path.dirname(dbPath);
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-  if (!fs.existsSync(dbPath)) {
-    fs.writeFileSync(dbPath, JSON.stringify({}));
-  }
-}
-
-// Veritabanından veri oku
-function readDb() {
-  ensureDbExists();
-  const data = fs.readFileSync(dbPath, 'utf8');
-  return JSON.parse(data);
-}
-
-// Veritabanına veri yaz
-function writeDb(data) {
-  ensureDbExists();
-  fs.writeFileSync(dbPath, JSON.stringify(data, null, 2));
-}
+import { withRateLimit } from '@/lib/rateLimit';
+import { connectDB } from '@/lib/mongodb';
+import Like from '@/models/Like';
+import { clampString, hashClientIdentifier, normalizeClientIp, readJsonLimited } from '@/lib/serverSecurity';
 
 // IP adresini al
 function getClientIP(request) {
-  const forwarded = request.headers.get('x-forwarded-for');
-  const realIP = request.headers.get('x-real-ip');
-  const remoteAddr = request.headers.get('x-vercel-forwarded-for');
-  
-  if (forwarded) {
-    return forwarded.split(',')[0].trim();
-  }
-  if (realIP) {
-    return realIP;
-  }
-  if (remoteAddr) {
-    return remoteAddr;
-  }
-  return 'unknown';
+  return normalizeClientIp(request);
 }
 
 // GET - Like sayısını getir
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
-    const slug = searchParams.get('slug');
-    
-    if (!slug) {
+    const slug = clampString(searchParams.get('slug'), 120);
+
+    if (!slug || !/^[a-z0-9-]+$/i.test(slug)) {
       return NextResponse.json({ error: 'Slug required' }, { status: 400 });
     }
 
-    const db = readDb();
-    const postData = db[slug] || { likes: 0, likedIPs: [] };
-    
-    return NextResponse.json({ 
-      likes: postData.likes,
-      totalLikes: postData.likes 
+    await connectDB();
+    const postData = await Like.findOne({ slug }).lean();
+    const likes = postData?.likes || 0;
+
+    return NextResponse.json({
+      likes,
+      totalLikes: likes
     });
   } catch (error) {
     console.error('Error getting likes:', error);
@@ -71,55 +34,65 @@ export async function GET(request) {
 }
 
 // POST - Like ekle
-export async function POST(request) {
+async function handler(request) {
   try {
-    const { slug } = await request.json();
-    
-    if (!slug) {
+    const body = await readJsonLimited(request, { maxBytes: 4 * 1024 });
+    const slug = clampString(body.slug, 120);
+
+    if (!slug || typeof slug !== 'string' || slug.length > 120 || !/^[a-z0-9-]+$/i.test(slug)) {
       return NextResponse.json({ error: 'Slug required' }, { status: 400 });
     }
 
     const clientIP = getClientIP(request);
-    const userAgent = request.headers.get('user-agent') || 'unknown';
-    const timestamp = new Date().toISOString();
-    
-    const db = readDb();
-    
-    // Post verisi yoksa oluştur
-    if (!db[slug]) {
-      db[slug] = {
-        likes: 0,
-        likedIPs: []
-      };
+    const userAgent = request.headers.get('user-agent') || '';
+    const clientHash = hashClientIdentifier(`${clientIP}:${userAgent.slice(0, 120)}`);
+
+    await connectDB();
+    let updated = await Like.findOneAndUpdate(
+      {
+        slug,
+        clientHashes: { $ne: clientHash },
+      },
+      {
+        $inc: { likes: 1 },
+        $push: { clientHashes: clientHash },
+      },
+      {
+        new: true,
+      }
+    );
+
+    if (!updated) {
+      const existing = await Like.findOne({ slug }).lean();
+      if (!existing) {
+        updated = await Like.create({
+          slug,
+          likes: 1,
+          clientHashes: [clientHash],
+        });
+      }
     }
 
-    // IP daha önce like atmış mı kontrol et
-    const hasLiked = db[slug].likedIPs.some(entry => entry.ip === clientIP);
-    
-    if (hasLiked) {
-      return NextResponse.json({ 
+    if (!updated) {
+      const existing = await Like.findOne({ slug }).lean();
+      return NextResponse.json({
         error: 'Already liked',
-        likes: db[slug].likes 
+        likes: existing?.likes || 0
       }, { status: 400 });
     }
 
-    // Like ekle
-    db[slug].likes += 1;
-    db[slug].likedIPs.push({
-      ip: clientIP,
-      userAgent: userAgent,
-      timestamp: timestamp
-    });
-
-    writeDb(db);
-
-    return NextResponse.json({ 
+    return NextResponse.json({
       success: true,
-      likes: db[slug].likes,
+      likes: updated.likes,
       message: 'Like added successfully'
     });
   } catch (error) {
     console.error('Error adding like:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
-} 
+}
+
+export const POST = withRateLimit(handler, {
+  limit: 20,
+  windowMs: 60 * 1000,
+});

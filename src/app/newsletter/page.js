@@ -41,7 +41,7 @@ export default function NewsletterSignup() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!formData.email.trim()) {
       setError('Email is required');
       return;
@@ -87,7 +87,7 @@ export default function NewsletterSignup() {
     const categories = formData.preferences.categories.includes(category)
       ? formData.preferences.categories.filter(c => c !== category)
       : [...formData.preferences.categories, category];
-    
+
     setFormData({
       ...formData,
       preferences: {
@@ -115,7 +115,7 @@ export default function NewsletterSignup() {
 
       <main>
         <div className="container mx-auto">
-          <PageHeader 
+          <PageHeader
             title="Newsletter"
             subtitle="Join the Dragon's Domain"
             icon="fas fa-envelope"
@@ -123,7 +123,7 @@ export default function NewsletterSignup() {
           />
 
           <div className="max-w-2xl mx-auto">
-            
+
             {/* Success Message */}
             {success && (
               <div className="bg-[#0a1a0f]/50 border border-[#4ade80] rounded-lg p-6 mb-8 text-center backdrop-blur-md">
@@ -141,7 +141,7 @@ export default function NewsletterSignup() {
             {!success && (
               <div className="bg-[#0a1a0f]/30 backdrop-blur-md border border-[#3e503e]/50 rounded-lg p-8">
                 <form onSubmit={handleSubmit} className="space-y-6">
-                  
+
                   {/* Email */}
                   <div>
                     <label className="block text-sm font-medium text-[#d1d5db] mb-2">
@@ -241,7 +241,7 @@ export default function NewsletterSignup() {
                   >
                     {loading ? (
                       <>
-                        <i className="fas fa-spinner fa-spin"></i>
+                        <i className="fas fa-hourglass-half"></i>
                         <span>Subscribing...</span>
                       </>
                     ) : (
@@ -286,7 +286,7 @@ export default function NewsletterSignup() {
                   Get behind-the-scenes insights into my latest projects, AI experiments, and development journey.
                 </p>
               </div>
-              
+
               <div className="bg-[#0a1a0f]/30 backdrop-blur-md border border-[#3e503e]/50 rounded-lg p-6">
                 <div className="flex items-center space-x-3 mb-3">
                   <i className="fas fa-code text-2xl text-[#4ade80]"></i>
@@ -301,7 +301,7 @@ export default function NewsletterSignup() {
             {/* Unsubscribe Link */}
             <div className="mt-8 text-center">
               <p className="text-sm text-gray-400">
-                Already subscribed? 
+                Already subscribed?
                 <a href="/newsletter/unsubscribe" className="text-[#e8c547] hover:text-[#d4b445] ml-1 transition-colors">
                   Manage your subscription
                 </a>
@@ -312,4 +312,4 @@ export default function NewsletterSignup() {
       </main>
     </PageContainer>
   );
-} 
+}

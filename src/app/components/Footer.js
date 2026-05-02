@@ -2,35 +2,84 @@
 
 import { useState, useEffect } from 'react';
 import Link from "next/link";
+import { usePathname } from 'next/navigation';
 import { SITE_CONFIG, SOCIAL_LINKS } from '../../lib/constants';
 import { getAppVersion } from '../../lib/version';
+import { ACTIVE_MINI_APPS, getMiniAppByPathname, getMiniAppTheme } from '@/lib/miniApps';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
   const [appVersion, setAppVersion] = useState('2.5.13');
-  
+  const pathname = usePathname();
+  const activeMiniApp = getMiniAppByPathname(pathname);
+
   useEffect(() => {
     // Set version on client-side to avoid hydration mismatch
     setAppVersion(getAppVersion());
   }, []);
 
+  if (activeMiniApp) {
+    const miniTheme = getMiniAppTheme(activeMiniApp);
+
+    return (
+      <footer className="mini-app-chrome mt-auto w-full border-t" style={miniTheme.cssVars}>
+        <div className="page-content pb-4 pt-5">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex items-start gap-3">
+              <span className="mini-app-icon-box flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border">
+                <i className={`${activeMiniApp.icon} mini-app-accent`}></i>
+              </span>
+              <div>
+                <p className="text-sm font-semibold text-white">{activeMiniApp.title}</p>
+                <p className="mini-app-muted text-sm">Mini app workspace by Bergaman • {appVersion}</p>
+              </div>
+            </div>
+
+            <nav className="flex flex-wrap items-center gap-2">
+              {ACTIVE_MINI_APPS.map((app) => (
+                <Link
+                  key={app.id}
+                  href={app.href}
+                  className={`mini-app-nav-item rounded-full px-3 py-1.5 text-sm transition-all duration-300 ${pathname === app.href ? 'mini-app-nav-item-active' : ''}`}
+                >
+                  {app.shortTitle}
+                </Link>
+              ))}
+              <Link
+                href="/portfolio"
+                className="mini-app-nav-item rounded-full px-3 py-1.5 text-sm transition-all duration-300"
+              >
+                Portfolio
+              </Link>
+            </nav>
+          </div>
+
+          <div className="mt-4 flex flex-col gap-2 border-t pt-4 text-xs sm:flex-row sm:items-center sm:justify-between" style={{ borderColor: 'var(--mini-border)' }}>
+            <span>© {currentYear} {SITE_CONFIG.name}</span>
+            <span className="mini-app-muted">Focused tool mode with reduced site chrome.</span>
+          </div>
+        </div>
+      </footer>
+    );
+  }
+
   return (
     <footer className="w-full bg-gradient-to-t from-[#0a1a0f] via-[#0e1b12] to-[#1a2e1a]/20 border-t border-[#3e503e]/60 mt-auto relative overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-5">
-        <div 
+        <div
           className="absolute top-0 left-0 w-full h-full"
           style={{
             backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23e8c547' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
           }}
         ></div>
       </div>
-      
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 relative z-10">
-        
+
+      <div className="page-content py-8 sm:py-12 relative z-10">
+
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 mb-8">
-          
+
           {/* Brand Section */}
           <div className="lg:col-span-1 text-center sm:text-left">
             <div className="flex items-center justify-center sm:justify-start space-x-3 mb-4">
@@ -45,11 +94,11 @@ export default function Footer() {
                 <p className="text-sm text-gray-400 -mt-1">The Dragon's Domain</p>
               </div>
             </div>
-            
+
             <p className="text-gray-300 text-sm leading-relaxed mb-4">
               Crafting innovative solutions with dragon's wisdom.
             </p>
-            
+
             {/* Social Links */}
             <div className="flex justify-center sm:justify-start space-x-3">
               {SOCIAL_LINKS.map((social, index) => (
@@ -79,12 +128,12 @@ export default function Footer() {
                 { href: '/about', label: 'About', icon: 'fas fa-user' },
                 { href: '/portfolio', label: 'Portfolio', icon: 'fas fa-briefcase' },
                 { href: '/blog', label: 'Blog', icon: 'fas fa-blog' },
-                { href: '/recommendations', label: 'Recommendations', icon: 'fas fa-heart' },
+                { href: '/picks', label: 'Picks', icon: 'fas fa-heart' },
                 { href: '/contact', label: 'Contact', icon: 'fas fa-envelope' }
               ].map((link, index) => (
-                <Link 
+                <Link
                   key={index}
-                  href={link.href} 
+                  href={link.href}
                   className="group flex items-center justify-center sm:justify-start space-x-2 text-gray-400 hover:text-[#e8c547] transition-all duration-300 py-1"
                 >
                   <i className={`${link.icon} text-xs group-hover:scale-110 transition-transform duration-300`}></i>
@@ -136,7 +185,7 @@ export default function Footer() {
               <i className="fas fa-code mr-2 text-sm"></i>
               Tech Stack
             </h4>
-            
+
             {/* Tech Stack Grid */}
             <div className="grid grid-cols-2 gap-3">
               <div className="group flex items-center space-x-2 text-gray-400 hover:text-blue-400 transition-colors duration-300">
@@ -170,7 +219,7 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="border-t border-[#3e503e]/30 pt-6">
           <div className="flex flex-col space-y-4 sm:flex-row sm:justify-between sm:items-center sm:space-y-0">
-            
+
             {/* Copyright & Version */}
             <div className="text-center sm:text-left">
               <div className="flex items-center justify-center sm:justify-start space-x-4 text-sm text-gray-400">

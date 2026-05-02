@@ -1,26 +1,30 @@
 import { NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
 import Portfolio from '@/models/Portfolio';
+import { clampString, readJsonLimited, validateEnum } from '@/lib/serverSecurity';
+
+const PORTFOLIO_CATEGORIES = ['Web', 'Mobile', 'Desktop', 'Game', 'AI', 'IoT', 'Graphic Design', 'Brand', 'Bot', 'Other', 'web', 'mobile', 'desktop', 'game', 'ai', 'iot', 'graphic design', 'brand', 'bot', 'other', 'design', 'bots'];
+const PORTFOLIO_STATUSES = ['active', 'inactive', 'published', 'completed', 'in_progress', 'planned'];
 
 export async function GET(request) {
   try {
     await connectDB();
 
     const { searchParams } = new URL(request.url);
-    const category = searchParams.get('category');
+    const category = clampString(searchParams.get('category'), 80);
     const status = searchParams.get('status');
     const featured = searchParams.get('featured');
 
     let query = {};
-    
+
     if (category && category !== 'all') {
-      query.category = category;
+      query.category = validateEnum(category, PORTFOLIO_CATEGORIES, 'category');
     }
-    
+
     if (status && status !== 'all') {
-      query.status = status;
+      query.status = validateEnum(status, PORTFOLIO_STATUSES, 'status');
     }
-    
+
     if (featured === 'true') {
       query.featured = true;
     }
@@ -46,8 +50,8 @@ export async function POST(request) {
   try {
     await connectDB();
 
-    const data = await request.json();
-    
+    const data = await readJsonLimited(request, { maxBytes: 32 * 1024 });
+
     const portfolio = new Portfolio({
       title: data.title,
       description: data.description,
@@ -75,4 +79,4 @@ export async function POST(request) {
       { status: 500 }
     );
   }
-} 
+}

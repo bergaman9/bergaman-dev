@@ -2,11 +2,24 @@ import { NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
 import Contact from '@/models/Contact';
 import mongoose from 'mongoose';
+import nodemailer from 'nodemailer';
+import {
+  clampString,
+  createContactReplyToken,
+  getSiteBaseUrl,
+  jsonError,
+  normalizeClientIp,
+  parseObjectId,
+  readJsonLimited,
+  textToHtml,
+} from '@/lib/serverSecurity';
 
 export async function POST(request, { params }) {
   try {
-    const { id } = await params;
-    const { message } = await request.json();
+    const { id: rawId } = await params;
+    const id = parseObjectId(rawId);
+    const body = await readJsonLimited(request, { maxBytes: 16 * 1024 });
+    const message = clampString(body.message, 5000);
 
     if (!message?.trim()) {
       return NextResponse.json(
@@ -18,8 +31,7 @@ export async function POST(request, { params }) {
     await connectDB();
 
     // Get client IP and user agent
-    const forwarded = request.headers.get('x-forwarded-for');
-    const ipAddress = forwarded ? forwarded.split(',')[0] : request.headers.get('x-real-ip') || 'unknown';
+    const ipAddress = normalizeClientIp(request);
     const userAgent = request.headers.get('user-agent') || 'unknown';
 
     // Create admin reply object
@@ -37,7 +49,7 @@ export async function POST(request, { params }) {
 
     // Find and update contact
     const contact = await Contact.findById(id);
-    
+
     if (!contact) {
       return NextResponse.json(
         { error: 'Contact not found' },
@@ -69,8 +81,6 @@ export async function POST(request, { params }) {
 
     // Send email notification to user
     try {
-      const nodemailer = require('nodemailer');
-      
       const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
@@ -79,32 +89,33 @@ export async function POST(request, { params }) {
         },
       });
 
-      const replyUrl = `${process.env.NEXTAUTH_URL || 'https://bergaman.dev'}/contact/reply/${id}`;
+      const replyToken = await createContactReplyToken(id);
+      const replyUrl = `${getSiteBaseUrl()}/contact/reply/${replyToken}`;
 
       const mailOptions = {
         from: process.env.EMAIL_USER,
-        to: contact.email,
-        replyTo: process.env.EMAIL_USER, // Admin replies should come back to admin
-        subject: `Re: Your conversation with Bergaman - New Reply from The Dragon's Domain [ID:${id}]`,
+      to: contact.email,
+      replyTo: process.env.EMAIL_USER, // Admin replies should come back to admin
+        subject: `Re: Your conversation with Bergaman - New Reply from The Dragon's Domain`,
         html: `
           <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; background: linear-gradient(135deg, #0e1b12 0%, #1a2e1a 100%); color: #d1d5db; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
-            
+
             <!-- Header -->
             <div style="background: linear-gradient(135deg, #e8c547 0%, #d4b445 100%); padding: 30px 40px; text-align: center;">
               <div style="font-size: 32px; margin-bottom: 8px;">🐉</div>
               <h1 style="margin: 0; color: #0e1b12; font-size: 28px; font-weight: bold;">Bergaman</h1>
               <p style="margin: 5px 0 0 0; color: #0e1b12; font-size: 14px; opacity: 0.8;">The Dragon's Domain</p>
             </div>
-            
+
             <!-- Content -->
             <div style="padding: 40px;">
               <div style="background: rgba(46, 61, 41, 0.3); border-left: 4px solid #e8c547; padding: 20px; margin-bottom: 30px; border-radius: 0 8px 8px 0;">
                 <h2 style="margin: 0 0 15px 0; color: #e8c547; font-size: 20px;">💬 New Reply in Your Conversation</h2>
                 <p style="margin: 0; color: #d1d5db; line-height: 1.6; font-size: 16px;">You have received a new reply from <strong>Ömer (Bergaman)</strong></p>
               </div>
-              
+
               <div style="background: rgba(14, 27, 18, 0.5); padding: 25px; border-radius: 8px; border: 1px solid rgba(62, 80, 62, 0.3); margin-bottom: 30px;">
-                <div style="white-space: pre-wrap; line-height: 1.7; font-size: 15px; color: #d1d5db;">${message.replace(/\n/g, '<br>')}</div>
+                <div style="white-space: pre-wrap; line-height: 1.7; font-size: 15px; color: #d1d5db;">${textToHtml(message)}</div>
               </div>
 
               <!-- Call to Action -->
@@ -112,12 +123,12 @@ export async function POST(request, { params }) {
                 <p style="margin: 0 0 20px 0; color: #d1d5db;">
                   Continue the conversation by clicking the button below:
                 </p>
-                
-                <a href="${replyUrl}" 
+
+                <a href="${replyUrl}"
                    style="display: inline-block; background: linear-gradient(135deg, #e8c547 0%, #d4b445 100%); color: #0e1b12; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; margin: 10px;">
                   💬 Continue Conversation
                 </a>
-                
+
                 <p style="margin: 20px 0 0 0; font-size: 14px; color: #9ca3af;">
                   <strong>Important:</strong> Please use the button above to reply. Email replies are not tracked in the system.
                 </p>
@@ -127,7 +138,7 @@ export async function POST(request, { params }) {
             <!-- Footer -->
             <div style="background: rgba(14, 27, 18, 0.8); padding: 20px; text-align: center; border-top: 1px solid rgba(62, 80, 62, 0.3);">
               <p style="margin: 0; font-size: 12px; color: #9ca3af;">
-                This message is from 
+                This message is from
                 <a href="https://bergaman.dev" style="color: #e8c547; text-decoration: none;">Ömer Güler (Bergaman)</a>
               </p>
               <p style="margin: 5px 0 0 0; font-size: 11px; color: #6b7280;">
@@ -151,9 +162,6 @@ export async function POST(request, { params }) {
 
   } catch (error) {
     console.error('Error adding reply:', error);
-    return NextResponse.json(
-      { error: 'Failed to add reply' },
-      { status: 500 }
-    );
+    return jsonError(error, 500);
   }
-} 
+}

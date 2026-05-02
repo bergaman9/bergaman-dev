@@ -175,7 +175,7 @@ export default function NewRecommendationPage() {
             {/* Basic Information */}
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-white mb-4">Basic Information</h3>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">Title *</label>
                 <input
@@ -254,7 +254,7 @@ export default function NewRecommendationPage() {
                       Upload New
                     </button>
                   </div>
-                  
+
                   {/* Hidden file input */}
                   <input
                     ref={fileInputRef}
@@ -266,9 +266,9 @@ export default function NewRecommendationPage() {
                         // Handle file upload
                         const formData = new FormData();
                         formData.append('file', file);
-                        
+
                         toast.loading('Uploading image...');
-                        
+
                         fetch('/api/upload', {
                           method: 'POST',
                           body: formData,
@@ -291,7 +291,7 @@ export default function NewRecommendationPage() {
                     }}
                     className="hidden"
                   />
-                  
+
                   {/* Image Selector */}
                   {showImageSelector && (
                     <div className="mt-4 p-4 bg-[#1a241a] border border-[#3e503e] rounded-lg">
@@ -307,14 +307,14 @@ export default function NewRecommendationPage() {
                           </button>
                         </div>
                       </div>
-                      
+
                       <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
                         <button
                           type="button"
                           onClick={() => setFilter('all')}
                           className={`px-3 py-1 text-xs rounded-full ${
-                            filter === 'all' 
-                              ? 'bg-[#e8c547] text-[#0e1b12]' 
+                            filter === 'all'
+                              ? 'bg-[#e8c547] text-[#0e1b12]'
                               : 'bg-[#2e3d29]/50 text-gray-300'
                           }`}
                         >
@@ -326,8 +326,8 @@ export default function NewRecommendationPage() {
                             type="button"
                             onClick={() => setFilter(category)}
                             className={`px-3 py-1 text-xs rounded-full capitalize ${
-                              filter === category 
-                                ? 'bg-[#e8c547] text-[#0e1b12]' 
+                              filter === category
+                                ? 'bg-[#e8c547] text-[#0e1b12]'
                                 : 'bg-[#2e3d29]/50 text-gray-300'
                             }`}
                           >
@@ -335,11 +335,11 @@ export default function NewRecommendationPage() {
                           </button>
                         ))}
                       </div>
-                      
+
                       <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 max-h-64 overflow-y-auto p-1 modal-scrollbar">
                         {(filter === 'all' ? getAllImages() : predefinedImages[filter] || []).map((img, index) => (
-                          <div 
-                            key={index} 
+                          <div
+                            key={index}
                             className={`relative h-20 border-2 rounded-lg overflow-hidden cursor-pointer transition-all ${
                               recommendation.image === img ? 'border-[#e8c547]' : 'border-transparent hover:border-[#e8c547]/50'
                             }`}
@@ -362,7 +362,7 @@ export default function NewRecommendationPage() {
                             )}
                           </div>
                         ))}
-                        
+
                         {(filter === 'all' ? getAllImages() : predefinedImages[filter] || []).length === 0 && (
                           <div className="col-span-3 py-8 text-center text-gray-400">
                             No predefined images available for this category.
@@ -371,7 +371,7 @@ export default function NewRecommendationPage() {
                       </div>
                     </div>
                   )}
-                  
+
                   <div className="mt-4 relative h-48 rounded-lg overflow-hidden border border-[#3e503e]">
                     {recommendation.image ? (
                       <Image
@@ -391,7 +391,7 @@ export default function NewRecommendationPage() {
                     )}
                   </div>
                 </div>
-                
+
                 {/* Keep the URL input as a fallback/alternative */}
                 <div className="mt-4">
                   <label className="block text-sm font-medium text-gray-300 mb-2">Image URL (alternative)</label>
@@ -585,7 +585,7 @@ export default function NewRecommendationPage() {
             >
               {submitting ? (
                 <>
-                  <i className="fas fa-spinner fa-spin mr-2"></i>
+                  <i className="fas fa-hourglass-half mr-2"></i>
                   Creating...
                 </>
               ) : (
@@ -600,4 +600,4 @@ export default function NewRecommendationPage() {
       </div>
     </div>
   );
-} 
+}

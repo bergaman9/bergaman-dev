@@ -5,6 +5,7 @@ export const dynamic = 'force-dynamic';
 
 import { useState, useEffect } from 'react';
 import PageHeader from '../../../components/PageHeader';
+import { SkeletonBox, SkeletonCard } from '@/app/components/Skeleton';
 
 export default function SettingsPage() {
   const [settings, setSettings] = useState({
@@ -33,7 +34,7 @@ export default function SettingsPage() {
     allowMemberOnly: true,
     defaultPostVisibility: 'public'
   });
-  
+
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
@@ -59,7 +60,7 @@ export default function SettingsPage() {
   const handleSave = async (e) => {
     e.preventDefault();
     setSaving(true);
-    
+
     try {
       const response = await fetch('/api/admin/settings', {
         method: 'POST',
@@ -93,11 +94,18 @@ export default function SettingsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center">
-          <i className="fas fa-spinner fa-spin text-4xl text-[#e8c547] mb-4"></i>
-          <p className="text-gray-400">Loading settings...</p>
+      <div className="space-y-6">
+        <PageHeader
+          title="Settings"
+          subtitle="Configure your site settings and preferences"
+          icon="fas fa-cogs"
+        />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6" aria-busy="true">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <SkeletonCard key={index} showImage={false} rows={4} footer={false} />
+          ))}
         </div>
+        <SkeletonBox className="h-11 w-32" />
       </div>
     );
   }
@@ -113,7 +121,7 @@ export default function SettingsPage() {
           {
             label: saving ? 'Saving...' : 'Save Settings',
             variant: 'primary',
-            icon: saving ? 'fas fa-spinner fa-spin' : 'fas fa-save',
+            icon: saving ? 'fas fa-hourglass-half' : 'fas fa-save',
             onClick: handleSave,
             disabled: saving
           }
@@ -123,7 +131,7 @@ export default function SettingsPage() {
       {/* Success/Error Message */}
       {message && (
         <div className={`p-4 rounded-lg border ${
-          message.includes('successfully') 
+          message.includes('successfully')
             ? 'bg-green-500/20 border-green-500/30 text-green-400'
             : 'bg-red-500/20 border-red-500/30 text-red-400'
         }`}>
@@ -141,7 +149,7 @@ export default function SettingsPage() {
             <i className="fas fa-cog mr-3"></i>
             General Settings
           </h2>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">Site Name</label>
@@ -152,7 +160,7 @@ export default function SettingsPage() {
                 className="w-full bg-[#1a2e1a]/50 border border-[#3e503e]/30 rounded-lg px-4 py-3 text-[#d1d5db] focus:border-[#e8c547]/50 focus:outline-none transition-colors duration-300"
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">Admin Email</label>
               <input
@@ -181,7 +189,7 @@ export default function SettingsPage() {
             <i className="fas fa-blog mr-3"></i>
             Blog Settings
           </h2>
-          
+
           <div className="space-y-6">
             {/* Posts Per Page */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -283,7 +291,7 @@ export default function SettingsPage() {
             <i className="fas fa-file-alt mr-3"></i>
             Content & Interaction Settings
           </h2>
-          
+
           <div className="space-y-4">
             {/* Allow Comments */}
             <div className="flex items-center justify-between p-4 bg-[#1a2e1a]/50 rounded-lg border border-[#3e503e]/30">
@@ -394,7 +402,7 @@ export default function SettingsPage() {
             <i className="fas fa-server mr-3"></i>
             System & Performance Settings
           </h2>
-          
+
           <div className="space-y-4">
             {/* Maintenance Mode */}
             <div className="flex items-center justify-between p-4 bg-[#1a2e1a]/50 rounded-lg border border-[#3e503e]/30">
@@ -549,7 +557,7 @@ export default function SettingsPage() {
             <i className="fas fa-undo"></i>
             <span>Reset</span>
           </button>
-          
+
           <button
             type="submit"
             disabled={saving}
@@ -557,7 +565,7 @@ export default function SettingsPage() {
           >
             {saving ? (
               <>
-                <i className="fas fa-spinner fa-spin"></i>
+                <i className="fas fa-hourglass-half"></i>
                 <span>Saving...</span>
               </>
             ) : (
@@ -587,4 +595,4 @@ export default function SettingsPage() {
       )}
     </div>
   );
-} 
+}

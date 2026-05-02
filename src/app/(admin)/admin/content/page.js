@@ -101,7 +101,7 @@ export default function AdminContent() {
             {activeTab === 'general' && (
               <div className="space-y-6">
                 <h2 className="text-xl font-bold gradient-text mb-4">General Settings</h2>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -179,7 +179,7 @@ export default function AdminContent() {
                 >
                   {isSaving ? (
                     <span className="flex items-center">
-                      <i className="fas fa-spinner fa-spin mr-2"></i>
+                      <i className="fas fa-hourglass-half mr-2"></i>
                       Saving...
                     </span>
                   ) : (
@@ -196,7 +196,7 @@ export default function AdminContent() {
             {activeTab === 'about' && (
               <div className="space-y-6">
                 <h2 className="text-xl font-bold gradient-text mb-4">About Page Content</h2>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -242,7 +242,7 @@ export default function AdminContent() {
                 >
                   {isSaving ? (
                     <span className="flex items-center">
-                      <i className="fas fa-spinner fa-spin mr-2"></i>
+                      <i className="fas fa-hourglass-half mr-2"></i>
                       Saving...
                     </span>
                   ) : (
@@ -281,4 +281,4 @@ export default function AdminContent() {
       </div>
     </>
   );
-} 
+}

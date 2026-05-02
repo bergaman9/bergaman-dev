@@ -1,12 +1,31 @@
 import { NextResponse } from 'next/server';
 import { connectDB } from '../../../../lib/mongodb';
 import Newsletter from '../../../../models/Newsletter';
+import nodemailer from 'nodemailer';
+import { withRateLimit } from '@/lib/rateLimit';
+import { escapeHtml, normalizeClientIp, readJsonLimited, validateEmail } from '@/lib/serverSecurity';
 
-export async function POST(request) {
+const ALLOWED_FREQUENCIES = new Set(['daily', 'weekly', 'monthly']);
+const ALLOWED_CATEGORIES = new Set(['tech', 'projects', 'ai', 'blockchain', 'tutorials']);
+
+function sanitizePreferences(preferences) {
+  return {
+    frequency: ALLOWED_FREQUENCIES.has(preferences?.frequency) ? preferences.frequency : 'weekly',
+    categories: Array.isArray(preferences?.categories)
+      ? preferences.categories
+          .filter((category) => ALLOWED_CATEGORIES.has(category))
+          .slice(0, 5)
+      : ['tech', 'projects']
+  };
+}
+
+async function handler(request) {
   try {
-    const { email, name, preferences } = await request.json();
+    const { email, name, preferences } = await readJsonLimited(request, { maxBytes: 12 * 1024 });
+    const safeEmail = typeof email === 'string' ? email.trim().toLowerCase().slice(0, 120) : '';
+    const safeName = typeof name === 'string' ? name.trim().slice(0, 80) : '';
 
-    if (!email) {
+    if (!safeEmail) {
       return NextResponse.json(
         { error: 'Email is required' },
         { status: 400 }
@@ -14,8 +33,7 @@ export async function POST(request) {
     }
 
     // Validate email format
-    const emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
-    if (!emailRegex.test(email)) {
+    if (!validateEmail(safeEmail)) {
       return NextResponse.json(
         { error: 'Please enter a valid email address' },
         { status: 400 }
@@ -25,14 +43,13 @@ export async function POST(request) {
     await connectDB();
 
     // Get client IP and user agent
-    const forwarded = request.headers.get('x-forwarded-for');
-    const ipAddress = forwarded ? forwarded.split(',')[0] : request.headers.get('x-real-ip') || 'unknown';
+    const ipAddress = normalizeClientIp(request);
     const userAgent = request.headers.get('user-agent') || 'unknown';
     const referrer = request.headers.get('referer') || 'direct';
 
     // Check if email already exists
-    const existingSubscriber = await Newsletter.findOne({ email: email.toLowerCase() });
-    
+    const existingSubscriber = await Newsletter.findOne({ email: safeEmail });
+
     if (existingSubscriber) {
       if (existingSubscriber.status === 'active') {
         return NextResponse.json(
@@ -44,14 +61,14 @@ export async function POST(request) {
         existingSubscriber.status = 'active';
         existingSubscriber.subscribedAt = new Date();
         existingSubscriber.unsubscribedAt = null;
-        existingSubscriber.name = name || existingSubscriber.name;
-        existingSubscriber.preferences = preferences || existingSubscriber.preferences;
+        existingSubscriber.name = safeName || existingSubscriber.name;
+        existingSubscriber.preferences = sanitizePreferences(preferences || existingSubscriber.preferences);
         existingSubscriber.ipAddress = ipAddress;
         existingSubscriber.userAgent = userAgent;
         existingSubscriber.referrer = referrer;
-        
+
         await existingSubscriber.save();
-        
+
         return NextResponse.json({
           message: 'Welcome back! Your newsletter subscription has been reactivated.',
           subscriber: {
@@ -65,25 +82,20 @@ export async function POST(request) {
 
     // Create new subscriber
     const subscriber = new Newsletter({
-      email: email.toLowerCase(),
-      name: name || '',
+      email: safeEmail,
+      name: safeName,
       status: 'active',
       source: 'website',
       ipAddress,
       userAgent,
       referrer,
-      preferences: preferences || {
-        frequency: 'weekly',
-        categories: ['tech', 'projects']
-      }
+      preferences: sanitizePreferences(preferences)
     });
 
     await subscriber.save();
 
     // Send welcome email (optional)
     try {
-            const nodemailer = require('nodemailer');
-
       const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
@@ -94,26 +106,26 @@ export async function POST(request) {
 
       const mailOptions = {
         from: process.env.EMAIL_USER,
-        to: email,
+        to: safeEmail,
         subject: 'Welcome to Bergaman\'s Newsletter - The Dragon\'s Domain',
         html: `
           <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; background: linear-gradient(135deg, #1e1b4b 0%, #3730a3 100%); color: #e2e8f0; border-radius: 12px; overflow: hidden;">
-            
+
             <!-- Header -->
             <div style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); padding: 30px 40px; text-align: center;">
               <div style="font-size: 32px; margin-bottom: 8px;">🐉</div>
               <h1 style="margin: 0; color: white; font-size: 28px; font-weight: bold;">Welcome to the Dragon's Domain</h1>
               <p style="margin: 5px 0 0 0; color: rgba(255,255,255,0.8); font-size: 14px;">Bergaman's Newsletter</p>
             </div>
-            
+
             <!-- Content -->
             <div style="padding: 40px;">
-              <h2 style="color: #e8c547; font-size: 24px; margin-bottom: 20px;">🎉 Welcome ${name || 'Fellow Developer'}!</h2>
-              
+              <h2 style="color: #e8c547; font-size: 24px; margin-bottom: 20px;">Welcome ${escapeHtml(safeName || 'Fellow Developer')}!</h2>
+
               <p style="color: #e2e8f0; line-height: 1.6; margin-bottom: 20px;">
                 Thank you for subscribing to my newsletter! You'll receive updates about:
               </p>
-              
+
               <ul style="color: #e2e8f0; line-height: 1.8; margin-bottom: 30px;">
                 <li>🤖 AI & Machine Learning projects</li>
                 <li>⛓️ Blockchain development insights</li>
@@ -121,15 +133,15 @@ export async function POST(request) {
                 <li>🚀 Latest project updates and releases</li>
                 <li>📚 Tech tips and best practices</li>
               </ul>
-              
+
               <div style="background: rgba(79, 70, 229, 0.1); border-left: 4px solid #4f46e5; padding: 20px; margin-bottom: 30px; border-radius: 0 8px 8px 0;">
                 <p style="margin: 0; color: #e2e8f0; font-style: italic;">
                   "Technology is best when it brings people together and solves real problems." - Bergaman
                 </p>
               </div>
-              
+
               <div style="text-align: center;">
-                <a href="https://bergaman.dev" 
+                <a href="https://bergaman.dev"
                    style="display: inline-block; background: linear-gradient(135deg, #e8c547 0%, #f59e0b 100%); color: #1e1b4b; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
                   🌐 Visit My Portfolio
                 </a>
@@ -151,7 +163,7 @@ export async function POST(request) {
 
       await transporter.sendMail(mailOptions);
     } catch (emailError) {
-      console.error('Error sending welcome email:', emailError);
+      console.error('Error sending welcome email:', emailError.message);
       // Don't fail the subscription if email fails
     }
 
@@ -165,18 +177,23 @@ export async function POST(request) {
     });
 
   } catch (error) {
-    console.error('Error subscribing to newsletter:', error);
-    
+    console.error('Error subscribing to newsletter:', error.message);
+
     if (error.code === 11000) {
       return NextResponse.json(
         { error: 'This email is already subscribed to our newsletter' },
         { status: 409 }
       );
     }
-    
+
     return NextResponse.json(
       { error: 'Failed to subscribe to newsletter' },
       { status: 500 }
     );
   }
-} 
+}
+
+export const POST = withRateLimit(handler, {
+  limit: 5,
+  windowMs: 60 * 1000,
+});

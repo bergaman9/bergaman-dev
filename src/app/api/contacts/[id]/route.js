@@ -1,16 +1,37 @@
 import { NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
 import Contact from '@/models/Contact';
-import mongoose from 'mongoose';
+import { parseObjectId, verifyContactReplyToken } from '@/lib/serverSecurity';
 
 export async function GET(request, { params }) {
   try {
-    const { id: contactId } = await params;
-    
+    const { id: token } = await params;
+    const tokenResult = await verifyContactReplyToken(token);
+
+    if (!tokenResult.valid) {
+      try {
+        parseObjectId(token);
+        return NextResponse.json(
+          { success: false, error: 'This reply link has expired. Please request a fresh link.' },
+          { status: 410 }
+        );
+      } catch {
+        // Non-ObjectId values are invalid tokens, not expired legacy links.
+      }
+
+      return NextResponse.json(
+        { success: false, error: 'Invalid or expired reply link' },
+        { status: 401 }
+      );
+    }
+
+    const contactId = tokenResult.contactId;
+
     await connectDB();
 
-    // Validate ObjectId
-    if (!mongoose.Types.ObjectId.isValid(contactId)) {
+    try {
+      parseObjectId(contactId, 'contact ID');
+    } catch {
       return NextResponse.json(
         { success: false, error: 'Invalid contact ID' },
         { status: 400 }
@@ -56,4 +77,4 @@ export async function GET(request, { params }) {
       { status: 500 }
     );
   }
-} 
+}

@@ -1,14 +1,18 @@
 import { NextResponse } from 'next/server';
 import { connectDB } from '../../../lib/mongodb';
 import BlogPost from '../../../models/BlogPost';
+import { productionDisabledResponse } from '@/lib/serverSecurity';
 
 export async function GET() {
+  const disabled = productionDisabledResponse();
+  if (disabled) return disabled;
+
   try {
     await connectDB();
-    
+
     // Get all blog posts with full details
     const allPosts = await BlogPost.find({}).lean();
-    
+
     // Group by visibility
     const byVisibility = allPosts.reduce((acc, post) => {
       const visibility = post.visibility || 'public';
@@ -22,18 +26,18 @@ export async function GET() {
       });
       return acc;
     }, {});
-    
+
     // Get public posts query like the main API
-    const publicQuery = { 
+    const publicQuery = {
       published: true,
       $or: [
         { visibility: 'public' },
         { visibility: { $exists: false } }
       ]
     };
-    
+
     const publicPosts = await BlogPost.find(publicQuery).lean();
-    
+
     return NextResponse.json({
       total: allPosts.length,
       byVisibility,
@@ -47,11 +51,11 @@ export async function GET() {
       })),
       publicQuery
     });
-    
+
   } catch (error) {
     return NextResponse.json({
       error: error.message,
       stack: error.stack
     }, { status: 500 });
   }
-} 
+}

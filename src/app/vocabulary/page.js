@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FaBookOpen, FaSpinner, FaExclamationTriangle, FaDownload, FaKey, FaCopy, FaCheck, FaChartBar, FaTrophy } from 'react-icons/fa';
+import { FaBookOpen, FaExclamationTriangle, FaDownload, FaKey, FaCopy, FaCheck, FaChartBar, FaTrophy } from 'react-icons/fa';
 import SearchFilters from '@/components/Vocabulary/SearchFilters';
 import WordCard from '@/components/Vocabulary/WordCard';
 import StatsModal from '@/components/Vocabulary/StatsModal';
@@ -10,11 +10,71 @@ import WordOfTheDay from '@/components/Vocabulary/WordOfTheDay';
 import QuizModal from '@/components/Vocabulary/QuizModal';
 import PaginationMap from '@/components/Vocabulary/PaginationMap';
 import { useVocabulary } from '@/context/VocabularyContext';
-import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import PageContainer from '@/components/PageContainer';
 import Modal from '@/components/UI/Modal';
+import { SkeletonCard } from '@/components/Skeleton';
+
+const ALLOWED_VAULT_STATUSES = new Set(['known', 'learning', 'want_to_learn']);
+const MAX_IMPORT_SIZE = 256 * 1024;
+
+function escapeCsvValue(value) {
+    const text = String(value ?? '').replace(/\r?\n/g, ' ');
+    return /[",\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
+}
+
+function downloadTextFile(filename, content, type = 'text/csv;charset=utf-8') {
+    const blob = new Blob([content], { type });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+function parseCsv(text) {
+    const rows = [];
+    let row = [];
+    let field = '';
+    let inQuotes = false;
+
+    for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        const next = text[i + 1];
+
+        if (char === '"') {
+            if (inQuotes && next === '"') {
+                field += '"';
+                i++;
+            } else {
+                inQuotes = !inQuotes;
+            }
+        } else if (char === ',' && !inQuotes) {
+            row.push(field);
+            field = '';
+        } else if ((char === '\n' || char === '\r') && !inQuotes) {
+            if (char === '\r' && next === '\n') i++;
+            row.push(field);
+            if (row.some((value) => value.trim() !== '')) rows.push(row);
+            row = [];
+            field = '';
+        } else {
+            field += char;
+        }
+    }
+
+    row.push(field);
+    if (row.some((value) => value.trim() !== '')) rows.push(row);
+    if (rows.length < 2) return [];
+
+    const headers = rows[0].map((header) => header.trim());
+    return rows.slice(1).map((values) => headers.reduce((record, header, index) => {
+        record[header] = values[index] ?? '';
+        return record;
+    }, {}));
+}
 
 export default function VocabularyPage() {
     const [words, setWords] = useState([]);
@@ -24,7 +84,7 @@ export default function VocabularyPage() {
     const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
 
     // Context for Vault Key
-    const { userId, syncWithCode, userProgress } = useVocabulary();
+    const { userId, syncWithCode, userProgress, updateWordStatus } = useVocabulary();
     const [showKeyModal, setShowKeyModal] = useState(false);
     const [showStatsModal, setShowStatsModal] = useState(false);
     const [showQuizModal, setShowQuizModal] = useState(false);
@@ -100,19 +160,22 @@ export default function VocabularyPage() {
                 return { ...word, userStatus };
             });
 
-            if (type === 'excel') {
-                const ws = XLSX.utils.json_to_sheet(wordsToExport.map(w => ({
-                    Term: w.term,
-                    Status: w.userStatus,
-                    Level: w.level,
-                    Type: w.type,
-                    Meaning: w.meaning,
-                    Example: w.exampleSentence,
-                    Pronunciation: w.pronunciation
-                })));
-                const wb = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(wb, ws, "My Vocabulary Vault");
-                XLSX.writeFile(wb, "my_vocabulary_vault.xlsx");
+            if (type === 'csv') {
+                const headers = ['Id', 'Term', 'Status', 'Level', 'Type', 'Meaning', 'Example', 'Pronunciation'];
+                const rows = wordsToExport.map(w => [
+                    w._id,
+                    w.term,
+                    w.userStatus,
+                    w.level,
+                    w.type,
+                    w.meaning,
+                    w.exampleSentence,
+                    w.pronunciation
+                ]);
+                const csv = [headers, ...rows]
+                    .map((row) => row.map(escapeCsvValue).join(','))
+                    .join('\n');
+                downloadTextFile('my_vocabulary_vault.csv', csv);
             } else if (type === 'pdf') {
                 const doc = new jsPDF();
                 doc.text("My Vocabulary Vault", 14, 20);
@@ -148,77 +211,50 @@ export default function VocabularyPage() {
     const handleImport = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
+        if (!file.name.toLowerCase().endsWith('.csv')) {
+            alert("Import only accepts CSV files exported from this app.");
+            e.target.value = '';
+            return;
+        }
+        if (file.size > MAX_IMPORT_SIZE) {
+            alert("Import file is too large. Maximum size is 256 KB.");
+            e.target.value = '';
+            return;
+        }
 
         const reader = new FileReader();
         reader.onload = async (evt) => {
             try {
-                const bstr = evt.target.result;
-                const wb = XLSX.read(bstr, { type: 'binary' });
-                const wsname = wb.SheetNames[0];
-                const ws = wb.Sheets[wsname];
-                const data = XLSX.utils.sheet_to_json(ws);
+                const data = parseCsv(evt.target.result);
 
                 if (data.length === 0) {
                     alert("Import file appears empty.");
                     return;
                 }
 
-                // Process import
-                // Expecting columns: Term, Status, etc.
                 if (!data[0].Term || !data[0].Status) {
                     alert("Invalid file format. Please use a file exported from this app.");
                     return;
                 }
 
-                // We need to match Terms to IDs to update status
-                // This is tricky without IDs in the import file (if we only match by term)
-                // Ideally, export should include ID (hidden or explicit). 
-                // For now, let's look up by Term via API for each? That's too heavy.
-                // BETTER: Add ID to export in the future.
-                // CURRENT FALLBACK: We have to assume the standard export.
-                // WAIT! Modifying Export to include ID is safer.
-                // Let's modify handleExport first to include ID in a hidden way or just rely on Term match if unique enough.
-                // OR fetch all words and match locally? Too big.
-                // Batch update API?
-
-                // Let's implement a "Batch Update by Term" API endpoint?
-                // Or just loop sequentially for now (slow but works for <1000 words).
-
                 let updatedCount = 0;
                 setLoading(true);
 
-                // Strategy: Get all statuses to update
-                const updates = [];
-
-                // First, fetch IDs for these terms
-                const terms = data.map(r => r.Term);
-                // We might need a new API endpoint to "get IDs for terms"
-                // For now, let's try to update one by one or warn user.
-
-                // Actually, let's just use the current loaded words? No, import might have others.
-
-                // REVISION: Simplest path - User exports -> It has "Status".
-                // When importing, we assume the user has the 'Term'.
-                // We will add a small client-side helper to find the ID?
-                // Actually, let's update export to include ID in a hidden column or just use Term matching in the backend.
-                // Backend 'find word by term' is easy.
-
-                // Let's try sending { term, status } to a new bulk sync endpoint or modify existing loop.
-                // Creating a bulk endpoint is cleanest.
-
-                // Client-side batch loop (for simplicity without backend changes right now)
-                for (const row of data) {
-                    if (row.Status && row.Term) {
+                for (const row of data.slice(0, 1000)) {
+                    const status = String(row.Status || '').toLowerCase();
+                    if (ALLOWED_VAULT_STATUSES.has(status) && row.Term) {
                         try {
-                            // Find ID for generic term? We need the ID for `updateWordStatus` which expects ID.
-                            // We need to find the word first.
-                            const res = await axios.get(`/api/words?search=${encodeURIComponent(row.Term)}&limit=1`);
-                            if (res.data.success && res.data.data.length > 0) {
-                                const word = res.data.data[0];
-                                if (word.term === row.Term) { // Exact match check
-                                    // Use context function
-                                    await updateWordStatus(word._id, row.Status.toLowerCase());
-                                    updatedCount++;
+                            if (row.Id) {
+                                await updateWordStatus(row.Id, status);
+                                updatedCount++;
+                            } else {
+                                const res = await axios.get(`/api/words?search=${encodeURIComponent(row.Term)}&limit=1`);
+                                if (res.data.success && res.data.data.length > 0) {
+                                    const word = res.data.data[0];
+                                    if (word.term === row.Term) {
+                                        await updateWordStatus(word._id, status);
+                                        updatedCount++;
+                                    }
                                 }
                             }
                         } catch (err) {
@@ -229,15 +265,21 @@ export default function VocabularyPage() {
 
                 setLoading(false);
                 alert(`Import complete! Updated ${updatedCount} words.`);
+                e.target.value = '';
                 window.location.reload();
 
             } catch (error) {
                 console.error("Import error", error);
                 alert("Failed to parse file.");
                 setLoading(false);
+                e.target.value = '';
             }
         };
-        reader.readAsBinaryString(file);
+        reader.onerror = () => {
+            alert("Failed to read file.");
+            e.target.value = '';
+        };
+        reader.readAsText(file);
     };
 
     const copyToClipboard = () => {
@@ -276,8 +318,10 @@ export default function VocabularyPage() {
 
         if (loading) {
             return (
-                <div className="flex justify-center items-center h-64">
-                    <FaSpinner className="w-12 h-12 text-accent animate-spin" />
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {Array.from({ length: 8 }).map((_, index) => (
+                        <SkeletonCard key={index} showImage={false} rows={4} footer={false} />
+                    ))}
                 </div>
             );
         }
@@ -391,8 +435,8 @@ export default function VocabularyPage() {
                             </button>
                             <div className="absolute right-0 top-full pt-2 w-48 opacity-0 group-hover:opacity-100 transition-opacity invisible group-hover:visible z-50">
                                 <div className="bg-black border border-white/10 rounded-xl shadow-xl overflow-hidden">
-                                    <button onClick={() => handleExport('excel')} className="w-full text-left px-4 py-3 hover:bg-white/5 text-sm font-medium text-gray-300 hover:text-white border-b border-white/5">
-                                        Export as Excel (.xlsx)
+                                    <button onClick={() => handleExport('csv')} className="w-full text-left px-4 py-3 hover:bg-white/5 text-sm font-medium text-gray-300 hover:text-white border-b border-white/5">
+                                        Export as CSV (.csv)
                                     </button>
                                     <button onClick={() => handleExport('pdf')} className="w-full text-left px-4 py-3 hover:bg-white/5 text-sm font-medium text-gray-300 hover:text-white">
                                         Export as PDF (.pdf)
@@ -400,9 +444,9 @@ export default function VocabularyPage() {
                                     <div className="border-t border-white/5 my-1"></div>
                                     <label className="w-full text-left px-4 py-3 hover:bg-white/5 text-sm font-medium text-[#e8c547] hover:text-[#e8c547]/80 cursor-pointer block flex flex-col gap-1">
                                         <div className="flex items-center gap-2">
-                                            <input type="file" accept=".xlsx" onChange={handleImport} className="hidden" />
+                                            <input type="file" accept=".csv,text/csv" onChange={handleImport} className="hidden" />
                                             <FaDownload className="rotate-180" />
-                                            <span>Import Excel (.xlsx)</span>
+                                            <span>Import CSV (.csv)</span>
                                         </div>
                                         <span className="text-[10px] text-gray-500 font-normal ml-6">
                                             Format: Columns "Term" & "Status" (optional)
@@ -486,7 +530,7 @@ export default function VocabularyPage() {
                 <StatsModal
                     onClose={() => setShowStatsModal(false)}
                     userProgress={userProgress}
-                    words={words} // Note: This only passes current page words, ideally needs all. 
+                    words={words} // Note: This only passes current page words, ideally needs all.
                 // StatsModal logic handles this gracefully for now.
                 />
             )}

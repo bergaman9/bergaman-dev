@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import { connectDB } from '../../../lib/mongodb';
 import Comment from '../../../models/Comment';
 import { getUserInfo } from '../../../lib/userInfo';
+import { withRateLimit } from '@/lib/rateLimit';
+import { readJsonLimited, validateEmail } from '@/lib/serverSecurity';
+import mongoose from 'mongoose';
 
 export async function GET(request) {
   try {
@@ -23,11 +26,11 @@ export async function GET(request) {
   }
 }
 
-export async function POST(request) {
+async function handler(request) {
   try {
     await connectDB();
 
-    const { postSlug, name, email, message, parentCommentId } = await request.json();
+    const { postSlug, name, email, message, parentCommentId } = await readJsonLimited(request, { maxBytes: 16 * 1024 });
 
     // Check if comments are allowed
     const db = await connectDB();
@@ -51,9 +54,12 @@ export async function POST(request) {
     }
 
     // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    if (!validateEmail(email)) {
       return NextResponse.json({ error: 'Invalid email format' }, { status: 400 });
+    }
+
+    if (parentCommentId && !mongoose.Types.ObjectId.isValid(parentCommentId)) {
+      return NextResponse.json({ error: 'Invalid parent comment' }, { status: 400 });
     }
 
     // Get user info (IP, browser, location, etc.)
@@ -97,4 +103,9 @@ export async function POST(request) {
     console.error('Error creating comment:', error);
     return NextResponse.json({ error: 'Failed to create comment' }, { status: 500 });
   }
-} 
+}
+
+export const POST = withRateLimit(handler, {
+  limit: 10,
+  windowMs: 60 * 1000,
+});

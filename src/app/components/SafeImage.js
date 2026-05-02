@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { SkeletonBox } from './Skeleton';
 
 const SafeImage = ({
   src,
@@ -12,7 +13,7 @@ const SafeImage = ({
   className = '',
   loading = 'lazy',
   priority = false,
-  sizes,
+  sizes = '(max-width: 768px) 100vw, 33vw',
   quality = 75,
   placeholder = 'empty',
   blurDataURL,
@@ -90,7 +91,7 @@ const SafeImage = ({
     >
       {isLoading && showLoader && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-800/20 rounded z-10">
-          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#e8c547]"></div>
+          <SkeletonBox className="h-full w-full rounded" />
         </div>
       )}
 
@@ -122,4 +123,4 @@ const SafeImage = ({
   );
 };
 
-export default SafeImage; 
+export default SafeImage;

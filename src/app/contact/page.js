@@ -8,28 +8,29 @@ import Head from 'next/head';
 import { useAdminMode } from '../../hooks/useAdminMode';
 import PageHeader from '../components/PageHeader';
 import PageContainer from '../components/PageContainer';
+import { SkeletonBox, SkeletonText } from '../components/Skeleton';
 
 export default function Contact() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    message: ''
+    message: '',
+    contactWebsite: ''
   });
+  const [formStartedAt, setFormStartedAt] = useState(() => Date.now());
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
-  const { isAdminMode, exitEditMode } = useAdminMode();
+  const { isAdminMode, isAuthenticated, exitEditMode } = useAdminMode();
 
   useEffect(() => {
     fetchSettings();
-  }, []);
+  }, [isAuthenticated]);
 
   const fetchSettings = async () => {
     try {
-      // Check if user is admin before trying to fetch settings
-      const adminAuth = localStorage.getItem('adminAuth');
-      if (adminAuth === 'true') {
+      if (isAuthenticated) {
         const response = await fetch('/api/admin/settings');
         if (response.ok) {
           const data = await response.json();
@@ -52,10 +53,29 @@ export default function Contact() {
   if (loading) {
     return (
       <PageContainer>
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="text-center">
-            <i className="fas fa-spinner fa-spin text-4xl text-[#e8c547] mb-4"></i>
-            <p className="text-gray-400">Loading...</p>
+        <PageHeader
+          title="Contact"
+          subtitle="Send a message or use one of the contact channels below"
+          icon="fas fa-envelope"
+        />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="rounded-lg border border-[#3e503e]/30 bg-[#2e3d29]/20 p-6">
+            <SkeletonBox className="mb-5 h-8 w-48" />
+            <div className="space-y-4">
+              <SkeletonBox className="h-12 w-full" />
+              <SkeletonBox className="h-12 w-full" />
+              <SkeletonBox className="h-36 w-full" />
+              <SkeletonBox className="h-11 w-36" />
+            </div>
+          </div>
+          <div className="rounded-lg border border-[#3e503e]/30 bg-[#2e3d29]/20 p-6">
+            <SkeletonBox className="mb-5 h-8 w-56" />
+            <SkeletonText lines={5} />
+            <div className="mt-6 grid gap-4">
+              <SkeletonBox className="h-14 w-full" />
+              <SkeletonBox className="h-14 w-full" />
+              <SkeletonBox className="h-14 w-full" />
+            </div>
           </div>
         </div>
       </PageContainer>
@@ -80,10 +100,10 @@ export default function Contact() {
             <p className="text-lg text-gray-300 max-w-3xl mx-auto mb-8">
               The contact form is currently disabled. Please reach out through alternative methods.
             </p>
-            
+
             <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 rounded-lg p-8 max-w-2xl mx-auto">
               <h2 className="text-2xl font-bold mb-6 text-[#e8c547]">Alternative Contact Methods</h2>
-              
+
               <div className="space-y-6">
                 {/* Email */}
                 <div className="flex items-center justify-center space-x-4">
@@ -105,9 +125,9 @@ export default function Contact() {
                   </div>
                   <div className="text-left">
                     <h3 className="text-gray-400 font-semibold">GitHub</h3>
-                    <a 
-                      href="https://github.com/bergaman9" 
-                      target="_blank" 
+                    <a
+                      href="https://github.com/bergaman9"
+                      target="_blank"
                       rel="noopener noreferrer"
                       className="text-gray-300 hover:text-gray-400 transition-colors"
                     >
@@ -141,12 +161,16 @@ export default function Contact() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          startedAt: formStartedAt,
+        }),
       });
 
       if (response.ok) {
         setSubmitStatus('success');
-        setFormData({ name: '', email: '', message: '' });
+        setFormData({ name: '', email: '', message: '', contactWebsite: '' });
+        setFormStartedAt(Date.now());
       } else {
         setSubmitStatus('error');
       }
@@ -192,7 +216,7 @@ export default function Contact() {
       )}
 
       <main className={isAdminMode ? 'pt-12' : ''}>
-        
+
         {/* Page Header */}
         <PageHeader
           title="Contact Me"
@@ -204,7 +228,7 @@ export default function Contact() {
         {/* Contact Content */}
         <section className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            
+
             {/* Let's Connect Card */}
             <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-8 rounded-lg slide-in-left">
               <h2 className="text-2xl font-bold mb-6 text-[#e8c547]">
@@ -275,6 +299,19 @@ export default function Contact() {
               )}
 
               <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="hidden" aria-hidden="true">
+                  <label htmlFor="contactWebsite">Website</label>
+                  <input
+                    type="text"
+                    id="contactWebsite"
+                    name="contactWebsite"
+                    value={formData.contactWebsite}
+                    onChange={handleChange}
+                    tabIndex={-1}
+                    autoComplete="off"
+                  />
+                </div>
+
                 {/* Name Field */}
                 <div>
                   <label htmlFor="name" className="block text-[#e8c547] font-medium mb-2">
@@ -334,7 +371,7 @@ export default function Contact() {
                 >
                   {isSubmitting ? (
                     <>
-                      <i className="fas fa-spinner fa-spin mr-2"></i>
+                      <i className="fas fa-hourglass-half mr-2"></i>
                       Sending Message...
                     </>
                   ) : (
@@ -376,4 +413,4 @@ export default function Contact() {
       </main>
     </PageContainer>
   );
-} 
+}

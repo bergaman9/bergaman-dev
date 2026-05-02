@@ -5,16 +5,28 @@ export function useAdminMode() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const checkAdminStatus = () => {
-      // Check if admin is authenticated
-      const adminAuth = localStorage.getItem('adminAuth');
-      const editMode = localStorage.getItem('adminEditMode');
-      
-      const authStatus = adminAuth === 'true';
-      const editStatus = editMode === 'true' && authStatus;
-      
+    let cancelled = false;
+
+    const checkAdminStatus = async () => {
+      let authStatus = false;
+
+      try {
+        const response = await fetch('/api/admin/auth', {
+          method: 'GET',
+          credentials: 'include',
+          cache: 'no-store',
+        });
+        const data = await response.json();
+        authStatus = response.ok && data.authenticated;
+      } catch {
+        authStatus = false;
+      }
+
+      if (cancelled) return;
+
+      const editMode = sessionStorage.getItem('adminEditMode');
       setIsAuthenticated(authStatus);
-      setIsAdminMode(editStatus);
+      setIsAdminMode(editMode === 'true' && authStatus);
     };
 
     // Initial check
@@ -22,7 +34,7 @@ export function useAdminMode() {
 
     // Listen for storage changes (when admin panel sets edit mode)
     const handleStorageChange = (e) => {
-      if (e.key === 'adminEditMode' || e.key === 'adminAuth') {
+      if (e.key === 'adminEditMode') {
         checkAdminStatus();
       }
     };
@@ -36,6 +48,7 @@ export function useAdminMode() {
     window.addEventListener('adminModeChange', handleAdminModeChange);
 
     return () => {
+      cancelled = true;
       window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('adminModeChange', handleAdminModeChange);
     };
@@ -45,8 +58,8 @@ export function useAdminMode() {
     if (isAuthenticated) {
       const newMode = !isAdminMode;
       setIsAdminMode(newMode);
-      localStorage.setItem('adminEditMode', newMode.toString());
-      
+      sessionStorage.setItem('adminEditMode', newMode.toString());
+
       // Dispatch custom event for same-tab updates
       window.dispatchEvent(new CustomEvent('adminModeChange'));
     }
@@ -54,8 +67,8 @@ export function useAdminMode() {
 
   const exitEditMode = () => {
     setIsAdminMode(false);
-    localStorage.removeItem('adminEditMode');
-    
+    sessionStorage.removeItem('adminEditMode');
+
     // Dispatch custom event for same-tab updates
     window.dispatchEvent(new CustomEvent('adminModeChange'));
   };
@@ -66,4 +79,4 @@ export function useAdminMode() {
     toggleEditMode,
     exitEditMode
   };
-} 
+}

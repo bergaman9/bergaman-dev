@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Head from 'next/head';
+import { SkeletonCard } from '@/app/components/Skeleton';
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState([]);
@@ -33,10 +34,10 @@ export default function CategoriesPage() {
     try {
       const response = await fetch('/api/admin/posts?limit=1000');
       const data = await response.json();
-      
+
       if (data.posts) {
         setPosts(data.posts);
-        
+
         // Count posts per category
         const categoryStats = {};
         data.posts.forEach(post => {
@@ -100,7 +101,7 @@ export default function CategoriesPage() {
     try {
       // Update all posts with this category
       const postsToUpdate = posts.filter(post => post.category === oldName);
-      
+
       for (const post of postsToUpdate) {
         await fetch(`/api/admin/posts/${post._id}`, {
           method: 'PUT',
@@ -126,13 +127,13 @@ export default function CategoriesPage() {
 
   const handleDeleteCategory = async (categoryName) => {
     const categoryPosts = posts.filter(post => post.category === categoryName);
-    
+
     if (categoryPosts.length > 0) {
       const confirm = window.confirm(
         `This category has ${categoryPosts.length} posts. ` +
         `All posts will be moved to "Technology" category. Continue?`
       );
-      
+
       if (!confirm) return;
     }
 
@@ -173,7 +174,7 @@ export default function CategoriesPage() {
             </h1>
             <p className="text-gray-400 mt-2">Organize your blog posts by categories</p>
           </div>
-          
+
           <Link
             href="/admin/posts"
             className="bg-[#2e3d29]/60 border border-[#3e503e] text-gray-300 px-4 py-3 rounded-lg hover:border-[#e8c547]/50 transition-colors duration-300 flex items-center space-x-2"
@@ -190,11 +191,12 @@ export default function CategoriesPage() {
               Blog Categories ({categories.filter(cat => cat.used).length} used)
             </h2>
           </div>
-          
+
           {loading ? (
-            <div className="p-8 text-center text-gray-400">
-              <i className="fas fa-spinner fa-spin text-4xl mb-4 block"></i>
-              <p>Loading categories...</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-6" aria-busy="true">
+              {Array.from({ length: 6 }).map((_, index) => (
+                <SkeletonCard key={index} showImage={false} rows={2} footer={false} />
+              ))}
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-6">
@@ -202,8 +204,8 @@ export default function CategoriesPage() {
                 <div
                   key={category.name}
                   className={`p-4 rounded-lg border transition-all duration-300 ${
-                    category.used 
-                      ? 'bg-[#0e1b12]/50 border-[#3e503e]/50 hover:border-[#e8c547]/30' 
+                    category.used
+                      ? 'bg-[#0e1b12]/50 border-[#3e503e]/50 hover:border-[#e8c547]/30'
                       : 'bg-[#0e1b12]/20 border-[#3e503e]/20 opacity-60'
                   }`}
                 >
@@ -230,7 +232,7 @@ export default function CategoriesPage() {
                       </span>
                     )}
                   </div>
-                  
+
                   <div className="text-sm text-gray-400 mb-3">
                     Slug: <code className="bg-[#0e1b12]/80 px-1 rounded">{category.name}</code>
                   </div>
@@ -244,7 +246,7 @@ export default function CategoriesPage() {
                         <i className="fas fa-eye mr-1"></i>
                         View Posts
                       </Link>
-                      
+
                       <div className="flex items-center space-x-2">
                         {category.custom && (
                           <>
@@ -285,7 +287,7 @@ export default function CategoriesPage() {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-4 rounded-lg">
             <div className="flex items-center space-x-3">
               <i className="fas fa-check-circle text-green-400 text-xl"></i>
@@ -295,7 +297,7 @@ export default function CategoriesPage() {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-4 rounded-lg">
             <div className="flex items-center space-x-3">
               <i className="fas fa-file-alt text-blue-400 text-xl"></i>
@@ -309,4 +311,4 @@ export default function CategoriesPage() {
       </div>
     </>
   );
-} 
+}

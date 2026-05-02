@@ -1,6 +1,7 @@
 import { rateLimit } from 'express-rate-limit';
 import { NextResponse } from 'next/server';
 import { SECURITY } from './constants';
+import { normalizeClientIp } from './serverSecurity';
 
 /**
  * API rate limiting için yardımcı fonksiyonlar
@@ -24,35 +25,30 @@ export function createRateLimiter(options = {}) {
     message: { error: 'Too many requests, please try again later.' },
     standardHeaders: true,
     legacyHeaders: false,
-    keyGenerator: (req) => {
-      // IP adresini al (X-Forwarded-For başlığını kontrol et)
-      return req.headers.get('x-forwarded-for') || 
-             req.headers.get('x-real-ip') || 
-             'unknown-ip';
-    },
+    keyGenerator: (req) => normalizeClientIp(req),
     // Hafıza içi store kullan
     store: {
       increment: async (key) => {
         const currentTime = Date.now();
         const windowMs = options.windowMs || SECURITY.RATE_LIMIT.API_WINDOW;
-        
-        let record = inMemoryStore.get(key) || { 
-          count: 0, 
-          resetTime: currentTime + windowMs 
+
+        let record = inMemoryStore.get(key) || {
+          count: 0,
+          resetTime: currentTime + windowMs
         };
-        
+
         // Süre dolmuşsa sıfırla
         if (record.resetTime <= currentTime) {
-          record = { 
-            count: 0, 
-            resetTime: currentTime + windowMs 
+          record = {
+            count: 0,
+            resetTime: currentTime + windowMs
           };
         }
-        
+
         // Sayacı artır
         record.count += 1;
         inMemoryStore.set(key, record);
-        
+
         return record;
       },
       decrement: async (key) => {
@@ -70,30 +66,30 @@ export function createRateLimiter(options = {}) {
       }
     }
   };
-  
+
   // Ayarları birleştir
   const limiterOptions = {
     ...defaultOptions,
     ...options,
     store: options.store || defaultOptions.store
   };
-  
+
   // Next.js API route için middleware
   return async function rateLimiterMiddleware(request) {
     const key = limiterOptions.keyGenerator(request);
-    
+
     try {
       // Rate limiting kontrolü
       const record = await limiterOptions.store.increment(key);
-      
+
       // Limit aşıldı mı kontrol et
       if (record.count > limiterOptions.limit) {
         const resetTime = record.resetTime;
         const currentTime = Date.now();
         const retryAfter = Math.ceil((resetTime - currentTime) / 1000);
-        
+
         // 429 Too Many Requests hatası döndür
-        return NextResponse.json(limiterOptions.message, { 
+        return NextResponse.json(limiterOptions.message, {
           status: 429,
           headers: {
             'Retry-After': retryAfter.toString(),
@@ -103,22 +99,22 @@ export function createRateLimiter(options = {}) {
           }
         });
       }
-      
+
       // Kalan istek sayısını hesapla
       const remaining = Math.max(0, limiterOptions.limit - record.count);
-      
+
       // Yanıt başlıklarını ayarla
       const headers = {
         'X-RateLimit-Limit': limiterOptions.limit.toString(),
         'X-RateLimit-Remaining': remaining.toString(),
         'X-RateLimit-Reset': Math.ceil(record.resetTime / 1000).toString()
       };
-      
+
       // İsteğe devam et
       return null;
     } catch (error) {
       console.error('Rate limiter error:', error);
-      
+
       // Hata durumunda isteğe devam et
       return null;
     }
@@ -133,16 +129,16 @@ export function createRateLimiter(options = {}) {
  */
 export function withRateLimit(handler, options = {}) {
   const limiter = createRateLimiter(options);
-  
+
   return async function rateProtectedHandler(request, ...args) {
     // Rate limiting kontrolü
     const limitResult = await limiter(request);
-    
+
     // Limit aşıldıysa hata döndür
     if (limitResult) {
       return limitResult;
     }
-    
+
     // Limit aşılmadıysa normal handler'ı çalıştır
     return handler(request, ...args);
   };
@@ -159,34 +155,34 @@ export async function checkIPRateLimit(ip, action, options = {}) {
   const key = `${ip}:${action}`;
   const limit = options.limit || SECURITY.RATE_LIMIT.MAX_LOGIN_ATTEMPTS;
   const windowMs = options.windowMs || SECURITY.RATE_LIMIT.LOCKOUT_DURATION;
-  
-  let record = inMemoryStore.get(key) || { 
-    count: 0, 
-    resetTime: Date.now() + windowMs 
+
+  let record = inMemoryStore.get(key) || {
+    count: 0,
+    resetTime: Date.now() + windowMs
   };
-  
+
   // Süre dolmuşsa sıfırla
   if (record.resetTime <= Date.now()) {
-    record = { 
-      count: 0, 
-      resetTime: Date.now() + windowMs 
+    record = {
+      count: 0,
+      resetTime: Date.now() + windowMs
     };
   }
-  
+
   // Limit aşıldı mı kontrol et
   if (record.count >= limit) {
     const remainingTime = Math.ceil((record.resetTime - Date.now()) / 1000 / 60);
-    
+
     return {
       allowed: false,
       message: `Too many ${action} attempts. Please try again after ${remainingTime} minutes.`,
       remainingTime
     };
   }
-  
+
   // Kalan deneme sayısını hesapla
   const remaining = Math.max(0, limit - record.count);
-  
+
   return {
     allowed: true,
     remaining,
@@ -203,16 +199,16 @@ export async function checkIPRateLimit(ip, action, options = {}) {
 export function recordFailedAttempt(ip, action, options = {}) {
   const key = `${ip}:${action}`;
   const windowMs = options.windowMs || SECURITY.RATE_LIMIT.LOCKOUT_DURATION;
-  
-  let record = inMemoryStore.get(key) || { 
-    count: 0, 
-    resetTime: Date.now() + windowMs 
+
+  let record = inMemoryStore.get(key) || {
+    count: 0,
+    resetTime: Date.now() + windowMs
   };
-  
+
   // Sayacı artır
   record.count += 1;
   inMemoryStore.set(key, record);
-  
+
   return record;
 }
 
@@ -224,4 +220,4 @@ export function recordFailedAttempt(ip, action, options = {}) {
 export function resetAttempts(ip, action) {
   const key = `${ip}:${action}`;
   inMemoryStore.delete(key);
-} 
+}
