@@ -4,9 +4,25 @@ import { useFinance } from '@/context/FinanceContext';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
 import { useMemo, useState, useRef } from 'react';
-import { FaEye, FaEyeSlash, FaArrowUp, FaArrowDown, FaPlus, FaTrash, FaFileExport, FaFileImport } from 'react-icons/fa';
+import { FaEye, FaEyeSlash, FaArrowUp, FaArrowDown, FaPlus, FaTrash, FaFileExport, FaFileImport, FaWallet, FaCog } from 'react-icons/fa';
+import { SkeletonBox, SkeletonCard } from '../Skeleton';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
+
+// Precious Metals - shown prominently
+const METALS = [
+    { key: 'GA', label: 'Gold', unit: '/g', color: 'from-yellow-400 to-amber-600', bg: 'bg-gradient-to-br from-yellow-500/20 to-amber-600/10' },
+    { key: 'GAG', label: 'Silver', unit: '/g', color: 'from-gray-300 to-gray-500', bg: 'bg-gradient-to-br from-gray-400/20 to-gray-600/10' },
+    { key: 'GAP', label: 'Platinum', unit: '/g', color: 'from-cyan-200 to-cyan-400', bg: 'bg-gradient-to-br from-cyan-300/20 to-cyan-500/10' },
+];
+
+// Other rates - compact display
+const OTHER_RATES = [
+    { key: 'USD', label: 'USD/TRY', icon: '🇺🇸' },
+    { key: 'EUR', label: 'EUR/TRY', icon: '🇪🇺' },
+    { key: 'BTC', label: 'Bitcoin', icon: '₿' },
+    { key: 'ETH', label: 'Ethereum', icon: 'Ξ' },
+];
 
 export default function FinanceDashboard() {
     const {
@@ -30,46 +46,63 @@ export default function FinanceDashboard() {
     const [showBalance, setShowBalance] = useState(true);
     const [isCreating, setIsCreating] = useState(false);
     const [newPortfolioName, setNewPortfolioName] = useState('');
+    const [showSettings, setShowSettings] = useState(false);
+    const [importStatus, setImportStatus] = useState(null);
 
     const fileInputRef = useRef(null);
 
-    const handleImportClick = () => {
-        fileInputRef.current?.click();
-    };
+    const handleImportClick = () => fileInputRef.current?.click();
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (!file) return;
-
+        if (file.type && file.type !== 'application/json') {
+            setImportStatus({ type: 'error', message: 'Import only accepts JSON backup files.' });
+            e.target.value = '';
+            return;
+        }
+        if (file.size > 1024 * 1024) {
+            setImportStatus({ type: 'error', message: 'Backup file is too large. Maximum size is 1 MB.' });
+            e.target.value = '';
+            return;
+        }
         const reader = new FileReader();
         reader.onload = (event) => {
             const result = importData(event.target.result);
             if (result.success) {
-                alert('Backup restored successfully!');
+                setImportStatus({ type: 'success', message: 'Backup restored successfully.' });
             } else {
-                alert('Failed to restore backup: ' + result.error);
+                setImportStatus({ type: 'error', message: `Backup import failed: ${result.error}` });
             }
-            e.target.value = ''; // Reset input
+            e.target.value = '';
+        };
+        reader.onerror = () => {
+            setImportStatus({ type: 'error', message: 'Backup file could not be read.' });
+            e.target.value = '';
         };
         reader.readAsText(file);
     };
 
     const stats = getPortfolioStats();
 
-    // Live Gold Price (Gram Gold)
-    const goldPrice = marketRates['GA'];
-    const usdPrice = marketRates['USD'];
-
-    // Currency Conversion Helper
     const getConvertedValue = (valInTry) => {
         if (!valInTry) return 0;
         if (currency === 'TRY') return valInTry;
-        const rate = marketRates[currency]; // USD or EUR
+        const rate = marketRates[currency];
         if (!rate) return valInTry;
         return valInTry / rate;
     };
 
-    const formatCurrency = (val) => new Intl.NumberFormat(currency === 'TRY' ? 'tr-TR' : 'en-US', { style: 'currency', currency: currency, maximumFractionDigits: 0 }).format(val);
+    const formatCurrency = (val) => new Intl.NumberFormat(currency === 'TRY' ? 'tr-TR' : 'en-US', {
+        style: 'currency', currency: currency, maximumFractionDigits: 0
+    }).format(val);
+
+    const formatCompact = (val) => {
+        if (!val) return '...';
+        // Show full price, no K/M rounding
+        return new Intl.NumberFormat('tr-TR', { maximumFractionDigits: 0 }).format(val);
+    };
+
 
     const chartData = useMemo(() => {
         const categories = {};
@@ -79,54 +112,34 @@ export default function FinanceDashboard() {
             categories[asset.category] = (categories[asset.category] || 0) + valueConverted;
         });
 
-        const labels = Object.keys(categories);
-        const data = Object.values(categories);
-
-        // System Theme Colors
-        const backgroundColors = [
-            '#e8c547', // Gold (Primary)
-            '#3e503e', // Dark Green (Secondary)
-            '#ffffff', // White
-            '#a1a1aa', // Gray
-            '#d97706', // Amber
-            '#b45309',
-            '#78350f',
-            '#451a03',
-        ];
-
         return {
-            labels,
-            datasets: [
-                {
-                    data: data,
-                    backgroundColor: backgroundColors,
-                    borderColor: '#0a0a0a',
-                    borderWidth: 2,
-                },
-            ],
+            labels: Object.keys(categories),
+            datasets: [{
+                data: Object.values(categories),
+                backgroundColor: ['#e8c547', '#10b981', '#3b82f6', '#8b5cf6', '#f59e0b', '#ef4444', '#ec4899', '#06b6d4'],
+                borderColor: '#000',
+                borderWidth: 2,
+            }],
         };
-    }, [assets, getAssetCurrentValue, currency, marketRates]); // Re-calc on currency change
+    }, [assets, getAssetCurrentValue, currency, marketRates]);
 
     const options = {
-        cutout: '80%', // Thinner ring
-        plugins: {
-            legend: { display: false },
-            tooltip: {
-                callbacks: {
-                    label: function (context) {
-                        let label = context.label || '';
-                        if (label) label += ': ';
-                        if (context.parsed !== null) {
-                            label += formatCurrency(context.parsed);
-                        }
-                        return label;
-                    }
-                }
-            }
-        },
+        cutout: '70%',
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${formatCurrency(ctx.parsed)}` } } },
     };
 
-    if (loading) return <div className="h-64 flex items-center justify-center text-white/50">Loading...</div>;
+    if (loading) {
+        return (
+            <div className="space-y-6" aria-busy="true">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {Array.from({ length: 3 }).map((_, index) => (
+                        <SkeletonCard key={index} showImage={false} rows={2} footer={false} />
+                    ))}
+                </div>
+                <SkeletonBox className="h-64 w-full rounded-xl" />
+            </div>
+        );
+    }
 
     const handleCreatePortfolio = (e) => {
         e.preventDefault();
@@ -138,198 +151,191 @@ export default function FinanceDashboard() {
     };
 
     const handleReset = () => {
-        if (confirm('ARE YOU SURE? This will delete ALL your portfolios and assets permanently.')) {
-            resetData();
-        }
+        if (window.confirm('Delete all local finance data from this browser? This cannot be undone.')) resetData();
     };
 
+    const currentPortfolio = portfolios.find(p => p.id === currentPortfolioId);
+
     return (
-        <div className="flex flex-col gap-6">
-            {/* Portfolio Switcher & Live Rates */}
-            <div className="flex flex-col gap-4">
-                {/* Live Rates Ticker */}
-                <div className="flex gap-4 overflow-x-auto pb-0 no-scrollbar justify-start sm:justify-between items-center mask-image-fade">
-                    <style jsx>{`
-                        .no-scrollbar::-webkit-scrollbar {
-                            display: none;
-                        }
-                        .no-scrollbar {
-                            -ms-overflow-style: none;
-                            scrollbar-width: none;
-                        }
-                    `}</style>
-                    <div className="flex gap-4 min-w-max">
-                        <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-lg border border-white/5 shrink-0">
-                            <span className="text-[10px] text-[#e8c547] font-bold uppercase">Gold</span>
-                            <span className="text-sm font-mono text-white">
-                                {goldPrice ? new Intl.NumberFormat('en-US', { style: 'currency', currency: 'TRY', maximumFractionDigits: 0 }).format(goldPrice) : '...'}
-                            </span>
-                        </div>
-                        <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-lg border border-white/5 shrink-0">
-                            <span className="text-[10px] text-gray-400 font-bold uppercase">Silver</span>
-                            <span className="text-sm font-mono text-white">
-                                {marketRates['GAG'] ? new Intl.NumberFormat('en-US', { style: 'currency', currency: 'TRY', maximumFractionDigits: 2 }).format(marketRates['GAG']) : '...'}
-                            </span>
-                        </div>
-                        <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-lg border border-white/5 shrink-0">
-                            <span className="text-[10px] text-green-400 font-bold uppercase">USD</span>
-                            <span className="text-sm font-mono text-white">
-                                {usdPrice ? new Intl.NumberFormat('en-US', { style: 'currency', currency: 'TRY', maximumFractionDigits: 2 }).format(usdPrice) : '...'}
-                            </span>
-                        </div>
-                    </div>
+        <div className="space-y-6">
+            {/* Hero Balance Card */}
+            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#1a1a1a] to-[#0d0d0d] border border-white/10 p-6">
+                {/* Decorative gold glow */}
+                <div className="absolute top-0 right-0 w-64 h-64 bg-[#e8c547]/10 rounded-full blur-[80px] pointer-events-none" />
 
-                    {/* Currency Toggle */}
-                    <div className="flex bg-[#0f0f0f] border border-white/10 rounded-lg p-0.5">
-                        {['TRY', 'USD', 'EUR'].map(c => (
-                            <button
-                                key={c}
-                                onClick={() => setCurrency(c)}
-                                className={`px-2 py-1 text-[10px] font-bold rounded-md transition-all ${currency === c ? 'bg-[#e8c547] text-black' : 'text-gray-500 hover:text-white'}`}
-                            >
-                                {c}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Import/Export */}
-                <div className="flex justify-end gap-2">
-                    <input
-                        type="file"
-                        accept=".json"
-                        ref={fileInputRef}
-                        style={{ display: 'none' }}
-                        onChange={handleFileChange}
-                    />
-                    <button
-                        onClick={handleImportClick}
-                        className="text-xs flex items-center gap-1 text-gray-400 hover:text-white transition-colors"
-                        title="Import Backup"
+                {/* Portfolio Selector */}
+                <div className="flex items-center gap-3 mb-6">
+                    <FaWallet className="text-[#e8c547]" />
+                    <select
+                        value={currentPortfolioId}
+                        onChange={(e) => setCurrentPortfolioId(e.target.value)}
+                    aria-label="Current portfolio"
+                    className="bg-transparent text-white font-semibold text-lg outline-none cursor-pointer hover:text-[#e8c547] transition-colors focus:ring-2 focus:ring-[#e8c547]/70 rounded-lg"
                     >
-                        <FaFileImport /> Import
-                    </button>
-                    <button
-                        onClick={exportData}
-                        className="text-xs flex items-center gap-1 text-gray-400 hover:text-white transition-colors"
-                        title="Export Backup"
-                    >
-                        <FaFileExport /> Export
-                    </button>
-                </div>
-
-                {/* Switcher & Reset */}
-                <div className="flex items-center justify-between bg-[#0f0f0f] p-1 rounded-xl border border-white/10">
-                    <div className="flex-1 flex gap-1 overflow-x-auto no-scrollbar">
                         {portfolios.map(p => (
-                            <button
-                                key={p.id}
-                                onClick={() => setCurrentPortfolioId(p.id)}
-                                className={`px-4 py-2 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${currentPortfolioId === p.id
-                                    ? 'bg-[#e8c547] text-black shadow-lg shadow-[#e8c547]/20'
-                                    : 'text-gray-400 hover:text-white hover:bg-white/5'
-                                    }`}
-                            >
-                                {p.name}
-                            </button>
+                            <option key={p.id} value={p.id} className="bg-black">{p.name}</option>
                         ))}
-                    </div>
-
-                    <div className="flex items-center border-l border-white/5 pl-1 ml-1">
-                        {isCreating ? (
-                            <form onSubmit={handleCreatePortfolio} className="flex items-center gap-2 ml-2">
-                                <input
-                                    autoFocus
-                                    value={newPortfolioName}
-                                    onChange={(e) => setNewPortfolioName(e.target.value)}
-                                    placeholder="Name..."
-                                    className="bg-black/50 border border-white/10 rounded-md px-2 py-1 text-xs text-white w-24 outline-none focus:border-[#e8c547]"
-                                    onBlur={() => !newPortfolioName && setIsCreating(false)}
-                                />
-                                <button type="submit" className="text-[#e8c547] hover:bg-white/10 p-1.5 rounded-md"><FaPlus size={10} /></button>
-                            </form>
-                        ) : (
-                            <button
-                                onClick={() => setIsCreating(true)}
-                                className="p-2 text-gray-400 hover:text-[#e8c547] transition-colors"
-                                title="Create Portfolio"
-                            >
-                                <FaPlus size={12} />
-                            </button>
-                        )}
-                        {portfolios.length > 1 && (
-                            <button
-                                onClick={() => {
-                                    if (confirm('Delete current portfolio?')) deletePortfolio(currentPortfolioId);
-                                }}
-                                className="p-2 text-gray-600 hover:text-red-400 transition-colors"
-                                title="Delete Current Portfolio"
-                            >
-                                <FaTrash size={12} />
-                            </button>
-                        )}
-                        <button
-                            onClick={handleReset}
-                            className="p-2 text-gray-600 hover:text-red-500 transition-colors ml-1"
-                            title="RESET ALL DATA"
-                        >
-                            <FaTrash size={12} />
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            {/* Main Circle & Balance */}
-            <div className="flex flex-col items-center justify-center py-2 relative">
-                <div className="relative w-64 h-64">
-                    {assets.length > 0 ? (
-                        <Doughnut data={chartData} options={options} />
+                    </select>
+                    <div className="flex-1" />
+                    {isCreating ? (
+                        <form onSubmit={handleCreatePortfolio} className="flex gap-2">
+                            <input
+                                autoFocus
+                                value={newPortfolioName}
+                                onChange={(e) => setNewPortfolioName(e.target.value)}
+                                placeholder="Name..."
+                            className="bg-white/10 border border-white/20 rounded-lg px-3 py-1.5 text-sm text-white w-28 outline-none focus:border-[#e8c547] focus:ring-2 focus:ring-[#e8c547]/40"
+                            />
+                            <button type="submit" className="bg-[#e8c547] text-black px-3 py-1.5 rounded-lg text-sm font-bold focus:outline-none focus:ring-2 focus:ring-[#e8c547]/70">Add</button>
+                            <button type="button" onClick={() => setIsCreating(false)} aria-label="Cancel portfolio creation" className="text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-[#e8c547]/70 rounded">✕</button>
+                        </form>
                     ) : (
-                        <div className="w-full h-full rounded-full border-8 border-white/5 flex items-center justify-center">
-                            <span className="text-white/30 text-sm">No Assets</span>
-                        </div>
+                        <button onClick={() => setIsCreating(true)} aria-label="Create portfolio" className="p-2 text-gray-500 hover:text-[#e8c547] hover:bg-white/5 rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-[#e8c547]/70">
+                            <FaPlus size={14} />
+                        </button>
                     )}
+                    <button onClick={() => setShowSettings(!showSettings)} aria-label="Toggle finance settings" aria-expanded={showSettings} className="p-2 text-gray-500 hover:text-white hover:bg-white/5 rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-[#e8c547]/70">
+                        <FaCog size={14} />
+                    </button>
+                </div>
 
-                    {/* Center Text */}
-                    <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                        <div className="text-white/50 text-xs mb-1">Total Balance</div>
-                        <div className="text-3xl font-bold text-white tracking-tight">
-                            {showBalance ? formatCurrency(getConvertedValue(stats.totalValue)) : '***'}
+                {/* Main Balance Display */}
+                <div className="flex items-center gap-8">
+                    {/* Chart */}
+                    <div className="relative w-28 h-28 shrink-0">
+                        {assets.length > 0 ? (
+                            <Doughnut data={chartData} options={options} />
+                        ) : (
+                            <div className="w-full h-full rounded-full border-4 border-dashed border-white/10 flex items-center justify-center">
+                                <span className="text-white/20 text-xs">No Data</span>
+                            </div>
+                        )}
+                        {/* Center text */}
+                        <div className="absolute inset-0 flex items-center justify-center">
+                            <span className="text-[10px] text-white/40 font-bold">{assets.length} ASSETS</span>
+                        </div>
+                    </div>
+
+                    {/* Stats */}
+                    <div className="flex-1 space-y-4">
+                        <div>
+                            <div className="text-xs text-white/40 uppercase tracking-wider mb-1">Total Balance</div>
+                            <div className="flex items-center gap-3">
+                                <span className="text-3xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+                                    {showBalance ? formatCurrency(getConvertedValue(stats.totalValue)) : '••••••'}
+                                </span>
+                                <button onClick={() => setShowBalance(!showBalance)} aria-label={showBalance ? 'Hide balance' : 'Show balance'} className="text-white/30 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-[#e8c547]/70 rounded">
+                                    {showBalance ? <FaEyeSlash size={16} /> : <FaEye size={16} />}
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className="flex gap-6">
+                            <div>
+                                <div className="text-[10px] text-white/30 uppercase">Cost Basis</div>
+                                <div className="text-sm text-white/60 font-mono">
+                                    {showBalance ? formatCurrency(getConvertedValue(stats.totalCost)) : '••••'}
+                                </div>
+                            </div>
+                            <div>
+                                <div className="text-[10px] text-white/30 uppercase">Profit/Loss</div>
+                                <div className={`text-sm font-mono flex items-center gap-1 ${stats.totalProfitLoss >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                                    {showBalance ? (
+                                        <>
+                                            {stats.totalProfitLoss >= 0 ? <FaArrowUp size={10} /> : <FaArrowDown size={10} />}
+                                            {formatCurrency(getConvertedValue(Math.abs(stats.totalProfitLoss)))}
+                                            <span className="text-[10px] opacity-60">({stats.totalProfitLossPercentage.toFixed(1)}%)</span>
+                                        </>
+                                    ) : '••••'}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Currency Toggle */}
+                        <div className="flex gap-1 pt-2">
+                            {['TRY', 'USD', 'EUR'].map(c => (
+                                <button
+                                    key={c}
+                                    onClick={() => setCurrency(c)}
+                                    aria-pressed={currency === c}
+                                    className={`px-3 py-1 text-xs font-bold rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-[#e8c547]/70 ${currency === c
+                                        ? 'bg-[#e8c547] text-black shadow-lg shadow-[#e8c547]/20'
+                                        : 'bg-white/5 text-gray-500 hover:text-white hover:bg-white/10'
+                                        }`}
+                                >
+                                    {c}
+                                </button>
+                            ))}
                         </div>
                     </div>
                 </div>
 
-                {/* Privacy Toggle */}
-                <button onClick={() => setShowBalance(!showBalance)} className="mt-4 text-white/30 hover:text-white transition-colors">
-                    {showBalance ? <FaEyeSlash /> : <FaEye />}
-                </button>
+                {/* Settings Panel (Collapsible) */}
+                {showSettings && (
+                    <div className="mt-6 pt-4 border-t border-white/10 flex flex-wrap gap-3">
+                        <input type="file" accept=".json" ref={fileInputRef} className="hidden" onChange={handleFileChange} />
+                        <button onClick={handleImportClick} className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-sm text-gray-400 hover:text-white transition-all focus:outline-none focus:ring-2 focus:ring-[#e8c547]/70">
+                            <FaFileImport /> Import
+                        </button>
+                        <button onClick={exportData} className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-sm text-gray-400 hover:text-white transition-all focus:outline-none focus:ring-2 focus:ring-[#e8c547]/70">
+                            <FaFileExport /> Export
+                        </button>
+                        {portfolios.length > 1 && (
+                            <button onClick={() => window.confirm(`Delete portfolio "${currentPortfolio?.name}" from this browser?`) && deletePortfolio(currentPortfolioId)} className="flex items-center gap-2 px-4 py-2 bg-red-500/10 hover:bg-red-500/20 rounded-lg text-sm text-red-400 hover:text-red-300 transition-all focus:outline-none focus:ring-2 focus:ring-red-400/70">
+                                <FaTrash /> Delete Portfolio
+                            </button>
+                        )}
+                        <button onClick={handleReset} className="ml-auto flex items-center gap-2 px-4 py-2 bg-red-900/20 hover:bg-red-900/30 border border-red-500/20 rounded-lg text-sm text-red-500 hover:text-red-400 transition-all focus:outline-none focus:ring-2 focus:ring-red-400/70">
+                            Reset All Data
+                        </button>
+                        {importStatus && (
+                            <p
+                                role="status"
+                                className={`basis-full text-xs ${importStatus.type === 'success' ? 'text-emerald-400' : 'text-red-400'}`}
+                            >
+                                {importStatus.message}
+                            </p>
+                        )}
+                    </div>
+                )}
             </div>
 
-            {/* Stats Grid */}
-            <div className="grid grid-cols-2 gap-4">
-                {/* Cost */}
-                <div className="bg-white/5 rounded-2xl p-4 border border-white/5 flex flex-col items-center">
-                    <span className="text-xs text-white/50 uppercase font-bold mb-1">Total Cost</span>
-                    <span className="text-lg font-mono text-white/80">
-                        {showBalance ? formatCurrency(getConvertedValue(stats.totalCost)) : '***'}
-                    </span>
-                </div>
+            {/* Precious Metals Cards */}
+            <div className="grid grid-cols-3 gap-3">
+                {METALS.map(metal => {
+                    const price = marketRates[metal.key];
+                    return (
+                        <div key={metal.key} className={`${metal.bg} rounded-2xl border border-white/10 p-4 relative overflow-hidden group hover:border-white/20 transition-all`}>
+                            <div className={`absolute inset-0 bg-gradient-to-br ${metal.color} opacity-0 group-hover:opacity-5 transition-opacity`} />
+                            <div className="relative">
+                                <div className="text-[10px] text-white/40 uppercase tracking-wider mb-1">{metal.label}</div>
+                                <div className={`text-xl font-bold bg-gradient-to-r ${metal.color} bg-clip-text text-transparent`}>
+                                    {price ? `₺${formatCompact(price)}` : '...'}
+                                </div>
+                                <div className="text-[10px] text-white/30">{metal.unit}</div>
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
 
-                {/* Profit/Loss */}
-                <div className="bg-white/5 rounded-2xl p-4 border border-white/5 flex flex-col items-center relative overflow-hidden group">
-                    <span className="text-xs text-white/50 uppercase font-bold mb-1">Profit / Loss</span>
-                    <div className={`flex items-center gap-2 font-bold text-lg ${stats.totalProfitLoss >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                        {showBalance ? (
-                            <>
-                                {stats.totalProfitLoss >= 0 ? <FaArrowUp size={12} /> : <FaArrowDown size={12} />}
-                                {formatCurrency(getConvertedValue(Math.abs(stats.totalProfitLoss)))}
-                            </>
-                        ) : '***'}
-                    </div>
-                    {/* Percentage Badge */}
-                    <div className={`text-xs px-2 py-0.5 rounded-full mt-1 ${stats.totalProfitLoss >= 0 ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
-                        {showBalance ? `${stats.totalProfitLossPercentage.toFixed(2)}%` : '%**'}
-                    </div>
+            {/* Other Rates - Compact Row */}
+            <div className="bg-white/5 rounded-xl border border-white/10 p-3">
+                <div className="flex items-center justify-between gap-4 overflow-x-auto">
+                    {OTHER_RATES.map(rate => {
+                        const price = marketRates[rate.key];
+                        return (
+                            <div key={rate.key} className="flex items-center gap-2 min-w-0">
+                                <span className="text-base">{rate.icon}</span>
+                                <div className="min-w-0">
+                                    <div className="text-[10px] text-white/40 truncate">{rate.label}</div>
+                                    <div className="text-sm font-mono text-white/80">
+                                        {price ? `₺${formatCompact(price)}` : '...'}
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
         </div>

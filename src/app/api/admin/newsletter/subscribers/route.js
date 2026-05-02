@@ -1,28 +1,41 @@
 import { NextResponse } from 'next/server';
 import { connectDB } from '../../../../../lib/mongodb';
 import Newsletter from '../../../../../models/Newsletter';
+import {
+  clampString,
+  createSafeRegex,
+  jsonError,
+  readJsonLimited,
+  validateEmail,
+  validateEnum,
+} from '../../../../../lib/serverSecurity';
+
+const SUBSCRIBER_STATUSES = ['active', 'unsubscribed', 'bounced'];
+const FREQUENCIES = ['daily', 'weekly', 'monthly'];
+const CATEGORIES = ['tech', 'blockchain', 'ai', 'projects', 'tutorials'];
 
 export async function GET(request) {
   try {
     await connectDB();
 
     const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get('page')) || 1;
-    const limit = parseInt(searchParams.get('limit')) || 50;
+    const page = Math.max(1, parseInt(searchParams.get('page'), 10) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit'), 10) || 50));
     const status = searchParams.get('status');
-    const search = searchParams.get('search');
+    const search = clampString(searchParams.get('search'), 100);
 
     // Build query
     let query = {};
-    
+
     if (status && status !== 'all') {
-      query.status = status;
+      query.status = validateEnum(status, SUBSCRIBER_STATUSES, 'status');
     }
-    
+
     if (search) {
+      const safeSearch = createSafeRegex(search);
       query.$or = [
-        { email: { $regex: search, $options: 'i' } },
-        { name: { $regex: search, $options: 'i' } }
+        { email: safeSearch },
+        { name: safeSearch }
       ];
     }
 
@@ -51,20 +64,19 @@ export async function GET(request) {
 
   } catch (error) {
     console.error('Error fetching newsletter subscribers:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch subscribers' },
-      { status: 500 }
-    );
+    return jsonError(error, 500);
   }
 }
 
 export async function POST(request) {
   try {
-    const { email, name, preferences } = await request.json();
+    const { email, name, preferences = {} } = await readJsonLimited(request, { maxBytes: 8 * 1024 });
+    const normalizedEmail = clampString(email, 254).toLowerCase();
+    const normalizedName = clampString(name, 120);
 
-    if (!email) {
+    if (!validateEmail(normalizedEmail)) {
       return NextResponse.json(
-        { error: 'Email is required' },
+        { error: 'Valid email is required' },
         { status: 400 }
       );
     }
@@ -72,8 +84,8 @@ export async function POST(request) {
     await connectDB();
 
     // Check if email already exists
-    const existingSubscriber = await Newsletter.findOne({ email: email.toLowerCase() });
-    
+    const existingSubscriber = await Newsletter.findOne({ email: normalizedEmail });
+
     if (existingSubscriber) {
       return NextResponse.json(
         { error: 'This email is already subscribed' },
@@ -81,15 +93,24 @@ export async function POST(request) {
       );
     }
 
+    const frequency = preferences.frequency
+      ? validateEnum(preferences.frequency, FREQUENCIES, 'frequency')
+      : 'weekly';
+    const categories = Array.isArray(preferences.categories)
+      ? preferences.categories
+          .filter((category) => CATEGORIES.includes(category))
+          .slice(0, 5)
+      : ['tech', 'projects'];
+
     // Create new subscriber
     const subscriber = new Newsletter({
-      email: email.toLowerCase(),
-      name: name || '',
+      email: normalizedEmail,
+      name: normalizedName,
       status: 'active',
       source: 'admin',
-      preferences: preferences || {
-        frequency: 'weekly',
-        categories: ['tech', 'projects']
+      preferences: {
+        frequency,
+        categories: categories.length ? categories : ['tech', 'projects']
       }
     });
 
@@ -102,9 +123,6 @@ export async function POST(request) {
 
   } catch (error) {
     console.error('Error adding subscriber:', error);
-    return NextResponse.json(
-      { error: 'Failed to add subscriber' },
-      { status: 500 }
-    );
+    return jsonError(error, 500);
   }
-} 
+}

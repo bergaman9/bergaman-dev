@@ -13,7 +13,6 @@ export default function MiniAppCard({
     badge = null, // "New", "Beta", "Hot"
     isOpen,
     onClick,
-    ...props
 }) {
 
     const themeColors = {
@@ -22,43 +21,48 @@ export default function MiniAppCard({
             border: 'border-[#e8c547]',
             bg: 'bg-[#e8c547]',
             hover: 'group-hover:border-[#e8c547]/60 group-hover:shadow-[0_0_20px_rgba(232,197,71,0.2)]',
-            gradient: 'from-[#e8c547]/10 to-transparent'
+            gradient: 'from-[#e8c547]/10 to-transparent',
+            button: 'border-[#e8c547]/25 bg-[#e8c547]/10 text-[#e8c547] hover:bg-[#e8c547] hover:text-black'
         },
         blue: {
             accent: 'text-cyan-400',
             border: 'border-cyan-500',
             bg: 'bg-cyan-500',
             hover: 'group-hover:border-cyan-500/60 group-hover:shadow-[0_0_20px_rgba(34,211,238,0.2)]',
-            gradient: 'from-cyan-500/10 to-transparent'
+            gradient: 'from-cyan-500/10 to-transparent',
+            button: 'border-cyan-500/25 bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500 hover:text-black'
         },
         red: {
             accent: 'text-rose-400',
             border: 'border-rose-500',
             bg: 'bg-rose-500',
             hover: 'group-hover:border-rose-500/60 group-hover:shadow-[0_0_20px_rgba(251,113,133,0.2)]',
-            gradient: 'from-rose-500/10 to-transparent'
+            gradient: 'from-rose-500/10 to-transparent',
+            button: 'border-rose-500/25 bg-rose-500/10 text-rose-400 hover:bg-rose-500 hover:text-black'
         },
         purple: {
             accent: 'text-fuchsia-400',
             border: 'border-fuchsia-500',
             bg: 'bg-fuchsia-500',
             hover: 'group-hover:border-fuchsia-500/60 group-hover:shadow-[0_0_20px_rgba(232,121,249,0.2)]',
-            gradient: 'from-fuchsia-500/10 to-transparent'
+            gradient: 'from-fuchsia-500/10 to-transparent',
+            button: 'border-fuchsia-500/25 bg-fuchsia-500/10 text-fuchsia-400 hover:bg-fuchsia-500 hover:text-black'
         },
         pink: {
             accent: 'text-pink-400',
             border: 'border-pink-500',
             bg: 'bg-pink-500',
             hover: 'group-hover:border-pink-500/60 group-hover:shadow-[0_0_20px_rgba(244,114,182,0.2)]',
-            gradient: 'from-pink-500/10 to-transparent'
+            gradient: 'from-pink-500/10 to-transparent',
+            button: 'border-pink-500/25 bg-pink-500/10 text-pink-400 hover:bg-pink-500 hover:text-black'
         }
     };
 
     const t = themeColors[theme] || themeColors.gold;
 
-    // We'll use a local state for hover effect if needed, but for the accordion behavior, 
+    // We'll use a local state for hover effect if needed, but for the accordion behavior,
     // relying on the parent to pass 'isOpen' and 'onClick' is better for "one open at a time".
-    // However, to keep it simple and reusable as standalone, let's allow it to handle its own state 
+    // However, to keep it simple and reusable as standalone, let's allow it to handle its own state
     // OR accept props. Let's make it flexible.
 
     // Actually, to strictly follow "Problematic scrolling" fix, an Accordion (controlled by parent) is best.
@@ -77,7 +81,7 @@ export default function MiniAppCard({
         <div
             onClick={onClick}
             className={`
-                relative group bg-[#0e1b12]/80 backdrop-blur-md border border-white/5 rounded-2xl overflow-hidden 
+                relative group bg-[#0e1b12]/80 backdrop-blur-md border border-white/5 rounded-2xl overflow-hidden
                 transition-all duration-500 cursor-pointer
                 ${isOpen ? 'shadow-2xl translate-y-[-4px] ' + t.hover : 'hover:bg-white/5 hover:border-white/10'}
                 ${t.border}
@@ -128,12 +132,15 @@ export default function MiniAppCard({
                 {/* Image/Banner Area */}
                 <div className="relative h-32 w-full overflow-hidden bg-black/20">
                     {image ? (
-                        <SafeImage
-                            src={image}
-                            alt={title}
-                            fill
-                            className={`object-cover transition-transform duration-700 group-hover:scale-105 ${status === 'coming_soon' ? 'grayscale opacity-50' : ''}`}
-                        />
+                        <>
+                            <SafeImage
+                                src={image}
+                                alt={title}
+                                fill
+                                className={`object-cover transition-transform duration-700 group-hover:scale-105 ${status === 'coming_soon' ? 'grayscale opacity-55' : ''}`}
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-[#0e1b12] via-transparent to-black/20"></div>
+                        </>
                     ) : (
                         <div className={`w-full h-full flex items-center justify-center ${t.bg}/10`}>
                             <i className={`${icon} text-4xl ${t.accent} opacity-50`}></i>
@@ -150,7 +157,7 @@ export default function MiniAppCard({
                         <a
                             href={href}
                             onClick={(e) => e.stopPropagation()}
-                            className={`mt-auto w-full flex items-center justify-center gap-2 py-2.5 rounded-xl ${t.bg}/10 hover:${t.bg} ${t.accent} hover:text-black border border-${t.border}/20 transition-all duration-300 font-semibold text-sm group/btn`}
+                            className={`mt-auto w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border transition-all duration-300 font-semibold text-sm group/btn ${t.button}`}
                         >
                             Open Tool <i className="fas fa-arrow-right transform group-hover/btn:translate-x-1 transition-transform"></i>
                         </a>

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import mongoose from 'mongoose';
 import BlogPost from '../../../../../models/BlogPost';
 import { connectDB } from '../../../../../lib/mongodb';
+import { parseObjectId, readJsonLimited } from '../../../../../lib/serverSecurity';
 
 
 
@@ -9,17 +9,18 @@ import { connectDB } from '../../../../../lib/mongodb';
 export async function GET(request, { params }) {
   try {
     await connectDB();
-    
-    const { id } = await params;
+
+    const { id: rawId } = await params;
+    const id = parseObjectId(rawId, 'post ID');
     const post = await BlogPost.findById(id);
-    
+
     if (!post) {
       return NextResponse.json(
         { error: 'Post not found' },
         { status: 404 }
       );
     }
-    
+
     return NextResponse.json(post);
   } catch (error) {
     console.error('Error fetching post:', error);
@@ -34,34 +35,35 @@ export async function GET(request, { params }) {
 export async function PUT(request, { params }) {
   try {
     await connectDB();
-    
-    const { id } = await params;
-    const data = await request.json();
-    
+
+    const { id: rawId } = await params;
+    const id = parseObjectId(rawId, 'post ID');
+    const data = await readJsonLimited(request, { maxBytes: 128 * 1024 });
+
     const post = await BlogPost.findByIdAndUpdate(
       id,
       { ...data, updatedAt: new Date() },
       { new: true, runValidators: true }
     );
-    
+
     if (!post) {
       return NextResponse.json(
         { error: 'Post not found' },
         { status: 404 }
       );
     }
-    
+
     return NextResponse.json(post);
   } catch (error) {
     console.error('Error updating post:', error);
-    
+
     if (error.code === 11000) {
       return NextResponse.json(
         { error: 'A post with this slug already exists' },
         { status: 400 }
       );
     }
-    
+
     return NextResponse.json(
       { error: 'Failed to update post' },
       { status: 500 }
@@ -73,17 +75,18 @@ export async function PUT(request, { params }) {
 export async function DELETE(request, { params }) {
   try {
     await connectDB();
-    
-    const { id } = await params;
+
+    const { id: rawId } = await params;
+    const id = parseObjectId(rawId, 'post ID');
     const post = await BlogPost.findByIdAndDelete(id);
-    
+
     if (!post) {
       return NextResponse.json(
         { error: 'Post not found' },
         { status: 404 }
       );
     }
-    
+
     return NextResponse.json({ message: 'Post deleted successfully' });
   } catch (error) {
     console.error('Error deleting post:', error);
@@ -92,4 +95,4 @@ export async function DELETE(request, { params }) {
       { status: 500 }
     );
   }
-} 
+}

@@ -1,15 +1,32 @@
 import { NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
 import UserProgress from '@/models/UserProgress';
+import mongoose from 'mongoose';
+import { withRateLimit } from '@/lib/rateLimit';
+import { readJsonLimited } from '@/lib/serverSecurity';
 
-export async function POST(request) {
+const ALLOWED_STATUSES = new Set(['known', 'learning', 'want_to_learn']);
+
+async function handler(request) {
     try {
         await connectDB();
-        const { userId, wordId, status } = await request.json();
+        const { userId, wordId, status } = await readJsonLimited(request, { maxBytes: 4 * 1024 });
 
         if (!userId || !wordId || !status) {
             return NextResponse.json(
                 { success: false, error: 'Missing required fields' },
+                { status: 400 }
+            );
+        }
+
+        if (
+            typeof userId !== 'string' ||
+            userId.length > 120 ||
+            !mongoose.Types.ObjectId.isValid(wordId) ||
+            !ALLOWED_STATUSES.has(status)
+        ) {
+            return NextResponse.json(
+                { success: false, error: 'Invalid progress payload' },
                 { status: 400 }
             );
         }
@@ -50,6 +67,11 @@ export async function POST(request) {
         );
     }
 }
+
+export const POST = withRateLimit(handler, {
+    limit: 60,
+    windowMs: 60 * 1000,
+});
 
 export async function GET(request) {
     try {

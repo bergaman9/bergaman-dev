@@ -3,6 +3,9 @@ import { connectDB } from '../../../../../../../lib/mongodb';
 import NewsletterCampaign from '../../../../../../../models/NewsletterCampaign';
 import Newsletter from '../../../../../../../models/Newsletter';
 import { marked } from 'marked';
+import nodemailer from 'nodemailer';
+import sanitizeHtml from 'sanitize-html';
+import { escapeHtml } from '@/lib/serverSecurity';
 
 export async function POST(request, { params }) {
   try {
@@ -48,8 +51,6 @@ export async function POST(request, { params }) {
 
     // Send emails
     try {
-      const nodemailer = require('nodemailer');
-      
       const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
@@ -59,7 +60,15 @@ export async function POST(request, { params }) {
       });
 
       // Convert markdown to HTML
-      const htmlContent = marked(campaign.content);
+      const htmlContent = sanitizeHtml(marked.parse(campaign.content || ''), {
+        allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img', 'h1', 'h2']),
+        allowedAttributes: {
+          ...sanitizeHtml.defaults.allowedAttributes,
+          a: ['href', 'name', 'target', 'rel'],
+          img: ['src', 'alt', 'title', 'width', 'height'],
+        },
+        allowedSchemes: ['http', 'https', 'mailto'],
+      });
 
       let sentCount = 0;
       let failedCount = 0;
@@ -68,11 +77,11 @@ export async function POST(request, { params }) {
       const batchSize = 10;
       for (let i = 0; i < subscribers.length; i += batchSize) {
         const batch = subscribers.slice(i, i + batchSize);
-        
+
         const emailPromises = batch.map(async (subscriber) => {
           try {
             const unsubscribeUrl = `${process.env.NEXTAUTH_URL || 'https://bergaman.dev'}/newsletter/unsubscribe?email=${encodeURIComponent(subscriber.email)}`;
-            
+
             const mailOptions = {
               from: process.env.EMAIL_USER,
               to: subscriber.email,
@@ -83,10 +92,10 @@ export async function POST(request, { params }) {
                 <head>
                   <meta charset="UTF-8">
                   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                  <title>${campaign.subject}</title>
+                  <title>${escapeHtml(campaign.subject)}</title>
                   <style>
                     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-                    
+
                     body {
                       margin: 0;
                       padding: 0;
@@ -95,7 +104,7 @@ export async function POST(request, { params }) {
                       color: #333;
                       line-height: 1.6;
                     }
-                    
+
                     .email-container {
                       max-width: 600px;
                       margin: 0 auto;
@@ -105,14 +114,14 @@ export async function POST(request, { params }) {
                       box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
                       border: 1px solid rgba(232, 197, 71, 0.2);
                     }
-                    
+
                     .email-header {
                       background: linear-gradient(135deg, #1e1b4b 0%, #3730a3 100%);
                       padding: 40px 30px;
                       text-align: center;
                       position: relative;
                     }
-                    
+
                     .email-header::after {
                       content: '';
                       position: absolute;
@@ -122,12 +131,12 @@ export async function POST(request, { params }) {
                       height: 6px;
                       background: linear-gradient(90deg, #e8c547 0%, #d4b445 100%);
                     }
-                    
+
                     .logo {
                       font-size: 42px;
                       margin-bottom: 10px;
                     }
-                    
+
                     .header-title {
                       margin: 0;
                       color: white;
@@ -135,68 +144,68 @@ export async function POST(request, { params }) {
                       font-weight: 700;
                       letter-spacing: -0.5px;
                     }
-                    
+
                     .header-subtitle {
                       margin: 5px 0 0;
                       color: rgba(255, 255, 255, 0.8);
                       font-size: 16px;
                       font-weight: 500;
                     }
-                    
+
                     .email-content {
                       padding: 40px 30px;
                       color: #e2e8f0;
                       font-size: 16px;
                       line-height: 1.7;
                     }
-                    
-                    .email-content h1, 
-                    .email-content h2, 
+
+                    .email-content h1,
+                    .email-content h2,
                     .email-content h3 {
                       color: #e8c547;
                       margin-top: 30px;
                       margin-bottom: 15px;
                     }
-                    
+
                     .email-content h1 {
                       font-size: 26px;
                     }
-                    
+
                     .email-content h2 {
                       font-size: 22px;
                     }
-                    
+
                     .email-content h3 {
                       font-size: 18px;
                     }
-                    
+
                     .email-content p {
                       margin-bottom: 20px;
                     }
-                    
+
                     .email-content a {
                       color: #e8c547;
                       text-decoration: underline;
                       font-weight: 500;
                     }
-                    
-                    .email-content ul, 
+
+                    .email-content ul,
                     .email-content ol {
                       margin-bottom: 20px;
                       padding-left: 20px;
                     }
-                    
+
                     .email-content li {
                       margin-bottom: 8px;
                     }
-                    
+
                     .email-content img {
                       max-width: 100%;
                       height: auto;
                       border-radius: 8px;
                       margin: 20px 0;
                     }
-                    
+
                     .email-content blockquote {
                       border-left: 4px solid #e8c547;
                       padding-left: 15px;
@@ -204,14 +213,14 @@ export async function POST(request, { params }) {
                       font-style: italic;
                       color: #94a3b8;
                     }
-                    
+
                     .email-content code {
                       background-color: rgba(0, 0, 0, 0.2);
                       padding: 2px 5px;
                       border-radius: 4px;
                       font-family: monospace;
                     }
-                    
+
                     .email-content pre {
                       background-color: rgba(0, 0, 0, 0.2);
                       padding: 15px;
@@ -219,36 +228,36 @@ export async function POST(request, { params }) {
                       overflow-x: auto;
                       font-family: monospace;
                     }
-                    
+
                     .email-footer {
                       background-color: rgba(30, 27, 75, 0.8);
                       padding: 30px;
                       text-align: center;
                       border-top: 1px solid rgba(232, 197, 71, 0.2);
                     }
-                    
+
                     .footer-text {
                       margin: 0;
                       font-size: 14px;
                       color: #94a3b8;
                     }
-                    
+
                     .footer-links {
                       margin: 15px 0 0;
                       font-size: 13px;
                       color: #64748b;
                     }
-                    
+
                     .footer-links a {
                       color: #64748b;
                       text-decoration: underline;
                       margin: 0 8px;
                     }
-                    
+
                     .social-icons {
                       margin-top: 20px;
                     }
-                    
+
                     .social-icon {
                       display: inline-block;
                       margin: 0 8px;
@@ -256,7 +265,7 @@ export async function POST(request, { params }) {
                       font-size: 18px;
                       text-decoration: none;
                     }
-                    
+
                     .btn {
                       display: inline-block;
                       background: linear-gradient(90deg, #e8c547 0%, #d4b445 100%);
@@ -268,24 +277,24 @@ export async function POST(request, { params }) {
                       margin: 20px 0;
                       text-align: center;
                     }
-                    
+
                     @media only screen and (max-width: 600px) {
                       .email-container {
                         border-radius: 0;
                       }
-                      
+
                       .email-header {
                         padding: 30px 20px;
                       }
-                      
+
                       .email-content {
                         padding: 30px 20px;
                       }
-                      
+
                       .email-footer {
                         padding: 20px;
                       }
-                      
+
                       .header-title {
                         font-size: 28px;
                       }
@@ -301,18 +310,18 @@ export async function POST(request, { params }) {
                       <p class="header-subtitle">The Dragon's Domain</p>
                     </div>
                     ` : ''}
-                    
+
                     <div class="email-content">
                       ${htmlContent}
                     </div>
-                    
+
                     ${campaign.template.settings.includeFooter ? `
                     <div class="email-footer">
                       <p class="footer-text">
                         You're receiving this because you subscribed to Bergaman's newsletter.
                       </p>
                       <p class="footer-links">
-                        <a href="${unsubscribeUrl}">Unsubscribe</a> | 
+                        <a href="${unsubscribeUrl}">Unsubscribe</a> |
                         <a href="https://bergaman.dev">Visit Website</a>
                       </p>
                       <div class="social-icons">
@@ -337,13 +346,13 @@ export async function POST(request, { params }) {
             await transporter.sendMail(mailOptions);
             sentCount++;
           } catch (error) {
-            console.error(`Failed to send email to ${subscriber.email}:`, error);
+            console.error('Failed to send newsletter email:', error.message);
             failedCount++;
           }
         });
 
         await Promise.all(emailPromises);
-        
+
         // Add delay between batches
         if (i + batchSize < subscribers.length) {
           await new Promise(resolve => setTimeout(resolve, 1000));
@@ -368,11 +377,11 @@ export async function POST(request, { params }) {
 
     } catch (emailError) {
       console.error('Error sending campaign emails:', emailError);
-      
+
       // Update campaign status to failed
       campaign.status = 'failed';
       await campaign.save();
-      
+
       return NextResponse.json(
         { error: 'Failed to send campaign emails' },
         { status: 500 }
@@ -386,4 +395,4 @@ export async function POST(request, { params }) {
       { status: 500 }
     );
   }
-} 
+}

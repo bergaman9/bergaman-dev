@@ -1,57 +1,56 @@
 import { NextResponse } from 'next/server';
 import { connectDB } from '../../../../lib/mongodb';
 import Contact from '../../../../models/Contact';
+import {
+  clampString,
+  createContactReplyToken,
+  createSafeRegex,
+  getSiteBaseUrl,
+  jsonError,
+  validateEnum,
+} from '../../../../lib/serverSecurity';
+
+const CONTACT_STATUSES = ['new', 'read', 'replied', 'active', 'closed'];
 
 export async function GET(request) {
   try {
-    console.log('Connecting to database...');
     await connectDB();
-    console.log('Database connected successfully');
 
     const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get('page')) || 1;
-    const limit = parseInt(searchParams.get('limit')) || 10;
+    const page = Math.max(1, parseInt(searchParams.get('page'), 10) || 1);
+    const limit = Math.min(50, Math.max(1, parseInt(searchParams.get('limit'), 10) || 10));
     const status = searchParams.get('status');
-    const search = searchParams.get('search');
-
-    console.log('Query parameters:', { page, limit, status, search });
+    const search = clampString(searchParams.get('search'), 100);
 
     // Build query
     let query = {};
-    
+
     if (status && status !== 'all') {
-      query.status = status;
-    }
-    
-    if (search) {
-      query.$or = [
-        { name: { $regex: search, $options: 'i' } },
-        { email: { $regex: search, $options: 'i' } },
-        { message: { $regex: search, $options: 'i' } }
-      ];
+      query.status = validateEnum(status, CONTACT_STATUSES, 'status');
     }
 
-    console.log('MongoDB query:', query);
+    if (search) {
+      const safeSearch = createSafeRegex(search);
+      query.$or = [
+        { name: safeSearch },
+        { email: safeSearch },
+        { message: safeSearch }
+      ];
+    }
 
     // Calculate skip
     const skip = (page - 1) * limit;
 
-    // Fetch contacts with pagination
-    console.log('Fetching contacts...');
     const contacts = await Contact.find(query)
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
       .lean();
 
-    console.log(`Found ${contacts.length} contacts`);
-
     // Get total count
     const total = await Contact.countDocuments(query);
-    console.log(`Total contacts: ${total}`);
 
     // Get statistics
-    console.log('Calculating statistics...');
     const stats = await Contact.aggregate([
       {
         $group: {
@@ -61,8 +60,6 @@ export async function GET(request) {
       }
     ]);
 
-    console.log('Statistics:', stats);
-
     const statistics = {
       total: await Contact.countDocuments(),
       new: stats.find(s => s._id === 'new')?.count || 0,
@@ -70,8 +67,16 @@ export async function GET(request) {
       replied: stats.find(s => s._id === 'replied')?.count || 0
     };
 
+    const siteBaseUrl = getSiteBaseUrl();
+    const contactsWithReplyLinks = await Promise.all(
+      contacts.map(async (contact) => ({
+        ...contact,
+        replyUrl: `${siteBaseUrl}/contact/reply/${await createContactReplyToken(contact._id)}`,
+      }))
+    );
+
     const response = {
-      contacts,
+      contacts: contactsWithReplyLinks,
       pagination: {
         page,
         limit,
@@ -81,16 +86,10 @@ export async function GET(request) {
       statistics
     };
 
-    console.log('Sending response:', response);
-
     return NextResponse.json(response);
 
   } catch (error) {
-    console.error('Error in admin contacts API:', error);
-    console.error('Error stack:', error.stack);
-    return NextResponse.json(
-      { error: 'Failed to fetch contacts', details: error.message },
-      { status: 500 }
-    );
+    console.error('Error in admin contacts API:', error.message);
+    return jsonError(error, 500);
   }
-} 
+}

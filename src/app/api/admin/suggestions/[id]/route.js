@@ -1,27 +1,29 @@
-import connectDB from '@/lib/mongodb';
+import { connectDB } from '@/lib/mongodb';
 import { NextResponse } from 'next/server';
 import Suggestion from '@/models/Suggestion';
+import { parseObjectId, readJsonLimited } from '@/lib/serverSecurity';
 
 export async function PUT(request, { params }) {
   try {
-    const { id } = await params;
+    const { id: rawId } = await params;
+    const id = parseObjectId(rawId, 'suggestion ID');
     await connectDB();
-    
-    const data = await request.json();
-    
+
+    const data = await readJsonLimited(request, { maxBytes: 16 * 1024 });
+
     const suggestion = await Suggestion.findByIdAndUpdate(
       id,
       { ...data, updatedAt: new Date() },
       { new: true }
     );
-    
+
     if (!suggestion) {
       return NextResponse.json(
         { success: false, error: 'Suggestion not found' },
         { status: 404 }
       );
     }
-    
+
     return NextResponse.json({
       success: true,
       data: suggestion
@@ -37,18 +39,19 @@ export async function PUT(request, { params }) {
 
 export async function DELETE(request, { params }) {
   try {
-    const { id } = await params;
+    const { id: rawId } = await params;
+    const id = parseObjectId(rawId, 'suggestion ID');
     await connectDB();
-    
+
     const suggestion = await Suggestion.findByIdAndDelete(id);
-    
+
     if (!suggestion) {
       return NextResponse.json(
         { success: false, error: 'Suggestion not found' },
         { status: 404 }
       );
     }
-    
+
     return NextResponse.json({
       success: true,
       message: 'Suggestion deleted successfully'
@@ -60,4 +63,4 @@ export async function DELETE(request, { params }) {
       { status: 500 }
     );
   }
-} 
+}

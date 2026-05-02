@@ -1,23 +1,26 @@
 import { NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
 import Recommendation from '@/models/Recommendation';
+import { parseObjectId, readJsonLimited } from '@/lib/serverSecurity';
 
 export async function GET(request, { params }) {
   try {
     await connectDB();
-    
-    const recommendation = await Recommendation.findById(params.id);
-    
+
+    const { id: rawId } = await params;
+    const id = parseObjectId(rawId, 'recommendation ID');
+    const recommendation = await Recommendation.findById(id);
+
     if (!recommendation) {
       return NextResponse.json(
         { success: false, error: 'Recommendation not found' },
         { status: 404 }
       );
     }
-    
-    return NextResponse.json({ 
-      success: true, 
-      recommendation 
+
+    return NextResponse.json({
+      success: true,
+      recommendation
     });
   } catch (error) {
     console.error('Error fetching recommendation:', error);
@@ -31,24 +34,26 @@ export async function GET(request, { params }) {
 export async function PUT(request, { params }) {
   try {
     await connectDB();
-    
-    const data = await request.json();
+
+    const { id: rawId } = await params;
+    const id = parseObjectId(rawId, 'recommendation ID');
+    const data = await readJsonLimited(request, { maxBytes: 32 * 1024 });
     const recommendation = await Recommendation.findByIdAndUpdate(
-      params.id,
+      id,
       data,
       { new: true, runValidators: true }
     );
-    
+
     if (!recommendation) {
       return NextResponse.json(
         { success: false, error: 'Recommendation not found' },
         { status: 404 }
       );
     }
-    
-    return NextResponse.json({ 
-      success: true, 
-      recommendation 
+
+    return NextResponse.json({
+      success: true,
+      recommendation
     });
   } catch (error) {
     console.error('Error updating recommendation:', error);
@@ -62,19 +67,21 @@ export async function PUT(request, { params }) {
 export async function DELETE(request, { params }) {
   try {
     await connectDB();
-    
-    const recommendation = await Recommendation.findByIdAndDelete(params.id);
-    
+
+    const { id: rawId } = await params;
+    const id = parseObjectId(rawId, 'recommendation ID');
+    const recommendation = await Recommendation.findByIdAndDelete(id);
+
     if (!recommendation) {
       return NextResponse.json(
         { success: false, error: 'Recommendation not found' },
         { status: 404 }
       );
     }
-    
-    return NextResponse.json({ 
-      success: true, 
-      message: 'Recommendation deleted successfully' 
+
+    return NextResponse.json({
+      success: true,
+      message: 'Recommendation deleted successfully'
     });
   } catch (error) {
     console.error('Error deleting recommendation:', error);
@@ -83,4 +90,4 @@ export async function DELETE(request, { params }) {
       { status: 500 }
     );
   }
-} 
+}

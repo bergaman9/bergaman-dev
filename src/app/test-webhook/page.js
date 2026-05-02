@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { SkeletonBox, SkeletonText } from '../components/Skeleton';
 
 export default function TestWebhook() {
+  const disabledInProduction = process.env.NODE_ENV === 'production';
   const [testData, setTestData] = useState({
     from: 'Test User <test@example.com>',
     to: 'omerguler53@gmail.com',
@@ -20,6 +22,16 @@ export default function TestWebhook() {
   useEffect(() => {
     checkAdminAuth();
   }, []);
+
+  if (disabledInProduction) {
+    return (
+      <main className="min-h-screen page-container">
+        <div className="page-content pt-4 pb-8">
+          <h1 className="text-2xl font-bold text-white">Not found</h1>
+        </div>
+      </main>
+    );
+  }
 
   const checkAdminAuth = async () => {
     try {
@@ -91,9 +103,10 @@ export default function TestWebhook() {
   if (authLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#0a1a0f] via-[#0e1b12] to-[#1a2e1a] text-[#d1d5db] flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#e8c547] mx-auto mb-4"></div>
-          <p className="text-gray-400">Checking authentication...</p>
+        <div className="w-full max-w-2xl rounded-lg border border-[#3e503e]/30 bg-[#2e3d29]/20 p-8">
+          <SkeletonBox className="mb-6 h-10 w-64" />
+          <SkeletonText lines={4} />
+          <SkeletonBox className="mt-6 h-11 w-36" />
         </div>
       </div>
     );
@@ -148,7 +161,7 @@ export default function TestWebhook() {
           {/* Test Data Form */}
           <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 rounded-lg p-6">
             <h2 className="text-xl font-semibold text-[#e8c547] mb-4">Test Data</h2>
-            
+
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-[#e8c547] mb-2">From</label>
@@ -212,7 +225,7 @@ export default function TestWebhook() {
               >
                 {loading ? (
                   <>
-                    <i className="fas fa-spinner fa-spin mr-2"></i>
+                    <i className="fas fa-hourglass-half mr-2"></i>
                     Testing...
                   </>
                 ) : (
@@ -222,7 +235,7 @@ export default function TestWebhook() {
                   </>
                 )}
               </button>
-              
+
               <button
                 onClick={testFormData}
                 disabled={loading}
@@ -230,7 +243,7 @@ export default function TestWebhook() {
               >
                 {loading ? (
                   <>
-                    <i className="fas fa-spinner fa-spin mr-2"></i>
+                    <i className="fas fa-hourglass-half mr-2"></i>
                     Testing...
                   </>
                 ) : (
@@ -249,13 +262,13 @@ export default function TestWebhook() {
               <i className="fas fa-terminal mr-2"></i>
               Response
             </h2>
-            
+
             <div className="bg-[#0e1b12] border border-[#3e503e] rounded p-4 min-h-[400px] max-h-[500px] overflow-auto">
               <pre className="text-sm text-[#d1d5db] whitespace-pre-wrap">
                 {response || 'No response yet. Click a test button to send a request.'}
               </pre>
             </div>
-            
+
             {response && (
               <button
                 onClick={() => setResponse('')}
@@ -274,7 +287,7 @@ export default function TestWebhook() {
             <i className="fas fa-info-circle mr-2"></i>
             Setup Instructions
           </h2>
-          
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div>
               <h3 className="font-semibold text-[#e8c547] mb-3">Webhook URL:</h3>
@@ -338,4 +351,4 @@ export default function TestWebhook() {
       </div>
     </div>
   );
-} 
+}

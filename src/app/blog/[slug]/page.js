@@ -11,6 +11,7 @@ import BlogImageGenerator from '../../components/BlogImageGenerator';
 import CommentSystem from '../../components/CommentSystem';
 import ImageModal from '../../components/ImageModal';
 import MarkdownRenderer from '../../components/MarkdownRenderer';
+import { SkeletonBox, SkeletonText } from '../../components/Skeleton';
 
 export default function BlogPost() {
   const params = useParams();
@@ -36,6 +37,20 @@ export default function BlogPost() {
     }
   }, [params.slug]);
 
+  const checkAdminAuthenticated = async () => {
+    try {
+      const response = await fetch('/api/admin/auth', {
+        method: 'GET',
+        credentials: 'include',
+        cache: 'no-store',
+      });
+      const data = await response.json();
+      return response.ok && data.authenticated;
+    } catch {
+      return false;
+    }
+  };
+
   const fetchPost = async () => {
     try {
       // First try to find by slug in MongoDB
@@ -47,9 +62,7 @@ export default function BlogPost() {
 
         // Check post visibility
         if (fetchedPost.visibility === 'private') {
-          // Check if user is admin
-          const adminAuth = localStorage.getItem('adminAuth');
-          if (adminAuth !== 'true') {
+          if (!(await checkAdminAuthenticated())) {
             setError('This post is private and only accessible to administrators.');
             setLoading(false);
             return;
@@ -103,8 +116,7 @@ export default function BlogPost() {
   const incrementViews = async (postId) => {
     try {
       // Only increment views if user is admin (since public API doesn't support updates)
-      const adminAuth = localStorage.getItem('adminAuth');
-      if (adminAuth === 'true') {
+      if (await checkAdminAuthenticated()) {
         await fetch(`/api/admin/posts/${postId}`, {
           method: 'PUT',
           headers: {
@@ -145,8 +157,7 @@ export default function BlogPost() {
     // Update likes in MongoDB (only if admin)
     if (post) {
       try {
-        const adminAuth = localStorage.getItem('adminAuth');
-        if (adminAuth === 'true') {
+          if (await checkAdminAuthenticated()) {
           await fetch(`/api/admin/posts/${post._id}`, {
             method: 'PUT',
             headers: {
@@ -213,9 +224,7 @@ export default function BlogPost() {
 
   const fetchAuthorProfile = async () => {
     try {
-      // Try to fetch settings, but don't fail if not authenticated
-      const adminAuth = localStorage.getItem('adminAuth');
-      if (adminAuth === 'true') {
+      if (await checkAdminAuthenticated()) {
         const response = await fetch('/api/admin/settings');
         if (response.ok) {
           const settings = await response.json();
@@ -248,9 +257,11 @@ export default function BlogPost() {
     return (
       <div className="page-container">
         <div className="page-content">
-          <div className="text-center py-16">
-            <i className="fas fa-spinner fa-spin text-4xl text-[#e8c547] mb-4"></i>
-            <p className="text-gray-400">Loading post...</p>
+          <div className="mx-auto max-w-4xl py-8" aria-busy="true">
+            <SkeletonBox className="mb-6 h-10 w-32" />
+            <SkeletonBox className="mb-6 h-12 w-3/4" />
+            <SkeletonBox className="mb-8 h-72 w-full" />
+            <SkeletonText lines={8} />
           </div>
         </div>
       </div>
@@ -333,9 +344,10 @@ export default function BlogPost() {
     return (
       <div className="page-container">
         <div className="page-content">
-          <div className="text-center py-16">
-            <i className="fas fa-spinner fa-spin text-4xl text-[#e8c547] mb-4"></i>
-            <p className="text-gray-400">Checking access permissions...</p>
+          <div className="mx-auto max-w-4xl py-8" aria-busy="true">
+            <SkeletonBox className="mb-6 h-10 w-32" />
+            <SkeletonBox className="mb-6 h-12 w-2/3" />
+            <SkeletonText lines={6} />
           </div>
         </div>
       </div>

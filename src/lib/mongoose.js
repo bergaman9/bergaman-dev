@@ -1,9 +1,9 @@
 import mongoose from 'mongoose';
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/bergaman-dev';
+const MONGODB_URI = process.env.MONGODB_URI;
 
 if (!MONGODB_URI) {
-  console.warn('MongoDB URI not found, using default local connection');
+  console.warn('MongoDB URI not found');
 }
 
 let cached = global.mongoose;
@@ -18,6 +18,10 @@ async function connectDB() {
   }
 
   if (!cached.promise) {
+    if (!MONGODB_URI) {
+      throw new Error('MONGODB_URI environment variable is not set');
+    }
+
     const opts = {
       bufferCommands: false,
     };
@@ -37,4 +41,4 @@ async function connectDB() {
   return cached.conn;
 }
 
-export default connectDB; 
+export default connectDB;

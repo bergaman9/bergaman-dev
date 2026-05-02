@@ -4,12 +4,10 @@
 export const dynamic = 'force-dynamic';
 
 import { useState, useEffect } from 'react';
-import { SITE_CONFIG } from '@/lib/constants';
 import RecommendationCard from '../components/RecommendationCard';
 import PageHeader from '../components/PageHeader';
-import Button from '../components/Button';
-import Loading from '../components/Loading';
 import Select from '../components/Select';
+import { PageSkeleton, SkeletonBox, SkeletonCard } from '../components/Skeleton';
 
 export default function RecommendationsPage() {
   const [recommendations, setRecommendations] = useState([]);
@@ -116,10 +114,34 @@ export default function RecommendationsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <i className="fas fa-circle-notch fa-spin text-4xl text-[#e8c547] mb-4"></i>
-          <p className="text-gray-400">Loading recommendations...</p>
+      <div className="min-h-screen">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-8 py-12">
+          <PageSkeleton
+            title="My Picks"
+            subtitle="Curated collection of movies, games, books, music, and more"
+            icon="fas fa-heart"
+            headerVariant="large"
+            controls={
+              <>
+                <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-4 mb-8">
+                  {categories.map((cat) => (
+                    <div key={cat.id} className="rounded-lg border border-[#3e503e]/30 bg-[#2e3d29]/30 p-4 text-center">
+                      <SkeletonBox className="mx-auto mb-2 h-8 w-8" rounded="rounded" />
+                      <SkeletonBox className="mx-auto h-4 w-16" rounded="rounded" />
+                      <SkeletonBox className="mx-auto mt-2 h-5 w-8" rounded="rounded" />
+                    </div>
+                  ))}
+                </div>
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <SkeletonBox className="h-10 w-24" />
+                  <SkeletonBox className="h-10 w-48" />
+                </div>
+              </>
+            }
+            gridClassName="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+            itemCount={6}
+            renderItem={(index) => <SkeletonCard key={index} imageHeight="h-56" rows={3} />}
+          />
         </div>
       </div>
     );
@@ -127,7 +149,7 @@ export default function RecommendationsPage() {
 
   return (
     <div className="min-h-screen">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 py-12">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-8 py-12">
         <PageHeader
           title="My Picks"
           subtitle="Curated collection of movies, games, books, music, and more"

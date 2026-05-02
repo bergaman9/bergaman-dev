@@ -6,6 +6,7 @@ import ImageUpload from '@/app/components/ImageUpload';
 import PageHeader from '@/app/components/PageHeader';
 import Button from '@/app/components/Button';
 import Modal from '@/app/components/Modal';
+import { SkeletonCard } from '@/app/components/Skeleton';
 
 export default function MediaManagement() {
   const [images, setImages] = useState([]);
@@ -66,7 +67,7 @@ export default function MediaManagement() {
 
   const deleteSelectedImages = async () => {
     if (selectedImages.length === 0) return;
-    
+
     const confirmDelete = confirm(`Are you sure you want to delete ${selectedImages.length} image(s)?`);
     if (!confirmDelete) return;
 
@@ -134,10 +135,10 @@ export default function MediaManagement() {
   // Group images based on selected grouping
   const groupImages = useCallback((images) => {
     if (groupBy === 'none') return { 'All Images': images };
-    
+
     return images.reduce((groups, image) => {
       let groupKey;
-      
+
       switch (groupBy) {
         case 'folder':
           groupKey = getImageFolder(image);
@@ -151,11 +152,11 @@ export default function MediaManagement() {
         default:
           groupKey = 'All Images';
       }
-      
+
       if (!groups[groupKey]) {
         groups[groupKey] = [];
       }
-      
+
       groups[groupKey].push(image);
       return groups;
     }, {});
@@ -168,14 +169,14 @@ export default function MediaManagement() {
     if (filterType !== 'all') {
       filtered = images.filter(image => getImageType(image) === filterType);
     }
-    
+
     // Filter by search term
     if (searchTerm) {
-      filtered = filtered.filter(image => 
+      filtered = filtered.filter(image =>
         image.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
-    
+
     // Sort images
     switch (sortBy) {
       case 'newest':
@@ -192,7 +193,7 @@ export default function MediaManagement() {
         });
         break;
     }
-    
+
     return filtered;
   }, [images, filterType, sortBy, searchTerm]);
 
@@ -218,9 +219,17 @@ export default function MediaManagement() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-16">
-        <i className="fas fa-spinner fa-spin text-4xl text-[#e8c547] mr-4"></i>
-        <p className="text-gray-400">Loading media...</p>
+      <div className="space-y-6">
+        <PageHeader
+          title="Media Management"
+          subtitle="Manage uploaded images and media files"
+          icon="fas fa-images"
+        />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" aria-busy="true">
+          {Array.from({ length: 8 }).map((_, index) => (
+            <SkeletonCard key={index} imageHeight="h-40" rows={2} footer={false} />
+          ))}
+        </div>
       </div>
     );
   }
@@ -264,7 +273,7 @@ export default function MediaManagement() {
                 <i className="fas fa-list"></i>
               </button>
             </div>
-            
+
             <select
               value={filterType}
               onChange={(e) => setFilterType(e.target.value)}
@@ -275,7 +284,7 @@ export default function MediaManagement() {
               <option value="document">Documents</option>
               <option value="other">Other</option>
             </select>
-            
+
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
@@ -285,7 +294,7 @@ export default function MediaManagement() {
               <option value="oldest">Oldest First</option>
               <option value="name">Name (A-Z)</option>
             </select>
-            
+
             <select
               value={groupBy}
               onChange={(e) => setGroupBy(e.target.value)}
@@ -296,7 +305,7 @@ export default function MediaManagement() {
               <option value="type">By Type</option>
               <option value="date">By Date</option>
             </select>
-            
+
             <div className="flex rounded-lg overflow-hidden border border-[#3e503e]/30">
               <button
                 onClick={() => setZoomLevel(Math.max(0, zoomLevel - 1))}
@@ -313,7 +322,7 @@ export default function MediaManagement() {
                 <i className="fas fa-search-plus"></i>
               </button>
             </div>
-            
+
             <div className="flex-grow">
               <input
                 type="text"
@@ -404,7 +413,7 @@ export default function MediaManagement() {
                     <span className="text-sm text-gray-400">({groupImages.length})</span>
                   </div>
                 )}
-                
+
                 {/* Grid View */}
                 {viewMode === 'grid' && (
                   <div className={`grid ${getGridColumns()} gap-4`}>
@@ -417,7 +426,7 @@ export default function MediaManagement() {
                             : 'border-[#3e503e] hover:border-[#e8c547]/50'
                         }`}
                       >
-                        <div 
+                        <div
                           className="aspect-square relative"
                           onClick={() => toggleImageSelection(image)}
                         >
@@ -427,11 +436,11 @@ export default function MediaManagement() {
                             fill
                             className="object-cover"
                           />
-                          
+
                           {/* Selection Overlay */}
                           <div className={`absolute inset-0 transition-opacity ${
-                            selectedImages.includes(image) 
-                              ? 'bg-[#e8c547]/20 opacity-100' 
+                            selectedImages.includes(image)
+                              ? 'bg-[#e8c547]/20 opacity-100'
                               : 'bg-black/20 opacity-0 group-hover:opacity-100'
                           }`}>
                             <div className="absolute top-2 right-2">
@@ -460,7 +469,7 @@ export default function MediaManagement() {
                           >
                             <i className="fas fa-search-plus"></i>
                           </button>
-                          
+
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
@@ -476,7 +485,7 @@ export default function MediaManagement() {
                     ))}
                   </div>
                 )}
-                
+
                 {/* List View */}
                 {viewMode === 'list' && (
                   <div className="overflow-x-auto">
@@ -498,11 +507,11 @@ export default function MediaManagement() {
                           const fileName = image.split('/').pop();
                           const fileType = getFileExtension(image);
                           const filePath = image.substring(0, image.lastIndexOf('/'));
-                          
+
                           return (
                             <tr key={index} className="border-b border-[#3e503e]/30 hover:bg-[#3e503e]/20">
                               <td className="py-2 px-4">
-                                <div 
+                                <div
                                   className="w-5 h-5 rounded-full border-2 flex items-center justify-center cursor-pointer"
                                   onClick={() => toggleImageSelection(image)}
                                 >
@@ -512,7 +521,7 @@ export default function MediaManagement() {
                                 </div>
                               </td>
                               <td className="py-2 px-4">
-                                <div 
+                                <div
                                   className="w-12 h-12 relative rounded overflow-hidden cursor-pointer"
                                   onClick={() => openZoomModal(image)}
                                 >
@@ -607,4 +616,4 @@ export default function MediaManagement() {
       </Modal>
     </div>
   );
-} 
+}

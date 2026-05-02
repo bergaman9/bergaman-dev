@@ -2,19 +2,22 @@
 import { NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
 import Word from '@/models/Word';
+import { clampString, createSafeRegex, parseObjectId, validateEnum } from '@/lib/serverSecurity';
 
 // Force dynamic rendering since we're using search params
 export const dynamic = 'force-dynamic';
+
+const WORD_LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
 export async function GET(request) {
     try {
         await connectDB();
 
         const { searchParams } = new URL(request.url);
-        const search = searchParams.get('search');
+        const search = clampString(searchParams.get('search'), 100);
         const level = searchParams.get('level');
-        const page = parseInt(searchParams.get('page')) || 1;
-        const limit = parseInt(searchParams.get('limit')) || 20;
+        const page = Math.max(1, parseInt(searchParams.get('page'), 10) || 1);
+        const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit'), 10) || 20));
 
         const ids = searchParams.get('ids');
 
@@ -22,16 +25,16 @@ export async function GET(request) {
         const query = {};
 
         if (ids) {
-            const idList = ids.split(',');
+            const idList = ids.split(',').slice(0, 100).map((id) => parseObjectId(id.trim()));
             query._id = { $in: idList };
             // Ignore other filters if exporting specific IDs
         } else {
             if (search) {
-                query.term = { $regex: search, $options: 'i' };
+                query.term = createSafeRegex(search);
             }
 
             if (level && level !== 'All') {
-                query.level = level;
+                query.level = validateEnum(level, WORD_LEVELS, 'level');
             }
         }
 
@@ -58,8 +61,8 @@ export async function GET(request) {
     } catch (error) {
         console.error('Error fetching words:', error);
         return NextResponse.json(
-            { success: false, error: 'Server Error' },
-            { status: 500 }
+            { success: false, error: error.message || 'Server Error' },
+            { status: error.status || 500 }
         );
     }
 }

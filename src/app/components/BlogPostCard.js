@@ -20,14 +20,15 @@ export default function BlogPostCard({ post, formatDate, formatCategoryName, ope
             src={post.image}
             alt={post.title}
             fill
+            sizes="(max-width: 768px) 100vw, 33vw"
             className="object-cover group-hover:scale-105 transition-transform duration-300"
             onClick={handleImageClick}
           />
         ) : (
           <div className="w-full h-full">
-            <BlogImageGenerator 
-              title={post.title} 
-              category={post.category} 
+            <BlogImageGenerator
+              title={post.title}
+              category={post.category}
             />
           </div>
         )}
@@ -42,12 +43,12 @@ export default function BlogPostCard({ post, formatDate, formatCategoryName, ope
           {formatDate(post.createdAt)}
         </div>
       </div>
-      
+
       <div className="p-4">
         <p className="text-gray-300 mb-4 text-sm line-clamp-2">
           {post.description}
         </p>
-        
+
         <div className="flex items-center justify-between text-xs text-gray-400">
           <span>
             <i className="fas fa-clock mr-1"></i>
@@ -71,4 +72,4 @@ export default function BlogPostCard({ post, formatDate, formatCategoryName, ope
       </div>
     </Link>
   );
-} 
+}

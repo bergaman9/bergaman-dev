@@ -3,30 +3,50 @@ import { connectDB } from '@/lib/mongodb';
 import Contact from '@/models/Contact';
 import mongoose from 'mongoose';
 import { withRateLimit } from '@/lib/rateLimit';
+import {
+  clampString,
+  normalizeClientIp,
+  parseObjectId,
+  readJsonLimited,
+  validateEmail,
+  verifyContactReplyToken,
+} from '@/lib/serverSecurity';
 
 async function handler(request) {
   try {
 
-    const { contactId, message, email } = await request.json();
+    const body = await readJsonLimited(request, { maxBytes: 16 * 1024 });
+    const token = clampString(body.contactId, 4096);
+    const message = clampString(body.message, 5000);
+    const email = clampString(body.email, 254).toLowerCase();
 
-    if (!contactId || !message?.trim() || !email?.trim()) {
+    if (!token || !message || !email) {
       return NextResponse.json(
         { success: false, error: 'Contact ID, message, and email are required' },
         { status: 400 }
       );
     }
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    const tokenResult = await verifyContactReplyToken(token);
+    if (!tokenResult.valid) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid or expired reply link' },
+        { status: 401 }
+      );
+    }
+
+    const contactId = tokenResult.contactId;
+
+    if (!validateEmail(email)) {
       return NextResponse.json(
         { success: false, error: 'Invalid email format' },
         { status: 400 }
       );
     }
 
-    // Validate ObjectId
-    if (!mongoose.Types.ObjectId.isValid(contactId)) {
+    try {
+      parseObjectId(contactId, 'contact ID');
+    } catch {
       return NextResponse.json(
         { success: false, error: 'Invalid contact ID' },
         { status: 400 }
@@ -43,19 +63,25 @@ async function handler(request) {
       );
     }
 
+    if (contact.email?.toLowerCase() !== email) {
+      return NextResponse.json(
+        { success: false, error: 'Email does not match this conversation' },
+        { status: 403 }
+      );
+    }
+
     // Get client IP and user agent
-    const forwarded = request.headers.get('x-forwarded-for');
-    const ipAddress = forwarded ? forwarded.split(',')[0] : request.headers.get('x-real-ip') || 'unknown';
+    const ipAddress = normalizeClientIp(request);
     const userAgent = request.headers.get('user-agent') || 'unknown';
 
     // Create reply object
     const newReply = {
       _id: new mongoose.Types.ObjectId(),
-      message: message.trim(),
+      message,
       type: 'user',
       createdAt: new Date(),
       read: false,
-      email: email.trim(),
+      email,
       senderName: contact.name, // Use the original contact name
       ipAddress,
       userAgent
@@ -75,7 +101,7 @@ async function handler(request) {
 
     // TODO: Send notification email to admin
     // This could be implemented with a service like SendGrid or AWS SES
-    
+
     return NextResponse.json({
       success: true,
       message: 'Reply sent successfully',
@@ -95,4 +121,4 @@ async function handler(request) {
 export const POST = withRateLimit(handler, {
   limit: 5,
   windowMs: 60 * 1000 // 1 minute
-}); 
+});

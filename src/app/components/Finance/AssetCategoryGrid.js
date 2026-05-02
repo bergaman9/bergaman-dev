@@ -2,18 +2,18 @@ import { useState } from 'react';
 import AssetListModal from './AssetListModal';
 import AddAssetModal from './AddAssetModal';
 import { useFinance } from '@/context/FinanceContext';
+import { FaPlus } from 'react-icons/fa';
 
 const CATEGORIES = [
-    { id: 'TL', name: 'Turkish Lira', icon: '₺' },
-    { id: 'BIST', name: 'Borsa Istanbul', icon: '📈' },
-    { id: 'EMTIA', name: 'Commodities', icon: '🏆' },
-    { id: 'DOVIZ', name: 'Foreign Exchange', icon: '💵' },
-    { id: 'FON', name: 'Investment Funds', icon: '📊' },
-    { id: 'KRIPTO', name: 'Crypto Assets', icon: '₿' },
-    { id: 'ABD', name: 'US Stocks', icon: '🌎' },
-    { id: 'DIGER', name: 'Other', icon: '📦' },
+    { id: 'TL', name: 'Turkish Lira', icon: '₺', gradient: 'from-red-500/20 to-red-900/10' },
+    { id: 'BIST', name: 'Borsa Istanbul', icon: '📈', gradient: 'from-blue-500/20 to-blue-900/10' },
+    { id: 'EMTIA', name: 'Commodities', icon: '🏆', gradient: 'from-yellow-500/20 to-amber-900/10' },
+    { id: 'DOVIZ', name: 'Foreign Exchange', icon: '💵', gradient: 'from-green-500/20 to-green-900/10' },
+    { id: 'FON', name: 'Investment Funds', icon: '📊', gradient: 'from-purple-500/20 to-purple-900/10' },
+    { id: 'KRIPTO', name: 'Crypto', icon: '₿', gradient: 'from-orange-500/20 to-orange-900/10' },
+    { id: 'ABD', name: 'US Stocks', icon: '🇺🇸', gradient: 'from-sky-500/20 to-sky-900/10' },
+    { id: 'DIGER', name: 'Other', icon: '📦', gradient: 'from-gray-500/20 to-gray-900/10' },
 ];
-
 
 export default function AssetCategoryGrid() {
     const [selectedCategory, setSelectedCategory] = useState(null);
@@ -24,12 +24,18 @@ export default function AssetCategoryGrid() {
     const getConvertedValue = (valInTry) => {
         if (!valInTry) return 0;
         if (currency === 'TRY') return valInTry;
-        const rate = marketRates[currency]; // USD or EUR
+        const rate = marketRates[currency];
         if (!rate) return valInTry;
         return valInTry / rate;
     };
 
-    const formatCurrency = (val) => new Intl.NumberFormat(currency === 'TRY' ? 'tr-TR' : 'en-US', { style: 'currency', currency: currency, maximumFractionDigits: 0 }).format(val);
+    const formatCurrency = (val) => {
+        // Show full price, no K/M rounding
+        return new Intl.NumberFormat(currency === 'TRY' ? 'tr-TR' : 'en-US', {
+            style: 'currency', currency: currency, maximumFractionDigits: 0
+        }).format(val);
+    };
+
 
     const handleCategoryClick = (category) => {
         setSelectedCategory(category);
@@ -56,33 +62,50 @@ export default function AssetCategoryGrid() {
     };
 
     return (
-        <div className="grid grid-cols-2 gap-3 pb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {CATEGORIES.map((cat) => {
                 const assets = getAssetsByCategory(cat.id);
                 const totalValueTry = assets.reduce((sum, item) => sum + (getAssetCurrentValue ? getAssetCurrentValue(item) : 0), 0);
                 const totalValueConverted = getConvertedValue(totalValueTry);
+                const hasAssets = assets.length > 0;
 
                 return (
                     <button
                         key={cat.id}
                         onClick={() => handleCategoryClick(cat.id)}
-                        className="group relative overflow-hidden rounded-2xl bg-[#0f0f0f] border border-white/5 hover:border-[#e8c547]/50 transition-all duration-300 p-4 text-left flex flex-col justify-between aspect-[1.2]"
+                        aria-label={`Open ${cat.name} assets`}
+                        className={`group relative overflow-hidden rounded-2xl bg-gradient-to-br ${cat.gradient} border border-white/10 hover:border-white/20 transition-all duration-300 p-5 text-left focus:outline-none focus:ring-2 focus:ring-[#e8c547]/70 motion-reduce:transition-none`}
                     >
-                        {/* Hover Gradient */}
-                        <div className="absolute inset-0 bg-[#e8c547]/0 group-hover:bg-[#e8c547]/5 transition-colors duration-300" />
+                        {/* Hover highlight */}
+                        <div className="absolute inset-0 bg-white/0 group-hover:bg-white/5 transition-colors duration-300" />
 
-                        <div className="relative z-10">
-                            <span className="text-2xl mb-2 block opacity-50 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300">{cat.icon}</span>
-                            <span className="text-xs font-bold text-gray-400 group-hover:text-white uppercase tracking-wider">{cat.name}</span>
+                        {/* Icon */}
+                        <div className="relative z-10 mb-4">
+                            <span className="text-3xl filter drop-shadow-lg group-hover:scale-110 transition-transform duration-300 inline-block">
+                                {cat.icon}
+                            </span>
                         </div>
 
-                        <div className="relative z-10 mt-auto">
-                            <div className="text-sm font-bold text-white group-hover:text-[#e8c547] transition-colors">
-                                {formatCurrency(totalValueConverted)}
+                        {/* Category Name */}
+                        <div className="relative z-10 mb-2">
+                            <span className="text-sm font-semibold text-white/90 group-hover:text-white transition-colors">
+                                {cat.name}
+                            </span>
+                        </div>
+
+                        {/* Value & Count */}
+                        <div className="relative z-10">
+                            <div className={`text-lg font-bold ${hasAssets ? 'text-white' : 'text-white/30'} group-hover:text-[#e8c547] transition-colors`}>
+                                {hasAssets ? formatCurrency(totalValueConverted) : '₺0'}
                             </div>
-                            <div className="text-[10px] text-gray-600 group-hover:text-gray-400">
-                                {assets.length} Assets
+                            <div className="text-xs text-white/40 mt-0.5">
+                                {assets.length} {assets.length === 1 ? 'asset' : 'assets'}
                             </div>
+                        </div>
+
+                        {/* Add indicator on hover */}
+                        <div className="absolute top-3 right-3 w-6 h-6 rounded-full bg-white/10 flex items-center justify-center opacity-60 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity" aria-hidden="true">
+                            <FaPlus size={10} className="text-white/60" />
                         </div>
                     </button>
                 );
@@ -106,7 +129,7 @@ export default function AssetCategoryGrid() {
                 onClose={handleCloseAddModal}
                 onAdd={handleAddAsset}
                 initialData={editingAsset}
-                initialCategory={selectedCategory} // Pass the currently selected category
+                initialCategory={selectedCategory}
             />
         </div>
     );

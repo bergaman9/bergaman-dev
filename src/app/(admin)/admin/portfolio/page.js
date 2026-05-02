@@ -10,6 +10,7 @@ import Input from '@/app/components/Input';
 import Select from '@/app/components/Select';
 import ProjectCard from '@/app/components/ProjectCard';
 import SafeImage from '@/app/components/SafeImage';
+import { SkeletonCard, SkeletonBox } from '@/app/components/Skeleton';
 
 export default function AdminPortfolio() {
   const [portfolios, setPortfolios] = useState([]);
@@ -56,13 +57,13 @@ export default function AdminPortfolio() {
     try {
       setLoading(true);
       const response = await fetch('/api/admin/portfolio');
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const data = await response.json();
-      
+
       if (data.success) {
         setPortfolios(data.portfolios || []);
       } else {
@@ -79,36 +80,36 @@ export default function AdminPortfolio() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Prepare submission data with proper validation
     const submissionData = {
       ...formData
     };
-    
+
     // Always set a valid image path
     if (!submissionData.image || submissionData.image.trim() === '') {
       submissionData.image = '/images/portfolio/default.svg';
     }
-    
+
     // Ensure category is valid
     if (submissionData.category === 'bots' || submissionData.category === 'Bots') {
       submissionData.category = 'Bot';
     }
-    
+
     // Ensure status is valid
     if (submissionData.status === 'published') {
       submissionData.status = 'active';
     }
-    
+
     try {
-      const url = editingPortfolio 
+      const url = editingPortfolio
         ? `/api/admin/portfolio/${editingPortfolio._id}`
         : '/api/admin/portfolio';
-      
+
       const method = editingPortfolio ? 'PUT' : 'POST';
-      
+
       console.log('Submitting data:', submissionData);
-      
+
       const response = await fetch(url, {
         method,
         headers: {
@@ -224,7 +225,7 @@ export default function AdminPortfolio() {
       formData.append('file', file);
 
       toast.loading('Uploading image...');
-      
+
       console.log('Uploading file:', file.name);
       const response = await fetch('/api/upload', {
         method: 'POST',
@@ -263,22 +264,22 @@ export default function AdminPortfolio() {
     try {
       // Create a JSON string from the portfolios data
       const dataToExport = JSON.stringify(portfolios, null, 2);
-      
+
       // Create a blob and download link
       const blob = new Blob([dataToExport], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
-      
+
       // Create a temporary anchor element to trigger download
       const a = document.createElement('a');
       a.href = url;
       a.download = `portfolio-export-${new Date().toISOString().split('T')[0]}.json`;
       document.body.appendChild(a);
       a.click();
-      
+
       // Clean up
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      
+
       toast.success('Portfolio data exported successfully');
     } catch (error) {
       console.error('Error exporting portfolio data:', error);
@@ -290,7 +291,7 @@ export default function AdminPortfolio() {
   const handleImportFile = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    
+
     setImportFile(file);
   };
 
@@ -302,35 +303,35 @@ export default function AdminPortfolio() {
 
     try {
       setImportLoading(true);
-      
+
       // Read the file content
       const reader = new FileReader();
-      
+
       reader.onload = async (e) => {
         try {
           const importedData = JSON.parse(e.target.result);
-          
+
           if (!Array.isArray(importedData)) {
             throw new Error('Invalid import format. Expected an array of portfolio items.');
           }
-          
+
           toast.loading(`Importing ${importedData.length} portfolio items...`);
-          
+
           // Process each item
           let successCount = 0;
           let errorCount = 0;
-          
+
           for (const item of importedData) {
             try {
               // Remove _id to create new entries
               const { _id, createdAt, updatedAt, __v, ...portfolioData } = item;
-              
+
               // Validate required fields
               if (!portfolioData.title || !portfolioData.description || !portfolioData.category) {
                 errorCount++;
                 continue;
               }
-              
+
               // Send to API
               const response = await fetch('/api/admin/portfolio', {
                 method: 'POST',
@@ -339,7 +340,7 @@ export default function AdminPortfolio() {
                 },
                 body: JSON.stringify(portfolioData),
               });
-              
+
               if (response.ok) {
                 successCount++;
               } else {
@@ -350,18 +351,18 @@ export default function AdminPortfolio() {
               errorCount++;
             }
           }
-          
+
           toast.dismiss();
-          
+
           if (successCount > 0) {
             toast.success(`Successfully imported ${successCount} portfolio items`);
             fetchPortfolios();
           }
-          
+
           if (errorCount > 0) {
             toast.error(`Failed to import ${errorCount} portfolio items`);
           }
-          
+
           setShowImportModal(false);
           setImportFile(null);
         } catch (parseError) {
@@ -369,7 +370,7 @@ export default function AdminPortfolio() {
           toast.error('Invalid JSON format in import file');
         }
       };
-      
+
       reader.readAsText(importFile);
     } catch (error) {
       console.error('Error importing portfolio data:', error);
@@ -386,18 +387,26 @@ export default function AdminPortfolio() {
   };
 
   // Filter portfolios by category
-  const filteredPortfolios = selectedCategory === 'all' 
-    ? portfolios 
+  const filteredPortfolios = selectedCategory === 'all'
+    ? portfolios
     : portfolios.filter(p => p.category === selectedCategory);
 
   if (loading) {
     return (
       <div className="page-content">
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#e8c547] mx-auto mb-4"></div>
-            <p className="text-gray-400">Loading portfolios...</p>
-          </div>
+        <PageHeader
+          title="Portfolio Management"
+          subtitle="Showcase your projects and professional work"
+          icon="fas fa-briefcase"
+        />
+        <div className="mb-6 flex flex-col md:flex-row gap-4">
+          <SkeletonBox className="h-11 flex-1" />
+          <SkeletonBox className="h-11 w-full md:w-48" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6" aria-busy="true">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <SkeletonCard key={index} imageHeight="h-48" rows={3} />
+          ))}
         </div>
       </div>
     );
@@ -525,7 +534,7 @@ export default function AdminPortfolio() {
                 Basic Information
               </h3>
             </div>
-            
+
             {/* Title */}
             <div>
               <Input
@@ -562,7 +571,7 @@ export default function AdminPortfolio() {
                 Media
               </h3>
             </div>
-            
+
             {/* Image Upload */}
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -572,9 +581,9 @@ export default function AdminPortfolio() {
             <div className="space-y-3">
               {formData.image && (
                 <div className="relative w-full h-40 bg-[#0e1b12] rounded-lg overflow-hidden mb-2">
-                  <img 
-                    src={formData.image} 
-                    alt="Project thumbnail" 
+                  <img
+                    src={formData.image}
+                    alt="Project thumbnail"
                     className="w-full h-full object-cover"
                     onError={(e) => {
                       e.target.src = '/images/portfolio/default.svg';
@@ -591,7 +600,7 @@ export default function AdminPortfolio() {
                   />
                 </div>
               )}
-              
+
               <div className="flex space-x-2">
                 <div className="flex-1">
                   <Input
@@ -761,8 +770,8 @@ export default function AdminPortfolio() {
 
           {/* Form Actions */}
           <div className="flex justify-end gap-3 pt-6 mt-6 border-t border-[#3e503e]/30">
-            <Button 
-              variant="secondary" 
+            <Button
+              variant="secondary"
               onClick={() => {
                 setShowModal(false);
                 resetForm();
@@ -771,8 +780,8 @@ export default function AdminPortfolio() {
             >
               Cancel
             </Button>
-            <Button 
-              variant="primary" 
+            <Button
+              variant="primary"
               onClick={handleSubmit}
               icon={editingPortfolio ? 'fas fa-save' : 'fas fa-plus'}
               loading={uploadingImage}
@@ -804,8 +813,8 @@ export default function AdminPortfolio() {
             }}>
               Cancel
             </Button>
-            <Button 
-              variant="primary" 
+            <Button
+              variant="primary"
               onClick={processImport}
               disabled={!importFile || importLoading}
             >
@@ -818,7 +827,7 @@ export default function AdminPortfolio() {
           <p className="text-gray-300">
             Upload a JSON file containing portfolio projects to import.
           </p>
-          
+
           <div className="border-2 border-dashed border-[#3e503e] rounded-lg p-6 text-center">
             <input
               type="file"
@@ -837,7 +846,7 @@ export default function AdminPortfolio() {
               </div>
             </label>
           </div>
-          
+
           <div className="bg-[#0e1b12]/50 p-3 rounded-lg text-xs text-gray-400">
             <p className="font-medium text-gray-300 mb-1">Note:</p>
             <p>The JSON file should contain an array of portfolio objects with title, description, and category fields at minimum.</p>
@@ -846,4 +855,4 @@ export default function AdminPortfolio() {
       </Modal>
     </>
   );
-} 
+}

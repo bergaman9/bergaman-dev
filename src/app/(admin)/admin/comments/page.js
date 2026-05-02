@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import PageHeader from '../../../components/PageHeader';
 import Select from '../../../components/Select';
+import { SkeletonTable } from '@/app/components/Skeleton';
 
 export default function AdminCommentsPage() {
   const [comments, setComments] = useState([]);
@@ -26,7 +27,7 @@ export default function AdminCommentsPage() {
     try {
       const response = await fetch('/api/admin/comments');
       const data = await response.json();
-      
+
       if (data.comments) {
         setComments(data.comments);
       }
@@ -48,8 +49,8 @@ export default function AdminCommentsPage() {
       });
 
       if (response.ok) {
-        setComments(comments.map(comment => 
-          comment._id === commentId 
+        setComments(comments.map(comment =>
+          comment._id === commentId
             ? { ...comment, approved: !currentStatus }
             : comment
         ));
@@ -99,11 +100,13 @@ export default function AdminCommentsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <div className="text-center">
-          <i className="fas fa-spinner fa-spin text-4xl text-[#e8c547] mb-4"></i>
-          <p className="text-gray-400">Loading comments...</p>
-        </div>
+      <div className="space-y-6">
+        <PageHeader
+          title="Comments Management"
+          subtitle="Manage blog post comments and user interactions"
+          icon="fas fa-comments"
+        />
+        <SkeletonTable columns={5} rows={6} />
       </div>
     );
   }
@@ -113,7 +116,7 @@ export default function AdminCommentsPage() {
       <Head>
         <title>Comments Management - Admin Panel</title>
       </Head>
-      
+
       <div className="space-y-6">
         {/* Header */}
         <PageHeader
@@ -164,8 +167,8 @@ export default function AdminCommentsPage() {
                         <h3 className="font-semibold text-[#e8c547]">{comment.name}</h3>
                         <span className="text-sm text-gray-400">{comment.email}</span>
                         <span className={`px-2 py-1 rounded-full text-xs ${
-                          comment.approved 
-                            ? 'bg-green-600/20 text-green-300' 
+                          comment.approved
+                            ? 'bg-green-600/20 text-green-300'
                             : 'bg-yellow-600/20 text-yellow-300'
                         }`}>
                           {comment.approved ? 'Approved' : 'Pending'}
@@ -195,7 +198,7 @@ export default function AdminCommentsPage() {
                         )}
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center space-x-2 ml-4">
                       <button
                         onClick={() => setSelectedComment(comment)}
@@ -207,8 +210,8 @@ export default function AdminCommentsPage() {
                       <button
                         onClick={() => toggleApproval(comment._id, comment.approved)}
                         className={`transition-colors p-2 ${
-                          comment.approved 
-                            ? 'text-yellow-400 hover:text-yellow-300' 
+                          comment.approved
+                            ? 'text-yellow-400 hover:text-yellow-300'
                             : 'text-green-400 hover:text-green-300'
                         }`}
                         title={comment.approved ? 'Unapprove' : 'Approve'}
@@ -244,67 +247,67 @@ export default function AdminCommentsPage() {
                     <i className="fas fa-times text-xl"></i>
                   </button>
                 </div>
-                
+
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-400 mb-1">Name & Email</label>
                     <p className="text-[#e8c547]">{selectedComment.name} ({selectedComment.email})</p>
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-400 mb-1">Message</label>
                     <p className="text-gray-300 bg-[#0e1b12] p-3 rounded border border-[#3e503e]">
                       {selectedComment.message}
                     </p>
                   </div>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-400 mb-1">IP Address</label>
                       <p className="text-gray-300">{selectedComment.ipAddress || 'Unknown'}</p>
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-400 mb-1">Location</label>
                       <p className="text-gray-300">{getLocationString(selectedComment.location)}</p>
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-400 mb-1">Browser</label>
                       <p className="text-gray-300">
                         {selectedComment.browser?.name || 'Unknown'} {selectedComment.browser?.version || ''}
                       </p>
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-400 mb-1">Operating System</label>
                       <p className="text-gray-300">
                         {selectedComment.os?.name || 'Unknown'} {selectedComment.os?.version || ''}
                       </p>
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-400 mb-1">Device</label>
                       <p className="text-gray-300">
-                        {selectedComment.device?.type || 'Unknown'} 
+                        {selectedComment.device?.type || 'Unknown'}
                         {selectedComment.device?.vendor && ` - ${selectedComment.device.vendor}`}
                         {selectedComment.device?.model && ` ${selectedComment.device.model}`}
                       </p>
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-400 mb-1">Date</label>
                       <p className="text-gray-300">{formatDate(selectedComment.createdAt)}</p>
                     </div>
                   </div>
-                  
+
                   {selectedComment.referrer && (
                     <div>
                       <label className="block text-sm font-medium text-gray-400 mb-1">Referrer</label>
                       <p className="text-gray-300 text-sm break-all">{selectedComment.referrer}</p>
                     </div>
                   )}
-                  
+
                   {selectedComment.userAgent && (
                     <div>
                       <label className="block text-sm font-medium text-gray-400 mb-1">User Agent</label>
@@ -321,4 +324,4 @@ export default function AdminCommentsPage() {
       </div>
     </>
   );
-} 
+}

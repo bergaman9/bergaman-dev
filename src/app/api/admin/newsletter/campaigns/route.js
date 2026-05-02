@@ -2,21 +2,24 @@ import { NextResponse } from 'next/server';
 import { connectDB } from '../../../../../lib/mongodb';
 import NewsletterCampaign from '../../../../../models/NewsletterCampaign';
 import Newsletter from '../../../../../models/Newsletter';
+import { clampString, jsonError, readJsonLimited, validateEnum } from '../../../../../lib/serverSecurity';
+
+const CAMPAIGN_STATUSES = ['draft', 'scheduled', 'sending', 'sent', 'failed'];
 
 export async function GET(request) {
   try {
     await connectDB();
 
     const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get('page')) || 1;
-    const limit = parseInt(searchParams.get('limit')) || 20;
+    const page = Math.max(1, parseInt(searchParams.get('page'), 10) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit'), 10) || 20));
     const status = searchParams.get('status');
 
     // Build query
     let query = {};
-    
+
     if (status && status !== 'all') {
-      query.status = status;
+      query.status = validateEnum(status, CAMPAIGN_STATUSES, 'status');
     }
 
     // Calculate skip
@@ -44,16 +47,15 @@ export async function GET(request) {
 
   } catch (error) {
     console.error('Error fetching newsletter campaigns:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch campaigns' },
-      { status: 500 }
-    );
+    return jsonError(error, 500);
   }
 }
 
 export async function POST(request) {
   try {
-    const campaignData = await request.json();
+    const campaignData = await readJsonLimited(request, { maxBytes: 128 * 1024 });
+    campaignData.title = clampString(campaignData.title, 160);
+    campaignData.subject = clampString(campaignData.subject, 200);
 
     if (!campaignData.title || !campaignData.subject || !campaignData.content) {
       return NextResponse.json(
@@ -93,9 +95,6 @@ export async function POST(request) {
 
   } catch (error) {
     console.error('Error creating campaign:', error);
-    return NextResponse.json(
-      { error: 'Failed to create campaign' },
-      { status: 500 }
-    );
+    return jsonError(error, 500);
   }
-} 
+}

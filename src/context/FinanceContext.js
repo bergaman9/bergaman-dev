@@ -3,9 +3,78 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 
 const FinanceContext = createContext();
+const FINANCE_SCHEMA_VERSION = 2;
+const FINANCE_STORAGE_KEY = 'finance_data_v2';
+const DEFAULT_PORTFOLIO = { id: 'default', name: 'Main Portfolio', assets: [] };
+const ALLOWED_CURRENCIES = new Set(['TRY', 'USD', 'EUR']);
+const ALLOWED_CATEGORIES = new Set(['TL', 'BIST', 'EMTIA', 'DOVIZ', 'KRIPTO', 'ABD', 'FON', 'DIGER']);
+
+const createClientId = () => {
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+        return crypto.randomUUID();
+    }
+    return `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+};
+
+const sanitizeText = (value, maxLength, fallback = '') => {
+    if (typeof value !== 'string') return fallback;
+    const trimmed = value.trim();
+    return trimmed.slice(0, maxLength) || fallback;
+};
+
+const sanitizeNumber = (value) => {
+    const number = Number(value);
+    return Number.isFinite(number) && number >= 0 ? number : 0;
+};
+
+const sanitizeAsset = (asset) => ({
+    id: sanitizeText(asset?.id, 80, createClientId()),
+    name: sanitizeText(asset?.name, 120, 'Unnamed Asset'),
+    amount: sanitizeNumber(asset?.amount),
+    cost: sanitizeNumber(asset?.cost),
+    category: ALLOWED_CATEGORIES.has(asset?.category) ? asset.category : 'DIGER',
+    symbol: sanitizeText(asset?.symbol, 16, '').toUpperCase().replace(/[^A-Z0-9_-]/g, '')
+});
+
+const sanitizePortfolio = (portfolio) => ({
+    id: sanitizeText(portfolio?.id, 80, createClientId()),
+    name: sanitizeText(portfolio?.name, 80, 'Portfolio'),
+    assets: Array.isArray(portfolio?.assets) ? portfolio.assets.slice(0, 500).map(sanitizeAsset) : []
+});
+
+const sanitizeFinancePayload = (payload) => {
+    if (!payload || typeof payload !== 'object') {
+        throw new Error('Invalid backup format');
+    }
+
+    if (![1, FINANCE_SCHEMA_VERSION].includes(payload.version)) {
+        throw new Error('Unsupported or missing finance backup version');
+    }
+
+    if (!Array.isArray(payload.portfolios)) {
+        throw new Error('Invalid backup format: Missing portfolios');
+    }
+
+    const portfolios = payload.portfolios.slice(0, 25).map(sanitizePortfolio);
+    if (portfolios.length === 0) {
+        throw new Error('Invalid backup format: No portfolios found');
+    }
+
+    const currentPortfolioId = sanitizeText(payload.currentPortfolioId, 80, portfolios[0].id);
+    const currency = ALLOWED_CURRENCIES.has(payload.currency) ? payload.currency : 'TRY';
+
+    return {
+        version: FINANCE_SCHEMA_VERSION,
+        currency,
+        currentPortfolioId: portfolios.some((portfolio) => portfolio.id === currentPortfolioId)
+            ? currentPortfolioId
+            : portfolios[0].id,
+        portfolios
+    };
+};
 
 export function FinanceProvider({ children }) {
-    const [portfolios, setPortfolios] = useState([{ id: 'default', name: 'Main Portfolio', assets: [] }]);
+    const [portfolios, setPortfolios] = useState([DEFAULT_PORTFOLIO]);
     const [currentPortfolioId, setCurrentPortfolioId] = useState('default');
     const [loading, setLoading] = useState(true);
     const [marketRates, setMarketRates] = useState({});
@@ -13,27 +82,57 @@ export function FinanceProvider({ children }) {
 
     // Load from LocalStorage on mount
     useEffect(() => {
-        const savedPortfolios = localStorage.getItem('finance_portfolios');
-        const savedAssets = localStorage.getItem('finance_portfolio_assets'); // Legacy support
-        const savedCurrency = localStorage.getItem('finance_currency'); // Load currency
+        try {
+            const savedData = localStorage.getItem(FINANCE_STORAGE_KEY);
+            const savedPortfolios = localStorage.getItem('finance_portfolios');
+            const savedAssets = localStorage.getItem('finance_portfolio_assets'); // Legacy support
+            const savedCurrency = localStorage.getItem('finance_currency'); // Legacy support
 
-        if (savedPortfolios) {
-            setPortfolios(JSON.parse(savedPortfolios));
-            const lastActive = localStorage.getItem('finance_current_portfolio_id');
-            if (lastActive) setCurrentPortfolioId(lastActive);
-        } else if (savedAssets) {
-            // Migrate legacy single list to portfolios
-            setPortfolios([{ id: 'default', name: 'Main Portfolio', assets: JSON.parse(savedAssets) }]);
-            localStorage.removeItem('finance_portfolio_assets'); // Clean up legacy
+            if (savedData) {
+                const restored = sanitizeFinancePayload(JSON.parse(savedData));
+                setPortfolios(restored.portfolios);
+                setCurrentPortfolioId(restored.currentPortfolioId);
+                setCurrency(restored.currency);
+            } else if (savedPortfolios) {
+                const restored = sanitizeFinancePayload({
+                    version: 1,
+                    portfolios: JSON.parse(savedPortfolios),
+                    currentPortfolioId: localStorage.getItem('finance_current_portfolio_id'),
+                    currency: savedCurrency
+                });
+                setPortfolios(restored.portfolios);
+                setCurrentPortfolioId(restored.currentPortfolioId);
+                setCurrency(restored.currency);
+            } else if (savedAssets) {
+                const restored = sanitizeFinancePayload({
+                    version: 1,
+                    currency: savedCurrency,
+                    portfolios: [{ ...DEFAULT_PORTFOLIO, assets: JSON.parse(savedAssets) }]
+                });
+                setPortfolios(restored.portfolios);
+                setCurrentPortfolioId(restored.currentPortfolioId);
+                setCurrency(restored.currency);
+                localStorage.removeItem('finance_portfolio_assets'); // Clean up legacy
+            } else if (ALLOWED_CURRENCIES.has(savedCurrency)) {
+                setCurrency(savedCurrency);
+            }
+        } catch {
+            setPortfolios([DEFAULT_PORTFOLIO]);
+            setCurrentPortfolioId('default');
+            setCurrency('TRY');
         }
-
-        if (savedCurrency) setCurrency(savedCurrency);
         setLoading(false);
     }, []);
 
     // Save to LocalStorage
     useEffect(() => {
         if (!loading) {
+            localStorage.setItem(FINANCE_STORAGE_KEY, JSON.stringify({
+                version: FINANCE_SCHEMA_VERSION,
+                portfolios,
+                currentPortfolioId,
+                currency
+            }));
             localStorage.setItem('finance_portfolios', JSON.stringify(portfolios));
             localStorage.setItem('finance_current_portfolio_id', currentPortfolioId);
             localStorage.setItem('finance_currency', currency);
@@ -75,20 +174,22 @@ export function FinanceProvider({ children }) {
     };
 
     const resetData = () => {
+        localStorage.removeItem(FINANCE_STORAGE_KEY);
         localStorage.removeItem('finance_portfolios');
         localStorage.removeItem('finance_portfolio_assets'); // Original legacy key
         localStorage.removeItem('finance_assets'); // New key mentioned in instruction for reset
         localStorage.removeItem('finance_current_portfolio_id');
         localStorage.removeItem('finance_currency');
-        setPortfolios([{ id: 'default', name: 'Main Portfolio', assets: [] }]);
+        setPortfolios([DEFAULT_PORTFOLIO]);
         setCurrentPortfolioId('default');
         setCurrency('TRY');
     };
 
     const exportData = () => {
         const data = {
-            version: 1,
+            version: FINANCE_SCHEMA_VERSION,
             timestamp: new Date().toISOString(),
+            currentPortfolioId,
             currency,
             portfolios
         };
@@ -105,22 +206,14 @@ export function FinanceProvider({ children }) {
         try {
             const data = JSON.parse(jsonData);
 
-            // Basic validation
-            if (!data.portfolios || !Array.isArray(data.portfolios)) {
-                throw new Error('Invalid backup format: Missing portfolios');
-            }
+            const restored = sanitizeFinancePayload(data);
 
-            // Apply data
-            setPortfolios(data.portfolios);
-            if (data.currency) setCurrency(data.currency);
-
-            // Reset active portfolio to first available or default
-            const newActiveId = data.portfolios[0]?.id || 'default';
-            setCurrentPortfolioId(newActiveId);
+            setPortfolios(restored.portfolios);
+            setCurrency(restored.currency);
+            setCurrentPortfolioId(restored.currentPortfolioId);
 
             return { success: true };
         } catch (error) {
-            console.error('Import failed:', error);
             return { success: false, error: error.message };
         }
     };
@@ -133,7 +226,7 @@ export function FinanceProvider({ children }) {
     };
 
     const addAsset = (asset) => {
-        const newAsset = { ...asset, id: Date.now().toString() };
+        const newAsset = sanitizeAsset({ ...asset, id: createClientId() });
         setPortfolios(prev => prev.map(p => {
             if (p.id === currentPortfolioId) {
                 return { ...p, assets: [...p.assets, newAsset] };
@@ -154,7 +247,7 @@ export function FinanceProvider({ children }) {
     const updateAsset = (assetId, updatedFields) => {
         setPortfolios(prev => prev.map(p => {
             if (p.id === currentPortfolioId) {
-                return { ...p, assets: p.assets.map(a => a.id === assetId ? { ...a, ...updatedFields } : a) };
+                return { ...p, assets: p.assets.map(a => a.id === assetId ? sanitizeAsset({ ...a, ...updatedFields, id: a.id }) : a) };
             }
             return p;
         }));

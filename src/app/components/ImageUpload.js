@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import Image from 'next/image';
+import { SkeletonBox, SkeletonText } from './Skeleton';
 
 export default function ImageUpload({ onImageUpload, currentImage = null, className = "" }) {
   const [uploading, setUploading] = useState(false);
@@ -137,14 +138,14 @@ export default function ImageUpload({ onImageUpload, currentImage = null, classN
             />
             {uploading && (
               <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                <div className="text-white text-center">
-                  <i className="fas fa-spinner fa-spin text-2xl mb-2"></i>
-                  <p>Uploading...</p>
+                <div className="w-40">
+                  <SkeletonBox className="mb-3 h-8 w-full" />
+                  <SkeletonText lines={1} widths={["w-24 mx-auto"]} />
                 </div>
               </div>
             )}
           </div>
-          
+
           {/* Image Actions */}
           <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
             <button
@@ -181,9 +182,9 @@ export default function ImageUpload({ onImageUpload, currentImage = null, classN
           onDragLeave={handleDragLeave}
         >
           {uploading ? (
-            <div className="text-center">
-              <i className="fas fa-spinner fa-spin text-3xl text-[#e8c547] mb-4"></i>
-              <p className="text-gray-400">Uploading...</p>
+            <div className="w-48">
+              <SkeletonBox className="mb-4 h-12 w-full" />
+              <SkeletonText lines={2} />
             </div>
           ) : (
             <div className="text-center">
@@ -196,4 +197,4 @@ export default function ImageUpload({ onImageUpload, currentImage = null, classN
       )}
     </div>
   );
-} 
+}

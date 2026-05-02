@@ -168,7 +168,7 @@ export default function AdminProfile() {
               {activeTab === 'general' && (
                 <div className="space-y-6">
                   <h2 className="text-xl font-bold text-[#e8c547] mb-4">General Information</h2>
-                  
+
                   {/* Avatar */}
                   <div className="flex items-center space-x-6">
                     <div className="relative">
@@ -268,7 +268,7 @@ export default function AdminProfile() {
               {activeTab === 'preferences' && (
                 <div className="space-y-6">
                   <h2 className="text-xl font-bold text-[#e8c547] mb-4">User Preferences</h2>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -323,9 +323,9 @@ export default function AdminProfile() {
                           checked={profile.preferences.showSocialInPosts || false}
                           onChange={(e) => setProfile(prev => ({
                             ...prev,
-                            preferences: { 
-                              ...prev.preferences, 
-                              showSocialInPosts: e.target.checked 
+                            preferences: {
+                              ...prev.preferences,
+                              showSocialInPosts: e.target.checked
                             }
                           }))}
                           className="w-5 h-5 text-[#e8c547] bg-[#0e1b12] border-[#3e503e] rounded focus:ring-[#e8c547] focus:ring-2"
@@ -342,9 +342,9 @@ export default function AdminProfile() {
                           checked={profile.preferences.showAuthorBio || true}
                           onChange={(e) => setProfile(prev => ({
                             ...prev,
-                            preferences: { 
-                              ...prev.preferences, 
-                              showAuthorBio: e.target.checked 
+                            preferences: {
+                              ...prev.preferences,
+                              showAuthorBio: e.target.checked
                             }
                           }))}
                           className="w-5 h-5 text-[#e8c547] bg-[#0e1b12] border-[#3e503e] rounded focus:ring-[#e8c547] focus:ring-2"
@@ -359,7 +359,7 @@ export default function AdminProfile() {
               {activeTab === 'notifications' && (
                 <div className="space-y-6">
                   <h2 className="text-xl font-bold text-[#e8c547] mb-4">Notification Settings</h2>
-                  
+
                   <div className="space-y-4">
                     {Object.entries(profile.preferences.notifications).map(([key, value]) => (
                       <label key={key} className="flex items-center justify-between p-4 bg-[#2e3d29]/30 rounded-lg border border-[#3e503e]/30">
@@ -402,7 +402,7 @@ export default function AdminProfile() {
               {activeTab === 'social' && (
                 <div className="space-y-6">
                   <h2 className="text-xl font-bold text-[#e8c547] mb-4">Social Media Links</h2>
-                  
+
                   <div className="space-y-4">
                     {Object.entries(profile.social).map(([platform, url]) => (
                       <div key={platform}>
@@ -430,7 +430,7 @@ export default function AdminProfile() {
               {activeTab === 'security' && (
                 <div className="space-y-6">
                   <h2 className="text-xl font-bold text-[#e8c547] mb-4">Security Settings</h2>
-                  
+
                   <div className="space-y-6">
                     <div className="p-6 bg-[#2e3d29]/30 rounded-lg border border-[#3e503e]/30">
                       <h3 className="text-lg font-semibold text-[#e8c547] mb-3">Change Password</h3>
@@ -496,7 +496,7 @@ export default function AdminProfile() {
                 >
                   {saving ? (
                     <>
-                      <i className="fas fa-spinner fa-spin mr-2"></i>
+                      <i className="fas fa-hourglass-half mr-2"></i>
                       Saving...
                     </>
                   ) : (
@@ -513,4 +513,4 @@ export default function AdminProfile() {
       </div>
     </>
   );
-} 
+}

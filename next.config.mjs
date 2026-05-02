@@ -7,6 +7,28 @@ const { SECURITY } = pkg;
 // Read version from package.json
 const packageJson = JSON.parse(readFileSync(join(process.cwd(), 'package.json'), 'utf8'));
 const version = `v${packageJson.version}`;
+const remoteImageHosts = (
+  process.env.NEXT_IMAGE_ALLOWED_HOSTS ||
+  [
+    'bergaman.dev',
+    'www.bergaman.dev',
+    'localhost',
+    'i.scdn.co',
+    'open.spotify.com',
+    'www.google.com',
+    't1.gstatic.com',
+    't2.gstatic.com',
+    't3.gstatic.com',
+    'github.com',
+    'avatars.githubusercontent.com',
+    'raw.githubusercontent.com',
+    'i.ytimg.com',
+    'images.unsplash.com',
+  ].join(',')
+)
+  .split(',')
+  .map((host) => host.trim())
+  .filter(Boolean);
 
 // Get current environment
 const nodeEnv = process.env.NODE_ENV || 'development';
@@ -15,7 +37,6 @@ const nodeEnv = process.env.NODE_ENV || 'development';
 const nextConfig = {
   env: {
     NEXT_PUBLIC_APP_VERSION: process.env.NEXT_PUBLIC_APP_VERSION || version,
-    MONGODB_URI: process.env.MONGODB_URI || 'mongodb://localhost:27017/bergaman-dev',
   },
   poweredByHeader: false,
   compress: true,
@@ -29,10 +50,12 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       },
-      {
-        protocol: 'https',
-        hostname: '**',
-      },
+      ...remoteImageHosts
+        .filter((hostname) => hostname !== 'localhost')
+        .map((hostname) => ({
+          protocol: 'https',
+          hostname,
+        })),
     ],
   },
   experimental: {
@@ -40,12 +63,8 @@ const nextConfig = {
   },
   trailingSlash: false,
   generateBuildId: async () => {
-    return 'build-' + Date.now();
+    return process.env.NEXT_BUILD_ID || process.env.VERCEL_GIT_COMMIT_SHA || packageJson.version;
   },
-  reactStrictMode: true,
-  // Güvenlik için varsayılan ayarlar
-  poweredByHeader: false, // X-Powered-By başlığını kaldır
-  compress: true, // Yanıtları sıkıştır
   async rewrites() {
     return [
       {

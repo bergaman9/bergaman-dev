@@ -1,3 +1,29 @@
+const APP_VERSION_VALUE = process.env.NEXT_PUBLIC_APP_VERSION || '2.7.0';
+const isProduction = process.env.NODE_ENV === 'production';
+const scriptSources = [
+  "'self'",
+  "'unsafe-inline'",
+  ...(!isProduction ? ["'unsafe-eval'"] : []),
+  'https://open.spotify.com',
+].join(' ');
+
+const imageSources = [
+  "'self'",
+  'data:',
+  'blob:',
+  'https://bergaman.dev',
+  'https://www.bergaman.dev',
+  'https://i.scdn.co',
+  'https://open.spotify.com',
+  'https://www.google.com',
+  'https://*.gstatic.com',
+  'https://i.ytimg.com',
+  'https://github.com',
+  'https://avatars.githubusercontent.com',
+  'https://raw.githubusercontent.com',
+  'https://images.unsplash.com',
+].join(' ');
+
 // Site Configuration
 export const SITE_CONFIG = {
   name: 'Bergaman',
@@ -24,7 +50,7 @@ export const SITE_CONFIG = {
     'Dragon Developer'
   ],
   themeColor: '#e8c547',
-  version: '2.5.13', // Current version - updated to match package.json
+  version: APP_VERSION_VALUE,
   previousVersions: {
     v1: {
       url: 'https://bergaman-v1.vercel.app/',
@@ -91,7 +117,7 @@ export const SEO_DEFAULTS = {
 
 // Genel sabitler
 export const APP_NAME = 'Bergaman';
-export const APP_VERSION = '2.5.13';
+export const APP_VERSION = APP_VERSION_VALUE;
 export const APP_DESCRIPTION = 'Personal portfolio and blog';
 export const APP_URL = 'https://bergaman.dev';
 
@@ -182,7 +208,7 @@ export const SECURITY = {
 
   // Güvenlik başlıkları
   HEADERS: {
-    CONTENT_SECURITY_POLICY: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://open.spotify.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data: blob: https: http:; font-src 'self' data: https://cdnjs.cloudflare.com; connect-src 'self' https://*.vercel-insights.com; frame-src 'self' https://open.spotify.com",
+    CONTENT_SECURITY_POLICY: `default-src 'self'; script-src ${scriptSources}; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src ${imageSources}; font-src 'self' data: https://cdnjs.cloudflare.com; connect-src 'self' https://*.vercel-insights.com; frame-src 'self' https://open.spotify.com; object-src 'none'; base-uri 'self'; form-action 'self'`,
     XSS_PROTECTION: '1; mode=block',
     FRAME_OPTIONS: 'SAMEORIGIN',
     CONTENT_TYPE_OPTIONS: 'nosniff',

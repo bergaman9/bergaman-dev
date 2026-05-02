@@ -8,6 +8,7 @@ import MarkdownEditor from '@/components/MarkdownEditor';
 import ImageUpload from '@/components/ImageUpload';
 import Card from '@/components/Card';
 import Select from '@/components/Select';
+import { SkeletonBox, SkeletonText } from '@/components/Skeleton';
 
 export default function EditPost() {
   const params = useParams();
@@ -35,10 +36,10 @@ export default function EditPost() {
   const [tagInput, setTagInput] = useState('');
 
   const categories = [
-    'technology', 
-    'ai', 
-    'web-development', 
-    'tutorial', 
+    'technology',
+    'ai',
+    'web-development',
+    'tutorial',
     'programming',
     'design',
     'ux-ui',
@@ -62,7 +63,7 @@ export default function EditPost() {
     try {
       const response = await fetch(`/api/admin/posts/${params.id}`);
       const data = await response.json();
-      
+
       if (response.ok) {
         setPost(data); // The API returns the post directly, not wrapped in data.post
       } else {
@@ -117,7 +118,7 @@ export default function EditPost() {
   const handleTitleChange = (e) => {
     const title = e.target.value;
     const autoMetaTitle = title.length > 60 ? title.substring(0, 60) + '...' : title;
-    
+
     setPost(prev => ({
       ...prev,
       title,
@@ -143,7 +144,7 @@ export default function EditPost() {
 
   const handleAddTag = () => {
     if (!tagInput.trim()) return;
-    
+
     // Avoid duplicates
     if (!post.tags.includes(tagInput.trim())) {
       const newTags = [...post.tags, tagInput.trim()];
@@ -156,7 +157,7 @@ export default function EditPost() {
         }
       }));
     }
-    
+
     setTagInput('');
   };
 
@@ -216,10 +217,21 @@ export default function EditPost() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0e1b12] text-[#d1d5db] flex items-center justify-center">
-        <div className="text-center">
-          <i className="fas fa-spinner fa-spin text-4xl text-[#e8c547] mb-4"></i>
-          <p className="text-gray-400">Loading post...</p>
+      <div className="min-h-screen bg-[#0e1b12] text-[#d1d5db]">
+        <div className="admin-content-wrapper">
+          <SkeletonBox className="mb-6 h-10 w-48" />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6" aria-busy="true">
+            <div className="lg:col-span-2 rounded-lg border border-[#3e503e]/30 bg-[#2e3d29]/20 p-6">
+              <SkeletonBox className="mb-4 h-12 w-full" />
+              <SkeletonBox className="mb-4 h-64 w-full" />
+              <SkeletonText lines={5} />
+            </div>
+            <div className="space-y-4">
+              <SkeletonBox className="h-32 w-full" />
+              <SkeletonBox className="h-32 w-full" />
+              <SkeletonBox className="h-44 w-full" />
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -293,7 +305,7 @@ export default function EditPost() {
                     onChange={(e) => {
                       const description = e.target.value;
                       const autoMetaDescription = description.length > 160 ? description.substring(0, 160) + '...' : description;
-                      
+
                       setPost(prev => ({
                         ...prev,
                         description,
@@ -328,7 +340,7 @@ export default function EditPost() {
                 {/* Publish Settings */}
                 <Card showImage={false}>
                   <h3 className="text-lg font-semibold text-[#e8c547] mb-4">Publish Settings</h3>
-                  
+
                   <div className="space-y-4">
                     <label className="flex items-center">
                       <input
@@ -339,7 +351,7 @@ export default function EditPost() {
                       />
                       <span className="text-gray-300">Published</span>
                     </label>
-                    
+
                     <label className="flex items-center">
                       <input
                         type="checkbox"
@@ -358,7 +370,7 @@ export default function EditPost() {
                     <i className="fas fa-shield-alt mr-2"></i>
                     Visibility & Security
                   </h3>
-                  
+
                   <div className="space-y-4">
                     {/* Visibility Setting */}
                     <div>
@@ -441,7 +453,7 @@ export default function EditPost() {
                   <label className="block text-sm font-medium text-[#e8c547] mb-2">
                     Tags
                   </label>
-                  
+
                   {/* Tag Input */}
                   <div className="flex space-x-2 mb-3">
                     <input
@@ -460,16 +472,16 @@ export default function EditPost() {
                       <i className="fas fa-plus"></i>
                     </button>
                   </div>
-                  
+
                   {/* Tag Display */}
                   <div className="flex flex-wrap gap-2 mt-3">
                     {post?.tags?.map((tag, index) => (
-                      <div 
+                      <div
                         key={index}
                         className="bg-[#3e503e]/40 text-white px-3 py-1 rounded-full text-sm flex items-center group"
                       >
                         <span>{tag}</span>
-                        <button 
+                        <button
                           type="button"
                           onClick={() => removeTag(tag)}
                           className="ml-2 text-gray-400 hover:text-red-400 transition-colors"
@@ -478,7 +490,7 @@ export default function EditPost() {
                         </button>
                       </div>
                     ))}
-                    
+
                     {post?.tags?.length === 0 && (
                       <p className="text-gray-500 text-sm italic">No tags added yet</p>
                     )}
@@ -500,7 +512,7 @@ export default function EditPost() {
                 {/* SEO Settings */}
                 <Card showImage={false}>
                   <h3 className="text-lg font-semibold text-[#e8c547] mb-4">SEO Settings</h3>
-                  
+
                   <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -520,7 +532,7 @@ export default function EditPost() {
                         {post?.seo?.metaTitle ? `${post.seo.metaTitle.length}/60 characters` : 'Leave empty to use post title (max 60 chars)'}
                       </p>
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-300 mb-2">
                         Meta Description
@@ -559,7 +571,7 @@ export default function EditPost() {
               >
                 {saving ? (
                   <>
-                    <i className="fas fa-spinner fa-spin mr-2"></i>
+                    <i className="fas fa-hourglass-half mr-2"></i>
                     Updating...
                   </>
                 ) : (
@@ -574,4 +586,4 @@ export default function EditPost() {
       </div>
     </>
   );
-} 
+}

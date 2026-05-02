@@ -46,7 +46,7 @@ body::-webkit-scrollbar-corner {
 @layer base {
   body {
     background: #0e1b12;
-    background-image: 
+    background-image:
       radial-gradient(circle at 20% 80%, rgba(232, 197, 71, 0.1) 0%, transparent 50%),
       radial-gradient(circle at 80% 20%, rgba(232, 197, 71, 0.1) 0%, transparent 50%),
       radial-gradient(circle at 40% 40%, rgba(46, 61, 41, 0.3) 0%, transparent 50%);
@@ -80,7 +80,7 @@ body::-webkit-scrollbar-corner {
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: 
+    background-image:
       linear-gradient(90deg, rgba(232, 197, 71, 0.03) 1px, transparent 1px),
       linear-gradient(rgba(232, 197, 71, 0.03) 1px, transparent 1px);
     background-size: 50px 50px;
@@ -111,9 +111,13 @@ body::-webkit-scrollbar-corner {
     @apply pt-24 pb-16 min-h-screen;
   }
 
-  /* Narrower content for better readability */
+  .home-page-container {
+    @apply min-h-screen pb-16;
+  }
+
+  /* Shared public content width aligned with header and footer */
   .page-content {
-    @apply max-w-5xl mx-auto px-4 sm:px-6 md:px-8;
+    @apply max-w-6xl mx-auto px-4 sm:px-6 md:px-8;
   }
 
   /* Page header with icon styling */
@@ -226,6 +230,99 @@ body::-webkit-scrollbar-corner {
 
   .custom-scrollbar::-webkit-scrollbar-thumb:active {
     background: #e8c547;
+  }
+
+  .mini-app-shell {
+    background: var(--mini-page-bg, #030303);
+    --skeleton-base: rgba(28, 25, 18, 0.82);
+    --skeleton-highlight: rgba(76, 64, 34, 0.86);
+    --skeleton-shine: rgba(232, 197, 71, 0.18);
+    --skeleton-surface: rgba(255, 255, 255, 0.045);
+    --skeleton-border: var(--mini-border, rgba(232, 197, 71, 0.18));
+  }
+
+  .mini-app-chrome {
+    background: var(--mini-chrome-bg, rgba(6, 6, 8, 0.94));
+    border-color: var(--mini-border, rgba(232, 197, 71, 0.18));
+    color: #f8fafc;
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.28);
+  }
+
+  .mini-app-header {
+    height: 72px;
+  }
+
+  .mini-app-header-inner {
+    height: 100%;
+    display: flex;
+    align-items: center;
+  }
+
+  .mini-app-accent {
+    color: var(--mini-accent-text, #e8c547);
+  }
+
+  .mini-app-muted {
+    color: var(--mini-muted, #8f8c9a);
+  }
+
+  .mini-app-icon-box {
+    border-color: var(--mini-border-strong, rgba(232, 197, 71, 0.42));
+    background: color-mix(in srgb, var(--mini-accent, #e8c547) 12%, transparent);
+    box-shadow: 0 0 24px var(--mini-glow, rgba(232, 197, 71, 0.18));
+  }
+
+  .mini-app-nav-item {
+    border: 1px solid transparent;
+    color: #9ca3af;
+  }
+
+  .mini-app-nav-item:hover {
+    background: var(--mini-surface, rgba(255, 255, 255, 0.055));
+    border-color: var(--mini-border, rgba(255, 255, 255, 0.12));
+    color: #fff;
+  }
+
+  .mini-app-nav-item-active {
+    background: color-mix(in srgb, var(--mini-accent, #e8c547) 13%, transparent);
+    border-color: var(--mini-border-strong, rgba(232, 197, 71, 0.42));
+    color: var(--mini-accent-text, #e8c547);
+  }
+
+  .skeleton-shimmer {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(
+      90deg,
+      var(--skeleton-base, rgba(46, 61, 41, 0.58)),
+      var(--skeleton-highlight, rgba(62, 80, 62, 0.78)),
+      var(--skeleton-base, rgba(46, 61, 41, 0.58))
+    );
+    background-size: 220% 100%;
+  }
+
+  .skeleton-shimmer::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent, var(--skeleton-shine, rgba(232, 197, 71, 0.13)), transparent);
+    animation: skeleton-shimmer 1.6s ease-in-out infinite;
+  }
+
+  .skeleton-surface {
+    border-color: var(--skeleton-border, rgba(62, 80, 62, 0.3));
+    background: var(--skeleton-surface, rgba(46, 61, 41, 0.2));
+  }
+
+  .skeleton-divider {
+    border-color: var(--skeleton-border, rgba(62, 80, 62, 0.3));
+  }
+
+  @keyframes skeleton-shimmer {
+    100% {
+      transform: translateX(100%);
+    }
   }
 
   /* Modal specific scrollbar */
@@ -484,6 +581,16 @@ body::-webkit-scrollbar-corner {
     animation: float-4 9s ease-in-out infinite;
   }
 
+  @keyframes record-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .animate-record-spin {
+    animation: record-spin 3s linear infinite;
+  }
+
   /* Syntax highlighting colors for dark theme */
   .hljs {
     @apply bg-gray-900 text-gray-100;
@@ -697,4 +804,15 @@ img[src="/images/portfolio/default.jpg"] {
 .custom-scrollbar {
   scrollbar-width: thin;
   scrollbar-color: #3e503e #0e1b12;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }

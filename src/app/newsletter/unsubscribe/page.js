@@ -6,6 +6,7 @@ export const dynamic = 'force-dynamic';
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Head from 'next/head';
+import { SkeletonBox, SkeletonText } from '../../components/Skeleton';
 
 function UnsubscribeContent() {
   const searchParams = useSearchParams();
@@ -23,7 +24,7 @@ function UnsubscribeContent() {
 
   const handleUnsubscribe = async (e) => {
     e.preventDefault();
-    
+
     if (!email.trim()) {
       setError('Email is required');
       return;
@@ -63,11 +64,11 @@ function UnsubscribeContent() {
         <title>Unsubscribe - Bergaman's Newsletter</title>
         <meta name="description" content="Unsubscribe from Bergaman's newsletter." />
       </Head>
-      
+
       <div className="page-content pt-4">
         <div className="container mx-auto px-4 py-12">
         <div className="max-w-md mx-auto">
-          
+
           {/* Header */}
           <div className="text-center mb-8">
             <div className="w-16 h-16 bg-gradient-to-br from-[#ef4444] to-[#dc2626] rounded-full flex items-center justify-center mx-auto mb-4">
@@ -103,7 +104,7 @@ function UnsubscribeContent() {
           {!success && (
             <div className="bg-[#2d3748]/30 backdrop-blur-md border border-[#4a5568]/30 rounded-lg p-6">
               <form onSubmit={handleUnsubscribe} className="space-y-6">
-                
+
                 <div>
                   <label className="block text-sm font-medium text-[#e2e8f0] mb-2">
                     Email Address
@@ -136,7 +137,7 @@ function UnsubscribeContent() {
                 >
                   {loading ? (
                     <>
-                      <i className="fas fa-spinner fa-spin mr-2"></i>
+                      <i className="fas fa-hourglass-half mr-2"></i>
                       Unsubscribing...
                     </>
                   ) : (
@@ -153,15 +154,15 @@ function UnsubscribeContent() {
                     Instead of unsubscribing, you could:
                   </p>
                   <div className="space-y-2">
-                    <a 
-                      href="/newsletter" 
+                    <a
+                      href="/newsletter"
                       className="block text-[#4f46e5] hover:text-[#4338ca] transition-colors text-sm"
                     >
                       <i className="fas fa-cog mr-2"></i>
                       Update your preferences
                     </a>
-                    <a 
-                      href="mailto:omerguler53@gmail.com?subject=Newsletter Feedback" 
+                    <a
+                      href="mailto:omerguler53@gmail.com?subject=Newsletter Feedback"
                       className="block text-[#4f46e5] hover:text-[#4338ca] transition-colors text-sm"
                     >
                       <i className="fas fa-comment mr-2"></i>
@@ -175,8 +176,8 @@ function UnsubscribeContent() {
 
           {/* Footer */}
           <div className="mt-8 text-center">
-            <a 
-              href="https://bergaman.dev" 
+            <a
+              href="https://bergaman.dev"
               className="text-gray-400 hover:text-[#4f46e5] transition-colors"
             >
               <i className="fas fa-arrow-left mr-2"></i>
@@ -187,7 +188,7 @@ function UnsubscribeContent() {
           </div>
         </div>
       </div>
-      
+
     </div>
   );
 }
@@ -198,9 +199,10 @@ export default function NewsletterUnsubscribe() {
       <div className="page-container">
         <div className="page-content pt-4">
           <div className="container mx-auto px-4 py-12">
-            <div className="max-w-md mx-auto text-center">
-              <i className="fas fa-spinner fa-spin text-4xl text-[#e8c547] mb-4"></i>
-              <p className="text-gray-400">Loading...</p>
+            <div className="max-w-md mx-auto rounded-lg border border-[#3e503e]/30 bg-[#2e3d29]/20 p-8">
+              <SkeletonBox className="mx-auto mb-6 h-12 w-12" rounded="rounded-full" />
+              <SkeletonBox className="mx-auto mb-4 h-8 w-64" />
+              <SkeletonText lines={3} />
             </div>
           </div>
         </div>
@@ -209,4 +211,4 @@ export default function NewsletterUnsubscribe() {
       <UnsubscribeContent />
     </Suspense>
   );
-} 
+}

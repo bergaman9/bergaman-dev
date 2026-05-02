@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
+import { SkeletonBox, SkeletonText } from './Skeleton';
 
 export default function Card({
   children,
@@ -55,7 +56,7 @@ export default function Card({
 
   // Base card styles
   const baseClasses = `overflow-hidden transition-all duration-300 ${fullWidth ? 'w-full' : ''}`;
-  
+
   // Rounded styles
   const roundedClasses = {
     none: "",
@@ -67,7 +68,7 @@ export default function Card({
     "3xl": "rounded-3xl",
     full: "rounded-full"
   };
-  
+
   // Variant styles
   const variantClasses = {
     default: "bg-[#2e3d29]/20 backdrop-blur-md border border-[#3e503e]/30",
@@ -83,7 +84,7 @@ export default function Card({
     info: "bg-blue-900/10 border border-blue-600/30 text-blue-500",
     transparent: "bg-transparent"
   };
-  
+
   // Elevation styles
   const elevationClasses = {
     none: "",
@@ -94,10 +95,10 @@ export default function Card({
     xl: "shadow-xl",
     "2xl": "shadow-2xl"
   };
-  
+
   // Hover styles
   const hoverClasses = hover ? "hover:border-[#e8c547]/50 hover:translate-y-[-2px]" : "";
-  
+
   // Title size styles
   const titleSizes = {
     xs: "text-xs",
@@ -108,7 +109,7 @@ export default function Card({
     "2xl": "text-2xl",
     "3xl": "text-3xl"
   };
-  
+
   // Badge color styles
   const badgeColors = {
     primary: "bg-[#e8c547] text-[#0e1b12]",
@@ -120,25 +121,28 @@ export default function Card({
     dark: "bg-[#0e1b12] text-white",
     light: "bg-gray-200 text-gray-800"
   };
-  
+
   // Loading state
   if (loading) {
     return (
-      <div className={`${baseClasses} ${roundedClasses[rounded]} ${variantClasses[variant]} ${elevationClasses[elevation]} ${className} animate-pulse`}>
-        <div className={`${imageHeight} bg-[#2e3d29]/50`}></div>
+      <div className={`${baseClasses} ${roundedClasses[rounded]} ${variantClasses[variant]} ${elevationClasses[elevation]} ${className}`} aria-busy="true">
+        {showImage && <SkeletonBox className={`${imageHeight} rounded-none`} />}
         <div className="p-4 space-y-3">
-          <div className="h-6 bg-[#2e3d29]/50 rounded w-3/4"></div>
-          <div className="h-4 bg-[#2e3d29]/40 rounded w-full"></div>
-          <div className="h-4 bg-[#2e3d29]/40 rounded w-5/6"></div>
-          <div className="h-4 bg-[#2e3d29]/40 rounded w-4/6"></div>
+          <SkeletonBox className="h-6 w-3/4" rounded="rounded" />
+          <SkeletonText lines={3} />
+          {footer && (
+            <div className="border-t border-[#3e503e]/30 pt-3">
+              <SkeletonBox className="h-8 w-full" rounded="rounded" />
+            </div>
+          )}
         </div>
       </div>
     );
   }
-  
+
   // Combine classes
   const cardClasses = `${baseClasses} ${roundedClasses[rounded]} ${variantClasses[variant]} ${elevationClasses[elevation]} ${hoverClasses} ${className}`;
-  
+
   // Determine which image to use (original or placeholder)
   const imageToUse = imageError ? getPlaceholderImage(category) : (imageSrc || getPlaceholderImage(category));
 
@@ -153,12 +157,12 @@ export default function Card({
         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         onError={() => setImageError(true)}
       />
-      
+
       {/* Overlay for better text visibility */}
       {imageOverlay && (
         <div className="absolute inset-0 bg-gradient-to-t from-[#0e1b12] to-transparent opacity-70"></div>
       )}
-      
+
       {category && (
         <div className="absolute top-3 right-3 z-10">
           <span className="bg-[#e8c547] text-[#0e1b12] px-3 py-1 rounded-full text-xs font-medium">
@@ -166,7 +170,7 @@ export default function Card({
           </span>
         </div>
       )}
-      
+
       {status && (
         <div className="absolute top-3 left-3 z-10">
           <span className="px-3 py-1 bg-[#e8c547] text-[#0e1b12] rounded-full text-xs font-bold">
@@ -174,7 +178,7 @@ export default function Card({
           </span>
         </div>
       )}
-      
+
       {badge && (
         <div className="absolute top-3 right-3 z-10">
           <span className={`px-3 py-1 ${badgeColors[badgeColor]} rounded-full text-xs font-medium`}>
@@ -182,7 +186,7 @@ export default function Card({
           </span>
         </div>
       )}
-      
+
       {date && !readTime && (
         <div className="absolute bottom-3 left-3 z-10">
           <span className="px-3 py-1 bg-[#0e1b12]/80 text-gray-300 rounded-full text-xs">
@@ -192,16 +196,16 @@ export default function Card({
       )}
     </div>
   );
-  
+
   // Card content
   const cardContent = (
     <>
       {/* Header section */}
       {header && <div className="p-3 border-b border-[#3e503e]/30">{header}</div>}
-      
+
       {/* Image positioning */}
       {imagePosition === 'top' && showImage && imageComponent}
-      
+
       <div className="p-4">
         {/* Icon and title row */}
         {(title || icon) && (
@@ -211,13 +215,13 @@ export default function Card({
             {icon && iconPosition === 'right' && <span className="text-[#e8c547] ml-auto">{icon}</span>}
           </div>
         )}
-        
+
         {/* Subtitle */}
         {subtitle && <p className="text-sm text-gray-400 mb-2">{subtitle}</p>}
-        
+
         {/* Description */}
         {description && <p className="text-gray-300 mb-3 text-sm leading-relaxed line-clamp-3">{description}</p>}
-        
+
         {/* Tags */}
         {tags && tags.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-3">
@@ -228,7 +232,7 @@ export default function Card({
             ))}
           </div>
         )}
-        
+
         {/* Date and read time */}
         {(date && readTime) && (
           <div className="flex items-center justify-between text-xs text-gray-400 mb-3">
@@ -242,14 +246,14 @@ export default function Card({
             </span>
           </div>
         )}
-        
+
         {/* Children content */}
         {children}
       </div>
-      
+
       {/* Image at bottom if specified */}
       {imagePosition === 'bottom' && showImage && imageComponent}
-      
+
       {/* Footer section */}
       {footer && <div className="p-3 border-t border-[#3e503e]/30">{footer}</div>}
     </>
@@ -272,11 +276,11 @@ export default function Card({
       </button>
     );
   }
-  
+
   // Default render
   return (
     <div className={cardClasses}>
       {cardContent}
     </div>
   );
-} 
+}

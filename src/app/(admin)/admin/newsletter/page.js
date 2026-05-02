@@ -6,6 +6,7 @@ import PageHeader from '../../../components/PageHeader';
 import Modal from '../../../components/Modal';
 import Input from '../../../components/Input';
 import Select from '../../../components/Select';
+import { SkeletonTable } from '@/app/components/Skeleton';
 
 export default function AdminNewsletter() {
   const [activeTab, setActiveTab] = useState('subscribers');
@@ -13,7 +14,7 @@ export default function AdminNewsletter() {
   const [campaigns, setCampaigns] = useState([]);
   const [statistics, setStatistics] = useState({});
   const [loading, setLoading] = useState(true);
-  
+
   // Campaign creation state
   const [showCreateCampaign, setShowCreateCampaign] = useState(false);
   const [campaignData, setCampaignData] = useState({
@@ -43,13 +44,13 @@ export default function AdminNewsletter() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      
+
       if (activeTab === 'subscribers') {
         await fetchSubscribers();
       } else if (activeTab === 'campaigns') {
         await fetchCampaigns();
       }
-      
+
       await fetchStatistics();
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -245,10 +246,7 @@ export default function AdminNewsletter() {
 
           <div className="p-6">
             {loading ? (
-              <div className="flex items-center justify-center py-12">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#e8c547]"></div>
-                <span className="ml-3 text-gray-400">Loading...</span>
-              </div>
+              <SkeletonTable columns={activeTab === 'subscribers' ? 4 : 5} rows={6} />
             ) : (
               <>
                 {/* Subscribers Tab */}
@@ -365,7 +363,7 @@ export default function AdminNewsletter() {
                                 )}
                               </div>
                             </div>
-                            
+
                             {campaign.status === 'sent' && (
                               <div className="grid grid-cols-4 gap-4 text-sm">
                                 <div className="text-center">
@@ -486,4 +484,4 @@ export default function AdminNewsletter() {
       </Modal>
     </>
   );
-} 
+}

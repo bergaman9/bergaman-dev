@@ -1,11 +1,15 @@
 import { NextResponse } from 'next/server';
 import { readdir, unlink } from 'fs/promises';
 import path from 'path';
+import { requireAdmin, readJsonLimited } from '@/lib/serverSecurity';
 
-export async function GET() {
+export async function GET(request) {
   try {
+    const admin = await requireAdmin(request);
+    if (!admin.authorized) return admin.response;
+
     const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
-    
+
     let files = [];
     try {
       files = await readdir(uploadsDir);
@@ -23,30 +27,38 @@ export async function GET() {
     return NextResponse.json({ images });
   } catch (error) {
     console.error('Error fetching media:', error);
-    return NextResponse.json({ 
-      error: 'Failed to fetch media' 
+    return NextResponse.json({
+      error: 'Failed to fetch media'
     }, { status: 500 });
   }
 }
 
 export async function DELETE(request) {
   try {
-    const { images } = await request.json();
-    
+    const admin = await requireAdmin(request);
+    if (!admin.authorized) return admin.response;
+
+    const { images } = await readJsonLimited(request, { maxBytes: 16 * 1024 });
+
     if (!images || !Array.isArray(images)) {
-      return NextResponse.json({ 
-        error: 'Invalid images array' 
+      return NextResponse.json({
+        error: 'Invalid images array'
       }, { status: 400 });
     }
 
     const results = [];
-    
+
     for (const imageUrl of images) {
       try {
         // Extract filename from URL
         const filename = path.basename(imageUrl);
-        const filePath = path.join(process.cwd(), 'public', 'uploads', filename);
-        
+        const uploadsDir = path.resolve(process.cwd(), 'public', 'uploads');
+        const filePath = path.resolve(uploadsDir, filename);
+
+        if (!filePath.startsWith(`${uploadsDir}${path.sep}`)) {
+          throw new Error('Invalid media path');
+        }
+
         await unlink(filePath);
         results.push({ url: imageUrl, deleted: true });
       } catch (error) {
@@ -55,14 +67,14 @@ export async function DELETE(request) {
       }
     }
 
-    return NextResponse.json({ 
-      success: true, 
-      results 
+    return NextResponse.json({
+      success: true,
+      results
     });
   } catch (error) {
     console.error('Error deleting media:', error);
-    return NextResponse.json({ 
-      error: 'Failed to delete media' 
+    return NextResponse.json({
+      error: 'Failed to delete media'
     }, { status: 500 });
   }
-} 
+}
