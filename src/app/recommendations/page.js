@@ -40,7 +40,7 @@ export default function RecommendationsPage() {
   const fetchRecommendations = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/recommendations');
+      const response = await fetch('/api/recommendations?limit=500');
 
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
