@@ -201,7 +201,7 @@ const GameCard = ({ recommendation, onEdit, onDelete, isAdmin = false }) => {
           alt={recommendation.title}
           fill
           sizes="(max-width: 768px) 100vw, 33vw"
-          className="object-contain p-4 transition-transform duration-500 group-hover:scale-[1.03]"
+          className="object-contain p-1 transition-transform duration-500 group-hover:scale-[1.02]"
           onError={() => setImageError(true)}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#0e1b12] via-transparent to-transparent pointer-events-none"></div>
@@ -243,8 +243,6 @@ const GameCard = ({ recommendation, onEdit, onDelete, isAdmin = false }) => {
             </span>
           )}
         </div>
-
-        <p className="text-gray-300 text-sm leading-relaxed line-clamp-3">{recommendation.recommendation}</p>
 
         {/* Gaming Platform Icons */}
         <div className="flex gap-3 mt-3 text-gray-500">
@@ -1222,7 +1220,7 @@ export default function RecommendationCard({
             alt={recommendation.title}
             fill
             sizes="(max-width: 768px) 100vw, 33vw"
-            className="object-contain p-4"
+            className="object-contain p-1"
             onError={handleImageError}
           />
         ) : (
@@ -1258,12 +1256,6 @@ export default function RecommendationCard({
             </span>
           )}
         </div>
-
-        {recommendation.description && (
-          <p className="text-gray-400 text-sm line-clamp-3 flex-1">
-            {recommendation.description}
-          </p>
-        )}
 
         {(recommendation.link || recommendation.url) && (
           <Link
