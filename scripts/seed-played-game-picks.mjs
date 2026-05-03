@@ -9,7 +9,7 @@ dotenv.config({ path: '.env.local' });
 
 const OUTPUT_DIR = path.join(process.cwd(), 'public', 'images', 'games', 'picks');
 const PUBLIC_DIR = '/images/games/picks';
-const PLAYED_COPY = 'Oynandı.';
+const GAME_PICK_COPY = 'Game pick.';
 
 const recommendationSchema = new mongoose.Schema({
   title: { type: String, required: true, trim: true },
@@ -248,8 +248,8 @@ async function main() {
       $set: {
         ...game,
         category: 'game',
-        description: PLAYED_COPY,
-        recommendation: PLAYED_COPY,
+        description: GAME_PICK_COPY,
+        recommendation: GAME_PICK_COPY,
         image,
         featured: game.rating >= 10,
         status: 'active',
