@@ -4,7 +4,7 @@ export const dynamic = 'force-dynamic';
 import { Inter } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
-import { SITE_CONFIG, SEO_DEFAULTS, APP_VERSION } from '../lib/constants';
+import { SITE_CONFIG, SEO_DEFAULTS } from '../lib/constants';
 import LayoutWrapper from './components/LayoutWrapper';
 import ImageWithFallback from './components/ImageWithFallback';
 import { VocabularyProvider } from '@/context/VocabularyContext';
@@ -67,9 +67,9 @@ export const metadata = {
     title: SITE_CONFIG.title,
     description: SITE_CONFIG.description,
   },
-  verification: {
-    google: 'your-google-verification-code',
-  },
+  ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+    ? { verification: { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION } }
+    : {}),
   alternates: {
     canonical: SITE_CONFIG.url,
   },
@@ -142,7 +142,7 @@ export default function RootLayout({ children }) {
               "@type": "Person",
               "name": SITE_CONFIG.author.name,
               "url": SITE_CONFIG.url,
-              "image": `${SITE_CONFIG.url}/images/profile/profile.png`,
+              "image": `${SITE_CONFIG.url}/images/profile/profile.jpg`,
               "sameAs": [
                 SITE_CONFIG.author.github,
                 SITE_CONFIG.author.twitter,

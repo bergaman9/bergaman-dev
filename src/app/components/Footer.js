@@ -1,22 +1,18 @@
 "use client";
 
-import { useState, useEffect } from 'react';
 import Link from "next/link";
 import { usePathname } from 'next/navigation';
-import { SITE_CONFIG, SOCIAL_LINKS } from '../../lib/constants';
+import { SITE_CONFIG, SOCIAL_LINKS, NAV_LINKS } from '../../lib/constants';
 import { getAppVersion } from '../../lib/version';
 import { ACTIVE_MINI_APPS, getMiniAppByPathname, getMiniAppTheme } from '@/lib/miniApps';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
-  const [appVersion, setAppVersion] = useState('2.5.13');
+  // NEXT_PUBLIC_APP_VERSION is inlined at build time on both server and
+  // client, so this is hydration-safe without any effect.
+  const appVersion = getAppVersion();
   const pathname = usePathname();
   const activeMiniApp = getMiniAppByPathname(pathname);
-
-  useEffect(() => {
-    // Set version on client-side to avoid hydration mismatch
-    setAppVersion(getAppVersion());
-  }, []);
 
   if (activeMiniApp) {
     const miniTheme = getMiniAppTheme(activeMiniApp);
@@ -124,13 +120,7 @@ export default function Footer() {
               Quick Links
             </h4>
             <div className="space-y-2">
-              {[
-                { href: '/about', label: 'About', icon: 'fas fa-user' },
-                { href: '/portfolio', label: 'Portfolio', icon: 'fas fa-briefcase' },
-                { href: '/blog', label: 'Blog', icon: 'fas fa-blog' },
-                { href: '/picks', label: 'Picks', icon: 'fas fa-heart' },
-                { href: '/contact', label: 'Contact', icon: 'fas fa-envelope' }
-              ].map((link, index) => (
+              {NAV_LINKS.filter((link) => link.href !== '/').map((link, index) => (
                 <Link
                   key={index}
                   href={link.href}

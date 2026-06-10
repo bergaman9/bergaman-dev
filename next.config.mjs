@@ -65,6 +65,21 @@ const nextConfig = {
   generateBuildId: async () => {
     return process.env.NEXT_BUILD_ID || process.env.VERCEL_GIT_COMMIT_SHA || packageJson.version;
   },
+  async redirects() {
+    // /picks is the canonical route for curated content; keep legacy URLs alive.
+    return [
+      {
+        source: '/recommendations',
+        destination: '/picks',
+        permanent: true,
+      },
+      {
+        source: '/suggestions',
+        destination: '/picks',
+        permanent: true,
+      },
+    ];
+  },
   async rewrites() {
     return [
       {

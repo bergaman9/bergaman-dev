@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
+import { NAV_LINKS } from "@/lib/constants";
 import { ACTIVE_MINI_APPS, getMiniAppByPathname, getMiniAppTheme } from "@/lib/miniApps";
 
 export default function Header() {
@@ -13,7 +14,14 @@ export default function Header() {
   const pathname = usePathname();
   const dropdownRef = useRef(null);
   const mobileMenuRef = useRef(null);
+  const menuButtonRef = useRef(null);
   const activeMiniApp = getMiniAppByPathname(pathname);
+
+  // Close menus on route change so navigation always lands on a clean header
+  useEffect(() => {
+    setIsMenuOpen(false);
+    setIsAdminDropdownOpen(false);
+  }, [pathname]);
 
   // Check authentication status
   useEffect(() => {
@@ -57,21 +65,36 @@ export default function Header() {
     };
   }, []);
 
-  // Auto-close dropdowns when clicking outside
+  // Auto-close dropdowns when clicking outside or pressing Escape
   useEffect(() => {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsAdminDropdownOpen(false);
       }
-      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target)) {
+      if (
+        mobileMenuRef.current &&
+        !mobileMenuRef.current.contains(event.target) &&
+        // Ignore the toggle button itself, otherwise mousedown closes the
+        // menu and the following click immediately re-opens it.
+        !(menuButtonRef.current && menuButtonRef.current.contains(event.target))
+      ) {
+        setIsMenuOpen(false);
+      }
+    }
+
+    function handleEscape(event) {
+      if (event.key === 'Escape') {
+        setIsAdminDropdownOpen(false);
         setIsMenuOpen(false);
       }
     }
 
     if (isAdminDropdownOpen || isMenuOpen) {
       document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('keydown', handleEscape);
       return () => {
         document.removeEventListener('mousedown', handleClickOutside);
+        document.removeEventListener('keydown', handleEscape);
       };
     }
   }, [isAdminDropdownOpen, isMenuOpen]);
@@ -96,15 +119,8 @@ export default function Header() {
     return pathname.startsWith(path);
   };
 
-  // Navigation links
-  const navigationItems = [
-    { href: "/", label: "Home", icon: "fas fa-home" },
-    { href: "/about", label: "About", icon: "fas fa-user" },
-    { href: "/portfolio", label: "Portfolio", icon: "fas fa-briefcase" },
-    { href: "/picks", label: "Picks", icon: "fas fa-heart" },
-    { href: "/blog", label: "Blog", icon: "fas fa-blog" },
-    { href: "/contact", label: "Contact", icon: "fas fa-envelope" }
-  ];
+  // Navigation links — single source shared with the footer and sitemap
+  const navigationItems = NAV_LINKS;
 
   if (activeMiniApp) {
     const miniTheme = getMiniAppTheme(activeMiniApp);
@@ -154,8 +170,9 @@ export default function Header() {
                 </Link>
               )}
               <button
+                ref={menuButtonRef}
                 onClick={toggleMenu}
-                className="mini-app-accent rounded-lg p-2 transition-colors duration-300 hover:bg-white/10 lg:hidden"
+                className="mini-app-accent rounded-lg p-2 transition-colors duration-300 hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-current lg:hidden"
                 aria-label="Toggle mini app navigation"
                 aria-expanded={isMenuOpen}
               >
@@ -204,8 +221,8 @@ export default function Header() {
           {/* Logo with Dragon Icon */}
           <Link href="/" className="flex items-center space-x-3 group">
             <div className="relative">
-              <div className="absolute inset-0 bg-[#e8c547]/20 rounded-full blur-lg animate-pulse"></div>
-              <i className="fas fa-dragon text-2xl text-[#e8c547] group-hover:scale-110 transition-transform duration-300 animate-pulse relative z-10 drop-shadow-lg"></i>
+              <div className="absolute inset-0 bg-[#e8c547]/20 rounded-full blur-lg"></div>
+              <i className="fas fa-dragon text-2xl text-[#e8c547] group-hover:scale-110 transition-transform duration-300 relative z-10 drop-shadow-lg"></i>
             </div>
             <div>
               <h1 className="text-2xl md:text-3xl font-extrabold bg-gradient-to-r from-[#e8c547] to-[#f4d76b] bg-clip-text text-transparent group-hover:from-[#f4d76b] group-hover:to-[#e8c547] transition-all duration-300">
@@ -221,7 +238,7 @@ export default function Header() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center space-x-2 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-300 xl:px-4 ${isActive(item.href)
+                className={`flex items-center space-x-2 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-300 xl:px-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c547]/60 ${isActive(item.href)
                     ? 'text-[#e8c547] bg-[#e8c547]/10 font-semibold'
                     : 'text-gray-300 hover:text-[#e8c547] hover:bg-[#e8c547]/10'
                   }`}
@@ -328,8 +345,9 @@ export default function Header() {
 
             {/* Mobile Menu Button */}
             <button
+              ref={menuButtonRef}
               onClick={toggleMenu}
-              className="lg:hidden text-[#e8c547] hover:text-[#f4d76b] transition-colors duration-300 p-2 rounded-lg hover:bg-[#e8c547]/10"
+              className="lg:hidden text-[#e8c547] hover:text-[#f4d76b] transition-colors duration-300 p-2 rounded-lg hover:bg-[#e8c547]/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c547]/60"
               aria-label="Toggle navigation menu"
               aria-expanded={isMenuOpen}
             >

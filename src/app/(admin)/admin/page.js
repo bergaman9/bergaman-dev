@@ -10,6 +10,7 @@ import Button from '@/app/components/Button';
 import Input from '@/app/components/Input';
 import Alert from '../../components/Alert';
 import Loading from '../../components/Loading';
+import { getAppVersion } from '../../../lib/version';
 
 // Dashboard component
 function AdminDashboard() {
@@ -266,7 +267,7 @@ function AdminDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <p className="text-gray-400 text-sm">Version</p>
-            <p className="text-white font-medium">v2.5.13</p>
+            <p className="text-white font-medium">v{getAppVersion()}</p>
           </div>
           <div>
             <p className="text-gray-400 text-sm">Database</p>

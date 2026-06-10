@@ -399,11 +399,11 @@ export default function Home() {
                 </div>
               </section>
 
-              {/* Recommendations Section */}
+              {/* Picks Section */}
               <section className="mb-12 slide-in-right">
                 <h2 className="text-3xl font-bold gradient-text mb-8 text-center">
-                  <i className="fas fa-thumbs-up mr-3"></i>
-                  My Recommendations
+                  <i className="fas fa-heart mr-3"></i>
+                  My Picks
                 </h2>
 
                 {loadingRecommendations ? (
@@ -423,12 +423,12 @@ export default function Home() {
                       ))}
                     </div>
                     <div className="text-center mt-8">
-                      <Button href="/recommendations" variant="secondary">View All Recommendations<i className="fas fa-arrow-right ml-2"></i></Button>
+                      <Button href="/picks" variant="secondary">Explore All Picks<i className="fas fa-arrow-right ml-2"></i></Button>
                     </div>
                   </>
                 ) : (
                   <div className="text-center py-8">
-                    <p className="text-gray-400">No recommendations found.</p>
+                    <p className="text-gray-400">No picks to show yet — check back soon.</p>
                   </div>
                 )}
               </section>

@@ -1,4 +1,6 @@
-const APP_VERSION_VALUE = process.env.NEXT_PUBLIC_APP_VERSION || '2.7.0';
+// Version is injected from package.json by next.config.mjs (NEXT_PUBLIC_APP_VERSION).
+// npm_package_version covers node scripts run through npm outside the Next build.
+const APP_VERSION_VALUE = (process.env.NEXT_PUBLIC_APP_VERSION || process.env.npm_package_version || '0.0.0').replace(/^v/, '');
 const isProduction = process.env.NODE_ENV === 'production';
 const scriptSources = [
   "'self'",
@@ -60,13 +62,16 @@ export const SITE_CONFIG = {
   }
 };
 
-// Navigation Links
+// Navigation Links — single source for Header, Footer and sitemaps.
+// Canonical route for curated content is /picks (legacy /recommendations
+// and /suggestions redirect there, see next.config.mjs).
 export const NAV_LINKS = [
   { href: '/', label: 'Home', icon: 'fas fa-home' },
   { href: '/about', label: 'About', icon: 'fas fa-user' },
   { href: '/portfolio', label: 'Portfolio', icon: 'fas fa-briefcase' },
   { href: '/blog', label: 'Blog', icon: 'fas fa-blog' },
-  { href: '/suggestions', label: 'Suggestions', icon: 'fas fa-lightbulb' }
+  { href: '/picks', label: 'Picks', icon: 'fas fa-heart' },
+  { href: '/contact', label: 'Contact', icon: 'fas fa-envelope' }
 ];
 
 // Social Media Links
@@ -101,15 +106,15 @@ export const SEO_DEFAULTS = {
     siteName: SITE_CONFIG.name,
     images: [
       {
-        url: '/images/og-image.png',
-        width: 1200,
-        height: 630,
+        url: '/images/profile/profile.png',
+        width: 512,
+        height: 512,
         alt: SITE_CONFIG.title,
       },
     ],
   },
   twitter: {
-    card: 'summary_large_image',
+    card: 'summary',
     site: '@bergaman9',
     creator: '@bergaman9',
   },

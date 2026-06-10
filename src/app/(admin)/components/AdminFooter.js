@@ -6,7 +6,7 @@ import { getAppVersion } from '../../../lib/version';
 
 export default function AdminFooter() {
   const [currentTime, setCurrentTime] = useState('');
-  const [appVersion, setAppVersion] = useState('2.5.13');
+  const appVersion = getAppVersion();
   const [systemStats, setSystemStats] = useState({
     uptime: '0h 0m',
     memory: '0%',
@@ -90,8 +90,7 @@ export default function AdminFooter() {
 
     updateTime();
     updateStats();
-    setAppVersion(getAppVersion());
-    
+
     const timeInterval = setInterval(updateTime, 1000);
     const statsInterval = setInterval(updateStats, 30000);
 
