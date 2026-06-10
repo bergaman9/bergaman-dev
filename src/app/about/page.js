@@ -300,7 +300,7 @@ export default function About() {
               <div className="relative w-48 h-48 sm:w-56 sm:h-56">
                 <Image
                   className="relative rounded-full border-4 border-[#e8c547]/50 shadow-2xl shadow-[#0e1b12]/50 transition-all duration-700 hover:scale-105 hover:border-[#e8c547]/80"
-                  src="/images/profile/profile.png"
+                  src="/images/profile/profile.jpg"
                   alt="Ömer Faruk Güler - Bergaman"
                   width={224}
                   height={224}
