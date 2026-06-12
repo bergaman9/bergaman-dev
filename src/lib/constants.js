@@ -238,18 +238,19 @@ export const SECURITY = {
   },
 };
 
-// Skills Data
+// Skills Data — canonical proficiency levels shared across Home and About.
+// Keep these in sync if a skill's level changes anywhere in the UI.
 export const SKILLS = [
-  { name: 'Python', level: 90 },
-  { name: 'JavaScript', level: 85 },
-  { name: 'React/Next.js', level: 88 },
-  { name: 'Node.js', level: 80 },
-  { name: 'C#', level: 85 },
-  { name: 'SQL', level: 75 },
-  { name: 'MongoDB', level: 78 },
+  { name: 'Python', level: 85 },
+  { name: 'JavaScript', level: 80 },
+  { name: 'React/Next.js', level: 82 },
+  { name: 'Node.js', level: 75 },
+  { name: 'C#', level: 70 },
+  { name: 'SQL', level: 70 },
+  { name: 'MongoDB', level: 75 },
   { name: 'Git', level: 85 },
-  { name: 'AI/ML', level: 70 },
-  { name: 'Blockchain', level: 65 }
+  { name: 'AI/ML', level: 65 },
+  { name: 'Blockchain', level: 55 }
 ];
 
 // Default export for ESM compatibility

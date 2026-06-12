@@ -17,9 +17,9 @@ const skillCategories = [
     title: "Programming Languages",
     icon: "fas fa-code",
     skills: [
-      { name: "Python", level: 80 },
-      { name: "JavaScript", level: 70 },
-      { name: "C#", level: 60 },
+      { name: "Python", level: 85 },
+      { name: "JavaScript", level: 80 },
+      { name: "C#", level: 70 },
       { name: "HTML & CSS", level: 90 }
     ]
   },
@@ -27,9 +27,9 @@ const skillCategories = [
     title: "Frameworks & Libraries",
     icon: "fas fa-layer-group",
     skills: [
-      { name: "React", level: 75 },
-      { name: "Node.js", level: 65 },
-      { name: "Next.js", level: 70 },
+      { name: "React", level: 85 },
+      { name: "Node.js", level: 75 },
+      { name: "Next.js", level: 80 },
       { name: "Tailwind CSS", level: 85 }
     ]
   },
@@ -39,7 +39,7 @@ const skillCategories = [
     skills: [
       { name: "SQL", level: 70 },
       { name: "Git", level: 85 },
-      { name: "MongoDB", level: 65 },
+      { name: "MongoDB", level: 75 },
       { name: "VS Code", level: 90 }
     ]
   },
@@ -274,21 +274,23 @@ export default function About() {
           variant="large"
         />
 
-        {/* Hero Section with Profile Image */}
-        <section className="mb-16 fade-in">
+        {/* Hero Section with Profile Image. Extra mobile bottom margin keeps
+            the stacked skill badges clear of the next section. */}
+        <section className="mb-28 sm:mb-16 fade-in">
           <div className="flex justify-center">
             <div className="relative">
-              {/* Animated Background Effects */}
-              <div className="absolute inset-0 bg-gradient-to-r from-[#e8c547]/20 to-[#f4d76b]/20 rounded-full blur-3xl animate-pulse scale-125"></div>
+              {/* Background glow - subtle */}
+              <div className="absolute inset-0 bg-gradient-to-r from-[#e8c547]/15 to-[#f4d76b]/10 rounded-full blur-3xl scale-110"></div>
 
               {/* Main Profile Image */}
-              <div className="relative w-48 h-48 sm:w-56 sm:h-56">
+              <div className="relative w-44 h-44 sm:w-56 sm:h-56">
                 <Image
                   className="relative rounded-full border-4 border-[#e8c547]/50 shadow-2xl shadow-[#0e1b12]/50 transition-all duration-700 hover:scale-105 hover:border-[#e8c547]/80"
                   src="/images/profile/profile.jpg"
-                  alt="Ömer Faruk Güler - Bergaman"
+                  alt="Ömer Faruk Güler — Bergaman, Electrical & Electronics Engineer"
                   width={224}
                   height={224}
+                  sizes="(max-width: 640px) 176px, 224px"
                   priority
                 />
 

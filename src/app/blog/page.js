@@ -96,34 +96,14 @@ export default function Blog() {
       const data = await response.json();
 
       if (data.success && data.posts) {
-        // Filter out non-public posts for regular visitors (if API returns any)
-        // Note: API already filters for public, but we keep this for admin/extra safety
-        let visiblePosts = data.posts.filter(post => {
+        // API already filters for public; keep this as an extra safety net.
+        // commentCount is included in the response (single aggregate query).
+        const visiblePosts = data.posts.filter(post => {
           if (isAdminMode) return true; // Admin can see all posts
           return post.visibility === 'public' || !post.visibility;
         });
 
-        // Fetch comment count for each post
-        const postsWithCommentCount = await Promise.all(
-          visiblePosts.map(async (post) => {
-            try {
-              const commentResponse = await fetch(`/api/comments?postSlug=${post.slug}`);
-              const commentData = await commentResponse.json();
-              return {
-                ...post,
-                commentCount: commentData.comments?.length || 0
-              };
-            } catch (error) {
-              console.error(`Error fetching comments for ${post.slug}:`, error);
-              return {
-                ...post,
-                commentCount: 0
-              };
-            }
-          })
-        );
-
-        setPosts(postsWithCommentCount);
+        setPosts(visiblePosts);
         setTotalPosts(data.pagination?.total || visiblePosts.length);
       } else {
         console.error('Blog API error:', data);

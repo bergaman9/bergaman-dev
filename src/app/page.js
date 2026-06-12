@@ -128,29 +128,8 @@ export default function Home() {
       const response = await fetch('/api/posts?limit=3');
       const data = await response.json();
 
-      if (data.posts) {
-        // Fetch comment count for each post
-        const postsWithCommentCount = await Promise.all(
-          data.posts.map(async (post) => {
-            try {
-              const commentResponse = await fetch(`/api/comments?postSlug=${post.slug}`);
-              const commentData = await commentResponse.json();
-              return {
-                ...post,
-                commentCount: commentData.comments?.length || 0
-              };
-            } catch (error) {
-              console.error(`Error fetching comments for ${post.slug}:`, error);
-              return {
-                ...post,
-                commentCount: 0
-              };
-            }
-          })
-        );
-
-        setBlogPosts(postsWithCommentCount);
-      }
+      // commentCount now comes from the posts API in a single response
+      setBlogPosts(Array.isArray(data.posts) ? data.posts : []);
     } catch (error) {
       console.error('Error fetching blog posts:', error);
       setBlogPosts([]);
@@ -237,20 +216,22 @@ export default function Home() {
                   }}></div>
                 </div>
 
-                {/* Profile Image - Cleaner Design */}
-                <div className="relative mb-8 flex justify-center">
+                {/* Profile Image - Cleaner Design. Extra bottom margin on
+                    mobile leaves room for the stacked skill badges below. */}
+                <div className="relative mb-24 sm:mb-10 flex justify-center">
                   <div className="relative">
-                    {/* Animated Background Effects */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#e8c547]/15 to-[#f4d76b]/15 rounded-full blur-2xl animate-pulse scale-125"></div>
+                    {/* Background glow - subtle, motion-reduce safe */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#e8c547]/15 to-[#f4d76b]/10 rounded-full blur-2xl scale-110"></div>
 
                     {/* Main Profile Image */}
-                    <div className="relative w-48 h-48 sm:w-56 sm:h-56 lg:w-64 lg:h-64">
+                    <div className="relative w-44 h-44 sm:w-56 sm:h-56 lg:w-64 lg:h-64">
                       <Image
                         className="relative rounded-full border-4 border-[#e8c547]/40 shadow-xl shadow-[#0e1b12]/30 transition-all duration-500 hover:scale-105 hover:border-[#e8c547]/60"
                         src="/images/profile/profile.jpg"
-                        alt="Ömer Faruk Güler - Bergaman"
+                        alt="Ömer Faruk Güler — Bergaman, Electrical & Electronics Engineer and full-stack developer"
                         width={256}
                         height={256}
+                        sizes="(max-width: 640px) 176px, (max-width: 1024px) 224px, 256px"
                         priority
                       />
 

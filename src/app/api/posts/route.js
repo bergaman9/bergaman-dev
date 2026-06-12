@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import BlogPost from '../../../models/BlogPost';
+import Comment from '../../../models/Comment';
 import { connectDB } from '../../../lib/mongodb';
 import { escapeRegExp } from '@/lib/serverSecurity';
 
@@ -55,6 +56,23 @@ export async function GET(request) {
 
     // Get total count for pagination
     const total = await BlogPost.countDocuments(query);
+
+    // Attach approved comment counts in a single aggregate (avoids the client
+    // firing one /api/comments request per post — an N+1 round trip).
+    const slugs = posts.map((post) => post.slug).filter(Boolean);
+    if (slugs.length > 0) {
+      const counts = await Comment.aggregate([
+        { $match: { postSlug: { $in: slugs }, approved: true } },
+        { $group: { _id: '$postSlug', count: { $sum: 1 } } }
+      ]);
+      const countBySlug = counts.reduce((acc, { _id, count }) => {
+        acc[_id] = count;
+        return acc;
+      }, {});
+      posts.forEach((post) => {
+        post.commentCount = countBySlug[post.slug] || 0;
+      });
+    }
 
     return NextResponse.json({
       success: true,

@@ -80,8 +80,8 @@ export default function Footer() {
           <div className="lg:col-span-1 text-center sm:text-left">
             <div className="flex items-center justify-center sm:justify-start space-x-3 mb-4">
               <div className="relative">
-                <div className="absolute inset-0 bg-[#e8c547]/30 rounded-full blur-lg animate-pulse"></div>
-                <i className="fas fa-dragon text-3xl text-[#e8c547] relative z-10 drop-shadow-lg animate-pulse"></i>
+                <div className="absolute inset-0 bg-[#e8c547]/20 rounded-full blur-lg"></div>
+                <i className="fas fa-dragon text-3xl text-[#e8c547] relative z-10 drop-shadow-lg"></i>
               </div>
               <div>
                 <h3 className="text-2xl font-bold bg-gradient-to-r from-[#e8c547] to-[#f4d76b] bg-clip-text text-transparent">
