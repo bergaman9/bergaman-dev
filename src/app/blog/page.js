@@ -3,12 +3,9 @@
 // Force dynamic rendering to prevent initialization errors
 export const dynamic = 'force-dynamic';
 
-import Head from 'next/head';
 import Link from "next/link";
-import BlogImageGenerator from "../components/BlogImageGenerator";
 import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
-import Image from 'next/image';
 import ImageModal from '../components/ImageModal';
 import { useAdminMode } from '../../hooks/useAdminMode';
 import BlogPostCard from '../components/BlogPostCard';
@@ -38,9 +35,16 @@ export default function Blog() {
         setIsCategoryDropdownOpen(false);
       }
     }
+    function handleEscape(event) {
+      if (event.key === 'Escape') {
+        setIsCategoryDropdownOpen(false);
+      }
+    }
     document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscape);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscape);
     };
   }, []);
 
@@ -90,8 +94,6 @@ export default function Blog() {
         }
       });
       const data = await response.json();
-
-      console.log('Blog API response:', data);
 
       if (data.success && data.posts) {
         // Filter out non-public posts for regular visitors (if API returns any)
@@ -205,21 +207,7 @@ export default function Blog() {
         </div>
       )}
 
-      <Head>
-        <title>Blog - Bergaman | Tech Insights & Development Stories</title>
-        <meta name="description" content="Explore Bergaman's blog featuring insights on web development, AI, technology trends, and programming tutorials. Stay updated with the latest in tech." />
-        <meta name="keywords" content="tech blog, web development, AI, programming, tutorials, technology insights, bergaman blog" />
-        <meta property="og:title" content="Blog - Bergaman | Tech Insights & Development Stories" />
-        <meta property="og:description" content="Explore Bergaman's blog featuring insights on web development, AI, and technology trends." />
-        <meta property="og:url" content="https://bergaman.dev/blog" />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Blog - Bergaman | Tech Insights & Development Stories" />
-        <meta name="twitter:description" content="Explore Bergaman's blog featuring insights on web development, AI, and technology trends." />
-        <link rel="canonical" href="https://bergaman.dev/blog" />
-      </Head>
-
-      <main className={isAdminMode ? 'pt-12' : ''}>
+      <div className={isAdminMode ? 'pt-12' : ''}>
 
         {/* Page Header */}
         <PageHeader
@@ -256,6 +244,9 @@ export default function Blog() {
                 <div className="md:w-64 relative" ref={categoryDropdownRef}>
                   <button
                     onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
+                    aria-haspopup="listbox"
+                    aria-expanded={isCategoryDropdownOpen}
+                    aria-label="Filter by category"
                     className="w-full pl-12 pr-4 py-4 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] focus:border-[#e8c547] focus:ring-1 focus:ring-[#e8c547]/30 focus:outline-none transition-all duration-300 text-base text-left flex items-center justify-between"
                   >
                     <i className="fas fa-filter absolute left-4 text-[#e8c547]"></i>
@@ -264,15 +255,17 @@ export default function Blog() {
                   </button>
 
                   {isCategoryDropdownOpen && (
-                    <div className="absolute top-full left-0 right-0 mt-2 bg-[#0e1b12] border border-[#3e503e] rounded-lg shadow-xl z-50 max-h-60 overflow-y-auto custom-scrollbar">
+                    <div role="listbox" className="absolute top-full left-0 right-0 mt-2 bg-[#0e1b12] border border-[#3e503e] rounded-lg shadow-xl z-50 max-h-60 overflow-y-auto custom-scrollbar">
                       {categories.map(category => (
                         <button
                           key={category}
+                          role="option"
+                          aria-selected={selectedCategory === category}
                           onClick={() => {
                             handleCategoryChange({ target: { value: category } });
                             setIsCategoryDropdownOpen(false);
                           }}
-                          className={`w-full text-left px-4 py-3 hover:bg-[#2e3d29] transition-colors flex items-center justify-between ${selectedCategory === category ? 'text-[#e8c547] bg-[#2e3d29]/50' : 'text-[#d1d5db]'
+                          className={`w-full text-left px-4 py-3 hover:bg-[#2e3d29] focus:bg-[#2e3d29] focus:outline-none transition-colors flex items-center justify-between ${selectedCategory === category ? 'text-[#e8c547] bg-[#2e3d29]/50' : 'text-[#d1d5db]'
                             }`}
                         >
                           <span>{formatCategoryName(category)}</span>
@@ -313,24 +306,31 @@ export default function Blog() {
                 ))}
               </div>
             ) : posts.length === 0 ? (
-              <div className="text-center py-16">
-                <i className="fas fa-search text-4xl text-gray-400 mb-4"></i>
-                <p className="text-gray-400">
-                  {searchTerm || selectedCategory !== 'all'
-                    ? 'No posts found matching your criteria.'
-                    : 'No blog posts available yet.'}
-                </p>
-                {(searchTerm || selectedCategory !== 'all') && (
-                  <button
-                    onClick={() => {
-                      setSearchTerm('');
-                      setSelectedCategory('all');
-                    }}
-                    className="mt-4 text-[#e8c547] hover:text-[#d4b445] transition-colors"
-                  >
-                    Clear filters
-                  </button>
-                )}
+              <div className="text-center py-20">
+                <div className="inline-block p-8 bg-[#2e3d29]/30 rounded-lg border border-[#3e503e]/30">
+                  <i className={`${searchTerm || selectedCategory !== 'all' ? 'fas fa-search' : 'fas fa-dragon'} text-6xl text-[#e8c547]/30 mb-4 block`}></i>
+                  <h3 className="text-xl font-medium text-gray-300 mb-2">
+                    {searchTerm || selectedCategory !== 'all'
+                      ? 'No posts match your filters'
+                      : 'No posts in the lair yet'}
+                  </h3>
+                  <p className="text-gray-500 mb-4">
+                    {searchTerm || selectedCategory !== 'all'
+                      ? 'Try a different search term or category.'
+                      : 'New articles are being forged — check back soon.'}
+                  </p>
+                  {(searchTerm || selectedCategory !== 'all') && (
+                    <button
+                      onClick={() => {
+                        setSearchTerm('');
+                        setSelectedCategory('all');
+                      }}
+                      className="text-[#e8c547] hover:text-[#f4d76b] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c547]/60 rounded px-2 py-1"
+                    >
+                      Clear filters
+                    </button>
+                  )}
+                </div>
               </div>
             ) : (
               <div className="card-grid card-grid-3">
@@ -370,20 +370,21 @@ export default function Blog() {
           {/* Pagination */}
           {totalPages > 1 && (
             <section className="mb-8 fade-in">
-              <div className="flex justify-center items-center space-x-2">
+              <div className="flex justify-center items-center gap-1.5 sm:gap-2">
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className={`px-4 py-2 rounded-lg border transition-all duration-300 ${currentPage === 1
+                  aria-label="Previous page"
+                  className={`px-3 sm:px-4 py-2 rounded-lg border transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c547]/60 ${currentPage === 1
                     ? 'border-[#3e503e] text-gray-500 cursor-not-allowed'
                     : 'border-[#e8c547] text-[#e8c547] hover:bg-[#e8c547] hover:text-[#0e1b12]'
                     }`}
                 >
-                  <i className="fas fa-chevron-left mr-2"></i>
-                  Previous
+                  <i className="fas fa-chevron-left sm:mr-2"></i>
+                  <span className="hidden sm:inline">Previous</span>
                 </button>
 
-                <div className="flex space-x-1">
+                <div className="flex gap-1">
                   {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
                     const showPage =
                       page === 1 ||
@@ -392,7 +393,7 @@ export default function Blog() {
 
                     if (!showPage) {
                       if (page === currentPage - 2 || page === currentPage + 2) {
-                        return <span key={page} className="px-3 py-2 text-gray-400">...</span>;
+                        return <span key={page} className="px-2 sm:px-3 py-2 text-gray-400">...</span>;
                       }
                       return null;
                     }
@@ -401,7 +402,9 @@ export default function Blog() {
                       <button
                         key={page}
                         onClick={() => handlePageChange(page)}
-                        className={`px-4 py-2 rounded-lg border transition-all duration-300 ${currentPage === page
+                        aria-label={`Page ${page}`}
+                        aria-current={currentPage === page ? 'page' : undefined}
+                        className={`min-w-[2.5rem] px-3 sm:px-4 py-2 rounded-lg border transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c547]/60 ${currentPage === page
                           ? 'bg-[#e8c547] text-[#0e1b12] border-[#e8c547]'
                           : 'border-[#3e503e] text-gray-300 hover:border-[#e8c547] hover:text-[#e8c547]'
                           }`}
@@ -415,13 +418,14 @@ export default function Blog() {
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
-                  className={`px-4 py-2 rounded-lg border transition-all duration-300 ${currentPage === totalPages
+                  aria-label="Next page"
+                  className={`px-3 sm:px-4 py-2 rounded-lg border transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c547]/60 ${currentPage === totalPages
                     ? 'border-[#3e503e] text-gray-500 cursor-not-allowed'
                     : 'border-[#e8c547] text-[#e8c547] hover:bg-[#e8c547] hover:text-[#0e1b12]'
                     }`}
                 >
-                  Next
-                  <i className="fas fa-chevron-right ml-2"></i>
+                  <span className="hidden sm:inline">Next</span>
+                  <i className="fas fa-chevron-right sm:ml-2"></i>
                 </button>
               </div>
               <div className="text-center mt-4 text-sm text-gray-400">
@@ -433,44 +437,43 @@ export default function Blog() {
 
         {/* Newsletter Section */}
         <section className="mb-12 fade-in">
-          <div className="glass p-8 rounded-lg text-center">
+          <div className="glass p-6 sm:p-8 rounded-lg text-center">
             <div className="mb-6">
-              <i className="fas fa-dragon text-4xl text-[#e8c547] mb-4"></i>
-              <h2 className="text-3xl md:text-4xl font-bold gradient-text mb-4 leading-tight">
+              <i className="fas fa-dragon text-3xl text-[#e8c547] mb-3"></i>
+              <h2 className="text-2xl md:text-3xl font-bold gradient-text mb-3 leading-tight">
                 Join the Dragon's Domain
               </h2>
-              <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-                Get exclusive insights on AI, blockchain, and full-stack development.
-                Join fellow developers in the dragon's lair for weekly technical updates and project showcases.
+              <p className="text-gray-300 max-w-2xl mx-auto">
+                Weekly insights on AI, full-stack development, and project showcases — straight to your inbox.
               </p>
             </div>
 
-            <div className="flex justify-center space-x-6 mb-6 text-sm text-gray-400">
-              <div className="flex items-center">
+            <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 mb-6 text-sm text-gray-400">
+              <span className="flex items-center">
                 <i className="fas fa-check text-green-400 mr-2"></i>
-                <span>Weekly Updates</span>
-              </div>
-              <div className="flex items-center">
+                Weekly Updates
+              </span>
+              <span className="flex items-center">
                 <i className="fas fa-check text-green-400 mr-2"></i>
-                <span>No Spam</span>
-              </div>
-              <div className="flex items-center">
+                No Spam
+              </span>
+              <span className="flex items-center">
                 <i className="fas fa-check text-green-400 mr-2"></i>
-                <span>Unsubscribe Anytime</span>
-              </div>
+                Unsubscribe Anytime
+              </span>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link
                 href="/newsletter"
-                className="px-8 py-4 text-lg font-medium bg-[#e8c547] text-[#0e1b12] rounded-lg hover:bg-[#d4b445] transition-colors duration-300"
+                className="px-6 py-3 font-medium bg-[#e8c547] text-[#0e1b12] rounded-lg hover:bg-[#d4b445] transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c547]/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0e1b12]"
               >
                 <i className="fas fa-paper-plane mr-2"></i>
                 Subscribe to Newsletter
               </Link>
               <Link
                 href="/contact"
-                className="px-8 py-4 text-lg font-medium border border-[#3e503e] rounded-lg hover:border-[#e8c547] transition-colors duration-300"
+                className="px-6 py-3 font-medium border border-[#3e503e] rounded-lg hover:border-[#e8c547] transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c547]/60"
               >
                 <i className="fas fa-envelope mr-2"></i>
                 Get in Touch
@@ -479,7 +482,7 @@ export default function Blog() {
           </div>
         </section>
 
-      </main>
+      </div>
 
       {/* Image Modal */}
       {modalImage && (

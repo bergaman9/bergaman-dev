@@ -4,20 +4,15 @@
 export const dynamic = 'force-dynamic';
 
 import { useState, useEffect } from 'react';
-import Head from 'next/head';
 import Link from 'next/link';
 import Image from 'next/image';
 import ImageModal from './components/ImageModal';
-import BlogImageGenerator from './components/BlogImageGenerator';
 import FloatingSkills from './components/FloatingSkills';
 import { useAdminMode } from '../hooks/useAdminMode';
-import Card from './components/Card';
 import Button from './components/Button';
 import BlogPostCard from './components/BlogPostCard';
 import ProjectCard from './components/ProjectCard';
 import RecommendationCard from './components/RecommendationCard';
-import Modal from "./components/Modal";
-import PageContainer from "./components/PageContainer";
 import { SkeletonCard } from './components/Skeleton';
 
 export default function Home() {
@@ -228,11 +223,8 @@ export default function Home() {
 
   return (
     <>
-      <Head>
-        <title>Bergaman - The Dragon's Domain</title>
-      </Head>
-
-      <main className="flex-grow">
+      {/* LayoutWrapper already renders the page <main>; keep this a plain div */}
+      <div className="flex-grow">
         <div className="bg-grid-pattern-dark">
           <div className="home-page-container">
             <div className="page-content">
@@ -319,9 +311,9 @@ export default function Home() {
                   </div>
                 </div>
 
-                {/* Scroll Indicator */}
-                <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-                  <i className="fas fa-chevron-down text-2xl text-[#e8c547]/50"></i>
+                {/* Scroll Indicator - desktop only, subtle */}
+                <div className="hidden md:block absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce motion-reduce:animate-none" aria-hidden="true">
+                  <i className="fas fa-chevron-down text-xl text-[#e8c547]/40"></i>
                 </div>
               </section>
 
@@ -505,7 +497,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </main>
+      </div>
 
       {modalImage && (
         <ImageModal

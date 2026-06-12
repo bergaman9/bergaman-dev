@@ -3,7 +3,6 @@
 // Force dynamic rendering to prevent initialization errors
 export const dynamic = 'force-dynamic';
 
-import Head from 'next/head';
 import ImageModal from "../components/ImageModal";
 import FloatingSkills from "../components/FloatingSkills";
 import Image from 'next/image';
@@ -81,7 +80,7 @@ const experiences = [
   {
     title: "Founder",
     company: "Bergasoft",
-    period: "2024 - Present (Until August 2025)",
+    period: "2024 - Present",
     description: "Developing innovative software solutions and technology projects as semi-professional initiatives. While not primarily profit-driven, gaining valuable experience and building practical projects. Focus on AI-powered applications, web development, and emerging technologies.",
     technologies: ["Python", "C#", "React", "Next.js", "AI Tools", "Web Development"],
     type: "personal"
@@ -265,21 +264,7 @@ export default function About() {
 
   return (
     <PageContainer>
-      <Head>
-        <title>About Me - Bergaman | Electrical & Electronics Engineer & Full Stack Developer</title>
-        <meta name="description" content="Learn more about Bergaman - Electrical & Electronics Engineer specializing in innovative solutions, full-stack development, and technical projects based in İstanbul, Turkey." />
-        <meta name="keywords" content="bergaman, electrical electronics engineer, full stack developer, istanbul, turkey, tech enthusiast, dragon domain" />
-        <meta property="og:title" content="About Me - Bergaman | Electrical & Electronics Engineer" />
-        <meta property="og:description" content="Electrical & Electronics Engineer specializing in innovative solutions and full-stack development." />
-        <meta property="og:url" content="https://bergaman.dev/about" />
-        <meta property="og:type" content="profile" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="About Me - Bergaman | Electrical & Electronics Engineer" />
-        <meta name="twitter:description" content="Electrical & Electronics Engineer specializing in innovative solutions and full-stack development." />
-        <link rel="canonical" href="https://bergaman.dev/about" />
-      </Head>
-
-      <main>
+      <div>
 
         {/* Page Header */}
         <PageHeader
@@ -327,7 +312,7 @@ export default function About() {
               </p>
 
               <p>
-                However, during my studies, I realized that the future and opportunities were shifting toward software. So, I took the initiative to teach myself programming and started developing my skills in the field of software engineering. Today, I specialize in <span className="text-[#e8c547] font-semibold">full-stack development, artificial intelligence, and blockchain technologies</span>.
+                However, during my studies, I realized that the future and opportunities were shifting toward software. So, I took the initiative to teach myself programming and started developing my skills in the field of software engineering. Today, I focus on <span className="text-[#e8c547] font-semibold">full-stack development and artificial intelligence</span>, while keeping a curious eye on emerging areas like blockchain and IoT.
               </p>
 
               <p>
@@ -562,7 +547,7 @@ export default function About() {
           </div>
         </section>
 
-      </main>
+      </div>
 
       {modalImage && (
         <ImageModal

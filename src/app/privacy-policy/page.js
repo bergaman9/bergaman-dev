@@ -6,7 +6,7 @@ export default function PrivacyPolicyPage() {
   const lastUpdated = '2024-06-01'; // Update this when you make changes to the policy
   
   return (
-    <div className="pt-24 pb-12 px-4">
+    <div className="py-12 px-4">
       <PrivacyHeader lastUpdated={lastUpdated} />
 
       <div className="prose prose-lg prose-invert max-w-4xl mx-auto">

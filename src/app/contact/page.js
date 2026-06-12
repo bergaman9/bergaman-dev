@@ -4,7 +4,6 @@
 export const dynamic = 'force-dynamic';
 
 import { useState, useEffect } from 'react';
-import Head from 'next/head';
 import { useAdminMode } from '../../hooks/useAdminMode';
 import PageHeader from '../components/PageHeader';
 import PageContainer from '../components/PageContainer';
@@ -86,12 +85,7 @@ export default function Contact() {
   if (settings && !settings.allowContactForm) {
     return (
       <PageContainer>
-        <Head>
-          <title>Contact Form Disabled - Ömer</title>
-          <meta name="description" content="Contact form is currently disabled." />
-        </Head>
-
-        <main>
+        <div>
           <section className="text-center mb-12 fade-in">
             <h1 className="text-4xl md:text-5xl font-bold gradient-text mb-4 leading-tight">
               <i className="fas fa-envelope-slash mr-3"></i>
@@ -138,7 +132,7 @@ export default function Contact() {
               </div>
             </div>
           </section>
-        </main>
+        </div>
       </PageContainer>
     );
   }
@@ -184,20 +178,6 @@ export default function Contact() {
 
   return (
     <PageContainer>
-      <Head>
-        <title>Contact Me - Ömer | Get in Touch</title>
-        <meta name="description" content="Get in touch with Ömer for questions, collaborations, or just to say hello. Always open to connecting with fellow developers and tech enthusiasts." />
-        <meta name="keywords" content="contact ömer, bergaman contact, developer contact, tech collaboration, portfolio contact" />
-        <meta property="og:title" content="Contact Me - Ömer | Get in Touch" />
-        <meta property="og:description" content="Get in touch with Ömer for questions, collaborations, or just to say hello." />
-        <meta property="og:url" content="https://bergaman.dev/contact" />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Contact Me - Ömer | Get in Touch" />
-        <meta name="twitter:description" content="Get in touch with Ömer for questions, collaborations, or just to say hello." />
-        <link rel="canonical" href="https://bergaman.dev/contact" />
-      </Head>
-
       {/* Admin Edit Mode Bar */}
       {isAdminMode && (
         <div className="fixed top-0 left-0 right-0 bg-[#e8c547] text-[#0e1b12] px-4 py-2 z-50 flex items-center justify-between">
@@ -215,7 +195,7 @@ export default function Contact() {
         </div>
       )}
 
-      <main className={isAdminMode ? 'pt-12' : ''}>
+      <div className={isAdminMode ? 'pt-12' : ''}>
 
         {/* Page Header */}
         <PageHeader
@@ -280,23 +260,24 @@ export default function Contact() {
                 Send me a Message
               </h2>
 
-              {submitStatus === 'success' && (
-                <div className="mb-6 p-4 bg-green-500/20 border border-green-500/30 rounded-lg">
-                  <div className="flex items-center">
-                    <i className="fas fa-check-circle text-green-400 mr-2"></i>
-                    <span className="text-green-400">Message sent successfully! I'll get back to you soon.</span>
+              <div aria-live="polite">
+                {submitStatus === 'success' && (
+                  <div className="mb-6 p-5 bg-green-500/15 border border-green-500/30 rounded-lg text-center">
+                    <i className="fas fa-paper-plane text-3xl text-green-400 mb-3 block"></i>
+                    <p className="text-green-300 font-semibold">Message sent successfully!</p>
+                    <p className="text-sm text-green-400/80 mt-1">Thanks for reaching out — I'll get back to you within 24 hours.</p>
                   </div>
-                </div>
-              )}
+                )}
 
-              {submitStatus === 'error' && (
-                <div className="mb-6 p-4 bg-red-500/20 border border-red-500/30 rounded-lg">
-                  <div className="flex items-center">
-                    <i className="fas fa-exclamation-circle text-red-400 mr-2"></i>
-                    <span className="text-red-400">Failed to send message. Please try again.</span>
+                {submitStatus === 'error' && (
+                  <div className="mb-6 p-4 bg-red-500/15 border border-red-500/30 rounded-lg">
+                    <div className="flex items-center">
+                      <i className="fas fa-exclamation-circle text-red-400 mr-2"></i>
+                      <span className="text-red-300">Something went wrong while sending your message. Please try again in a moment.</span>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="hidden" aria-hidden="true">
@@ -325,7 +306,7 @@ export default function Contact() {
                     onChange={handleChange}
                     required
                     placeholder="Enter your name"
-                    className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] placeholder-gray-400 focus:border-[#e8c547]/50 focus:outline-none transition-colors duration-300"
+                    className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] placeholder-gray-400 focus:border-[#e8c547]/50 focus:ring-1 focus:ring-[#e8c547]/30 focus:outline-none transition-colors duration-300"
                   />
                 </div>
 
@@ -342,7 +323,7 @@ export default function Contact() {
                     onChange={handleChange}
                     required
                     placeholder="Enter your email"
-                    className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] placeholder-gray-400 focus:border-[#e8c547]/50 focus:outline-none transition-colors duration-300"
+                    className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] placeholder-gray-400 focus:border-[#e8c547]/50 focus:ring-1 focus:ring-[#e8c547]/30 focus:outline-none transition-colors duration-300"
                   />
                 </div>
 
@@ -359,7 +340,7 @@ export default function Contact() {
                     required
                     rows={6}
                     placeholder="Write your message..."
-                    className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] placeholder-gray-400 focus:border-[#e8c547]/50 focus:outline-none transition-colors duration-300 resize-none"
+                    className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] placeholder-gray-400 focus:border-[#e8c547]/50 focus:ring-1 focus:ring-[#e8c547]/30 focus:outline-none transition-colors duration-300 resize-none"
                   />
                 </div>
 
@@ -410,7 +391,7 @@ export default function Contact() {
           </div>
         </section>
 
-      </main>
+      </div>
     </PageContainer>
   );
 }

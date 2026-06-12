@@ -4,7 +4,6 @@
 export const dynamic = 'force-dynamic';
 
 import { useState, useEffect } from 'react';
-import Head from 'next/head';
 import Loading from "../components/Loading";
 import PageHeader from "../components/PageHeader";
 import PageContainer from "../components/PageContainer";
@@ -99,21 +98,7 @@ export default function NewsletterSignup() {
 
   return (
     <PageContainer>
-      <Head>
-        <title>Newsletter - Bergaman | Subscribe for Tech Updates</title>
-        <meta name="description" content="Join Bergaman's newsletter for exclusive insights on AI, blockchain, full-stack development, and tech innovation. Get weekly updates delivered to your inbox." />
-        <meta name="keywords" content="tech newsletter, AI updates, blockchain news, web development tips, bergaman newsletter, programming insights" />
-        <meta property="og:title" content="Newsletter - Bergaman | Subscribe for Tech Updates" />
-        <meta property="og:description" content="Join Bergaman's newsletter for exclusive tech insights and weekly updates." />
-        <meta property="og:url" content="https://bergaman.dev/newsletter" />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Newsletter - Bergaman | Subscribe for Tech Updates" />
-        <meta name="twitter:description" content="Join Bergaman's newsletter for exclusive tech insights and weekly updates." />
-        <link rel="canonical" href="https://bergaman.dev/newsletter" />
-      </Head>
-
-      <main>
+      <div>
         <div className="container mx-auto">
           <PageHeader
             title="Newsletter"
@@ -309,7 +294,7 @@ export default function NewsletterSignup() {
             </div>
           </div>
         </div>
-      </main>
+      </div>
     </PageContainer>
   );
 }
