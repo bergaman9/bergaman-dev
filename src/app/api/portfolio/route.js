@@ -5,7 +5,6 @@ import Portfolio from '@/models/Portfolio';
 export async function GET(request) {
   try {
     await connectDB();
-    console.log('Connected to MongoDB in portfolio API');
 
     const { searchParams } = new URL(request.url);
     const category = searchParams.get('category');
@@ -23,8 +22,6 @@ export async function GET(request) {
       query.featured = true;
     }
 
-    console.log('Portfolio query:', query);
-    
     // Get portfolio items with proper sorting
     let portfolioQuery = Portfolio.find(query)
       .sort({ featured: -1, order: 1, createdAt: -1 });
@@ -35,8 +32,6 @@ export async function GET(request) {
     }
     
     const portfolios = await portfolioQuery;
-    
-    console.log(`Found ${portfolios.length} portfolio items`);
 
     return NextResponse.json({
       success: true,

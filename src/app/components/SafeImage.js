@@ -36,11 +36,7 @@ const SafeImage = ({
   }, [src, showLoader]);
 
   const handleError = (e) => {
-    console.warn(`Image load error for: ${imgSrc}`);
-    console.warn('Error details:', e);
-
     if (!hasAttemptedFallback && imgSrc !== fallbackSrc) {
-      console.log(`Switching to fallback image: ${fallbackSrc}`);
       setError(true);
       setImgSrc(fallbackSrc);
       setIsLoading(false);
@@ -51,13 +47,11 @@ const SafeImage = ({
         onError(e);
       }
     } else {
-      console.error(`Failed to load both primary and fallback images. Primary: ${src}, Fallback: ${fallbackSrc}`);
       setIsLoading(false);
     }
   };
 
   const handleLoad = () => {
-    console.log(`Successfully loaded image: ${imgSrc}`);
     setIsLoading(false);
     setError(false);
   };
@@ -66,7 +60,6 @@ const SafeImage = ({
   const getImageSource = () => {
     // If no src provided, use fallback
     if (!src || src.trim() === '') {
-      console.log('No source provided, using fallback:', fallbackSrc);
       return fallbackSrc;
     }
 
