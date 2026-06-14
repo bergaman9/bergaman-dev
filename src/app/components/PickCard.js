@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import Link from 'next/link';
 import SafeImage from './SafeImage';
 
@@ -20,8 +20,12 @@ const CATEGORY_META = {
 };
 
 const PLACEHOLDER = { game: '/images/portfolio/game-placeholder.svg' };
+// Generic placeholder art we should NOT treat as a real cover (the "PROJECT"
+// cube etc.) — these look wrong inside a music/album tile.
+const PLACEHOLDER_RE = /(default|web-placeholder|game-placeholder|placeholder)\.svg($|\?)/i;
 
 const isUrlLike = (s) => typeof s === 'string' && /^https?:\/\//.test(s.trim());
+const hasRealImage = (img) => !!img && !PLACEHOLDER_RE.test(img);
 
 function metaFor(category) {
   return CATEGORY_META[category] || CATEGORY_META.link;
@@ -48,11 +52,30 @@ export default function PickCard({ recommendation: rec, variant = 'grid' }) {
   const domain = useMemo(() => domainFromUrl(rec?.url || rec?.link), [rec]);
   const placeholder = PLACEHOLDER[category] || '/images/portfolio/default.svg';
 
+  // For music picks, pull the real album art + track title from Spotify oEmbed.
+  const [spotify, setSpotify] = useState(null);
+  useEffect(() => {
+    if (category !== 'music') return;
+    const spUrl = rec?.url || rec?.link;
+    if (!spUrl || !/open\.spotify\.com/.test(spUrl)) return;
+    let cancelled = false;
+    fetch(`/api/picks/spotify-oembed?url=${encodeURIComponent(spUrl)}`)
+      .then((r) => r.json())
+      .then((d) => { if (!cancelled) setSpotify(d); })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [category, rec]);
+
+  // Real album art from Spotify oEmbed when available.
+  const musicArt = isMusic ? (hasRealImage(rec?.image) ? rec.image : (spotify?.thumbnail || null)) : null;
+
   // Avoid showing a raw URL as the title/subtitle/blurb (some link/music picks
-  // store the URL in those fields).
-  const displayTitle = isUrlLike(rec?.title)
-    ? (rec?.artist || rec?.author || (isMusic ? 'Music pick' : domain) || meta.label)
-    : (rec?.title || meta.label);
+  // store the URL in those fields). Prefer the Spotify track title for music.
+  const displayTitle = isMusic && spotify?.title
+    ? spotify.title
+    : isUrlLike(rec?.title)
+      ? (rec?.artist || rec?.author || (isMusic ? 'Music pick' : domain) || meta.label)
+      : (rec?.title || meta.label);
   const rawSubtitle = rec?.author || rec?.developer || rec?.studio || rec?.director || rec?.artist || (isMusic ? 'Spotify' : domain) || rec?.linkType || null;
   const subtitle = isUrlLike(rawSubtitle) ? null : rawSubtitle;
   const rawBlurb = rec?.recommendation || rec?.description || '';
@@ -77,17 +100,25 @@ export default function PickCard({ recommendation: rec, variant = 'grid' }) {
           )}
         </div>
       ) : isMusic ? (
-        // Square 1:1 album tile centred in the frame, music-themed background.
-        <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-emerald-900/40 via-[#0d1f16] to-[#0a140d] p-6">
-          <div className="relative aspect-square w-2/3 overflow-hidden rounded-xl border border-emerald-400/20 bg-black/40 shadow-lg">
-            {rec.image ? (
-              <SafeImage src={rec.image} fallbackSrc={placeholder} alt={displayTitle} fill sizes="180px" className="object-cover" />
-            ) : (
-              <div className="flex h-full w-full items-center justify-center">
-                <i className="fas fa-compact-disc text-4xl text-emerald-300/70"></i>
+        // Music: real album art as a 1:1 tile when available, otherwise a
+        // Spotify-themed vinyl so it never falls back to the "PROJECT" cube.
+        <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[#1DB954]/20 via-[#0d1f16] to-[#0a140d] p-6">
+          {musicArt ? (
+            // Spotify CDN hosts vary (i.scdn.co, *.spotifycdn.com); a plain img
+            // keeps it simple and only needs the CSP img-src allowance.
+            <div className="relative aspect-square w-2/3 overflow-hidden rounded-xl border border-emerald-400/20 bg-black/40 shadow-lg">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={musicArt} alt={displayTitle} className="h-full w-full object-cover" loading="lazy" draggable={false} />
+            </div>
+          ) : (
+            <div className="relative flex h-28 w-28 items-center justify-center rounded-full border border-emerald-400/20 bg-gradient-to-br from-zinc-800 to-black shadow-xl">
+              <div className="absolute inset-3 rounded-full border border-white/5"></div>
+              <div className="absolute inset-6 rounded-full border border-white/5"></div>
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#1DB954]/25">
+                <i className="fab fa-spotify text-xl text-[#1DB954]"></i>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       ) : (
         <SafeImage

@@ -16,6 +16,7 @@ const imageSources = [
   'https://bergaman.dev',
   'https://www.bergaman.dev',
   'https://i.scdn.co',
+  'https://*.spotifycdn.com',
   'https://open.spotify.com',
   'https://www.google.com',
   'https://*.gstatic.com',
