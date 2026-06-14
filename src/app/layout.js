@@ -1,6 +1,3 @@
-// Tüm sayfaları dinamik olarak işaretle
-export const dynamic = 'force-dynamic';
-
 import { Inter } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";

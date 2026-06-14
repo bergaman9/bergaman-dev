@@ -11,6 +11,7 @@ export default function Header() {
   const [isAdminDropdownOpen, setIsAdminDropdownOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
+  const [isHidden, setIsHidden] = useState(false);
   const pathname = usePathname();
   const dropdownRef = useRef(null);
   const mobileMenuRef = useRef(null);
@@ -22,6 +23,41 @@ export default function Header() {
     setIsMenuOpen(false);
     setIsAdminDropdownOpen(false);
   }, [pathname]);
+
+  // Auto-hide on scroll down, reveal on scroll up (header is no longer pinned).
+  useEffect(() => {
+    let lastY = window.scrollY;
+    let ticking = false;
+
+    const update = () => {
+      const currentY = window.scrollY;
+      const delta = currentY - lastY;
+
+      // Always show near the top or when an overlay menu is open.
+      if (currentY < 80 || isMenuOpen || isAdminDropdownOpen) {
+        setIsHidden(false);
+      } else if (delta > 6) {
+        setIsHidden(true); // scrolling down
+      } else if (delta < -6) {
+        setIsHidden(false); // scrolling up
+      }
+
+      lastY = currentY;
+      ticking = false;
+    };
+
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(update);
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [isMenuOpen, isAdminDropdownOpen]);
+
+  const hideTransitionClass = `transition-transform duration-300 will-change-transform ${isHidden ? '-translate-y-full' : 'translate-y-0'}`;
 
   // Check authentication status
   useEffect(() => {
@@ -126,7 +162,7 @@ export default function Header() {
     const miniTheme = getMiniAppTheme(activeMiniApp);
 
     return (
-      <header className="mini-app-chrome mini-app-header fixed left-0 right-0 top-0 z-50 border-b backdrop-blur-xl" style={miniTheme.cssVars}>
+      <header className={`mini-app-chrome mini-app-header fixed left-0 right-0 top-0 z-50 border-b backdrop-blur-xl ${hideTransitionClass}`} style={miniTheme.cssVars}>
         <div className="mini-app-header-inner page-content">
           <div className="flex items-center justify-between gap-4">
             <Link href="/portfolio" className="group flex min-w-0 items-center gap-3">
@@ -215,7 +251,7 @@ export default function Header() {
   }
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-[#0a1a0f] via-[#0e1b12] to-[#1a2e1a]/20 backdrop-blur-md border-b border-[#3e503e]/60">
+    <header className={`fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-[#0a1a0f] via-[#0e1b12] to-[#1a2e1a]/20 backdrop-blur-md border-b border-[#3e503e]/60 ${hideTransitionClass}`}>
       <div className="page-content py-4">
         <div className="flex items-center justify-between">
           {/* Logo with Dragon Icon */}

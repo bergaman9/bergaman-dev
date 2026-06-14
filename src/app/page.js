@@ -1,8 +1,5 @@
 "use client";
 
-// Force dynamic rendering to prevent initialization errors
-export const dynamic = 'force-dynamic';
-
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -12,7 +9,7 @@ import { useAdminMode } from '../hooks/useAdminMode';
 import Button from './components/Button';
 import BlogPostCard from './components/BlogPostCard';
 import ProjectCard from './components/ProjectCard';
-import RecommendationCard from './components/RecommendationCard';
+import HomePickCard from './components/HomePickCard';
 import { SkeletonCard } from './components/Skeleton';
 
 export default function Home() {
@@ -380,16 +377,16 @@ export default function Home() {
                 </h2>
 
                 {loadingRecommendations ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {Array.from({ length: 3 }).map((_, index) => (
-                      <SkeletonCard key={index} imageHeight="h-56" rows={3} />
+                      <SkeletonCard key={index} imageHeight="h-40" rows={3} />
                     ))}
                   </div>
                 ) : recommendations.length > 0 ? (
                   <>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
                       {recommendations.map((rec) => (
-                        <RecommendationCard
+                        <HomePickCard
                           key={rec._id}
                           recommendation={rec}
                         />

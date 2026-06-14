@@ -1,8 +1,5 @@
 "use client";
 
-// Force dynamic rendering to prevent initialization errors
-export const dynamic = 'force-dynamic';
-
 import { useState, useEffect } from 'react';
 import Loading from "../components/Loading";
 import PageHeader from "../components/PageHeader";

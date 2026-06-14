@@ -1,8 +1,5 @@
 "use client";
 
-// Force dynamic rendering to prevent initialization errors
-export const dynamic = 'force-dynamic';
-
 import ImageModal from "../components/ImageModal";
 import FloatingSkills from "../components/FloatingSkills";
 import Image from 'next/image';

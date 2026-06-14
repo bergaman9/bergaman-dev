@@ -112,12 +112,16 @@ async function handler(request) {
 
     await contactMessage.save();
 
-    // Check email configuration
-    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-      console.error('Email configuration missing');
+    // The message is now persisted (visible in the admin panel) regardless of
+    // whether the email notification succeeds. So email delivery is treated as
+    // best-effort: a missing/expired SMTP config must NOT make the visitor see
+    // a failure for a message we actually received.
+    const emailConfigured = Boolean(process.env.EMAIL_USER && process.env.EMAIL_PASS);
+    if (!emailConfigured) {
+      console.error('Contact email notification skipped: EMAIL_USER/EMAIL_PASS not set');
       return NextResponse.json(
-        { error: 'Email service not configured' },
-        { status: 500 }
+        { message: 'Message received successfully' },
+        { status: 200 }
       );
     }
 
@@ -131,14 +135,6 @@ async function handler(request) {
         pass: process.env.EMAIL_PASS,
       },
     });
-
-    // Verify transporter configuration
-    try {
-      await transporter.verify();
-    } catch (verifyError) {
-      console.error('Email transporter verification failed:', verifyError.message);
-      // Continue anyway, sometimes verify fails but sending works
-    }
 
     // Email content
     const mailOptions = {
@@ -248,7 +244,13 @@ async function handler(request) {
       `,
     };
 
-    await transporter.sendMail(mailOptions);
+    // Best-effort delivery: the message is already saved, so a send failure
+    // here should not be surfaced to the visitor as a lost message.
+    try {
+      await transporter.sendMail(mailOptions);
+    } catch (sendError) {
+      console.error('Contact email notification failed (message still saved):', sendError.message);
+    }
 
     return NextResponse.json(
       { message: 'Message sent successfully' },
@@ -258,18 +260,11 @@ async function handler(request) {
   } catch (error) {
     console.error('Error processing contact form:', error.message);
 
-    // Return more specific error messages
+    // Only genuine processing failures (validation, DB) reach here.
     if (error.name === 'ValidationError') {
       return NextResponse.json(
         { error: 'Invalid data provided' },
         { status: 400 }
-      );
-    }
-
-    if (error.code === 'EAUTH' || error.code === 'ENOTFOUND') {
-      return NextResponse.json(
-        { error: 'Email service temporarily unavailable' },
-        { status: 503 }
       );
     }
 
