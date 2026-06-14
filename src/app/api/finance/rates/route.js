@@ -1,106 +1,123 @@
 import { NextResponse } from 'next/server';
 import axios from 'axios';
 
-// Cache (Server-side memory)
-let ratesCache = {
-    data: null,
-    timestamp: 0
-};
-
+// Server-side memory cache
+let ratesCache = { data: null, timestamp: 0 };
 const CACHE_DURATION = 60000; // 60 seconds
+const OZ_TO_GRAM = 31.1035;
+
+// Binance's public data mirror (data-api.binance.vision) is not geo-blocked the
+// way api.binance.com is from cloud regions (Vercel runs in the US, where
+// api.binance.com often returns HTTP 451). CoinGecko is a key-less fallback so
+// crypto/gold still populate even if Binance is unreachable.
+const BINANCE_TICKER = 'https://data-api.binance.vision/api/v3/ticker/price';
+const COINGECKO = 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,avalanche-2,pax-gold&vs_currencies=usd';
+const FRANKFURTER = 'https://api.frankfurter.app/latest?from=USD&to=TRY,EUR';
+const GOLD_API = (sym) => `https://api.gold-api.com/price/${sym}`;
 
 export async function GET() {
-    const now = Date.now();
-    if (ratesCache.data && (now - ratesCache.timestamp < CACHE_DURATION)) {
-        return NextResponse.json(ratesCache.data);
+  const now = Date.now();
+  if (ratesCache.data && now - ratesCache.timestamp < CACHE_DURATION) {
+    return NextResponse.json(ratesCache.data);
+  }
+
+  const rates = {
+    USDT: 0, BTC: 0, ETH: 0, SOL: 0, AVAX: 0,
+    USD: 0, EUR: 0, GA: 0, GAG: 0, GAP: 0, XAU: 0,
+  };
+
+  const get = (p) => axios.get(p, { timeout: 8000 });
+  const [binanceRes, coingeckoRes, forexRes, goldRes, silverRes, platinumRes] =
+    await Promise.allSettled([
+      get(BINANCE_TICKER),
+      get(COINGECKO),
+      get(FRANKFURTER),
+      get(GOLD_API('XAU')),
+      get(GOLD_API('XAG')),
+      get(GOLD_API('XPT')),
+    ]);
+
+  // --- Forex first: establishes the USD/TRY rate everything else converts with
+  let usdTry = 0;
+  if (forexRes.status === 'fulfilled') {
+    const fx = forexRes.value.data?.rates || {};
+    if (fx.TRY) {
+      rates.USD = fx.TRY;
+      usdTry = fx.TRY;
+      if (fx.EUR) rates.EUR = fx.TRY / fx.EUR;
     }
+  }
 
-    try {
-        const rates = {
-            'USDT': 0,
-            'BTC': 0,
-            'ETH': 0,
-            'SOL': 0,
-            'AVAX': 0,
-            'USD': 0,
-            'EUR': 0,
-            'GA': 0,   // Gram Gold
-            'GAG': 0,  // Gram Silver
-            'GAP': 0,  // Gram Platinum
-            'XAU': 0,  // Ounce Gold (USD)
-        };
-
-        // Fetch from multiple sources in parallel
-        const binancePromise = axios.get('https://api.binance.com/api/v3/ticker/price');
-        const forexPromise = axios.get('https://api.frankfurter.app/latest?from=USD&to=TRY,EUR');
-        const silverPromise = axios.get('https://api.gold-api.com/price/XAG');
-        const platinumPromise = axios.get('https://api.gold-api.com/price/XPT');
-
-        const [binanceRes, forexRes, silverRes, platinumRes] = await Promise.allSettled([
-            binancePromise, forexPromise, silverPromise, platinumPromise
-        ]);
-
-        let usdtTryPrice = 0;
-
-        // Binance Data (Crypto + Gold via PAXG)
-        if (binanceRes.status === 'fulfilled') {
-            const data = binanceRes.value.data;
-            const getPrice = (symbol) => {
-                const item = data.find(d => d.symbol === symbol);
-                return item ? parseFloat(item.price) : 0;
-            };
-
-            usdtTryPrice = getPrice('USDTTRY');
-            rates['USDT'] = usdtTryPrice;
-            rates['BTC'] = getPrice('BTCUSDT') * usdtTryPrice;
-            rates['ETH'] = getPrice('ETHUSDT') * usdtTryPrice;
-            rates['SOL'] = getPrice('SOLUSDT') * usdtTryPrice;
-            rates['AVAX'] = getPrice('AVAXUSDT') * usdtTryPrice;
-
-            // Gold from PAXG (Gold-backed token - 1 PAXG = 1 oz Gold)
-            const paxgUsdt = getPrice('PAXGUSDT');
-            if (paxgUsdt > 0) {
-                rates['XAU'] = paxgUsdt; // Ounce price in USD
-                if (usdtTryPrice > 0) {
-                    rates['GA'] = (paxgUsdt * usdtTryPrice) / 31.1035; // Gram price in TRY
-                }
-            }
-        }
-
-        // Forex Data (USD/EUR to TRY)
-        if (forexRes.status === 'fulfilled') {
-            const fx = forexRes.value.data.rates;
-            rates['USD'] = fx.TRY;
-            if (fx.EUR) {
-                rates['EUR'] = fx.TRY / fx.EUR;
-            }
-
-            // Fallback for USD price
-            if (usdtTryPrice === 0) {
-                usdtTryPrice = rates['USD'];
-            }
-        }
-
-        const tryRate = rates['USD'] || usdtTryPrice || 35; // Fallback TRY rate
-
-        // Silver from gold-api.com (price is USD per ounce)
-        if (silverRes.status === 'fulfilled' && silverRes.value.data?.price) {
-            const silverOzUsd = silverRes.value.data.price;
-            rates['GAG'] = (silverOzUsd * tryRate) / 31.1035; // Convert to gram TRY
-        }
-
-        // Platinum from gold-api.com (price is USD per ounce)
-        if (platinumRes.status === 'fulfilled' && platinumRes.value.data?.price) {
-            const platinumOzUsd = platinumRes.value.data.price;
-            rates['GAP'] = (platinumOzUsd * tryRate) / 31.1035; // Convert to gram TRY
-        }
-
-        ratesCache.data = rates;
-        ratesCache.timestamp = now;
-
-        return NextResponse.json(rates);
-    } catch (error) {
-        console.error("API Route Error:", error);
-        return NextResponse.json({ error: "Failed to fetch rates" }, { status: 500 });
+  // --- Binance (preferred for crypto + USDT/TRY + PAXG gold)
+  let paxgUsd = 0;
+  if (binanceRes.status === 'fulfilled' && Array.isArray(binanceRes.value.data)) {
+    const data = binanceRes.value.data;
+    const price = (symbol) => {
+      const item = data.find((d) => d.symbol === symbol);
+      return item ? parseFloat(item.price) : 0;
+    };
+    const usdtTry = price('USDTTRY');
+    if (usdtTry > 0) {
+      rates.USDT = usdtTry;
+      if (!usdTry) usdTry = usdtTry; // forex fallback
     }
+    const conv = rates.USDT || usdTry;
+    if (conv > 0) {
+      const btc = price('BTCUSDT');
+      const eth = price('ETHUSDT');
+      const sol = price('SOLUSDT');
+      const avax = price('AVAXUSDT');
+      if (btc) rates.BTC = btc * conv;
+      if (eth) rates.ETH = eth * conv;
+      if (sol) rates.SOL = sol * conv;
+      if (avax) rates.AVAX = avax * conv;
+    }
+    paxgUsd = price('PAXGUSDT');
+  }
+
+  // --- CoinGecko fallback for any crypto Binance didn't provide
+  if (coingeckoRes.status === 'fulfilled' && coingeckoRes.value.data) {
+    const cg = coingeckoRes.value.data;
+    const conv = rates.USDT || usdTry;
+    const usd = (id) => cg[id]?.usd || 0;
+    if (conv > 0) {
+      if (!rates.BTC && usd('bitcoin')) rates.BTC = usd('bitcoin') * conv;
+      if (!rates.ETH && usd('ethereum')) rates.ETH = usd('ethereum') * conv;
+      if (!rates.SOL && usd('solana')) rates.SOL = usd('solana') * conv;
+      if (!rates.AVAX && usd('avalanche-2')) rates.AVAX = usd('avalanche-2') * conv;
+    }
+    if (!paxgUsd && usd('pax-gold')) paxgUsd = usd('pax-gold');
+  }
+
+  const tryRate = rates.USD || rates.USDT || 35; // last-resort TRY rate
+
+  // --- Gold: prefer PAXG (oz), else gold-api XAU (oz USD)
+  if (paxgUsd > 0) {
+    rates.XAU = paxgUsd;
+  } else if (goldRes.status === 'fulfilled' && goldRes.value.data?.price) {
+    rates.XAU = goldRes.value.data.price;
+  }
+  if (rates.XAU > 0 && tryRate > 0) {
+    rates.GA = (rates.XAU * tryRate) / OZ_TO_GRAM; // gram gold in TRY
+  }
+
+  // --- Silver / Platinum (oz USD -> gram TRY)
+  if (silverRes.status === 'fulfilled' && silverRes.value.data?.price) {
+    rates.GAG = (silverRes.value.data.price * tryRate) / OZ_TO_GRAM;
+  }
+  if (platinumRes.status === 'fulfilled' && platinumRes.value.data?.price) {
+    rates.GAP = (platinumRes.value.data.price * tryRate) / OZ_TO_GRAM;
+  }
+
+  // Only cache if we got something meaningful; otherwise serve stale cache.
+  const gotData = rates.USD || rates.BTC || rates.GA;
+  if (gotData) {
+    ratesCache.data = rates;
+    ratesCache.timestamp = now;
+    return NextResponse.json(rates);
+  }
+  if (ratesCache.data) {
+    return NextResponse.json(ratesCache.data);
+  }
+  return NextResponse.json(rates);
 }
