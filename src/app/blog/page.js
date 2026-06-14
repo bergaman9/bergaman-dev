@@ -4,7 +4,7 @@
 export const dynamic = 'force-dynamic';
 
 import Link from "next/link";
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import ImageModal from '../components/ImageModal';
 import { useAdminMode } from '../../hooks/useAdminMode';
@@ -13,7 +13,9 @@ import PageHeader from '../components/PageHeader';
 import PageContainer from '../components/PageContainer';
 import { SkeletonCard } from '../components/Skeleton';
 
-export default function Blog() {
+// useSearchParams() must sit under a Suspense boundary for the build to
+// generate the route shell; BlogContent holds the actual page.
+function BlogContent() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -473,5 +475,29 @@ export default function Blog() {
         />
       )}
     </PageContainer>
+  );
+}
+
+export default function Blog() {
+  return (
+    <Suspense
+      fallback={
+        <PageContainer>
+          <PageHeader
+            title="Blog"
+            subtitle="Thoughts, tutorials, and insights from the dragon's lair"
+            icon="fas fa-blog"
+            variant="large"
+          />
+          <div className="card-grid card-grid-3">
+            {Array.from({ length: 9 }).map((_, index) => (
+              <SkeletonCard key={index} imageHeight="h-48" rows={3} />
+            ))}
+          </div>
+        </PageContainer>
+      }
+    >
+      <BlogContent />
+    </Suspense>
   );
 }
