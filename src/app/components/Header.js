@@ -190,6 +190,14 @@ export default function Header() {
 
             <div className="flex shrink-0 items-center gap-2">
               <Link
+                href="/"
+                className="mini-app-nav-item hidden rounded-lg px-3 py-2 text-sm font-medium transition-all duration-300 sm:inline-flex"
+                title="Back to bergaman.dev"
+              >
+                <i className="fas fa-home mr-2 text-xs"></i>
+                Home
+              </Link>
+              <Link
                 href="/portfolio"
                 className="mini-app-nav-item hidden rounded-lg px-3 py-2 text-sm font-medium transition-all duration-300 sm:inline-flex"
               >
@@ -234,14 +242,24 @@ export default function Header() {
                     <span className="font-medium">{app.title}</span>
                   </Link>
                 ))}
-                <Link
-                  href="/portfolio"
-                  className="mini-app-nav-item mt-2 flex items-center gap-3 rounded-lg px-4 py-3 transition-all duration-300"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <i className="fas fa-arrow-left"></i>
-                  <span className="font-medium">Back to Portfolio</span>
-                </Link>
+                <div className="mt-2 grid grid-cols-2 gap-2 border-t pt-3" style={{ borderColor: 'var(--mini-border)' }}>
+                  <Link
+                    href="/"
+                    className="mini-app-nav-item flex items-center gap-2 rounded-lg px-4 py-3 transition-all duration-300"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <i className="fas fa-home"></i>
+                    <span className="font-medium">Home</span>
+                  </Link>
+                  <Link
+                    href="/portfolio"
+                    className="mini-app-nav-item flex items-center gap-2 rounded-lg px-4 py-3 transition-all duration-300"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <i className="fas fa-arrow-left"></i>
+                    <span className="font-medium">Portfolio</span>
+                  </Link>
+                </div>
               </div>
             </nav>
           )}
