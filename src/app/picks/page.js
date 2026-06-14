@@ -13,6 +13,15 @@ export default function PicksPage() {
   const [activeCategory, setActiveCategory] = useState('all');
   const [sortBy, setSortBy] = useState('newest');
   const [view, setView] = useState('grid');
+  const [showTop, setShowTop] = useState(false);
+
+  // Reveal the back-to-top button only after scrolling down a bit.
+  useEffect(() => {
+    const onScroll = () => setShowTop(window.scrollY > 500);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   const categories = [
     { id: 'all', label: 'All', icon: 'fas fa-th' },
@@ -215,16 +224,16 @@ export default function PicksPage() {
         </div>
       )}
 
-      {/* Back to top */}
-      <div className="fixed bottom-8 right-8">
+      {/* Back to top — appears after scrolling */}
+      {showTop && (
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="p-3 bg-[#e8c547] text-[#0e1b12] rounded-full shadow-lg hover:bg-[#f4d76b] transition-all duration-300 group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0e1b12]"
+          className="fixed bottom-6 right-6 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-[#e8c547] text-[#0e1b12] shadow-lg shadow-black/30 transition-all duration-300 hover:bg-[#f4d76b] hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0e1b12] group"
           aria-label="Back to top"
         >
-          <i className="fas fa-arrow-up group-hover:-translate-y-1 transition-transform"></i>
+          <i className="fas fa-arrow-up transition-transform group-hover:-translate-y-0.5"></i>
         </button>
-      </div>
+      )}
     </PageContainer>
   );
 }

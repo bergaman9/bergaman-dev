@@ -364,8 +364,23 @@ export default function Portfolio() {
         </div>
       </div>
 
+      {/* Results summary — full width so both columns align at the top */}
+      {portfolioItems.length > 0 && filteredPortfolios.length > 0 && (
+        <div className="mb-6">
+          <p className="text-gray-400">
+            Showing <span className="text-[#e8c547] font-semibold">{filteredPortfolios.length}</span> project{filteredPortfolios.length !== 1 ? 's' : ''}
+            {activeCategory !== 'all' && (
+              <span> in <span className="text-[#e8c547]">{categoryConfig[activeCategory]?.name}</span></span>
+            )}
+            {searchTerm && (
+              <span> matching "<span className="text-[#e8c547]">{searchTerm}</span>"</span>
+            )}
+          </p>
+        </div>
+      )}
+
       {/* Portfolio Grid with Sidebar */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:items-start">
 
         {/* Main Projects Section */}
         <div className="lg:col-span-2">
@@ -410,19 +425,6 @@ export default function Portfolio() {
             </div>
           ) : (
             <>
-              {/* Results Header */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-3">
-                <p className="text-gray-400">
-                  Showing <span className="text-[#e8c547] font-semibold">{filteredPortfolios.length}</span> project{filteredPortfolios.length !== 1 ? 's' : ''}
-                  {activeCategory !== 'all' && (
-                    <span> in <span className="text-[#e8c547]">{categoryConfig[activeCategory]?.name}</span></span>
-                  )}
-                  {searchTerm && (
-                    <span> matching "<span className="text-[#e8c547]">{searchTerm}</span>"</span>
-                  )}
-                </p>
-              </div>
-
               {/* Projects Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 animate-fadeIn">
                 {sortedPortfolios.map((project, index) => (

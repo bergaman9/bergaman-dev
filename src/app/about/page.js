@@ -315,12 +315,14 @@ export default function About() {
               {/* Main Profile Image */}
               <div className="relative w-44 h-44 sm:w-56 sm:h-56">
                 <Image
-                  className="relative rounded-full border-4 border-[#e8c547]/50 shadow-2xl shadow-[#0e1b12]/50 transition-all duration-700 hover:scale-105 hover:border-[#e8c547]/80"
+                  className="no-drag relative rounded-full border-4 border-[#e8c547]/50 shadow-2xl shadow-[#0e1b12]/50 transition-all duration-700 hover:scale-105 hover:border-[#e8c547]/80"
                   src="/images/profile/profile.jpg"
                   alt="Ömer Faruk Güler — Bergaman, Electrical & Electronics Engineer"
                   width={224}
                   height={224}
                   sizes="(max-width: 640px) 176px, 224px"
+                  draggable={false}
+                  onContextMenu={(e) => e.preventDefault()}
                   priority
                 />
 

@@ -824,3 +824,14 @@ img[src="/images/portfolio/default.jpg"] {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Deter dragging / saving of protected images (e.g. the personal photo) */
+.no-drag {
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}

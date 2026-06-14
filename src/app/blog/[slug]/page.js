@@ -13,6 +13,20 @@ import ImageModal from '../../components/ImageModal';
 import MarkdownRenderer from '../../components/MarkdownRenderer';
 import { SkeletonBox, SkeletonText } from '../../components/Skeleton';
 
+// The featured image is already shown in the header, but many posts also embed
+// the same cover as the first image in their markdown — strip that leading
+// duplicate so the cover only appears once at the top.
+function stripLeadingCoverImage(content, coverUrl) {
+  if (!content || !coverUrl) return content;
+  const coverFile = coverUrl.split('/').pop().split('?')[0];
+  const head = content.slice(0, 500);
+  const match = head.match(/!\[[^\]]*\]\(([^)\s]+)[^)]*\)/);
+  if (match && match[1].split('/').pop().split('?')[0] === coverFile) {
+    return content.replace(match[0], '').replace(/^\s+/, '');
+  }
+  return content;
+}
+
 export default function BlogPost() {
   const params = useParams();
   const [post, setPost] = useState(null);
@@ -258,10 +272,27 @@ export default function BlogPost() {
       <div className="page-container">
         <div className="page-content">
           <div className="mx-auto max-w-4xl py-8" aria-busy="true">
-            <SkeletonBox className="mb-6 h-10 w-32" />
-            <SkeletonBox className="mb-6 h-12 w-3/4" />
-            <SkeletonBox className="mb-8 h-72 w-full" />
-            <SkeletonText lines={8} />
+            {/* Back link */}
+            <SkeletonBox className="mb-6 h-9 w-28" rounded="rounded-lg" />
+            {/* Category + meta row */}
+            <div className="mb-4 flex gap-3">
+              <SkeletonBox className="h-6 w-24" rounded="rounded-full" />
+              <SkeletonBox className="h-6 w-20" rounded="rounded-full" />
+            </div>
+            {/* Title */}
+            <SkeletonBox className="mb-3 h-10 w-11/12" />
+            <SkeletonBox className="mb-6 h-10 w-2/3" />
+            {/* Description */}
+            <SkeletonBox className="mb-2 h-5 w-full" rounded="rounded" />
+            <SkeletonBox className="mb-8 h-5 w-4/5" rounded="rounded" />
+            {/* Featured image */}
+            <SkeletonBox className="mb-8 h-64 w-full md:h-96" />
+            {/* Article content card */}
+            <div className="skeleton-surface rounded-lg border p-6 lg:p-8">
+              <SkeletonText lines={8} />
+              <div className="my-6" />
+              <SkeletonText lines={6} />
+            </div>
           </div>
         </div>
       </div>
@@ -421,7 +452,7 @@ export default function BlogPost() {
         <article className="mb-8 w-full overflow-hidden">
           <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-4 sm:p-6 lg:p-8 rounded-lg w-full overflow-hidden">
             {post.content ? (
-              <MarkdownRenderer content={post.content} className="w-full max-w-full overflow-hidden" />
+              <MarkdownRenderer content={stripLeadingCoverImage(post.content, post.image)} className="w-full max-w-full overflow-hidden" />
             ) : (
               <div className="text-gray-300 leading-relaxed w-full overflow-hidden">
                 <p className="mb-4 break-words">
@@ -498,7 +529,9 @@ export default function BlogPost() {
                   <img
                     src={authorProfile?.avatar || post.authorImage || '/images/profile/profile.png'}
                     alt={authorProfile?.name || post.author || 'Bergaman'}
-                    className="w-16 h-16 rounded-full border-2 border-[#e8c547] shadow-lg"
+                    className="no-drag w-16 h-16 rounded-full border-2 border-[#e8c547] shadow-lg"
+                    draggable={false}
+                    onContextMenu={(e) => e.preventDefault()}
                   />
                 </div>
                 <div className="flex-1">
