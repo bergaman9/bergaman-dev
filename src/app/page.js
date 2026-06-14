@@ -10,7 +10,7 @@ import Button from './components/Button';
 import BlogPostCard from './components/BlogPostCard';
 import ProjectCard from './components/ProjectCard';
 import PickCard from './components/PickCard';
-import { SkeletonCard, SkeletonBox } from './components/Skeleton';
+import { SkeletonBlogCard, SkeletonProjectCard, SkeletonPickCard } from './components/Skeleton';
 
 export default function Home() {
   const [blogPosts, setBlogPosts] = useState([]);
@@ -304,7 +304,7 @@ export default function Home() {
                 {loading ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {Array.from({ length: 3 }).map((_, index) => (
-                      <SkeletonCard key={index} imageHeight="h-48" rows={3} />
+                      <SkeletonBlogCard key={index} />
                     ))}
                   </div>
                 ) : blogPosts && blogPosts.length > 0 ? (
@@ -350,7 +350,7 @@ export default function Home() {
                 {loadingProjects ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {Array.from({ length: 3 }).map((_, index) => (
-                      <SkeletonCard key={index} imageHeight="h-48" rows={3} />
+                      <SkeletonProjectCard key={index} />
                     ))}
                   </div>
                 ) : featuredProjects.length > 0 ? (
@@ -379,13 +379,7 @@ export default function Home() {
                 {loadingRecommendations ? (
                   <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
                     {Array.from({ length: 4 }).map((_, index) => (
-                      <div key={index} className="rounded-xl border border-[#3e503e]/30 bg-[#2e3d29]/30 overflow-hidden">
-                        <SkeletonBox className="aspect-[2/3] w-full" rounded="rounded-none" />
-                        <div className="p-4 space-y-2">
-                          <SkeletonBox className="h-4 w-3/4" />
-                          <SkeletonBox className="h-3 w-1/2" />
-                        </div>
-                      </div>
+                      <SkeletonPickCard key={index} />
                     ))}
                   </div>
                 ) : recommendations.length > 0 ? (

@@ -8,7 +8,7 @@ import Badge from '../components/Badge';
 import Select from '../components/Select';
 import PageContainer from '../components/PageContainer';
 import MiniAppCard from '../components/MiniAppCard';
-import { PageSkeleton, SkeletonBox, SkeletonCard } from '../components/Skeleton';
+import { PageSkeleton, SkeletonBox, SkeletonCard, SkeletonProjectCard } from '../components/Skeleton';
 import { MINI_APPS } from '@/lib/miniApps';
 
 export default function Portfolio() {
@@ -206,7 +206,7 @@ export default function Portfolio() {
             <>
               <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {Array.from({ length: 6 }).map((_, index) => (
-                  <SkeletonCard key={index} imageHeight="h-48" rows={3} className="rounded-[2rem]" />
+                  <SkeletonProjectCard key={index} />
                 ))}
               </div>
               <div className="space-y-4">

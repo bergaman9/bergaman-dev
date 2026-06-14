@@ -11,7 +11,7 @@ import { useAdminMode } from '../../hooks/useAdminMode';
 import BlogPostCard from '../components/BlogPostCard';
 import PageHeader from '../components/PageHeader';
 import PageContainer from '../components/PageContainer';
-import { SkeletonCard } from '../components/Skeleton';
+import { SkeletonBlogCard } from '../components/Skeleton';
 
 // useSearchParams() must sit under a Suspense boundary for the build to
 // generate the route shell; BlogContent holds the actual page.
@@ -284,7 +284,7 @@ function BlogContent() {
             {loading ? (
               <div className="card-grid card-grid-3">
                 {Array.from({ length: postsPerPage }).map((_, index) => (
-                  <SkeletonCard key={index} imageHeight="h-48" rows={3} />
+                  <SkeletonBlogCard key={index} />
                 ))}
               </div>
             ) : posts.length === 0 ? (
@@ -491,7 +491,7 @@ export default function Blog() {
           />
           <div className="card-grid card-grid-3">
             {Array.from({ length: 9 }).map((_, index) => (
-              <SkeletonCard key={index} imageHeight="h-48" rows={3} />
+              <SkeletonBlogCard key={index} />
             ))}
           </div>
         </PageContainer>
