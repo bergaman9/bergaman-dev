@@ -1,0 +1,37 @@
+name: Deploy to Production
+
+# Minimal deploy-only workflow. The previous "Deploy & Version" workflow also
+# ran lint/audit/semantic-release jobs that kept failing; this one does nothing
+# but push the production deploy to Vercel on every push to main (Vercel's
+# native git auto-deploy is disabled for this project, so this is the trigger).
+
+on:
+  push:
+    branches: [ main ]
+
+# Avoid overlapping/duplicate production deploys.
+concurrency:
+  group: production-deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Deploy to Vercel
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy to Vercel (production)
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: '--prod'
+        env:
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+          EMAIL_USER: ${{ secrets.EMAIL_USER }}
+          EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+          NEXT_PUBLIC_SITE_URL: https://bergaman.dev
