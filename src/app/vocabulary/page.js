@@ -2,12 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FaBookOpen, FaExclamationTriangle, FaDownload, FaKey, FaCopy, FaCheck, FaChartBar, FaTrophy } from 'react-icons/fa';
+import { FaBookOpen, FaExclamationTriangle, FaDownload, FaKey, FaCopy, FaCheck, FaChartBar, FaTrophy, FaLayerGroup } from 'react-icons/fa';
 import SearchFilters from '@/components/Vocabulary/SearchFilters';
 import WordCard from '@/components/Vocabulary/WordCard';
 import StatsModal from '@/components/Vocabulary/StatsModal';
 import WordOfTheDay from '@/components/Vocabulary/WordOfTheDay';
 import QuizModal from '@/components/Vocabulary/QuizModal';
+import FlashcardReview from '@/components/Vocabulary/FlashcardReview';
 import PaginationMap from '@/components/Vocabulary/PaginationMap';
 import { useVocabulary } from '@/context/VocabularyContext';
 import jsPDF from 'jspdf';
@@ -84,11 +85,34 @@ export default function VocabularyPage() {
     const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
 
     // Context for Vault Key
-    const { userId, syncWithCode, userProgress, updateWordStatus } = useVocabulary();
+    const { userId, syncWithCode, userProgress, updateWordStatus, getReviewStats } = useVocabulary();
     const [showKeyModal, setShowKeyModal] = useState(false);
     const [showStatsModal, setShowStatsModal] = useState(false);
     const [showQuizModal, setShowQuizModal] = useState(false);
+    const [showReview, setShowReview] = useState(false);
+    const [reviewWords, setReviewWords] = useState([]);
     const [inputCode, setInputCode] = useState('');
+
+    const dueCount = getReviewStats ? getReviewStats().dueCount : 0;
+
+    // Pull full word objects for every marked word so the SRS queue has data,
+    // then open the flashcard review. Marked words live in userProgress.
+    const openReview = async () => {
+        if (!userProgress || userProgress.length === 0) {
+            alert('Mark some words as "learning" first, then come back to review them.');
+            return;
+        }
+        try {
+            const ids = userProgress.map((p) => p.wordId).filter(Boolean).join(',');
+            const response = await axios.get(`/api/words?ids=${ids}&limit=10000`);
+            setReviewWords(response.data?.success ? response.data.data : words);
+        } catch (err) {
+            console.error('Failed to load review words', err);
+            setReviewWords(words);
+        } finally {
+            setShowReview(true);
+        }
+    };
 
     const [copied, setCopied] = useState(false);
     const [totalWordCount, setTotalWordCount] = useState(25000); // Default fallback
@@ -419,6 +443,20 @@ export default function VocabularyPage() {
                             <FaChartBar /> <span className="hidden md:inline">Stats</span>
                         </button>
 
+                        {/* Spaced-repetition Review */}
+                        <button
+                            onClick={openReview}
+                            className="relative h-full px-4 flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-colors text-sm font-medium"
+                            title="Spaced repetition review"
+                        >
+                            <FaLayerGroup /> <span className="hidden md:inline">Review</span>
+                            {dueCount > 0 && (
+                                <span className="absolute -top-2 -right-2 min-w-[20px] h-5 px-1 flex items-center justify-center rounded-full bg-[#e8c547] text-black text-[11px] font-bold">
+                                    {dueCount > 99 ? '99+' : dueCount}
+                                </span>
+                            )}
+                        </button>
+
                         {/* Quiz Button */}
                         <button
                             onClick={() => setShowQuizModal(true)}
@@ -541,6 +579,14 @@ export default function VocabularyPage() {
                     onClose={() => setShowQuizModal(false)}
                     userProgress={userProgress}
                     allWords={words} // Pass current words to help quiz gen, component fetches more if needed
+                />
+            )}
+
+            {/* Spaced-repetition Flashcard Review */}
+            {showReview && (
+                <FlashcardReview
+                    onClose={() => setShowReview(false)}
+                    allWords={reviewWords}
                 />
             )}
         </PageContainer>
