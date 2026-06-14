@@ -9,8 +9,8 @@ import { useAdminMode } from '../hooks/useAdminMode';
 import Button from './components/Button';
 import BlogPostCard from './components/BlogPostCard';
 import ProjectCard from './components/ProjectCard';
-import HomePickCard from './components/HomePickCard';
-import { SkeletonCard } from './components/Skeleton';
+import PickCard from './components/PickCard';
+import { SkeletonCard, SkeletonBox } from './components/Skeleton';
 
 export default function Home() {
   const [blogPosts, setBlogPosts] = useState([]);
@@ -147,9 +147,9 @@ export default function Home() {
       const data = await response.json();
 
       if (data.success && data.recommendations) {
-        // Shuffle array and pick 3 random items
+        // Shuffle array and pick 4 random items (fills one row of poster cards)
         const shuffled = [...data.recommendations].sort(() => 0.5 - Math.random());
-        setRecommendations(shuffled.slice(0, 3));
+        setRecommendations(shuffled.slice(0, 4));
       }
     } catch (error) {
       console.error('Error fetching recommendations:', error);
@@ -377,16 +377,22 @@ export default function Home() {
                 </h2>
 
                 {loadingRecommendations ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {Array.from({ length: 3 }).map((_, index) => (
-                      <SkeletonCard key={index} imageHeight="h-40" rows={3} />
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
+                    {Array.from({ length: 4 }).map((_, index) => (
+                      <div key={index} className="rounded-xl border border-[#3e503e]/30 bg-[#2e3d29]/30 overflow-hidden">
+                        <SkeletonBox className="aspect-[2/3] w-full" rounded="rounded-none" />
+                        <div className="p-4 space-y-2">
+                          <SkeletonBox className="h-4 w-3/4" />
+                          <SkeletonBox className="h-3 w-1/2" />
+                        </div>
+                      </div>
                     ))}
                   </div>
                 ) : recommendations.length > 0 ? (
                   <>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5 items-stretch">
                       {recommendations.map((rec) => (
-                        <HomePickCard
+                        <PickCard
                           key={rec._id}
                           recommendation={rec}
                         />
