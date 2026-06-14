@@ -3,7 +3,7 @@
 import ImageModal from "../components/ImageModal";
 import FloatingSkills from "../components/FloatingSkills";
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Button from "../components/Button";
 import PageHeader from "../components/PageHeader";
 import PageContainer from "../components/PageContainer";
@@ -72,6 +72,18 @@ const skillCategories = [
   }
 ];
 
+// Military service period: shows "Present" until the service ends (Aug 2026),
+// then automatically switches to the completed end date. English output.
+const SERVICE_START = 'Aug 2025';
+const SERVICE_END = 'Aug 2026';
+function getServicePeriod() {
+  // Service is considered completed once we pass the end of August 2026.
+  const completedFrom = new Date(2026, 8, 1); // Sep 1, 2026 (month is 0-indexed)
+  return new Date() >= completedFrom
+    ? `${SERVICE_START} - ${SERVICE_END}`
+    : `${SERVICE_START} - Present`;
+}
+
 // Experience Data - Updated with correct information
 const experiences = [
   {
@@ -83,10 +95,20 @@ const experiences = [
     type: "personal"
   },
   {
+    title: "Reserve Officer",
+    company: "Turkish Armed Forces",
+    // Period is resolved at render time: "Aug 2025 - Present" until the service
+    // completes, then automatically "Aug 2025 - Aug 2026".
+    period: getServicePeriod(),
+    description: "Serving as a reserve officer (yedek subay) as part of compulsory military service. Strengthening leadership, discipline, decision-making under pressure, and team coordination in a structured environment.",
+    technologies: ["Leadership", "Discipline", "Team Coordination", "Responsibility"],
+    type: "military"
+  },
+  {
     title: "Freelance Developer",
-    company: "Bionluk Platform",
+    company: "Fiverr, Freelancer.com & Upwork",
     period: "Aug 2022 - Nov 2024",
-    description: "Provided graphic design and software development services as a freelancer. Worked on various client projects including web development, Discord bots, and design solutions.",
+    description: "Provided graphic design and software development services to international clients across major freelance platforms. Delivered web development, Discord bots, and design solutions.",
     technologies: ["Graphic Design", "Web Development", "Python", "Discord.py", "React"],
     type: "freelance"
   },
@@ -219,6 +241,8 @@ const getExperienceIcon = (type) => {
       return "fas fa-laptop-code";
     case "internship":
       return "fas fa-tools";
+    case "military":
+      return "fas fa-shield-alt";
     default:
       return "fas fa-briefcase";
   }
@@ -232,6 +256,8 @@ const getExperienceTypeLabel = (type) => {
       return "Freelance";
     case "internship":
       return "Internship";
+    case "military":
+      return "Service";
     default:
       return "Experience";
   }
@@ -246,6 +272,13 @@ const getSkillLevelLabel = (level) => {
 
 export default function About() {
   const [modalImage, setModalImage] = useState(null);
+  // SSR-safe: render "Present" first (matches a pre-Aug-2026 build), then
+  // reconcile on the client so it auto-flips to the end date after the service.
+  const [servicePeriod, setServicePeriod] = useState(`${SERVICE_START} - Present`);
+
+  useEffect(() => {
+    setServicePeriod(getServicePeriod());
+  }, []);
 
   const openModal = (imageSrc, imageAlt) => {
     if (!imageSrc) return; // Don't open modal if no image source
@@ -416,7 +449,7 @@ export default function About() {
                       <span className="inline-flex items-center rounded-full bg-[#e8c547]/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[#e8c547] border border-[#e8c547]/20">
                         {getExperienceTypeLabel(exp.type)}
                       </span>
-                      <p className="mt-2 text-sm text-gray-400 leading-relaxed">{exp.period}</p>
+                      <p className="mt-2 text-sm text-gray-400 leading-relaxed">{exp.type === 'military' ? servicePeriod : exp.period}</p>
                     </div>
                   </div>
 
