@@ -1,12 +1,9 @@
-import { Inter } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import { SITE_CONFIG, SEO_DEFAULTS } from '../lib/constants';
 import LayoutWrapper from './components/LayoutWrapper';
 import ImageWithFallback from './components/ImageWithFallback';
 import { VocabularyProvider } from '@/context/VocabularyContext';
-
-const inter = Inter({ subsets: ["latin"] });
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -122,7 +119,7 @@ export default function RootLayout({ children }) {
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black" />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} ${inter.className} antialiased min-h-screen text-[#d1d5db] flex flex-col`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen text-[#d1d5db] flex flex-col`}>
         <ImageWithFallback />
         <VocabularyProvider>
           <LayoutWrapper>
@@ -145,10 +142,10 @@ export default function RootLayout({ children }) {
                 SITE_CONFIG.author.twitter,
                 SITE_CONFIG.author.discord
               ],
-              "jobTitle": "Electrical & Electronics Engineer",
+              "jobTitle": "Electrical & Electronics Engineer & Full-Stack Developer",
               "worksFor": {
                 "@type": "Organization",
-                "name": "Freelance"
+                "name": "Bergasoft"
               },
               "knowsAbout": [
                 "Artificial Intelligence",
@@ -158,7 +155,12 @@ export default function RootLayout({ children }) {
                 "JavaScript Development",
                 "Discord Bot Development",
                 "IoT Projects",
-                "Machine Learning"
+                "Machine Learning",
+                "High-Voltage Engineering",
+                "Power Systems",
+                "AutoCAD",
+                "Electrical Protection and Grounding",
+                "AI-Assisted Software Development"
               ],
               "description": SITE_CONFIG.description
             })

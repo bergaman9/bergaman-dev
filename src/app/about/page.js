@@ -3,7 +3,7 @@
 import ImageModal from "../components/ImageModal";
 import FloatingSkills from "../components/FloatingSkills";
 import Image from 'next/image';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Button from "../components/Button";
 import PageHeader from "../components/PageHeader";
 import PageContainer from "../components/PageContainer";
@@ -61,6 +61,26 @@ const skillCategories = [
     ]
   },
   {
+    title: "High-Voltage & Power Systems",
+    icon: "fas fa-bolt",
+    skills: [
+      { name: "AutoCAD & Electrical Drawings", level: 85 },
+      { name: "High-Voltage Systems", level: 80 },
+      { name: "Protection, Grounding & Safety", level: 80 },
+      { name: "Panels, Automation & Commissioning", level: 80 }
+    ]
+  },
+  {
+    title: "Engineering & AI Workflow",
+    icon: "fas fa-wand-magic-sparkles",
+    skills: [
+      { name: "Technical Documentation", level: 85 },
+      { name: "AI-Assisted Development", level: 85 },
+      { name: "Codex, Claude & Antigravity", level: 80 },
+      { name: "Code Review & Verification", level: 80 }
+    ]
+  },
+  {
     title: "Languages",
     icon: "fas fa-language",
     skills: [
@@ -71,18 +91,6 @@ const skillCategories = [
     ]
   }
 ];
-
-// Military service period: shows "Present" until the service ends (Aug 2026),
-// then automatically switches to the completed end date. English output.
-const SERVICE_START = 'Aug 2025';
-const SERVICE_END = 'Aug 2026';
-function getServicePeriod() {
-  // Service is considered completed once we pass the end of August 2026.
-  const completedFrom = new Date(2026, 8, 1); // Sep 1, 2026 (month is 0-indexed)
-  return new Date() >= completedFrom
-    ? `${SERVICE_START} - ${SERVICE_END}`
-    : `${SERVICE_START} - Present`;
-}
 
 // Experience Data - Updated with correct information
 const experiences = [
@@ -95,13 +103,11 @@ const experiences = [
     type: "personal"
   },
   {
-    title: "Reserve Officer",
+    title: "Reserve Officer — Electrical & Electronics Engineer",
     company: "Turkish Armed Forces",
-    // Period is resolved at render time: "Aug 2025 - Present" until the service
-    // completes, then automatically "Aug 2025 - Aug 2026".
-    period: getServicePeriod(),
-    description: "Serving as a reserve officer (yedek subay) as part of compulsory military service. Strengthening leadership, discipline, decision-making under pressure, and team coordination in a structured environment.",
-    technologies: ["Leadership", "Discipline", "Team Coordination", "Responsibility"],
+    period: "Aug 2025 - Aug 2026",
+    description: "Served as a reserve officer and Electrical & Electronics Engineer, combining engineering responsibility with leadership, disciplined operations, technical documentation, and decision-making under pressure.",
+    technologies: ["Electrical Engineering", "Technical Documentation", "Leadership", "Team Coordination", "Operational Safety"],
     type: "military"
   },
   {
@@ -272,13 +278,6 @@ const getSkillLevelLabel = (level) => {
 
 export default function About() {
   const [modalImage, setModalImage] = useState(null);
-  // SSR-safe: render "Present" first (matches a pre-Aug-2026 build), then
-  // reconcile on the client so it auto-flips to the end date after the service.
-  const [servicePeriod, setServicePeriod] = useState(`${SERVICE_START} - Present`);
-
-  useEffect(() => {
-    setServicePeriod(getServicePeriod());
-  }, []);
 
   const openModal = (imageSrc, imageAlt) => {
     if (!imageSrc) return; // Don't open modal if no image source
@@ -378,10 +377,6 @@ export default function About() {
           </h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
             {skillCategories.map((category, index) => {
-              const averageLevel = Math.round(
-                category.skills.reduce((total, skill) => total + skill.level, 0) / category.skills.length
-              );
-
               return (
                 <div key={index} className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-5 sm:p-6 rounded-lg hover:border-[#e8c547]/35 transition-all duration-300">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
@@ -394,9 +389,7 @@ export default function About() {
                         <p className="text-sm text-gray-400">{category.skills.length} focused skills</p>
                       </div>
                     </div>
-                    <div className="shrink-0 rounded-full border border-[#e8c547]/25 bg-[#e8c547]/10 px-3 py-1 text-sm font-semibold text-[#e8c547]">
-                      {averageLevel}% avg
-                    </div>
+                    <div className="shrink-0 rounded-full border border-[#e8c547]/25 bg-[#e8c547]/10 px-3 py-1 text-sm font-semibold text-[#e8c547]">Evidence-led</div>
                   </div>
 
                   <div className="space-y-4">
@@ -407,20 +400,7 @@ export default function About() {
                             <span className="block truncate text-gray-200 font-medium">{skill.name}</span>
                             <span className="text-xs uppercase tracking-wide text-gray-500">{getSkillLevelLabel(skill.level)}</span>
                           </div>
-                          <span className="shrink-0 text-[#e8c547] font-semibold">{skill.level}%</span>
-                        </div>
-                        <div
-                          className="h-2.5 w-full overflow-hidden rounded-full bg-[#0e1b12] ring-1 ring-[#3e503e]/45"
-                          role="progressbar"
-                          aria-label={`${skill.name} proficiency`}
-                          aria-valuenow={skill.level}
-                          aria-valuemin="0"
-                          aria-valuemax="100"
-                        >
-                          <div
-                            className="h-full rounded-full bg-gradient-to-r from-[#d4b445] via-[#e8c547] to-[#f4d76b] shadow-[0_0_14px_rgba(232,197,71,0.22)] transition-all duration-700 ease-out group-hover:shadow-[0_0_18px_rgba(232,197,71,0.34)]"
-                            style={{ width: `${skill.level}%` }}
-                          ></div>
+                          <span className="shrink-0 rounded-full bg-[#e8c547]/10 px-2.5 py-1 text-xs font-semibold uppercase tracking-wide text-[#e8c547]">{getSkillLevelLabel(skill.level)}</span>
                         </div>
                       </div>
                     ))}
@@ -451,7 +431,7 @@ export default function About() {
                       <span className="inline-flex items-center rounded-full bg-[#e8c547]/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[#e8c547] border border-[#e8c547]/20">
                         {getExperienceTypeLabel(exp.type)}
                       </span>
-                      <p className="mt-2 text-sm text-gray-400 leading-relaxed">{exp.type === 'military' ? servicePeriod : exp.period}</p>
+                      <p className="mt-2 text-sm text-gray-400 leading-relaxed">{exp.period}</p>
                     </div>
                   </div>
 

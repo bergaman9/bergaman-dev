@@ -9,16 +9,18 @@ import { useAdminMode } from '../hooks/useAdminMode';
 import Button from './components/Button';
 import BlogPostCard from './components/BlogPostCard';
 import ProjectCard from './components/ProjectCard';
-import PickCard from './components/PickCard';
-import { SkeletonBlogCard, SkeletonProjectCard, SkeletonPickCard } from './components/Skeleton';
+import { SkeletonBlogCard, SkeletonProjectCard } from './components/Skeleton';
+import { blogPosts as staticBlogPosts } from '../data/blogPosts';
 
 export default function Home() {
-  const [blogPosts, setBlogPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // Render useful content immediately; the API refreshes it in the background.
+  // This removes the blank/skeleton-only blog experience on cold starts.
+  const [blogPosts, setBlogPosts] = useState(() => [...staticBlogPosts]
+    .sort((a, b) => new Date(b.createdAt || b.date) - new Date(a.createdAt || a.date))
+    .slice(0, 3));
+  const [loading, setLoading] = useState(false);
   const [modalImage, setModalImage] = useState(null);
-  const { isAdminMode, exitEditMode } = useAdminMode();
-  const [recommendations, setRecommendations] = useState([]);
-  const [loadingRecommendations, setLoadingRecommendations] = useState(true);
+  const { isAdminMode } = useAdminMode();
   const [featuredProjects, setFeaturedProjects] = useState([]);
   const [loadingProjects, setLoadingProjects] = useState(true);
 
@@ -45,13 +47,23 @@ export default function Home() {
       ]
     },
     {
-      title: "Tools & Databases",
-      icon: "fas fa-database",
+      title: "Power Systems & Design",
+      icon: "fas fa-bolt",
       skills: [
-        { name: "MongoDB", level: 75 },
-        { name: "Git", level: 85 },
-        { name: "Docker", level: 60 },
-        { name: "SQL", level: 70 }
+        { name: "AutoCAD", level: 85 },
+        { name: "High-Voltage Systems", level: 80 },
+        { name: "Protection & Grounding", level: 80 },
+        { name: "Electrical Automation", level: 80 }
+      ]
+    },
+    {
+      title: "Engineering Workflow",
+      icon: "fas fa-gears",
+      skills: [
+        { name: "Technical Documentation", level: 85 },
+        { name: "AI-Assisted Development", level: 85 },
+        { name: "Codex, Claude & Antigravity", level: 80 },
+        { name: "Git, SQL & MongoDB", level: 80 }
       ]
     }
   ];
@@ -116,7 +128,6 @@ export default function Home() {
 
   useEffect(() => {
     fetchBlogPosts();
-    fetchRecommendations();
     fetchFeaturedProjects();
   }, []);
 
@@ -135,39 +146,10 @@ export default function Home() {
     }
   };
 
-  const fetchRecommendations = async () => {
-    try {
-      setLoadingRecommendations(true);
-      const response = await fetch('/api/recommendations');
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      if (data.success && data.recommendations) {
-        // Shuffle array and pick 4 random items (fills one row of poster cards)
-        const shuffled = [...data.recommendations].sort(() => 0.5 - Math.random());
-        setRecommendations(shuffled.slice(0, 4));
-      }
-    } catch (error) {
-      console.error('Error fetching recommendations:', error);
-      setRecommendations([]);
-    } finally {
-      setLoadingRecommendations(false);
-    }
-  };
-
   const fetchFeaturedProjects = async () => {
     try {
       setLoadingProjects(true);
-      const response = await fetch('/api/portfolio?featured=true&limit=3', {
-        cache: 'no-store',
-        headers: {
-          'Cache-Control': 'no-cache'
-        }
-      });
+      const response = await fetch('/api/portfolio?featured=true&limit=3', { cache: 'force-cache' });
 
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
@@ -244,12 +226,12 @@ export default function Home() {
                 <div className="relative z-10">
                   <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
                     <span className="bg-gradient-to-r from-[#e8c547] via-[#f4d76b] to-[#e8c547] bg-clip-text text-transparent animate-gradient bg-300">
-                      Bergaman
+                      Ömer Faruk Güler
                     </span>
                   </h1>
 
                   <p className="text-xl md:text-2xl text-gray-300 mb-6 font-light">
-                    The Dragon's Domain
+                    Electrical & Electronics Engineer &amp; Full-Stack Developer
                   </p>
 
                   <div className="flex flex-wrap justify-center items-center gap-3 text-gray-400 mb-6">
@@ -265,28 +247,28 @@ export default function Home() {
                     <span className="hidden sm:inline text-gray-600">•</span>
                     <span className="flex items-center gap-2">
                       <i className="fas fa-brain text-[#e8c547]"></i>
-                      AI Enthusiast
+                      High-Voltage &amp; Power Systems
                     </span>
                   </div>
 
                   <p className="text-lg text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
-                    Crafting innovative technical solutions with the strength and wisdom of a dragon.
-                    Specializing in embedded systems, web development, and artificial intelligence.
+                    I build reliable web, automation, and electrical engineering solutions by combining
+                    engineering fundamentals with modern software development.
                   </p>
 
                   {/* CTA Buttons - Enhanced */}
                   <div className="flex flex-wrap gap-4 justify-center">
                     <Button href="/portfolio" size="lg" className="group">
                       <i className="fas fa-briefcase mr-2 group-hover:rotate-12 transition-transform"></i>
-                      View Portfolio
+                      Selected Projects
                     </Button>
                     <Button href="/about" variant="secondary" size="lg" className="group">
                       <i className="fas fa-user mr-2 group-hover:scale-110 transition-transform"></i>
-                      About Me
+                      About &amp; Experience
                     </Button>
                     <Button href="/contact" variant="secondary" size="lg" className="group">
                       <i className="fas fa-envelope mr-2 group-hover:translate-x-1 transition-transform"></i>
-                      Get in Touch
+                      Discuss a Project
                     </Button>
                   </div>
                 </div>
@@ -297,8 +279,9 @@ export default function Home() {
                 </div>
               </section>
 
+              <div className="flex flex-col">
               {/* Latest Blog Posts */}
-              <section className="mb-12 slide-in-right">
+              <section className="order-2 mb-12 slide-in-right">
                 <h2 className="text-3xl font-bold gradient-text mb-6 text-center">
                   <i className="fas fa-blog mr-3"></i>
                   Latest Blog Posts
@@ -344,7 +327,7 @@ export default function Home() {
               </section>
 
               {/* Featured Projects */}
-              <section className="mb-12 slide-in-left">
+              <section className="order-1 mb-12 slide-in-left">
                 <h2 className="text-3xl font-bold gradient-text mb-8 text-center">
                   <i className="fas fa-star mr-3"></i>
                   Featured Projects
@@ -370,40 +353,7 @@ export default function Home() {
                   <Button href="/portfolio">View All Projects<i className="fas fa-arrow-right ml-2"></i></Button>
                 </div>
               </section>
-
-              {/* Picks Section */}
-              <section className="mb-12 slide-in-right">
-                <h2 className="text-3xl font-bold gradient-text mb-8 text-center">
-                  <i className="fas fa-heart mr-3"></i>
-                  My Picks
-                </h2>
-
-                {loadingRecommendations ? (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
-                    {Array.from({ length: 4 }).map((_, index) => (
-                      <SkeletonPickCard key={index} />
-                    ))}
-                  </div>
-                ) : recommendations.length > 0 ? (
-                  <>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5 items-stretch">
-                      {recommendations.map((rec) => (
-                        <PickCard
-                          key={rec._id}
-                          recommendation={rec}
-                        />
-                      ))}
-                    </div>
-                    <div className="text-center mt-8">
-                      <Button href="/picks" variant="secondary">Explore All Picks<i className="fas fa-arrow-right ml-2"></i></Button>
-                    </div>
-                  </>
-                ) : (
-                  <div className="text-center py-8">
-                    <p className="text-gray-400">No picks to show yet — check back soon.</p>
-                  </div>
-                )}
-              </section>
+              </div>
 
               {/* Technical Skills */}
               <section className="mb-12 slide-in-right">
@@ -422,15 +372,9 @@ export default function Home() {
                         <div className="space-y-3">
                           {category.skills.map((skill, skillIndex) => (
                             <div key={skillIndex}>
-                              <div className="flex justify-between mb-1">
+                              <div className="flex justify-between gap-3 rounded-lg border border-[#3e503e]/30 bg-[#0e1b12]/40 px-3 py-2">
                                 <span className="text-gray-300">{skill.name}</span>
-                                <span className="text-[#e8c547] font-semibold">{skill.level}%</span>
-                              </div>
-                              <div className="w-full bg-[#0e1b12] rounded-full h-2">
-                                <div
-                                  className="bg-gradient-to-r from-[#e8c547] to-[#f4d76b] h-2 rounded-full transition-all duration-1000 ease-out"
-                                  style={{ width: `${skill.level}%` }}
-                                ></div>
+                                <span className="text-xs uppercase tracking-wide text-[#e8c547] font-semibold">{skill.level >= 85 ? 'Advanced' : skill.level >= 75 ? 'Proficient' : 'Working knowledge'}</span>
                               </div>
                             </div>
                           ))}
@@ -463,13 +407,13 @@ export default function Home() {
                 <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-8 rounded-lg text-center">
                   <h2 className="text-3xl font-bold gradient-text mb-4">
                     <i className="fas fa-handshake mr-3"></i>
-                    Let's Connect
+                    Build with Bergasoft
                   </h2>
                   <p className="text-gray-300 mb-6 max-w-2xl mx-auto">
-                    Have a question, idea, or just want to say hello? I'm always open to interesting conversations and new connections. Feel free to reach out through the contact form or social media.
+                    Have a software project, automation need, electrical engineering opportunity, or technical product in mind? Share the scope and let's explore how I can help.
                   </p>
                   <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                    <Button href="/contact" size="lg"><i className="fas fa-envelope mr-2"></i>Contact Me</Button>
+                    <Button href="/contact" size="lg"><i className="fas fa-envelope mr-2"></i>Discuss a Project</Button>
                     <Button href="/about" variant="secondary" size="lg"><i className="fas fa-user mr-2"></i>More About Me</Button>
                   </div>
                 </div>

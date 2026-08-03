@@ -36,7 +36,7 @@ export async function GET(request) {
     return NextResponse.json({
       success: true,
       portfolios: portfolios
-    });
+    }, { headers: { 'Cache-Control': 'public, max-age=300, s-maxage=1800, stale-while-revalidate=86400' } });
 
   } catch (error) {
     console.error('Error fetching portfolios:', error);
@@ -45,4 +45,4 @@ export async function GET(request) {
       { status: 500 }
     );
   }
-} 
+}

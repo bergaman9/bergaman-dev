@@ -5,6 +5,7 @@ import axios from 'axios';
 // the real track title + album art instead of a raw URL. Cached in memory.
 const cache = new Map(); // url -> { data, ts }
 const TTL = 24 * 60 * 60 * 1000; // 1 day
+const CACHE_HEADERS = { 'Cache-Control': 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800' };
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
@@ -18,7 +19,7 @@ export async function GET(request) {
 
   const cached = cache.get(url);
   if (cached && Date.now() - cached.ts < TTL) {
-    return NextResponse.json(cached.data);
+    return NextResponse.json(cached.data, { headers: CACHE_HEADERS });
   }
 
   try {
@@ -28,8 +29,8 @@ export async function GET(request) {
       thumbnail: res.data?.thumbnail_url || null,
     };
     cache.set(url, { data, ts: Date.now() });
-    return NextResponse.json(data);
+    return NextResponse.json(data, { headers: CACHE_HEADERS });
   } catch {
-    return NextResponse.json({ title: null, thumbnail: null });
+    return NextResponse.json({ title: null, thumbnail: null }, { headers: CACHE_HEADERS });
   }
 }

@@ -29,12 +29,7 @@ export default function Portfolio() {
   const fetchPortfolios = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/portfolio', {
-        cache: 'no-store',
-        headers: {
-          'Cache-Control': 'no-cache'
-        }
-      });
+      const response = await fetch('/api/portfolio', { cache: 'force-cache' });
 
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);

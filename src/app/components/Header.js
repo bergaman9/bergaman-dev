@@ -11,7 +11,6 @@ export default function Header() {
   const [isAdminDropdownOpen, setIsAdminDropdownOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
-  const [isHidden, setIsHidden] = useState(false);
   const pathname = usePathname();
   const dropdownRef = useRef(null);
   const mobileMenuRef = useRef(null);
@@ -24,46 +23,15 @@ export default function Header() {
     setIsAdminDropdownOpen(false);
   }, [pathname]);
 
-  // Auto-hide on scroll down, reveal on scroll up (header is no longer pinned).
-  useEffect(() => {
-    let lastY = window.scrollY;
-    let ticking = false;
-
-    const update = () => {
-      const currentY = window.scrollY;
-      const delta = currentY - lastY;
-
-      // Always show near the top or when an overlay menu is open.
-      if (currentY < 80 || isMenuOpen || isAdminDropdownOpen) {
-        setIsHidden(false);
-      } else if (delta > 6) {
-        setIsHidden(true); // scrolling down
-      } else if (delta < -6) {
-        setIsHidden(false); // scrolling up
-      }
-
-      lastY = currentY;
-      ticking = false;
-    };
-
-    const onScroll = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(update);
-        ticking = true;
-      }
-    };
-
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, [isMenuOpen, isAdminDropdownOpen]);
-
-  const hideTransitionClass = `transition-transform duration-300 will-change-transform ${isHidden ? '-translate-y-full' : 'translate-y-0'}`;
+  const hideTransitionClass = 'transition-colors duration-300';
 
   // Check authentication status
   useEffect(() => {
     let cancelled = false;
 
     const checkAuth = async () => {
+      const shouldCheck = pathname.startsWith('/admin') || sessionStorage.getItem('adminEditMode') === 'true';
+      if (!shouldCheck) return;
       try {
         const response = await fetch('/api/admin/auth', {
           method: 'GET',
@@ -99,7 +67,15 @@ export default function Header() {
       cancelled = true;
       window.removeEventListener('adminAuthChange', handleAuthChange);
     };
-  }, []);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!isMenuOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    mobileMenuRef.current?.querySelector('a')?.focus();
+    return () => { document.body.style.overflow = previousOverflow; };
+  }, [isMenuOpen]);
 
   // Auto-close dropdowns when clicking outside or pressing Escape
   useEffect(() => {
@@ -279,9 +255,9 @@ export default function Header() {
               <i className="fas fa-dragon text-2xl text-[#e8c547] group-hover:scale-110 transition-transform duration-300 relative z-10 drop-shadow-lg"></i>
             </div>
             <div>
-              <h1 className="text-2xl md:text-3xl font-extrabold bg-gradient-to-r from-[#e8c547] to-[#f4d76b] bg-clip-text text-transparent group-hover:from-[#f4d76b] group-hover:to-[#e8c547] transition-all duration-300">
+              <span className="block text-2xl md:text-3xl font-extrabold bg-gradient-to-r from-[#e8c547] to-[#f4d76b] bg-clip-text text-transparent group-hover:from-[#f4d76b] group-hover:to-[#e8c547] transition-all duration-300">
                 Bergaman
-              </h1>
+              </span>
               <p className="text-xs text-gray-400 -mt-1 hidden sm:block">The Dragon's Domain</p>
             </div>
           </Link>
@@ -404,6 +380,7 @@ export default function Header() {
               className="lg:hidden text-[#e8c547] hover:text-[#f4d76b] transition-colors duration-300 p-2 rounded-lg hover:bg-[#e8c547]/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c547]/60"
               aria-label="Toggle navigation menu"
               aria-expanded={isMenuOpen}
+              aria-controls="site-mobile-navigation"
             >
               <i className={`fas ${isMenuOpen ? 'fa-times' : 'fa-bars'} text-xl transition-transform duration-300 ${isMenuOpen ? 'rotate-90' : ''}`}></i>
             </button>
@@ -413,6 +390,7 @@ export default function Header() {
         {/* Mobile Navigation */}
         {isMenuOpen && (
           <nav
+            id="site-mobile-navigation"
             ref={mobileMenuRef}
             className="lg:hidden absolute top-full left-0 right-0 bg-gradient-to-b from-[#0e1b12] to-[#1a2e1a] backdrop-blur-md border-b border-[#3e503e]/30 shadow-xl"
           >

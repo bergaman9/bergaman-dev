@@ -10,6 +10,17 @@ export function useAdminMode() {
     const checkAdminStatus = async () => {
       let authStatus = false;
 
+      // The common public path is not admin edit mode. Avoid an authentication
+      // request on every page view unless the dashboard explicitly enabled it.
+      const editMode = sessionStorage.getItem('adminEditMode');
+      if (editMode !== 'true') {
+        if (!cancelled) {
+          setIsAuthenticated(false);
+          setIsAdminMode(false);
+        }
+        return;
+      }
+
       try {
         const response = await fetch('/api/admin/auth', {
           method: 'GET',
@@ -24,7 +35,6 @@ export function useAdminMode() {
 
       if (cancelled) return;
 
-      const editMode = sessionStorage.getItem('adminEditMode');
       setIsAuthenticated(authStatus);
       setIsAdminMode(editMode === 'true' && authStatus);
     };

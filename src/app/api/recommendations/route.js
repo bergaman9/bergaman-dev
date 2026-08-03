@@ -2,9 +2,6 @@ import { NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
 import Recommendation from '@/models/Recommendation';
 
-export const dynamic = 'force-dynamic';
-export const fetchCache = 'force-no-store';
-
 export async function GET(request) {
   try {
     await connectDB();
@@ -35,7 +32,7 @@ export async function GET(request) {
         message: 'Using fallback recommendations'
       }, {
         headers: {
-          'Cache-Control': 'no-store, must-revalidate',
+          'Cache-Control': 'public, max-age=300, s-maxage=1800, stale-while-revalidate=86400',
           'Content-Type': 'application/json'
         }
       });
@@ -46,7 +43,7 @@ export async function GET(request) {
       recommendations
     }, {
       headers: {
-        'Cache-Control': 'no-store, must-revalidate',
+        'Cache-Control': 'public, max-age=300, s-maxage=1800, stale-while-revalidate=86400',
         'Content-Type': 'application/json'
       }
     });
@@ -64,7 +61,7 @@ export async function GET(request) {
     }, {
       status: 200, // Return 200 with fallback data instead of error
       headers: {
-        'Cache-Control': 'no-store, must-revalidate',
+        'Cache-Control': 'public, max-age=300, s-maxage=1800, stale-while-revalidate=86400',
         'Content-Type': 'application/json'
       }
     });

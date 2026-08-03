@@ -47,7 +47,7 @@ export default function PicksPage() {
   const fetchRecommendations = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/recommendations?limit=500');
+      const response = await fetch('/api/recommendations?limit=500', { cache: 'force-cache' });
       if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
       const data = await response.json();
 

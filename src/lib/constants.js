@@ -30,11 +30,11 @@ const imageSources = [
 // Site Configuration
 export const SITE_CONFIG = {
   name: 'Bergaman',
-  title: 'Bergaman - The Dragon\'s Domain',
-  description: 'Passionate Electrical & Electronics Engineer specializing in modern web technologies, innovative digital solutions, and technical projects. Crafting technology inspired by the strength and wisdom of a dragon.',
+  title: 'Ömer Faruk Güler | Electrical Engineer & Full-Stack Developer',
+  description: 'Ömer Faruk Güler builds reliable high-voltage, automation, embedded, and full-stack software solutions through Bergasoft in Istanbul, Turkey.',
   url: process.env.NEXT_PUBLIC_SITE_URL || 'https://bergaman.dev',
   author: {
-    name: 'Ömer (Bergaman)',
+    name: 'Ömer Faruk Güler',
     email: 'contact@bergaman.dev',
     github: 'https://github.com/bergaman9',
     twitter: 'https://twitter.com/bergaman9',
@@ -43,12 +43,18 @@ export const SITE_CONFIG = {
   keywords: [
     'Electrical Engineer',
     'Electronics Engineer',
+    'High Voltage Engineer',
+    'Power Systems',
+    'AutoCAD Electrical',
+    'Electrical Automation',
     'Full Stack Developer',
     'Next.js',
     'React',
     'Python',
     'Discord Bot',
     'Web Development',
+    'AI-Assisted Development',
+    'Bergasoft',
     'Bergaman',
     'Dragon Developer'
   ],
@@ -69,8 +75,8 @@ export const SITE_CONFIG = {
 export const NAV_LINKS = [
   { href: '/', label: 'Home', icon: 'fas fa-home' },
   { href: '/about', label: 'About', icon: 'fas fa-user' },
-  { href: '/portfolio', label: 'Portfolio', icon: 'fas fa-briefcase' },
-  { href: '/blog', label: 'Blog', icon: 'fas fa-blog' },
+  { href: '/portfolio', label: 'Work', icon: 'fas fa-briefcase' },
+  { href: '/blog', label: 'Writing', icon: 'fas fa-blog' },
   { href: '/picks', label: 'Picks', icon: 'fas fa-heart' },
   { href: '/contact', label: 'Contact', icon: 'fas fa-envelope' }
 ];

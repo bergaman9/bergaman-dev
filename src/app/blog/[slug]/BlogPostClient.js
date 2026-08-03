@@ -1,0 +1,573 @@
+"use client";
+
+// Force dynamic rendering to prevent initialization errors
+export const dynamic = 'force-dynamic';
+
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import BlogImageGenerator from '../../components/BlogImageGenerator';
+import CommentSystem from '../../components/CommentSystem';
+import ImageModal from '../../components/ImageModal';
+import MarkdownRenderer from '../../components/MarkdownRenderer';
+import { SkeletonBox, SkeletonText } from '../../components/Skeleton';
+
+// The featured image is already shown in the header, but many posts also embed
+// the same cover as the first image in their markdown — strip that leading
+// duplicate so the cover only appears once at the top.
+function stripLeadingCoverImage(content, coverUrl) {
+  if (!content || !coverUrl) return content;
+  const coverFile = coverUrl.split('/').pop().split('?')[0];
+  const head = content.slice(0, 500);
+  const match = head.match(/!\[[^\]]*\]\(([^)\s]+)[^)]*\)/);
+  if (match && match[1].split('/').pop().split('?')[0] === coverFile) {
+    return content.replace(match[0], '').replace(/^\s+/, '');
+  }
+  return content;
+}
+
+export default function BlogPostClient({ slug, initialPost }) {
+  const params = { slug };
+  const [post, setPost] = useState(initialPost);
+  const [loading, setLoading] = useState(!initialPost);
+  const [error, setError] = useState(null);
+  const [likes, setLikes] = useState(0);
+  const [hasLiked, setHasLiked] = useState(false);
+  const [modalImage, setModalImage] = useState(null);
+  const [commentCount, setCommentCount] = useState(0);
+  const [isPasswordProtected, setIsPasswordProtected] = useState(false);
+  const [passwordInput, setPasswordInput] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authorProfile] = useState({
+    name: 'Ömer Faruk Güler',
+    about: 'Electrical & Electronics Engineer and full-stack developer working across high-voltage systems, automation, and modern software.',
+    avatar: '/images/profile/profile.png',
+    showAuthorBio: true
+  });
+
+  useEffect(() => {
+    if (params.slug) {
+      fetchPost();
+      loadLikes();
+      fetchCommentCount();
+      fetchAuthorProfile();
+    }
+  }, [params.slug]);
+
+  const checkAdminAuthenticated = async () => {
+    try {
+      const response = await fetch('/api/admin/auth', {
+        method: 'GET',
+        credentials: 'include',
+        cache: 'no-store',
+      });
+      const data = await response.json();
+      return response.ok && data.authenticated;
+    } catch {
+      return false;
+    }
+  };
+
+  const fetchPost = async () => {
+    try {
+      // First try to find by slug in MongoDB
+      const response = await fetch(`/api/posts?slug=${params.slug}`);
+      const data = await response.json();
+
+      if (data.posts && data.posts.length > 0) {
+        const fetchedPost = data.posts[0];
+
+        // Check post visibility
+        if (fetchedPost.visibility === 'private') {
+          if (!(await checkAdminAuthenticated())) {
+            setError('This post is private and only accessible to administrators.');
+            setLoading(false);
+            return;
+          }
+        } else if (fetchedPost.visibility === 'password') {
+          // Check if password is already provided
+          const savedPassword = sessionStorage.getItem(`post_password_${params.slug}`);
+          if (!savedPassword || savedPassword !== fetchedPost.password) {
+            setIsPasswordProtected(true);
+            setPost(fetchedPost);
+            setLoading(false);
+            return;
+          }
+        } else if (fetchedPost.visibility === 'members') {
+          // Check if user is a member (you can implement member authentication)
+          const memberAuth = localStorage.getItem('memberAuth');
+          if (!memberAuth) {
+            setError('This post is only accessible to registered members. Please log in to continue.');
+            setLoading(false);
+            return;
+          }
+        }
+
+        setPost(fetchedPost);
+        setIsAuthenticated(true);
+        // Increment view count
+        incrementViews(fetchedPost._id);
+      } else {
+        setError('Post not found');
+      }
+    } catch (error) {
+      console.error('Error fetching post:', error);
+      setError('Failed to load post');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchCommentCount = async () => {
+    try {
+      const response = await fetch(`/api/comments?postSlug=${params.slug}`);
+      if (response.ok) {
+        const data = await response.json();
+        setCommentCount(data.comments?.length || 0);
+      }
+    } catch (error) {
+      console.error('Error fetching comment count:', error);
+    }
+  };
+
+  const incrementViews = async (postId) => {
+    if (!postId || String(postId).startsWith('static-')) return;
+    try {
+      // Only increment views if user is admin (since public API doesn't support updates)
+      if (await checkAdminAuthenticated()) {
+        await fetch(`/api/admin/posts/${postId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            views: (post?.views || 0) + 1
+          })
+        });
+      }
+    } catch (error) {
+      console.error('Error incrementing views:', error);
+    }
+  };
+
+  const loadLikes = () => {
+    const savedLikes = localStorage.getItem(`likes_${params.slug}`);
+    const userLiked = localStorage.getItem(`liked_${params.slug}`);
+
+    if (savedLikes) {
+      setLikes(parseInt(savedLikes));
+    }
+    if (userLiked === 'true') {
+      setHasLiked(true);
+    }
+  };
+
+  const handleLike = async () => {
+    if (hasLiked) return;
+
+    const newLikes = likes + 1;
+    setLikes(newLikes);
+    setHasLiked(true);
+
+    localStorage.setItem(`likes_${params.slug}`, newLikes.toString());
+    localStorage.setItem(`liked_${params.slug}`, 'true');
+
+    // Update likes in MongoDB (only if admin)
+    if (post) {
+      try {
+          if (await checkAdminAuthenticated()) {
+          await fetch(`/api/admin/posts/${post._id}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              likes: newLikes
+            })
+          });
+        }
+      } catch (error) {
+        console.error('Error updating likes:', error);
+      }
+    }
+  };
+
+  const openModal = (imageSrc, imageAlt) => {
+    setModalImage({ src: imageSrc, alt: imageAlt });
+  };
+
+  const closeModal = () => {
+    setModalImage(null);
+  };
+
+  const handleCommentCountUpdate = (count) => {
+    setCommentCount(count);
+  };
+
+  const formatCategoryName = (category) => {
+    switch (category) {
+      case 'ai': return 'AI';
+      case 'web-development': return 'Web Development';
+      case 'technology': return 'Technology';
+      case 'tutorial': return 'Tutorial';
+      case 'programming': return 'Programming';
+      case 'blockchain': return 'Blockchain';
+      case 'mobile': return 'Mobile';
+      case 'design': return 'Design';
+      default: return category.charAt(0).toUpperCase() + category.slice(1);
+    }
+  };
+
+  const formatDate = (date) => {
+    return new Date(date).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  const handlePasswordSubmit = (e) => {
+    e.preventDefault();
+    if (passwordInput === post.password) {
+      sessionStorage.setItem(`post_password_${params.slug}`, passwordInput);
+      setIsPasswordProtected(false);
+      setIsAuthenticated(true);
+      setPasswordError('');
+      // Increment view count after successful password entry
+      incrementViews(post._id);
+    } else {
+      setPasswordError('Incorrect password. Please try again.');
+    }
+  };
+
+  const fetchAuthorProfile = async () => {
+    // Public article rendering must not wait for an admin-auth/settings round
+    // trip. Admin profile editing remains available in the dashboard.
+    return authorProfile;
+  };
+
+  if (loading) {
+    return (
+      <div className="page-container">
+        <div className="page-content">
+          <div className="mx-auto max-w-4xl py-8" aria-busy="true">
+            {/* Back link */}
+            <SkeletonBox className="mb-6 h-9 w-28" rounded="rounded-lg" />
+            {/* Category + meta row */}
+            <div className="mb-4 flex gap-3">
+              <SkeletonBox className="h-6 w-24" rounded="rounded-full" />
+              <SkeletonBox className="h-6 w-20" rounded="rounded-full" />
+            </div>
+            {/* Title */}
+            <SkeletonBox className="mb-3 h-10 w-11/12" />
+            <SkeletonBox className="mb-6 h-10 w-2/3" />
+            {/* Description */}
+            <SkeletonBox className="mb-2 h-5 w-full" rounded="rounded" />
+            <SkeletonBox className="mb-8 h-5 w-4/5" rounded="rounded" />
+            {/* Featured image */}
+            <SkeletonBox className="mb-8 h-64 w-full md:h-96" />
+            {/* Article content card */}
+            <div className="skeleton-surface rounded-lg border p-6 lg:p-8">
+              <SkeletonText lines={8} />
+              <div className="my-6" />
+              <SkeletonText lines={6} />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !post) {
+    return (
+      <div className="page-container">
+        <div className="page-content">
+          <div className="text-center py-16">
+            <i className="fas fa-exclamation-triangle text-4xl text-red-400 mb-4"></i>
+            <h1 className="text-2xl font-bold text-gray-300 mb-4">Post Not Found</h1>
+            <p className="text-gray-400 mb-8">{error || 'The requested blog post could not be found.'}</p>
+            <Link
+              href="/blog"
+              className="btn-cyber px-6 py-3"
+            >
+              <i className="fas fa-arrow-left mr-2"></i>
+              Back to Blog
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Password Protection Screen
+  if (isPasswordProtected && post) {
+    return (
+      <div className="page-container">
+        <div className="page-content">
+          <div className="max-w-md mx-auto text-center py-16">
+            <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-8 rounded-lg">
+              <i className="fas fa-lock text-4xl text-[#e8c547] mb-6"></i>
+              <h1 className="text-2xl font-bold text-gray-300 mb-4">Protected Post</h1>
+              <p className="text-gray-400 mb-6">This post is password protected. Please enter the password to continue.</p>
+
+              <form onSubmit={handlePasswordSubmit} className="space-y-4">
+                <div>
+                  <input
+                    type="password"
+                    value={passwordInput}
+                    onChange={(e) => setPasswordInput(e.target.value)}
+                    placeholder="Enter password"
+                    className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-white focus:border-[#e8c547] focus:outline-none"
+                    required
+                  />
+                  {passwordError && (
+                    <p className="text-red-400 text-sm mt-2">{passwordError}</p>
+                  )}
+                </div>
+                <button
+                  type="submit"
+                  className="w-full bg-[#e8c547] text-[#0e1b12] px-6 py-3 rounded-lg font-medium hover:bg-[#d4b445] transition-colors duration-300"
+                >
+                  <i className="fas fa-unlock mr-2"></i>
+                  Access Post
+                </button>
+              </form>
+
+              <div className="mt-6">
+                <Link
+                  href="/blog"
+                  className="text-gray-400 hover:text-[#e8c547] transition-colors duration-300"
+                >
+                  <i className="fas fa-arrow-left mr-2"></i>
+                  Back to Blog
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Only render the full post if authenticated
+  if (!isAuthenticated) {
+    return (
+      <div className="page-container">
+        <div className="page-content">
+          <div className="mx-auto max-w-4xl py-8" aria-busy="true">
+            <SkeletonBox className="mb-6 h-10 w-32" />
+            <SkeletonBox className="mb-6 h-12 w-2/3" />
+            <SkeletonText lines={6} />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="page-container">
+      <div className="page-content">
+        {/* Back to Blog */}
+        <div className="mb-8">
+          <Link
+            href="/blog"
+            className="inline-flex items-center text-[#e8c547] hover:text-[#d4b445] transition-colors duration-300"
+          >
+            <i className="fas fa-arrow-left mr-2"></i>
+            Back to Blog
+          </Link>
+        </div>
+
+        {/* Article Header */}
+        <header className="mb-8">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="px-3 py-1 bg-[#e8c547]/20 text-[#e8c547] text-sm rounded-full">
+              {formatCategoryName(post.category)}
+            </span>
+            <span className="text-gray-400">
+              {formatDate(post.createdAt)}
+            </span>
+            <span className="text-gray-400">•</span>
+            <span className="text-gray-400">
+              <i className="fas fa-clock mr-1"></i>
+              {post.readTime ? post.readTime.replace(' read', '') : '5 min'}
+            </span>
+          </div>
+
+          <h1 className="text-4xl md:text-5xl font-bold gradient-text mb-6 leading-tight">
+            {post.title}
+          </h1>
+
+          <p className="text-xl text-gray-300 mb-8">
+            {post.description}
+          </p>
+
+          {/* Featured Image */}
+          <div className="mb-8">
+            {post.image ? (
+              <Image
+                src={post.image}
+                alt={post.title}
+                width={800}
+                height={400}
+                className="w-full h-64 md:h-96 object-cover rounded-lg cursor-pointer"
+                onClick={() => openModal(post.image, post.title)}
+              />
+            ) : (
+              <div className="cursor-pointer w-full" onClick={() => { }}>
+                <BlogImageGenerator
+                  title={post.title}
+                  category={post.category}
+                  width={800}
+                  height={400}
+                  className="w-full h-64 md:h-96"
+                />
+              </div>
+            )}
+          </div>
+        </header>
+
+        {/* Article Content */}
+        <article className="mb-8 w-full overflow-hidden">
+          <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-4 sm:p-6 lg:p-8 rounded-lg w-full overflow-hidden">
+            {post.content ? (
+              <MarkdownRenderer content={stripLeadingCoverImage(post.content, post.image)} className="w-full max-w-full overflow-hidden" />
+            ) : (
+              <div className="text-gray-300 leading-relaxed w-full overflow-hidden">
+                <p className="mb-4 break-words">
+                  This is the full content of the blog post. The content can be edited in the admin panel.
+                </p>
+                <p className="mb-4 break-words">
+                  {post.description}
+                </p>
+                <p className="break-words">
+                  More detailed content would go here. You can add rich text, code examples, images, and more through the admin interface.
+                </p>
+              </div>
+            )}
+          </div>
+        </article>
+
+        {/* Post Meta - Moved here */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between py-4 px-4 bg-[#2e3d29]/30 border border-[#3e503e]/50 rounded-lg mb-8 gap-4">
+          <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-sm">
+            <span className="flex items-center text-[#e8c547]">
+              <i className="fas fa-user mr-2"></i>
+              <span className="text-gray-200">{post.author || 'Bergaman'}</span>
+            </span>
+            <span className="flex items-center text-[#e8c547]">
+              <i className="fas fa-eye mr-2"></i>
+              <span className="text-gray-200">{post.views || 0} views</span>
+            </span>
+            <span className="flex items-center text-[#e8c547]">
+              <i className="fas fa-comments mr-2"></i>
+              <span className="text-gray-200">{commentCount} comments</span>
+            </span>
+          </div>
+
+          <button
+            onClick={handleLike}
+            disabled={hasLiked}
+            className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-300 ${hasLiked
+                ? 'bg-[#e8c547]/20 text-[#e8c547] cursor-not-allowed'
+                : 'bg-[#e8c547]/10 text-[#e8c547] hover:bg-[#e8c547]/20 hover:scale-105'
+              }`}
+          >
+            <i className={`fas fa-heart ${hasLiked ? 'text-[#e8c547]' : ''}`}></i>
+            <span>{likes || post.likes || 0}</span>
+          </button>
+        </div>
+
+        {/* Tags */}
+        {post.tags && post.tags.length > 0 && (
+          <div className="mb-12">
+            <h3 className="text-lg font-semibold text-[#e8c547] mb-4 flex items-center">
+              <i className="fas fa-tags mr-2"></i>
+              Tags
+            </h3>
+            <div className="flex flex-wrap gap-2">
+              {post.tags.map((tag, index) => (
+                <Link
+                  key={index}
+                  href={`/blog?tag=${encodeURIComponent(tag)}`}
+                  className="px-3 py-1.5 bg-[#3e503e]/50 text-gray-300 text-sm rounded-full border border-[#3e503e] hover:bg-[#e8c547]/20 hover:text-[#e8c547] hover:border-[#e8c547]/50 transition-all duration-300"
+                >
+                  #{tag}
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Author Section */}
+        {(post.showAuthorBio !== false && authorProfile?.showAuthorBio !== false) && (authorProfile?.about || authorProfile?.bio) && (
+          <div className="mb-12">
+            <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg">
+              <div className="flex items-start space-x-4">
+                <div className="flex-shrink-0">
+                  <img
+                    src={authorProfile?.avatar || post.authorImage || '/images/profile/profile.png'}
+                    alt={authorProfile?.name || post.author || 'Bergaman'}
+                    className="no-drag w-16 h-16 rounded-full border-2 border-[#e8c547] shadow-lg"
+                    draggable={false}
+                    onContextMenu={(e) => e.preventDefault()}
+                  />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center mb-2">
+                    <h3 className="text-lg font-semibold text-[#e8c547]">
+                      {authorProfile?.name || post.author || 'Bergaman'}
+                    </h3>
+                    <div className="ml-2 w-5 h-5 bg-[#e8c547] rounded-full flex items-center justify-center">
+                      <i className="fas fa-crown text-[#0e1b12] text-xs"></i>
+                    </div>
+                  </div>
+                  <p className="text-gray-300 leading-relaxed">
+                    {authorProfile?.about || authorProfile?.bio || 'Electrical & Electronics Engineer specializing in full-stack development and AI technologies.'}
+                  </p>
+                  {authorProfile?.social && (
+                    <div className="flex items-center space-x-4 mt-3">
+                      {authorProfile.social.github && (
+                        <a href={authorProfile.social.github} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[#e8c547] transition-colors">
+                          <i className="fab fa-github"></i>
+                        </a>
+                      )}
+                      {authorProfile.social.linkedin && (
+                        <a href={authorProfile.social.linkedin} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[#e8c547] transition-colors">
+                          <i className="fab fa-linkedin"></i>
+                        </a>
+                      )}
+                      {authorProfile.social.twitter && (
+                        <a href={authorProfile.social.twitter} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[#e8c547] transition-colors">
+                          <i className="fab fa-twitter"></i>
+                        </a>
+                      )}
+                      {authorProfile.social.website && (
+                        <a href={authorProfile.social.website} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[#e8c547] transition-colors">
+                          <i className="fas fa-globe"></i>
+                        </a>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Comments Section */}
+        <CommentSystem postSlug={params.slug} onCommentCountUpdate={handleCommentCountUpdate} />
+      </div>
+
+      {/* Image Modal */}
+      {modalImage && (
+        <ImageModal
+          src={modalImage.src}
+          alt={modalImage.alt}
+          onClose={closeModal}
+        />
+      )}
+    </div>
+  );
+}

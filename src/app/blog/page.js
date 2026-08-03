@@ -12,19 +12,24 @@ import BlogPostCard from '../components/BlogPostCard';
 import PageHeader from '../components/PageHeader';
 import PageContainer from '../components/PageContainer';
 import { SkeletonBlogCard } from '../components/Skeleton';
+import { blogPosts as staticBlogPosts } from '../../data/blogPosts';
+
+const INITIAL_POSTS = [...staticBlogPosts]
+  .sort((a, b) => new Date(b.createdAt || b.date) - new Date(a.createdAt || a.date))
+  .slice(0, 9);
 
 // useSearchParams() must sit under a Suspense boundary for the build to
 // generate the route shell; BlogContent holds the actual page.
 function BlogContent() {
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [posts, setPosts] = useState(INITIAL_POSTS);
+  const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedTag, setSelectedTag] = useState('');
   const [modalImage, setModalImage] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [postsPerPage, setPostsPerPage] = useState(9);
-  const [totalPosts, setTotalPosts] = useState(0);
+  const [totalPosts, setTotalPosts] = useState(staticBlogPosts.length);
   const [settings, setSettings] = useState(null);
   const { isAdminMode, exitEditMode } = useAdminMode();
   const searchParams = useSearchParams();
@@ -89,12 +94,7 @@ function BlogContent() {
         ...(searchTerm && { search: searchTerm })
       });
 
-      const response = await fetch(`/api/posts?${params}`, {
-        cache: 'no-store',
-        headers: {
-          'Cache-Control': 'no-cache'
-        }
-      });
+      const response = await fetch(`/api/posts?${params}`);
       const data = await response.json();
 
       if (data.success && data.posts) {

@@ -103,8 +103,9 @@ export default function Footer() {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group relative w-10 h-10 bg-gradient-to-br from-[#2e3d29] to-[#1a2e1a] border border-[#3e503e]/50 rounded-lg flex items-center justify-center text-gray-400 hover:text-[#e8c547] hover:border-[#e8c547]/50 transition-all duration-300 hover:scale-110"
+                  className="group relative w-11 h-11 bg-gradient-to-br from-[#2e3d29] to-[#1a2e1a] border border-[#3e503e]/50 rounded-lg flex items-center justify-center text-gray-400 hover:text-[#e8c547] hover:border-[#e8c547]/50 transition-all duration-300 hover:scale-105"
                   title={social.label}
+                  aria-label={social.label}
                 >
                   <div className="absolute inset-0 bg-[#e8c547]/10 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   <i className={`${social.icon} text-base relative z-10`}></i>

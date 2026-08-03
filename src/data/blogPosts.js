@@ -1,5 +1,95 @@
 export const blogPosts = [
   {
+    _id: 'static-high-voltage-engineering',
+    slug: 'high-voltage-engineering-from-design-to-safe-operation',
+    title: 'High-Voltage Engineering: From Design to Safe Operation',
+    description: 'A practical engineering guide to insulation coordination, protection, grounding, testing, and safe operation of high-voltage power systems.',
+    excerpt: 'High-voltage engineering is not simply about increasing a voltage rating. Reliable systems emerge when insulation, protection, grounding, testing, documentation, and human safety are designed as one coordinated system.',
+    category: 'technology',
+    tags: ['high voltage', 'electrical engineering', 'power systems', 'protection', 'AutoCAD', 'safety'],
+    image: '/images/posts/high-voltage-power-systems.webp',
+    readTime: '11 min read',
+    author: 'Ömer Faruk Güler',
+    published: true,
+    featured: true,
+    visibility: 'public',
+    seo: {
+      metaTitle: 'High-Voltage Engineering: Design, Protection and Safety',
+      metaDescription: 'Learn the engineering principles behind safe and reliable high-voltage systems: insulation coordination, protection, grounding, testing and documentation.',
+      keywords: ['high-voltage engineering', 'electrical engineer', 'power systems', 'insulation coordination', 'protection relays', 'grounding']
+    },
+    content: `## Why high voltage demands a systems mindset
+
+High-voltage engineering begins where ordinary design assumptions stop being sufficient. As voltage rises, clearances, insulation behavior, switching transients, electric-field concentration, earthing performance, protection selectivity, and operating discipline become tightly coupled. A component can satisfy its individual nameplate rating while the installation around it still creates an unacceptable risk.
+
+That is why I approach a high-voltage project as a complete lifecycle: define the operating conditions, model the electrical system, coordinate insulation and protection, document the physical design, verify the installation, and establish safe operating procedures. Reliability is created by the interfaces between these activities.
+
+## 1. Start with the electrical requirements
+
+Before selecting equipment, the design basis should clearly record:
+
+- nominal and highest system voltage;
+- frequency, grounding method, and neutral arrangement;
+- expected load and future capacity;
+- short-circuit levels and clearing times;
+- environmental conditions such as altitude, pollution, humidity, and temperature;
+- availability target and acceptable outage duration;
+- applicable utility rules and IEC, IEEE, or national standards.
+
+A current single-line diagram is the foundation. It should show sources, transformers, bus sections, breakers, disconnectors, instrument transformers, protection zones, metering, and earthing relationships. I use AutoCAD and engineering documentation workflows to keep drawings readable, revision-controlled, and useful both in the field and during analysis.
+
+## 2. Insulation coordination is more than a clearance table
+
+Equipment must withstand power-frequency stress as well as lightning and switching impulses. Insulation coordination aligns equipment withstand levels with expected overvoltages and the protective characteristics of surge arresters.
+
+Key design checks include creepage distance, phase-to-phase and phase-to-earth clearances, altitude correction, pollution severity, conductor movement, and electric-field concentration around terminals. The objective is not to maximize insulation everywhere; it is to apply a coordinated margin so that a predictable protective device operates before expensive primary equipment is damaged.
+
+## 3. Protection must be selective, fast, and explainable
+
+A protection system should isolate only the faulted zone while keeping healthy parts energized whenever possible. That requires more than choosing a relay model. Current-transformer ratios, saturation, pickup values, time-current curves, breaker operating time, communication delays, and backup protection all affect the final result.
+
+Typical studies cover overcurrent and earth-fault protection, transformer differential and restricted earth fault, busbar protection, distance protection, breaker failure, and under/over-voltage or frequency functions. Settings should be supported by calculations and coordination plots, then verified through secondary injection and functional trip tests.
+
+## 4. Grounding is a personnel-safety system
+
+An earthing grid is expected to carry fault current without exposing people to dangerous touch and step potentials. Soil resistivity, conductor geometry, fault duration, surface material, transferred potential, and bonding all matter. A low measured resistance alone does not prove that the installation is safe.
+
+The practical design also has to bond structures, equipment frames, cable screens, fences, control buildings, and metallic services correctly. Test points and accessible connections should be considered during design rather than added after construction.
+
+## 5. Physical layout and constructability
+
+The primary layout must respect electrical clearances while remaining maintainable. Operators need safe access to breakers, disconnectors, cable terminations, test points, and emergency routes. Cable segregation, fire barriers, drainage, lighting, signage, and future extension areas should be visible in the design package.
+
+Good drawings reduce site improvisation. I treat general arrangements, sections, cable schedules, termination diagrams, interlocking logic, and equipment lists as engineering deliverables—not administrative attachments.
+
+## 6. Commissioning turns design intent into evidence
+
+Commissioning should answer a simple question: does the installed system behave as the approved design predicts? Depending on the asset, verification may include insulation resistance, winding resistance, transformer ratio, dielectric tests, circuit-breaker timing, contact resistance, CT/VT polarity, relay injection, interlock checks, SCADA point-to-point tests, and trip-circuit supervision.
+
+Results need acceptance criteria, calibrated instruments, traceable records, and a clear process for resolving deviations. An energization checklist should confirm that drawings, protection settings, earthing, temporary grounds, work permits, communication channels, and emergency arrangements are all ready.
+
+## 7. Safe operation is engineered before the switching order
+
+High voltage leaves little room for informal assumptions. Isolation, verification of absence of voltage, discharge, earthing, lockout/tagout, approach boundaries, arc-flash precautions, PPE selection, and permit-to-work responsibilities must be explicit. Switching programs should be independently checked and use unambiguous equipment identifiers.
+
+The strongest safety culture is not based on confidence alone. It is based on repeatable controls, peer verification, current documentation, and the authority to stop when field conditions differ from the plan.
+
+## Digital tools in the engineering workflow
+
+Modern electrical engineering benefits from disciplined use of software: AutoCAD for drawings, calculation and simulation tools for studies, spreadsheets or scripts for repeatable checks, and structured repositories for revision control. AI-assisted tools can help organize documentation, inspect code, draft test templates, or accelerate research, but every engineering conclusion still requires domain review and traceable source data.
+
+My experience across electrical/electronics engineering, software development, field-oriented documentation, and reserve-officer responsibility has reinforced the same lesson: dependable systems come from clear thinking under constraints. High-voltage work makes that principle visible. Every assumption eventually becomes a clearance, a setting, a test result, or an operating risk.
+
+## Final checklist
+
+Before handover, I expect a high-voltage project to have a validated design basis, coordinated insulation and protection, verified grounding, constructible drawings, approved relay settings, complete test records, updated as-built documentation, trained operators, and controlled switching procedures.
+
+High voltage is unforgiving, but it is not mysterious. With sound calculations, careful documentation, rigorous testing, and respect for safe working practices, complex power systems can be made understandable, maintainable, and reliable.`,
+    date: '2026-08-03',
+    createdAt: '2026-08-03T09:00:00.000Z',
+    updatedAt: '2026-08-03T09:00:00.000Z'
+  },
+  {
     slug: 'the-importance-of-electricity',
     title: 'The Importance of Electricity',
     description: "Insights into electricity's role in modern life.",

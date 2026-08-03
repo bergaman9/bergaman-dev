@@ -19,7 +19,6 @@ const CATEGORY_META = {
   link: { label: 'Link', icon: 'fas fa-link', accent: 'text-cyan-300', chip: 'bg-cyan-500/15 border-cyan-400/30' },
 };
 
-const PLACEHOLDER = { game: '/images/portfolio/game-placeholder.svg' };
 // Generic placeholder art we should NOT treat as a real cover (the "PROJECT"
 // cube etc.) — these look wrong inside a music/album tile.
 const PLACEHOLDER_RE = /(default|web-placeholder|game-placeholder|placeholder)\.svg($|\?)/i;
@@ -45,12 +44,13 @@ export default function PickCard({ recommendation: rec, variant = 'grid' }) {
   const meta = metaFor(category);
   const isLink = category === 'link';
   const isMusic = category === 'music';
+  const [coverFailed, setCoverFailed] = useState(false);
+  const [musicArtFailed, setMusicArtFailed] = useState(false);
 
   const destination = rec?.link || rec?.url || null;
   const isExternal = isUrlLike(destination);
   const hasLink = !!destination;
   const domain = useMemo(() => domainFromUrl(rec?.url || rec?.link), [rec]);
-  const placeholder = PLACEHOLDER[category] || '/images/portfolio/default.svg';
 
   // For music picks, pull the real album art + track title from Spotify oEmbed.
   const [spotify, setSpotify] = useState(null);
@@ -88,13 +88,17 @@ export default function PickCard({ recommendation: rec, variant = 'grid' }) {
   if (!rec) return null;
 
   // Shared media block. `frame` controls the aspect wrapper.
-  const Media = ({ frame }) => (
+  const renderMedia = (frame) => (
     <div className={`relative ${frame} shrink-0 overflow-hidden bg-[#0a140d]`}>
       {isLink ? (
-        <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[#13202a] to-[#0a140d]">
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-gradient-to-br from-[#13202a] to-[#0a140d] p-6 text-center">
           {domain ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={`https://www.google.com/s2/favicons?domain=${domain}&sz=128`} alt="" className="h-12 w-12 rounded-lg" loading="lazy" draggable={false} />
+            <>
+              <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-cyan-400/25 bg-cyan-400/10 text-2xl font-bold uppercase text-cyan-200 shadow-lg">
+                {domain.charAt(0)}
+              </div>
+              <span className="max-w-full truncate text-sm font-semibold text-cyan-100/80">{domain}</span>
+            </>
           ) : (
             <i className={`${meta.icon} text-4xl ${meta.accent} opacity-70`}></i>
           )}
@@ -103,12 +107,12 @@ export default function PickCard({ recommendation: rec, variant = 'grid' }) {
         // Music: real album art as a 1:1 tile when available, otherwise a
         // Spotify-themed vinyl so it never falls back to the "PROJECT" cube.
         <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[#1DB954]/20 via-[#0d1f16] to-[#0a140d] p-6">
-          {musicArt ? (
+          {musicArt && !musicArtFailed ? (
             // Spotify CDN hosts vary (i.scdn.co, *.spotifycdn.com); a plain img
             // keeps it simple and only needs the CSP img-src allowance.
             <div className="relative aspect-square w-2/3 overflow-hidden rounded-xl border border-emerald-400/20 bg-black/40 shadow-lg">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={musicArt} alt={displayTitle} className="h-full w-full object-cover" loading="lazy" draggable={false} />
+              <img src={musicArt} alt={displayTitle} className="h-full w-full object-cover" loading="lazy" draggable={false} onError={() => setMusicArtFailed(true)} />
             </div>
           ) : (
             <div className="relative flex h-28 w-28 items-center justify-center rounded-full border border-emerald-400/20 bg-gradient-to-br from-zinc-800 to-black shadow-xl">
@@ -120,16 +124,24 @@ export default function PickCard({ recommendation: rec, variant = 'grid' }) {
             </div>
           )}
         </div>
-      ) : (
+      ) : hasRealImage(rec.image) && !coverFailed ? (
         <SafeImage
-          src={rec.image || placeholder}
-          fallbackSrc={placeholder}
+          src={rec.image}
+          fallbackSrc={rec.image}
           alt={displayTitle}
           fill
           sizes={variant === 'grid' ? '(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw' : '120px'}
           className="object-cover transition-transform duration-500 group-hover:scale-105"
+          onError={() => setCoverFailed(true)}
           draggable={false}
         />
+      ) : (
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-gradient-to-br from-[#14261b] via-[#0d1f16] to-[#08110b] p-6 text-center">
+          <div className={`flex h-20 w-20 items-center justify-center rounded-2xl border border-[#e8c547]/25 bg-[#e8c547]/10 ${meta.accent}`}>
+            <i className={`${meta.icon} text-3xl`}></i>
+          </div>
+          <span className="line-clamp-2 text-sm font-semibold text-gray-200">{displayTitle}</span>
+        </div>
       )}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0e1b12]/70 via-transparent to-transparent"></div>
       <span className={`absolute left-2.5 top-2.5 inline-flex items-center gap-1.5 rounded-md border bg-black/65 px-2 py-1 text-[11px] font-medium backdrop-blur-sm ${meta.chip} ${meta.accent}`}>
@@ -148,7 +160,7 @@ export default function PickCard({ recommendation: rec, variant = 'grid' }) {
     (hasLink ? ' hover:-translate-y-1 hover:shadow-xl hover:shadow-[#e8c547]/10' : '');
 
   // Footer: a CTA only when the card actually links somewhere external.
-  const Footer = () =>
+  const renderFooter = () =>
     isExternal ? (
       <div className="mt-auto pt-3 flex items-center text-xs text-gray-500 group-hover:text-[#e8c547] transition-colors">
         <span>{cta}</span>
@@ -156,25 +168,25 @@ export default function PickCard({ recommendation: rec, variant = 'grid' }) {
       </div>
     ) : null;
 
-  const Body = ({ list }) => (
+  const renderBody = (list = false) => (
     <div className={`flex flex-1 flex-col ${list ? 'min-w-0 p-4' : 'p-4'}`}>
       <h3 className={`font-bold text-white line-clamp-1 transition-colors ${hasLink ? 'group-hover:text-[#e8c547]' : ''} ${list ? 'text-base' : 'text-base'}`}>{displayTitle}</h3>
       {subtitle && <p className={`text-xs ${meta.accent} mt-0.5 line-clamp-1`}>{subtitle}</p>}
       {blurb && <p className={`text-sm text-gray-400 leading-relaxed line-clamp-2 ${list ? 'mt-1.5' : 'mt-2'}`}>{blurb}</p>}
-      <Footer />
+      {renderFooter()}
     </div>
   );
 
   const inner =
     variant === 'list' ? (
       <div className={`${shell} flex`}>
-        <Media frame="w-20 sm:w-24 aspect-[2/3]" />
-        <Body list />
+        {renderMedia('w-20 sm:w-24 aspect-[2/3]')}
+        {renderBody(true)}
       </div>
     ) : (
       <div className={`${shell} flex flex-col`}>
-        <Media frame="aspect-[2/3]" />
-        <Body />
+        {renderMedia('aspect-[2/3]')}
+        {renderBody()}
       </div>
     );
 

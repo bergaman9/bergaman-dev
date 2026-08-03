@@ -3,7 +3,7 @@ import { SITE_CONFIG } from '@/lib/constants';
 import PrivacyHeader from './PrivacyHeader';
 
 export default function PrivacyPolicyPage() {
-  const lastUpdated = '2024-06-01'; // Update this when you make changes to the policy
+  const lastUpdated = '2026-08-03';
   
   return (
     <div className="py-12 px-4">
@@ -106,9 +106,9 @@ export default function PrivacyPolicyPage() {
           </p>
           <p>These third-party services may include:</p>
           <ul className="list-disc pl-6 mt-2 mb-4">
-            <li>Google Analytics</li>
-            <li>Newsletter service providers</li>
-            <li>Comment system providers</li>
+            <li>Vercel Analytics for privacy-oriented aggregate site metrics</li>
+            <li>MongoDB Atlas for application data storage</li>
+            <li>Gmail/SMTP for requested email notifications</li>
           </ul>
         </section>
 
@@ -167,11 +167,11 @@ export default function PrivacyPolicyPage() {
             If you have any questions about this Privacy Policy, please contact us:
           </p>
           <ul className="list-disc pl-6 mt-2 mb-4">
-            <li>By email: {SITE_CONFIG.email || 'contact@bergaman.dev'}</li>
+            <li>By email: {SITE_CONFIG.author.email}</li>
             <li>By visiting our <Link href="/contact" className="text-[#e8c547] hover:underline">contact page</Link></li>
           </ul>
         </section>
       </div>
     </div>
   );
-} 
+}

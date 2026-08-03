@@ -10,18 +10,21 @@ export default function Contact() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    inquiryType: 'Project inquiry',
     message: '',
     contactWebsite: ''
   });
   const [formStartedAt, setFormStartedAt] = useState(() => Date.now());
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
-  const [settings, setSettings] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [settings, setSettings] = useState({ allowContactForm: true });
+  const [loading, setLoading] = useState(false);
   const { isAdminMode, isAuthenticated, exitEditMode } = useAdminMode();
 
   useEffect(() => {
-    fetchSettings();
+    // Public visitors should see the form immediately. Settings are only an
+    // authenticated dashboard concern and must not block the page shell.
+    if (isAuthenticated) fetchSettings();
   }, [isAuthenticated]);
 
   const fetchSettings = async () => {
@@ -103,8 +106,8 @@ export default function Contact() {
                   </div>
                   <div className="text-left">
                     <h3 className="text-[#e8c547] font-semibold">Email</h3>
-                    <a href="mailto:omerguler53@gmail.com" className="text-gray-300 hover:text-[#e8c547] transition-colors">
-                      omerguler53@gmail.com
+                    <a href="mailto:contact@bergaman.dev" className="text-gray-300 hover:text-[#e8c547] transition-colors">
+                      contact@bergaman.dev
                     </a>
                   </div>
                 </div>
@@ -160,7 +163,7 @@ export default function Contact() {
 
       if (response.ok) {
         setSubmitStatus('success');
-        setFormData({ name: '', email: '', message: '', contactWebsite: '' });
+        setFormData({ name: '', email: '', inquiryType: 'Project inquiry', message: '', contactWebsite: '' });
         setFormStartedAt(Date.now());
       } else {
         setSubmitStatus('error');
@@ -197,7 +200,7 @@ export default function Contact() {
         {/* Page Header */}
         <PageHeader
           title="Contact Me"
-          subtitle="Feel free to reach out for questions, collaborations, tech discussions, or just to say hello! I'm always excited to connect with fellow developers and tech enthusiasts."
+          subtitle="Have a software project, electrical engineering opportunity, automation need, or collaboration in mind? Contact Bergasoft and let's discuss the work."
           icon="fas fa-envelope"
           variant="large"
         />
@@ -212,7 +215,7 @@ export default function Contact() {
                 Let's Connect
               </h2>
               <p className="text-gray-300 mb-8 leading-relaxed">
-                Whether you have a question about my projects, want to discuss technology, share ideas, or just want to chat - I'd love to hear from you! Drop me a message and I'll get back to you as soon as possible.
+                Bergasoft is open to project inquiries, engineering opportunities, technical consulting, collaborations, and product work across software, automation, and electrical systems.
               </p>
 
               <div className="space-y-6">
@@ -223,7 +226,7 @@ export default function Contact() {
                   </div>
                   <div>
                     <h3 className="text-[#e8c547] font-semibold">Email Me</h3>
-                    <p className="text-gray-300">omerguler53@gmail.com</p>
+                    <a href="mailto:contact@bergaman.dev" className="text-gray-300 hover:text-[#e8c547] transition-colors">contact@bergaman.dev</a>
                   </div>
                 </div>
 
@@ -245,7 +248,7 @@ export default function Contact() {
                   </div>
                   <div>
                     <h3 className="text-[#e8c547] font-semibold">Response Time</h3>
-                    <p className="text-gray-300">Usually within 24 hours</p>
+                    <p className="text-gray-300">Usually within 1–2 business days</p>
                   </div>
                 </div>
               </div>
@@ -262,7 +265,7 @@ export default function Contact() {
                   <div className="mb-6 p-5 bg-green-500/15 border border-green-500/30 rounded-lg text-center">
                     <i className="fas fa-paper-plane text-3xl text-green-400 mb-3 block"></i>
                     <p className="text-green-300 font-semibold">Message sent successfully!</p>
-                    <p className="text-sm text-green-400/80 mt-1">Thanks for reaching out — I'll get back to you within 24 hours.</p>
+                    <p className="text-sm text-green-400/80 mt-1">Thanks for reaching out — I'll usually reply within 1–2 business days.</p>
                   </div>
                 )}
 
@@ -326,6 +329,25 @@ export default function Contact() {
 
                 {/* Message Field */}
                 <div>
+                  <label htmlFor="inquiryType" className="block text-[#e8c547] font-medium mb-2">How can I help?</label>
+                  <select
+                    id="inquiryType"
+                    name="inquiryType"
+                    value={formData.inquiryType}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] focus:border-[#e8c547]/50 focus:ring-1 focus:ring-[#e8c547]/30 focus:outline-none"
+                  >
+                    <option>Project inquiry</option>
+                    <option>Electrical engineering opportunity</option>
+                    <option>Software development</option>
+                    <option>Automation / IoT</option>
+                    <option>Collaboration</option>
+                    <option>General question</option>
+                  </select>
+                </div>
+
+                {/* Message Field */}
+                <div>
                   <label htmlFor="message" className="block text-[#e8c547] font-medium mb-2">
                     Your Message
                   </label>
@@ -336,7 +358,7 @@ export default function Contact() {
                     onChange={handleChange}
                     required
                     rows={6}
-                    placeholder="Write your message..."
+                    placeholder="Tell me about the goal, scope, timeline, and how I can help..."
                     className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] placeholder-gray-400 focus:border-[#e8c547]/50 focus:ring-1 focus:ring-[#e8c547]/30 focus:outline-none transition-colors duration-300 resize-none"
                   />
                 </div>
@@ -381,8 +403,8 @@ export default function Contact() {
                 <p><strong className="text-gray-300">Availability:</strong> Monday - Friday</p>
               </div>
               <div>
-                <p><strong className="text-gray-300">Response Time:</strong> Usually within 24 hours</p>
-                <p><strong className="text-gray-300">Interests:</strong> AI, IoT, Full Stack Development</p>
+                <p><strong className="text-gray-300">Response Time:</strong> Usually within 1–2 business days</p>
+                <p><strong className="text-gray-300">Services:</strong> Software, automation, electrical engineering</p>
               </div>
             </div>
           </div>

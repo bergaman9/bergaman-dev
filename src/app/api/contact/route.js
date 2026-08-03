@@ -11,10 +11,12 @@ async function handler(request) {
     await connectDB();
 
     const body = await readJsonLimited(request, { maxBytes: 16 * 1024 });
-    const { name, email, message } = body;
+    const { name, email, message, inquiryType } = body;
     const safeName = typeof name === 'string' ? name.trim().slice(0, 80) : '';
     const safeEmail = typeof email === 'string' ? email.trim().toLowerCase().slice(0, 120) : '';
     const safeMessage = typeof message === 'string' ? message.trim().slice(0, 5000) : '';
+    const safeInquiryType = typeof inquiryType === 'string' ? inquiryType.trim().slice(0, 80) : 'General question';
+    const storedMessage = `[${safeInquiryType}]\n\n${safeMessage}`;
 
     // Validate required fields
     if (!safeName || !safeEmail || !safeMessage) {
@@ -42,7 +44,7 @@ async function handler(request) {
         ...body,
         name: safeName,
         email: safeEmail,
-        message: safeMessage,
+        message: storedMessage,
       },
       { clientIp }
     );
@@ -78,7 +80,7 @@ async function handler(request) {
     const duplicateMessage = await Contact.exists({
       name: safeName,
       email: safeEmail,
-      message: safeMessage,
+      message: storedMessage,
       createdAt: { $gte: duplicateWindow },
     });
 
@@ -103,7 +105,7 @@ async function handler(request) {
     const contactMessage = new Contact({
       name: safeName,
       email: safeEmail,
-      message: safeMessage,
+      message: storedMessage,
       ipAddress: clientIp,
       userAgent,
       referrer: referer,
@@ -139,7 +141,7 @@ async function handler(request) {
     // Email content
     const mailOptions = {
       from: process.env.EMAIL_USER,
-      to: 'omerguler53@gmail.com', // Ana email adresiniz
+      to: process.env.ADMIN_EMAIL || process.env.EMAIL_USER,
       replyTo: safeEmail, // Set reply-to to the original sender
       subject: `New Contact Message from ${safeName} - Bergaman Portfolio [ID:${contactMessage._id}]`,
       html: `
@@ -172,6 +174,11 @@ async function handler(request) {
               <div style="margin-bottom: 15px;">
                 <strong style="color: #e8c547;">Email:</strong>
                 <a href="mailto:${encodeURIComponent(safeEmail)}" style="color: #60a5fa; text-decoration: none; margin-left: 10px;">${escapeHtml(safeEmail)}</a>
+              </div>
+
+              <div style="margin-bottom: 20px;">
+                <strong style="color: #e8c547;">Inquiry:</strong>
+                <span style="color: #d1d5db; margin-left: 10px;">${escapeHtml(safeInquiryType)}</span>
               </div>
 
               <div style="margin-bottom: 20px;">

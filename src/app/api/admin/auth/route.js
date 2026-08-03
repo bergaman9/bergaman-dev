@@ -17,8 +17,9 @@ import { getJwtSecret, normalizeClientIp, readJsonLimited, verifyAdminSession } 
 import crypto from 'crypto';
 
 const ADMIN_USER = {
-  username: process.env.ADMIN_USERNAME || 'admin',
-  passwordHash: process.env.ADMIN_PASSWORD_HASH || process.env.ADMIN_PASSWORD,
+  username: process.env.ADMIN_USERNAME || 'bergaman',
+  passwordHash: process.env.ADMIN_PASSWORD_HASH,
+  password: process.env.ADMIN_PASSWORD,
   pbkdf2Hash: process.env.ADMIN_PASSWORD_PBKDF2_HASH,
   salt: process.env.ADMIN_PASSWORD_SALT
 };
@@ -37,9 +38,18 @@ async function verifyAdminPassword(password) {
     return expected.length === candidate.length && crypto.timingSafeEqual(expected, candidate);
   }
 
-  if (process.env.NODE_ENV !== 'production' && ADMIN_USER.passwordHash) {
-    console.warn('Using plaintext ADMIN_PASSWORD fallback in development. Set ADMIN_PASSWORD_HASH before production.');
-    return password === ADMIN_USER.passwordHash;
+  // Vercel stores environment variables encrypted at rest. Support the common
+  // ADMIN_PASSWORD configuration in every environment, but compare it in
+  // constant time. ADMIN_PASSWORD_HASH/PBKDF2 remain preferred for portability.
+  const plaintextSecret = ADMIN_USER.password || (
+    ADMIN_USER.passwordHash && !ADMIN_USER.passwordHash.startsWith('$2')
+      ? ADMIN_USER.passwordHash
+      : null
+  );
+  if (plaintextSecret) {
+    const expected = Buffer.from(plaintextSecret, 'utf8');
+    const candidate = Buffer.from(password, 'utf8');
+    return expected.length === candidate.length && crypto.timingSafeEqual(expected, candidate);
   }
 
   console.error('Admin password hash is not configured securely');
@@ -84,8 +94,8 @@ async function handleLogin(request) {
 
     const { username, password } = await readJsonLimited(request, { maxBytes: 4 * 1024 });
 
-    if (!ADMIN_USER.passwordHash && !ADMIN_USER.pbkdf2Hash) {
-      console.error('Admin password hash environment variable is not set');
+    if (!ADMIN_USER.passwordHash && !ADMIN_USER.pbkdf2Hash && !ADMIN_USER.password) {
+      console.error('Admin password environment variable is not set');
       return NextResponse.json({
         error: 'Server configuration error'
       }, {
