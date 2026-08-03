@@ -40,7 +40,7 @@ export default function BlogPostClient({ slug, initialPost }) {
   const [passwordError, setPasswordError] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authorProfile] = useState({
-    name: 'Ömer Faruk Güler',
+    name: 'Ömer Güler',
     about: 'Electrical & Electronics Engineer and full-stack developer working across high-voltage systems, automation, and modern software.',
     avatar: '/images/profile/profile.png',
     showAuthorBio: true

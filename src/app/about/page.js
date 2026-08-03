@@ -24,10 +24,10 @@ const skillCategories = [
     title: "Frameworks & Libraries",
     icon: "fas fa-layer-group",
     skills: [
-      { name: "React", level: 85 },
+      { name: "React & Next.js", level: 85 },
       { name: "Node.js", level: 75 },
-      { name: "Next.js", level: 80 },
-      { name: "Tailwind CSS", level: 85 }
+      { name: "Tailwind CSS", level: 85 },
+      { name: "AI-Assisted Development (Codex, Claude, Antigravity)", level: 85 }
     ]
   },
   {
@@ -37,7 +37,7 @@ const skillCategories = [
       { name: "SQL", level: 70 },
       { name: "Git", level: 85 },
       { name: "MongoDB", level: 75 },
-      { name: "VS Code", level: 90 }
+      { name: "AutoCAD", level: 85 }
     ]
   },
   {
@@ -46,8 +46,8 @@ const skillCategories = [
     skills: [
       { name: "Problem Solving", level: 90 },
       { name: "System Design", level: 75 },
-      { name: "Technical Analysis", level: 80 },
-      { name: "Project Management", level: 70 }
+      { name: "High-Voltage Systems", level: 80 },
+      { name: "Protection & Grounding", level: 80 }
     ]
   },
   {
@@ -56,28 +56,8 @@ const skillCategories = [
     skills: [
       { name: "Arduino/ESP32", level: 80 },
       { name: "Circuit Design", level: 75 },
-      { name: "Soldering", level: 85 },
+      { name: "Panels & Automation", level: 80 },
       { name: "IoT Systems", level: 75 }
-    ]
-  },
-  {
-    title: "High-Voltage & Power Systems",
-    icon: "fas fa-bolt",
-    skills: [
-      { name: "AutoCAD & Electrical Drawings", level: 85 },
-      { name: "High-Voltage Systems", level: 80 },
-      { name: "Protection, Grounding & Safety", level: 80 },
-      { name: "Panels, Automation & Commissioning", level: 80 }
-    ]
-  },
-  {
-    title: "Engineering & AI Workflow",
-    icon: "fas fa-wand-magic-sparkles",
-    skills: [
-      { name: "Technical Documentation", level: 85 },
-      { name: "AI-Assisted Development", level: 85 },
-      { name: "Codex, Claude & Antigravity", level: 80 },
-      { name: "Code Review & Verification", level: 80 }
     ]
   },
   {
@@ -316,7 +296,7 @@ export default function About() {
                 <Image
                   className="no-drag relative rounded-full border-4 border-[#e8c547]/50 shadow-2xl shadow-[#0e1b12]/50 transition-all duration-700 hover:scale-105 hover:border-[#e8c547]/80"
                   src="/images/profile/profile.jpg"
-                  alt="Ömer Faruk Güler — Bergaman, Electrical & Electronics Engineer"
+                  alt="Ömer Güler — Bergaman, Electrical & Electronics Engineer"
                   width={224}
                   height={224}
                   sizes="(max-width: 640px) 176px, 224px"
@@ -377,6 +357,10 @@ export default function About() {
           </h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
             {skillCategories.map((category, index) => {
+              const averageLevel = Math.round(
+                category.skills.reduce((total, skill) => total + skill.level, 0) / category.skills.length
+              );
+
               return (
                 <div key={index} className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-5 sm:p-6 rounded-lg hover:border-[#e8c547]/35 transition-all duration-300">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
@@ -389,7 +373,9 @@ export default function About() {
                         <p className="text-sm text-gray-400">{category.skills.length} focused skills</p>
                       </div>
                     </div>
-                    <div className="shrink-0 rounded-full border border-[#e8c547]/25 bg-[#e8c547]/10 px-3 py-1 text-sm font-semibold text-[#e8c547]">Evidence-led</div>
+                    <div className="shrink-0 rounded-full border border-[#e8c547]/25 bg-[#e8c547]/10 px-3 py-1 text-sm font-semibold text-[#e8c547]">
+                      {averageLevel}% avg
+                    </div>
                   </div>
 
                   <div className="space-y-4">
@@ -400,7 +386,20 @@ export default function About() {
                             <span className="block truncate text-gray-200 font-medium">{skill.name}</span>
                             <span className="text-xs uppercase tracking-wide text-gray-500">{getSkillLevelLabel(skill.level)}</span>
                           </div>
-                          <span className="shrink-0 rounded-full bg-[#e8c547]/10 px-2.5 py-1 text-xs font-semibold uppercase tracking-wide text-[#e8c547]">{getSkillLevelLabel(skill.level)}</span>
+                          <span className="shrink-0 text-[#e8c547] font-semibold">{skill.level}%</span>
+                        </div>
+                        <div
+                          className="h-2.5 w-full overflow-hidden rounded-full bg-[#0e1b12] ring-1 ring-[#3e503e]/45"
+                          role="progressbar"
+                          aria-label={`${skill.name} proficiency`}
+                          aria-valuenow={skill.level}
+                          aria-valuemin="0"
+                          aria-valuemax="100"
+                        >
+                          <div
+                            className="h-full rounded-full bg-gradient-to-r from-[#d4b445] via-[#e8c547] to-[#f4d76b] shadow-[0_0_14px_rgba(232,197,71,0.22)] transition-all duration-700 ease-out group-hover:shadow-[0_0_18px_rgba(232,197,71,0.34)]"
+                            style={{ width: `${skill.level}%` }}
+                          ></div>
                         </div>
                       </div>
                     ))}

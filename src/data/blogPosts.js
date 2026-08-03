@@ -9,7 +9,7 @@ export const blogPosts = [
     tags: ['high voltage', 'electrical engineering', 'power systems', 'protection', 'AutoCAD', 'safety'],
     image: '/images/posts/high-voltage-power-systems.webp',
     readTime: '11 min read',
-    author: 'Ömer Faruk Güler',
+    author: 'Ömer Güler',
     published: true,
     featured: true,
     visibility: 'public',

@@ -47,23 +47,13 @@ export default function Home() {
       ]
     },
     {
-      title: "Power Systems & Design",
-      icon: "fas fa-bolt",
+      title: "Tools & Databases",
+      icon: "fas fa-database",
       skills: [
-        { name: "AutoCAD", level: 85 },
-        { name: "High-Voltage Systems", level: 80 },
-        { name: "Protection & Grounding", level: 80 },
-        { name: "Electrical Automation", level: 80 }
-      ]
-    },
-    {
-      title: "Engineering Workflow",
-      icon: "fas fa-gears",
-      skills: [
-        { name: "Technical Documentation", level: 85 },
-        { name: "AI-Assisted Development", level: 85 },
-        { name: "Codex, Claude & Antigravity", level: 80 },
-        { name: "Git, SQL & MongoDB", level: 80 }
+        { name: "MongoDB", level: 75 },
+        { name: "Git", level: 85 },
+        { name: "Docker", level: 60 },
+        { name: "SQL", level: 70 }
       ]
     }
   ];
@@ -207,7 +197,7 @@ export default function Home() {
                       <Image
                         className="no-drag relative rounded-full border-4 border-[#e8c547]/40 shadow-xl shadow-[#0e1b12]/30 transition-all duration-500 hover:scale-105 hover:border-[#e8c547]/60"
                         src="/images/profile/profile.jpg"
-                        alt="Ömer Faruk Güler — Bergaman, Electrical & Electronics Engineer and full-stack developer"
+                        alt="Ömer Güler — Bergaman, Electrical & Electronics Engineer and full-stack developer"
                         width={256}
                         height={256}
                         sizes="(max-width: 640px) 176px, (max-width: 1024px) 224px, 256px"
@@ -226,7 +216,7 @@ export default function Home() {
                 <div className="relative z-10">
                   <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
                     <span className="bg-gradient-to-r from-[#e8c547] via-[#f4d76b] to-[#e8c547] bg-clip-text text-transparent animate-gradient bg-300">
-                      Ömer Faruk Güler
+                      Ömer Güler
                     </span>
                   </h1>
 
@@ -372,9 +362,15 @@ export default function Home() {
                         <div className="space-y-3">
                           {category.skills.map((skill, skillIndex) => (
                             <div key={skillIndex}>
-                              <div className="flex justify-between gap-3 rounded-lg border border-[#3e503e]/30 bg-[#0e1b12]/40 px-3 py-2">
+                              <div className="flex justify-between mb-1">
                                 <span className="text-gray-300">{skill.name}</span>
-                                <span className="text-xs uppercase tracking-wide text-[#e8c547] font-semibold">{skill.level >= 85 ? 'Advanced' : skill.level >= 75 ? 'Proficient' : 'Working knowledge'}</span>
+                                <span className="text-[#e8c547] font-semibold">{skill.level}%</span>
+                              </div>
+                              <div className="w-full bg-[#0e1b12] rounded-full h-2">
+                                <div
+                                  className="bg-gradient-to-r from-[#e8c547] to-[#f4d76b] h-2 rounded-full transition-all duration-1000 ease-out"
+                                  style={{ width: `${skill.level}%` }}
+                                ></div>
                               </div>
                             </div>
                           ))}
