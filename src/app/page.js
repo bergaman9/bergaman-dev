@@ -197,7 +197,7 @@ export default function Home() {
                       <Image
                         className="no-drag relative rounded-full border-4 border-[#e8c547]/40 shadow-xl shadow-[#0e1b12]/30 transition-all duration-500 hover:scale-105 hover:border-[#e8c547]/60"
                         src="/images/profile/profile.jpg"
-                        alt="Ömer Güler — Bergaman, Electrical & Electronics Engineer and full-stack developer"
+                        alt="Ömer — Bergaman, Electrical & Electronics Engineer and full-stack developer"
                         width={256}
                         height={256}
                         sizes="(max-width: 640px) 176px, (max-width: 1024px) 224px, 256px"
@@ -216,7 +216,7 @@ export default function Home() {
                 <div className="relative z-10">
                   <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
                     <span className="bg-gradient-to-r from-[#e8c547] via-[#f4d76b] to-[#e8c547] bg-clip-text text-transparent animate-gradient bg-300">
-                      Ömer Güler
+                      Ömer
                     </span>
                   </h1>
 

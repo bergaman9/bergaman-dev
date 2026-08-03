@@ -30,11 +30,11 @@ const imageSources = [
 // Site Configuration
 export const SITE_CONFIG = {
   name: 'Bergaman',
-  title: 'Ömer Güler | Electrical Engineer & Full-Stack Developer',
-  description: 'Ömer Güler builds reliable high-voltage, automation, embedded, and full-stack software solutions through Bergasoft in Istanbul, Turkey.',
+  title: 'Ömer | Electrical Engineer & Full-Stack Developer',
+  description: 'Ömer builds reliable high-voltage, automation, embedded, and full-stack software solutions through Bergasoft in Istanbul, Turkey.',
   url: process.env.NEXT_PUBLIC_SITE_URL || 'https://bergaman.dev',
   author: {
-    name: 'Ömer Güler',
+    name: 'Ömer',
     email: 'contact@bergaman.dev',
     github: 'https://github.com/bergaman9',
     twitter: 'https://twitter.com/bergaman9',

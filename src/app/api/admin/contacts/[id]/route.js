@@ -156,7 +156,7 @@ export async function PUT(request, { params }) {
               <div style="background: rgba(14, 27, 18, 0.8); padding: 20px; text-align: center; border-top: 1px solid rgba(62, 80, 62, 0.3);">
                 <p style="margin: 0; font-size: 12px; color: #9ca3af;">
                   This is a personal response from
-                  <a href="https://bergaman.dev" style="color: #e8c547; text-decoration: none;">Ömer Güler (Bergaman)</a>
+                  <a href="https://bergaman.dev" style="color: #e8c547; text-decoration: none;">Ömer (Bergaman)</a>
                 </p>
                 <p style="margin: 5px 0 0 0; font-size: 11px; color: #6b7280;">
                   Electrical Electronics Engineer | Full Stack Developer | The Dragon's Domain
