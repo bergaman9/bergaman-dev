@@ -202,8 +202,8 @@ export default function Header() {
               <button type="button" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} className="mini-app-nav-item h-11 w-11 justify-center rounded-lg" aria-label={theme === 'dark' ? t('themeLight') : t('themeDark')} title={theme === 'dark' ? t('themeLight') : t('themeDark')}>
                 <ThemeGlyph theme={theme} />
               </button>
-              <button type="button" onClick={() => setLocale(locale === 'en' ? 'tr' : 'en')} className="mini-app-nav-item h-11 min-w-14 justify-center gap-1.5 rounded-lg px-2 text-[10px] font-bold" aria-label={t('language')} title={t('language')}>
-                <LanguageGlyph /><span>{locale === 'en' ? 'TR' : 'EN'}</span>
+              <button type="button" onClick={() => setLocale(locale === 'en' ? 'tr' : 'en')} className="mini-app-nav-item h-11 w-11 justify-center rounded-lg text-[10px] font-bold" aria-label={t('language')} title={t('language')}>
+                <LanguageGlyph locale={locale} />
               </button>
               <Link
                 href="/"
@@ -289,7 +289,7 @@ export default function Header() {
   return (
     <header data-scrolled={isScrolled} className={`site-header-shell fixed left-0 right-0 top-0 z-50 ${isScrolled ? '' : 'border-b border-[#3e503e]/60 bg-gradient-to-b from-[#0a1a0f] via-[#0e1b12] to-[#1a2e1a]/20 backdrop-blur-md'} ${hideTransitionClass}`}>
       <div className="site-header-island page-content py-3.5 backdrop-blur-xl">
-        <div className="relative flex items-center justify-between">
+        <div className="flex items-center justify-between">
           {/* Logo with Dragon Icon */}
           <Link href="/" className="group flex items-center space-x-3 lg:justify-self-start">
             <div className="relative">
@@ -305,7 +305,7 @@ export default function Header() {
           </Link>
 
           {/* Desktop navigation remains geometrically centered regardless of side controls. */}
-          <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center justify-center gap-1 lg:flex">
+          <nav className="hidden min-w-0 flex-1 items-center justify-center gap-1 px-4 lg:flex">
             {navigationItems.map((item) => (
               <Link
                 key={item.href}
@@ -328,8 +328,8 @@ export default function Header() {
               <button type="button" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} className="preference-button flex h-11 w-11 items-center justify-center rounded-xl border transition-colors hover:border-[#e8c547]/60 hover:text-[#e8c547] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c547]/60" aria-label={theme === 'dark' ? t('themeLight') : t('themeDark')} title={theme === 'dark' ? t('themeLight') : t('themeDark')}>
                 <ThemeGlyph theme={theme} />
               </button>
-              <button type="button" onClick={() => setLocale(locale === 'en' ? 'tr' : 'en')} className="preference-button flex h-11 min-w-14 items-center justify-center gap-1.5 rounded-xl border px-2 text-[10px] font-bold transition-colors hover:border-[#e8c547]/60 hover:text-[#e8c547] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c547]/60" aria-label={t('language')} title={t('language')}>
-                <LanguageGlyph /><span>{locale === 'en' ? 'TR' : 'EN'}</span>
+              <button type="button" onClick={() => setLocale(locale === 'en' ? 'tr' : 'en')} className="preference-button flex h-11 w-11 items-center justify-center rounded-xl border transition-colors hover:border-[#e8c547]/60 hover:text-[#e8c547] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c547]/60" aria-label={t('language')} title={t('language')}>
+                <LanguageGlyph locale={locale} />
               </button>
             </div>
             {/* Admin Status (Desktop) - Only show if authenticated */}
@@ -452,7 +452,7 @@ export default function Header() {
                     <ThemeGlyph theme={theme} /><span>{theme === 'dark' ? 'Light' : 'Dark'}</span>
                   </button>
                   <button type="button" onClick={() => setLocale(locale === 'en' ? 'tr' : 'en')} className="preference-button flex min-h-11 flex-1 items-center justify-center gap-2 rounded-lg border font-semibold">
-                    <LanguageGlyph /><span>{locale === 'en' ? 'Türkçe' : 'English'}</span>
+                    <LanguageGlyph locale={locale} /><span>{locale === 'en' ? 'Türkçe' : 'English'}</span>
                   </button>
                 </div>
                 {/* Public Links */}
@@ -580,10 +580,28 @@ function ThemeGlyph({ theme }) {
   );
 }
 
-function LanguageGlyph() {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" className="h-[17px] w-[17px]" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a14.5 14.5 0 0 1 0 18M12 3a14.5 14.5 0 0 0 0 18" />
-    </svg>
+function LanguageGlyph({ locale }) {
+  const targetLocale = locale === 'en' ? 'tr' : 'en';
+  return targetLocale === 'tr' ? (
+    <span aria-hidden="true" className="flex flex-col items-center gap-0.5 leading-none">
+      <svg viewBox="0 0 30 20" className="h-4 w-6 overflow-hidden rounded-[2px] shadow-sm" role="img">
+        <rect width="30" height="20" fill="#e30a17" />
+        <circle cx="12" cy="10" r="5.2" fill="#fff" />
+        <circle cx="13.7" cy="10" r="4.15" fill="#e30a17" />
+        <path d="m18.2 10 2.75-.9-1.7 2.35v-2.9l1.7 2.35Z" fill="#fff" />
+      </svg>
+      <span className="text-[8px] font-bold tracking-wide">TR</span>
+    </span>
+  ) : (
+    <span aria-hidden="true" className="flex flex-col items-center gap-0.5 leading-none">
+      <svg viewBox="0 0 30 20" className="h-4 w-6 overflow-hidden rounded-[2px] shadow-sm" role="img">
+        <rect width="30" height="20" fill="#012169" />
+        <path d="M0 0 30 20M30 0 0 20" stroke="#fff" strokeWidth="4" />
+        <path d="M0 0 30 20M30 0 0 20" stroke="#c8102e" strokeWidth="2" />
+        <path d="M15 0v20M0 10h30" stroke="#fff" strokeWidth="6" />
+        <path d="M15 0v20M0 10h30" stroke="#c8102e" strokeWidth="3.2" />
+      </svg>
+      <span className="text-[8px] font-bold tracking-wide">EN</span>
+    </span>
   );
 }
