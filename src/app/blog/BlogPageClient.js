@@ -10,6 +10,7 @@ import PageHeader from '../components/PageHeader';
 import PageContainer from '../components/PageContainer';
 import { SkeletonBlogCard } from '../components/Skeleton';
 import { blogPosts as staticBlogPosts } from '../../data/blogPosts';
+import { localizePost, usePreferences } from '../components/PreferencesProvider';
 
 const INITIAL_POSTS = [...staticBlogPosts]
   .sort((a, b) => new Date(b.createdAt || b.date) - new Date(a.createdAt || a.date))
@@ -18,6 +19,7 @@ const INITIAL_POSTS = [...staticBlogPosts]
 // useSearchParams() must sit under a Suspense boundary for the build to
 // generate the route shell; BlogContent holds the actual page.
 function BlogContent({ initialPosts = INITIAL_POSTS, initialTotal = staticBlogPosts.length }) {
+  const { locale } = usePreferences();
   const [posts, setPosts] = useState(initialPosts);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -159,7 +161,7 @@ function BlogContent({ initialPosts = INITIAL_POSTS, initialTotal = staticBlogPo
   };
 
   const formatDate = (date) => {
-    return new Date(date).toLocaleDateString('en-US', {
+    return new Date(date).toLocaleDateString(locale === 'tr' ? 'tr-TR' : 'en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric'
@@ -189,8 +191,8 @@ function BlogContent({ initialPosts = INITIAL_POSTS, initialTotal = staticBlogPo
 
         {/* Page Header */}
         <PageHeader
-          title="Blog"
-          subtitle="Thoughts, tutorials, and insights from the dragon's lair"
+          title={locale === 'tr' ? 'Yazılar' : 'Blog'}
+          subtitle={locale === 'tr' ? 'Mühendislik, yazılım ve teknoloji üzerine notlar' : "Thoughts, tutorials, and insights from the dragon's lair"}
           icon="fas fa-blog"
           variant="large"
           stats={[
@@ -202,7 +204,7 @@ function BlogContent({ initialPosts = INITIAL_POSTS, initialTotal = staticBlogPo
         {/* Main Content */}
         <div className="w-full">
           {/* Search and Filter */}
-          <section className="mb-8 slide-in-left">
+          <section className="relative z-30 mb-8 slide-in-left">
             <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg">
               <div className="flex flex-col md:flex-row gap-4">
 
@@ -233,7 +235,7 @@ function BlogContent({ initialPosts = INITIAL_POSTS, initialTotal = staticBlogPo
                   </button>
 
                   {isCategoryDropdownOpen && (
-                    <div role="listbox" className="absolute top-full left-0 right-0 mt-2 bg-[#0e1b12] border border-[#3e503e] rounded-lg shadow-xl z-50 max-h-60 overflow-y-auto custom-scrollbar">
+                    <div role="listbox" className="absolute left-0 right-0 top-full z-[80] mt-2 max-h-60 overflow-y-auto rounded-lg border border-[#3e503e] bg-[#0e1b12] shadow-2xl custom-scrollbar">
                       {categories.map(category => (
                         <button
                           key={category}
@@ -277,7 +279,7 @@ function BlogContent({ initialPosts = INITIAL_POSTS, initialTotal = staticBlogPo
           </section>
 
           {/* Blog Posts */}
-          <section className="section-spacing slide-in-right">
+          <section className="relative z-0 section-spacing slide-in-right">
             <h2 className="sr-only">Blog posts</h2>
             {loading ? (
               <div className="card-grid card-grid-3">
@@ -336,7 +338,7 @@ function BlogContent({ initialPosts = INITIAL_POSTS, initialTotal = staticBlogPo
                       </div>
                     )}
                     <BlogPostCard
-                      post={post}
+                      post={localizePost(post, locale)}
                       formatDate={formatDate}
                       formatCategoryName={formatCategoryName}
                       openModal={openModal}

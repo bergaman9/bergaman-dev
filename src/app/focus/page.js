@@ -62,7 +62,7 @@ export default function FocusTimerPage() {
   // Reflect remaining time in the tab title while running
   useEffect(() => {
     if (typeof document === 'undefined') return;
-    const base = 'Focus Timer | Bergaman';
+    const base = 'Focus Timer • Bergaman';
     document.title = isRunning ? `${format(secondsLeft)} · ${MODES[mode].label}` : base;
     return () => { document.title = base; };
   }, [secondsLeft, isRunning, mode]);

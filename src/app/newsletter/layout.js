@@ -5,7 +5,7 @@ export const metadata = {
     canonical: 'https://www.bergaman.dev/newsletter',
   },
   openGraph: {
-    title: 'Newsletter | Bergaman',
+    title: 'Newsletter • Bergaman',
     description: "Join Bergaman's newsletter for insights on AI, full-stack development, and tech innovation.",
     url: 'https://www.bergaman.dev/newsletter',
     type: 'website',

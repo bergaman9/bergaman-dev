@@ -5,7 +5,7 @@ export const metadata = {
     canonical: 'https://www.bergaman.dev/blog',
   },
   openGraph: {
-    title: 'Blog | Bergaman',
+    title: 'Blog • Bergaman',
     description: 'Technical writing on high-voltage engineering, automation, software development, and practical technology.',
     url: 'https://www.bergaman.dev/blog',
     type: 'website',

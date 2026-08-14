@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 
-const SIZE = 5;
+const INITIAL_COLORS = ['#0f5132', '#e8c547', '#1f2937', '#2563eb', '#be185d'];
 
 function randomHex() {
   const n = Math.floor(Math.random() * 0xffffff);
@@ -19,7 +19,7 @@ function readableText(hex) {
 }
 
 export default function PalettePage() {
-  const [colors, setColors] = useState(() => Array.from({ length: SIZE }, () => ({ hex: randomHex(), locked: false })));
+  const [colors, setColors] = useState(() => INITIAL_COLORS.map((hex) => ({ hex, locked: false })));
   const [copied, setCopied] = useState(null);
 
   const generate = useCallback(() => {
@@ -74,7 +74,7 @@ export default function PalettePage() {
           return (
             <div
               key={i}
-              className="group relative rounded-2xl overflow-hidden border border-white/10 h-44 sm:h-56 flex flex-col justify-between p-3 transition-transform hover:-translate-y-1"
+              className="group relative flex h-44 flex-col justify-between overflow-hidden rounded-2xl border border-white/10 p-3 transition-[border-color,box-shadow] hover:border-white/25 hover:shadow-xl sm:h-56"
               style={{ background: c.hex }}
             >
               <div className="flex justify-end">

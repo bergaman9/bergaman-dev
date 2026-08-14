@@ -5,7 +5,7 @@ export const metadata = {
     canonical: 'https://www.bergaman.dev/contact',
   },
   openGraph: {
-    title: 'Contact | Bergaman',
+    title: 'Contact • Bergaman',
     description: 'Discuss software, automation, electrical engineering, or technical product work with Ömer through Bergasoft.',
     url: 'https://www.bergaman.dev/contact',
     type: 'website',

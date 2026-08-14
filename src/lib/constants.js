@@ -30,7 +30,7 @@ const imageSources = [
 // Site Configuration
 export const SITE_CONFIG = {
   name: 'Bergaman',
-  title: 'Ömer | Electrical Engineer & Full-Stack Developer',
+  title: 'Ömer • Electrical Engineer & Full-Stack Developer',
   description: 'Ömer builds reliable high-voltage, automation, embedded, and full-stack software solutions through Bergasoft in Istanbul, Turkey.',
   url: process.env.NEXT_PUBLIC_SITE_URL || 'https://www.bergaman.dev',
   author: {

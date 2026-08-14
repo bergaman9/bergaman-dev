@@ -38,7 +38,8 @@ const nodeEnv = process.env.NODE_ENV || 'development';
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   env: {
-    NEXT_PUBLIC_APP_VERSION: process.env.NEXT_PUBLIC_APP_VERSION || version,
+    // package.json is the only source of truth; ignore stale dashboard/local values.
+    NEXT_PUBLIC_APP_VERSION: version,
   },
   poweredByHeader: false,
   compress: true,

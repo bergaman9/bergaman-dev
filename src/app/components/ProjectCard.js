@@ -4,7 +4,7 @@ import Tooltip from './Tooltip';
 import SafeImage from './SafeImage';
 import { getSafeHttpUrl, hostnameMatches, parseSafeHttpUrl } from '@/lib/urlSecurity';
 
-export default function ProjectCard({ project, isAdmin = false, onEdit, onDelete }) {
+export default function ProjectCard({ project, isAdmin = false, onEdit, onDelete, compact = false }) {
   // Temporary Overrides (Hotfix)
   const displayProject = { ...project };
 
@@ -101,16 +101,16 @@ export default function ProjectCard({ project, isAdmin = false, onEdit, onDelete
   const secondaryAction = safeGithubUrl ? { url: safeGithubUrl, ...getLinkConfig(safeGithubUrl) } : null;
 
   return (
-    <div className="group h-full flex flex-col relative rounded-[2rem] overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-[#e8c547]/10">
+    <div className="group relative flex h-full flex-col overflow-hidden rounded-xl transition-[border-color,box-shadow] duration-300 hover:shadow-xl hover:shadow-[#e8c547]/5">
 
       {/* Dynamic Background Glow */}
       <div className={`absolute -inset-1 bg-gradient-to-br ${getCategoryGradient(displayProject.category)} opacity-0 group-hover:opacity-30 blur-2xl transition-opacity duration-500`}></div>
 
       {/* Glass Container */}
-      <div className="relative h-full flex flex-col bg-[#0e1b12]/70 backdrop-blur-xl border border-white/10 rounded-[2rem] overflow-hidden shadow-sm group-hover:border-[#e8c547]/30 transition-all duration-300">
+      <div className="relative flex h-full flex-col overflow-hidden rounded-xl border border-[#3e503e]/40 bg-[#2e3d29]/30 shadow-sm transition-colors duration-300 group-hover:border-[#e8c547]/40">
 
         {/* Image Section */}
-        <div className="relative h-56 overflow-hidden bg-[#050a07]">
+        <div className={`relative overflow-hidden bg-[#050a07] ${compact ? 'h-40' : 'h-52'}`}>
           {displayProject.image ? (
             <SafeImage
               src={displayProject.image}
@@ -140,7 +140,7 @@ export default function ProjectCard({ project, isAdmin = false, onEdit, onDelete
         </div>
 
         {/* Content Area */}
-        <div className="flex-1 p-6 flex flex-col">
+        <div className={`flex flex-1 flex-col ${compact ? 'p-4' : 'p-5'}`}>
           {/* Category & Date */}
           <div className="flex items-center justify-between text-xs text-gray-400 mb-3">
             <span className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-white/5 border border-white/5">
@@ -156,12 +156,12 @@ export default function ProjectCard({ project, isAdmin = false, onEdit, onDelete
           </h3>
 
           {/* Description */}
-          <p className="text-sm text-gray-400 leading-relaxed mb-6 line-clamp-3 flex-grow">
+          <p className={`flex-grow text-sm leading-relaxed text-gray-400 ${compact ? 'mb-4 line-clamp-2' : 'mb-5 line-clamp-3'}`}>
             {displayProject.description}
           </p>
 
           {/* Technologies */}
-          <div className="flex flex-wrap gap-2 mb-6">
+          <div className={`flex flex-wrap gap-2 ${compact ? 'mb-4' : 'mb-5'}`}>
             {displayProject.technologies?.slice(0, 3).map((tech, i) => (
               <span key={i} className="px-2 py-1 text-xs font-medium text-gray-300 bg-white/5 rounded border border-white/5">
                 {tech}

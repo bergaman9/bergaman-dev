@@ -38,6 +38,7 @@ export default function NewPost() {
       metaDescription: '',
       keywords: ''
     },
+    translations: { tr: { title: '', description: '', content: '' } },
     visibility: 'public',
     password: ''
   });
@@ -409,6 +410,15 @@ export default function NewPost() {
                 className="min-h-[400px]"
               />
             </div>
+          </div>
+        </Card>
+
+        <Card showImage={false}>
+          <div className="space-y-5">
+            <div className="border-b border-[#3e503e]/30 pb-2"><h3 className="flex items-center gap-2 text-lg font-semibold text-[#e8c547]"><i className="fas fa-language"></i>Türkçe Çeviri</h3><p className="mt-1 text-sm text-gray-400">Boş alanlar İngilizce içeriğe geri döner.</p></div>
+            <Input label="Türkçe Başlık" value={formData.translations.tr.title} onChange={(event) => setFormData((prev) => ({ ...prev, translations: { ...prev.translations, tr: { ...prev.translations.tr, title: event.target.value } } }))} icon="fas fa-heading" />
+            <textarea value={formData.translations.tr.description} onChange={(event) => setFormData((prev) => ({ ...prev, translations: { ...prev.translations, tr: { ...prev.translations.tr, description: event.target.value } } }))} rows={3} className="w-full rounded-lg border border-[#3e503e] bg-[#0e1b12] px-4 py-3 text-[#d1d5db] focus:border-[#e8c547]/50 focus:outline-none" placeholder="Türkçe açıklama" />
+            <MarkdownEditor value={formData.translations.tr.content} onChange={(content) => setFormData((prev) => ({ ...prev, translations: { ...prev.translations, tr: { ...prev.translations.tr, content } } }))} placeholder="Türkçe Markdown içeriği…" className="min-h-[320px]" />
           </div>
         </Card>
 

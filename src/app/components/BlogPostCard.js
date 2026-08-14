@@ -3,8 +3,11 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import BlogImageGenerator from './BlogImageGenerator';
+import { formatReadTime } from '@/lib/readTime';
+import { usePreferences } from './PreferencesProvider';
 
 export default function BlogPostCard({ post, formatDate, formatCategoryName, openModal }) {
+  const { locale } = usePreferences();
   const handleImageClick = (e) => {
     if (openModal) {
       e.preventDefault();
@@ -52,7 +55,7 @@ export default function BlogPostCard({ post, formatDate, formatCategoryName, ope
         <div className="flex items-center justify-between text-xs text-gray-400">
           <span>
             <i className="fas fa-clock mr-1"></i>
-            {post.readTime ? post.readTime.replace(' read', '') : '6 min'}
+            {formatReadTime(post.readTime, locale)}
           </span>
           <div className="flex items-center space-x-3">
             <span>

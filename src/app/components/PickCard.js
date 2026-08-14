@@ -21,7 +21,9 @@ const CATEGORY_META = {
 
 // Generic placeholder art we should NOT treat as a real cover (the "PROJECT"
 // cube etc.) — these look wrong inside a music/album tile.
-const PLACEHOLDER_RE = /(default|web-placeholder|game-placeholder|placeholder)\.svg($|\?)/i;
+// Several legacy seed records pointed at missing or one-byte placeholder files.
+// Treat them as absent before Next/Image requests them, preventing repeated 400s.
+const PLACEHOLDER_RE = /(default|web-placeholder|game-placeholder|placeholder)\.svg($|\?)|\/movies\/(matrix|inception|dune|foundation|hitchhiker|neuromancer)\.jpg($|\?)/i;
 
 const isUrlLike = (s) => typeof s === 'string' && /^https?:\/\//.test(s.trim());
 const hasRealImage = (img) => !!img && !PLACEHOLDER_RE.test(img);
@@ -46,11 +48,13 @@ export default function PickCard({ recommendation: rec, variant = 'grid' }) {
   const isMusic = category === 'music';
   const [coverFailed, setCoverFailed] = useState(false);
   const [musicArtFailed, setMusicArtFailed] = useState(false);
+  const [faviconFailed, setFaviconFailed] = useState(false);
 
   const destination = rec?.link || rec?.url || null;
   const isExternal = isUrlLike(destination);
   const hasLink = !!destination;
   const domain = useMemo(() => domainFromUrl(rec?.url || rec?.link), [rec]);
+  const favicon = domain ? `https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=128` : null;
 
   const spotify = isMusic ? { title: rec?.spotifyTitle, thumbnail: rec?.spotifyThumbnail } : null;
 
@@ -82,8 +86,8 @@ export default function PickCard({ recommendation: rec, variant = 'grid' }) {
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-gradient-to-br from-[#13202a] to-[#0a140d] p-6 text-center">
           {domain ? (
             <>
-              <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-cyan-400/25 bg-cyan-400/10 text-2xl font-bold uppercase text-cyan-200 shadow-lg">
-                {domain.charAt(0)}
+              <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl border border-cyan-400/25 bg-white/95 p-3 text-2xl font-bold uppercase text-cyan-800 shadow-lg">
+                {favicon && !faviconFailed ? <img src={favicon} alt="" className="h-full w-full object-contain" loading="lazy" onError={() => setFaviconFailed(true)} /> : domain.charAt(0)}
               </div>
               <span className="max-w-full truncate text-sm font-semibold text-cyan-100/80">{domain}</span>
             </>
@@ -145,7 +149,7 @@ export default function PickCard({ recommendation: rec, variant = 'grid' }) {
 
   const shell =
     'group h-full bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 rounded-xl overflow-hidden transition-all duration-300 hover:border-[#e8c547]/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c547]/60' +
-    (hasLink ? ' hover:-translate-y-1 hover:shadow-xl hover:shadow-[#e8c547]/10' : '');
+    (hasLink ? ' hover:shadow-xl hover:shadow-[#e8c547]/10' : '');
 
   // Footer: a CTA only when the card actually links somewhere external.
   const renderFooter = () =>
@@ -168,12 +172,12 @@ export default function PickCard({ recommendation: rec, variant = 'grid' }) {
   const inner =
     variant === 'list' ? (
       <div className={`${shell} flex`}>
-        {renderMedia('w-20 sm:w-24 aspect-[2/3]')}
+        {renderMedia(`w-20 sm:w-24 ${isMusic || isLink ? 'aspect-square' : 'aspect-[2/3]'}`)}
         {renderBody(true)}
       </div>
     ) : (
       <div className={`${shell} flex flex-col`}>
-        {renderMedia('aspect-[2/3]')}
+        {renderMedia(isMusic || isLink ? 'aspect-square' : 'aspect-[2/3]')}
         {renderBody()}
       </div>
     );

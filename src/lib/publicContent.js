@@ -89,6 +89,11 @@ export async function queryPublicPosts({ page = 1, limit = 9, category, search, 
         .lean(),
       BlogPost.countDocuments(query),
     ]);
+    const staticBySlug = new Map(staticBlogPosts.map((post) => [post.slug, post]));
+    posts.forEach((post) => {
+      const fallback = staticBySlug.get(post.slug);
+      if (!post.translations?.tr?.content && fallback?.translations) post.translations = fallback.translations;
+    });
     const dbSlugsOnPage = posts
       .map((post) => post.slug)
       .filter(Boolean);
@@ -140,12 +145,12 @@ export const getPublicPostBySlug = cache(async (slug) => {
 export const getSitemapPosts = unstable_cache(async () => {
   const staticPosts = staticBlogPosts
     .filter((post) => matchesStaticPost(post))
-    .map((post) => ({ slug: post.slug, updatedAt: post.updatedAt || post.createdAt || post.date }));
+    .map((post) => ({ slug: post.slug, image: post.image, updatedAt: post.updatedAt || post.createdAt || post.date }));
 
   try {
     await connectDB();
     const dbPosts = await BlogPost.find(PUBLIC_POST_QUERY)
-      .select('slug updatedAt createdAt')
+      .select('slug image updatedAt createdAt')
       .sort({ createdAt: -1 })
       .lean();
     const dbSlugs = new Set(dbPosts.map((post) => post.slug));

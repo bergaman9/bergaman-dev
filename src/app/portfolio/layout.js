@@ -5,7 +5,7 @@ export const metadata = {
     canonical: 'https://www.bergaman.dev/portfolio',
   },
   openGraph: {
-    title: 'Portfolio | Bergaman',
+    title: 'Portfolio • Bergaman',
     description: 'Selected software, automation, embedded, and electrical engineering work by Ömer.',
     url: 'https://www.bergaman.dev/portfolio',
     type: 'website',

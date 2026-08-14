@@ -85,6 +85,69 @@ My experience across electrical/electronics engineering, software development, f
 Before handover, I expect a high-voltage project to have a validated design basis, coordinated insulation and protection, verified grounding, constructible drawings, approved relay settings, complete test records, updated as-built documentation, trained operators, and controlled switching procedures.
 
 High voltage is unforgiving, but it is not mysterious. With sound calculations, careful documentation, rigorous testing, and respect for safe working practices, complex power systems can be made understandable, maintainable, and reliable.`,
+    translations: {
+      tr: {
+        title: 'Yüksek Gerilim Mühendisliği: Tasarımdan Güvenli İşletmeye',
+        description: 'Yüksek gerilim güç sistemlerinde yalıtım koordinasyonu, koruma, topraklama, test ve güvenli işletmeye yönelik uygulamalı bir mühendislik rehberi.',
+        content: `## Yüksek gerilim neden sistem yaklaşımı gerektirir?
+
+Yüksek gerilim mühendisliği, sıradan tasarım kabullerinin yetersiz kaldığı noktada başlar. Gerilim yükseldikçe açıklıklar, yalıtım davranışı, anahtarlama darbeleri, elektrik alan yoğunlaşması, topraklama performansı, koruma seçiciliği ve işletme disiplini birbirine bağlanır. Bir ekipman etiket değerini tek başına karşılayabilir; buna rağmen çevresindeki tesis kabul edilemez bir risk oluşturabilir.
+
+Bu nedenle yüksek gerilim projesini bütün yaşam döngüsüyle ele alırım: işletme koşullarını tanımlamak, elektrik sistemini modellemek, yalıtım ve korumayı koordine etmek, fiziksel tasarımı belgelemek, montajı doğrulamak ve güvenli işletme prosedürlerini oluşturmak. Güvenilirlik, bu çalışmaların arasındaki bağlantılarda ortaya çıkar.
+
+## 1. Elektriksel gereksinimlerle başlayın
+
+Ekipman seçiminden önce tasarım esası; nominal ve en yüksek sistem gerilimini, frekansı, nötr ve topraklama düzenini, yük ile gelecek kapasitesini, kısa devre seviyelerini, çevresel koşulları, kesinti hedeflerini ve geçerli IEC, IEEE veya ulusal standartları açıkça kaydetmelidir.
+
+Güncel tek hat şeması tasarımın temelidir. Kaynakları, transformatörleri, bara bölümlerini, kesicileri, ayırıcıları, ölçü transformatörlerini, koruma bölgelerini, ölçüm ve topraklama ilişkilerini göstermelidir. AutoCAD ve sürüm kontrollü mühendislik dokümantasyonu kullanarak çizimlerin hem sahada hem analiz sırasında okunabilir kalmasını sağlarım.
+
+## 2. Yalıtım koordinasyonu yalnızca açıklık tablosu değildir
+
+Ekipman; güç frekanslı zorlanmaların yanında yıldırım ve anahtarlama darbelerine de dayanmalıdır. Yalıtım koordinasyonu, ekipmanın dayanım seviyelerini beklenen aşırı gerilimler ve parafudrların koruma karakteristikleriyle eşleştirir.
+
+Kaçak yolu, faz-faz ve faz-toprak açıklıkları, rakım düzeltmesi, kirlilik seviyesi, iletken hareketi ve terminallerdeki elektrik alan yoğunlaşması birlikte kontrol edilir. Amaç her noktada yalıtımı büyütmek değil, pahalı ana ekipman zarar görmeden önce öngörülen koruma elemanının çalışacağı koordineli bir güvenlik payı oluşturmaktır.
+
+## 3. Koruma seçici, hızlı ve açıklanabilir olmalıdır
+
+Koruma sistemi mümkün olduğunda yalnızca arızalı bölgeyi ayırmalı, sağlıklı kısımları enerjili tutmalıdır. Akım transformatörü oranı ve doyumu, eşik değerleri, zaman-akım eğrileri, kesici süresi, haberleşme gecikmesi ve yedek koruma sonucu birlikte etkiler.
+
+Çalışmalar genellikle aşırı akım ve toprak arızası, transformatör diferansiyel, sınırlı toprak arızası, bara, mesafe ve kesici arızası korumalarını kapsar. Ayarlar hesap ve koordinasyon eğrileriyle desteklenmeli; sekonder enjeksiyon ve fonksiyonel açma testleriyle doğrulanmalıdır.
+
+## 4. Topraklama bir personel güvenliği sistemidir
+
+Topraklama ağı, arıza akımını insanları tehlikeli dokunma ve adım gerilimlerine maruz bırakmadan taşımalıdır. Toprak özgül direnci, iletken geometrisi, arıza süresi, yüzey malzemesi, taşınan potansiyel ve eşpotansiyel kuşaklama birlikte değerlendirilir. Yalnızca düşük ölçülmüş topraklama direnci tesisin güvenli olduğunu kanıtlamaz.
+
+Yapılar, ekipman gövdeleri, kablo ekranları, çitler, kontrol binaları ve metal servisler doğru biçimde bağlanmalıdır. Test noktaları ve erişilebilir bağlantılar inşaat sonrasında eklenmek yerine tasarım sırasında planlanmalıdır.
+
+## 5. Fiziksel yerleşim ve uygulanabilirlik
+
+Primer yerleşim elektriksel açıklıkları korurken bakım yapılabilir kalmalıdır. İşletmecilerin kesicilere, ayırıcılara, kablo başlıklarına, test noktalarına ve acil çıkışlara güvenli erişimi gerekir. Kablo ayrımı, yangın bariyerleri, drenaj, aydınlatma, işaretleme ve gelecekteki genişleme alanları tasarım paketinde görünür olmalıdır.
+
+Genel yerleşimler, kesitler, kablo listeleri, terminal şemaları, kilitleme mantığı ve ekipman listeleri idari ekler değil, doğrudan mühendislik teslimleridir.
+
+## 6. Devreye alma, tasarım niyetini kanıta dönüştürür
+
+Devreye alma şu soruyu yanıtlamalıdır: kurulan sistem onaylı tasarımın öngördüğü gibi davranıyor mu? Yalıtım ve sargı direnci, dönüştürme oranı, dielektrik testler, kesici zamanlaması, kontak direnci, CT/VT polaritesi, röle enjeksiyonu, kilitlemeler, SCADA uçtan uca kontrolleri ve açma devresi gözetimi varlığa göre doğrulanır.
+
+Sonuçların kabul kriteri, kalibre cihazı, izlenebilir kaydı ve sapma çözüm süreci olmalıdır. Enerjilendirme kontrol listesi çizimleri, koruma ayarlarını, topraklamayı, çalışma izinlerini, iletişimi ve acil durum düzenini doğrulamalıdır.
+
+## 7. Güvenli işletme, manevra talimatından önce tasarlanır
+
+Ayırma, gerilim yokluğunu doğrulama, boşaltma, topraklama, kilitleme/etiketleme, yaklaşma sınırları, ark parlaması tedbirleri, KKD ve çalışma izni sorumlulukları açık olmalıdır. Manevra programları bağımsız kontrol edilmeli ve belirsizliğe izin vermeyen ekipman tanımları kullanmalıdır.
+
+En güçlü güvenlik kültürü yalnızca tecrübeye değil; tekrarlanabilir kontrollere, çapraz doğrulamaya, güncel dokümana ve saha koşulları plandan farklı olduğunda işi durdurma yetkisine dayanır.
+
+## Mühendislik iş akışındaki dijital araçlar
+
+AutoCAD çizimlerde; hesap ve simülasyon araçları sistem çalışmalarında; tablolar ve betikler tekrarlanabilir kontrollerde; yapılandırılmış depolar ise revizyon yönetiminde değer sağlar. Yapay zekâ destekli araçlar dokümantasyonu düzenleyebilir, kodu inceleyebilir, test şablonları hazırlayabilir ve araştırmayı hızlandırabilir. Ancak her mühendislik sonucu alan uzmanı incelemesi ve izlenebilir kaynak veri gerektirir.
+
+## Son kontrol listesi
+
+Devir öncesinde doğrulanmış tasarım esası, koordineli yalıtım ve koruma, doğrulanmış topraklama, uygulanabilir çizimler, onaylı röle ayarları, eksiksiz test kayıtları, güncel as-built dokümanlar, eğitimli işletmeciler ve kontrollü manevra prosedürleri bulunmalıdır.
+
+Yüksek gerilim hata kabul etmez; fakat gizemli değildir. Sağlam hesaplar, dikkatli dokümantasyon, disiplinli testler ve güvenli çalışma kurallarına saygıyla karmaşık güç sistemleri anlaşılır, bakımı yapılabilir ve güvenilir hâle gelir.`
+      }
+    },
     date: '2026-08-03',
     createdAt: '2026-08-03T09:00:00.000Z',
     updatedAt: '2026-08-03T09:00:00.000Z'

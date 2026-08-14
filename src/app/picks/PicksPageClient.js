@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useTransition } from 'react';
+import { useState, useEffect, useRef, useTransition, useCallback } from 'react';
 import PickCard from '../components/PickCard';
 import PageHeader from '../components/PageHeader';
 import PageContainer from '../components/PageContainer';
@@ -19,6 +19,7 @@ export default function PicksPageClient({ initialRecommendations = [], initialCo
   const [sortBy, setSortBy] = useState('newest');
   const [view, setView] = useState('grid');
   const [showTop, setShowTop] = useState(false);
+  const loadMoreRef = useRef(null);
 
   // Reveal the back-to-top button only after scrolling down a bit.
   useEffect(() => {
@@ -73,7 +74,8 @@ export default function PicksPageClient({ initialRecommendations = [], initialCo
     return () => controller.abort();
   }, [activeCategory]);
 
-  const loadMore = async () => {
+  const loadMore = useCallback(async () => {
+    if (loading || !hasMore) return;
     const nextPage = page + 1;
     setLoading(true);
     try {
@@ -90,7 +92,17 @@ export default function PicksPageClient({ initialRecommendations = [], initialCo
     } finally {
       setLoading(false);
     }
-  };
+  }, [activeCategory, hasMore, loading, page]);
+
+  useEffect(() => {
+    const target = loadMoreRef.current;
+    if (!target || !hasMore) return;
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0]?.isIntersecting) loadMore();
+    }, { rootMargin: '500px 0px' });
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, [hasMore, loadMore]);
 
   const sorted = [...recommendations].sort((a, b) => {
     switch (sortBy) {
@@ -222,32 +234,21 @@ export default function PicksPageClient({ initialRecommendations = [], initialCo
           </div>
         </div>
       ) : view === 'list' ? (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
           {sorted.map((item) => (
             <PickCard key={item._id} recommendation={item} variant="list" />
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
+        <div className="columns-1 gap-5 sm:columns-2 lg:columns-3 xl:columns-4">
           {sorted.map((item) => (
-            <PickCard key={item._id} recommendation={item} variant="grid" />
+            <div key={item._id} className="mb-5 break-inside-avoid"><PickCard recommendation={item} variant="grid" /></div>
           ))}
         </div>
       )}
       </div>
 
-      {hasMore && sorted.length > 0 && (
-        <div className="mt-10 flex justify-center">
-          <button
-            type="button"
-            onClick={loadMore}
-            disabled={loading}
-            className="min-h-11 rounded-lg border border-[#e8c547]/50 bg-[#e8c547]/10 px-6 py-3 font-semibold text-[#e8c547] transition-colors hover:bg-[#e8c547]/20 disabled:cursor-wait disabled:opacity-60"
-          >
-            {loading ? 'Loading…' : 'Load more picks'}
-          </button>
-        </div>
-      )}
+      {hasMore && sorted.length > 0 && <div ref={loadMoreRef} className="mt-8 flex min-h-16 items-center justify-center" role="status" aria-live="polite">{loading && <><i className="fas fa-circle-notch mr-2 animate-spin text-[#e8c547]"></i><span className="text-sm text-gray-400">Loading more picks…</span></>}</div>}
 
       {/* Back to top — appears after scrolling */}
       {showTop && (

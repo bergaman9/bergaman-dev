@@ -5,17 +5,27 @@ import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { NAV_LINKS } from "@/lib/constants";
 import { ACTIVE_MINI_APPS, getMiniAppByPathname, getMiniAppTheme } from "@/lib/miniApps";
+import { usePreferences } from './PreferencesProvider';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAdminDropdownOpen, setIsAdminDropdownOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const { theme, locale, setTheme, setLocale, t } = usePreferences();
   const pathname = usePathname();
   const dropdownRef = useRef(null);
   const mobileMenuRef = useRef(null);
   const menuButtonRef = useRef(null);
   const activeMiniApp = getMiniAppByPathname(pathname);
+
+  useEffect(() => {
+    const onScroll = () => setIsScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   // Close menus on route change so navigation always lands on a clean header
   useEffect(() => {
@@ -153,7 +163,10 @@ export default function Header() {
   };
 
   // Navigation links — single source shared with the footer and sitemap
-  const navigationItems = NAV_LINKS;
+  const navigationItems = NAV_LINKS.map((item) => ({
+    ...item,
+    label: t(({ '/': 'home', '/about': 'about', '/portfolio': 'work', '/blog': 'writing', '/picks': 'picks', '/contact': 'contact' })[item.href] || item.label),
+  }));
 
   if (activeMiniApp) {
     const miniTheme = getMiniAppTheme(activeMiniApp);
@@ -186,6 +199,12 @@ export default function Header() {
             </nav>
 
             <div className="flex shrink-0 items-center gap-2">
+              <button type="button" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} className="mini-app-nav-item h-11 w-11 justify-center rounded-lg" aria-label={theme === 'dark' ? t('themeLight') : t('themeDark')} title={theme === 'dark' ? t('themeLight') : t('themeDark')}>
+                <span aria-hidden="true" className="text-lg leading-none">{theme === 'dark' ? '☀' : '☾'}</span>
+              </button>
+              <button type="button" onClick={() => setLocale(locale === 'en' ? 'tr' : 'en')} className="mini-app-nav-item h-11 min-w-11 justify-center rounded-lg px-2 text-xs font-bold" aria-label={t('language')} title={t('language')}>
+                {locale === 'en' ? 'TR' : 'EN'}
+              </button>
               <Link
                 href="/"
                 className="mini-app-nav-item hidden rounded-lg px-3 py-2 text-sm font-medium transition-all duration-300 sm:inline-flex"
@@ -268,8 +287,8 @@ export default function Header() {
   }
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-[#0a1a0f] via-[#0e1b12] to-[#1a2e1a]/20 backdrop-blur-md border-b border-[#3e503e]/60 ${hideTransitionClass}`}>
-      <div className="page-content py-4">
+    <header data-scrolled={isScrolled} className={`site-header-shell fixed left-0 right-0 top-0 z-50 ${isScrolled ? '' : 'border-b border-[#3e503e]/60 bg-gradient-to-b from-[#0a1a0f] via-[#0e1b12] to-[#1a2e1a]/20 backdrop-blur-md'} ${hideTransitionClass}`}>
+      <div className="site-header-island page-content py-3.5 backdrop-blur-xl">
         <div className="flex items-center justify-between">
           {/* Logo with Dragon Icon */}
           <Link href="/" className="flex items-center space-x-3 group">
@@ -304,6 +323,14 @@ export default function Header() {
 
           {/* Right Side - Admin and Mobile Menu */}
           <div className="flex shrink-0 items-center space-x-4">
+            <div className="hidden items-center gap-2 lg:flex">
+              <button type="button" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} className="preference-button flex h-11 w-11 items-center justify-center rounded-xl border transition-colors hover:border-[#e8c547]/60 hover:text-[#e8c547] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c547]/60" aria-label={theme === 'dark' ? t('themeLight') : t('themeDark')} title={theme === 'dark' ? t('themeLight') : t('themeDark')}>
+                <span aria-hidden="true" className="text-lg leading-none">{theme === 'dark' ? '☀' : '☾'}</span>
+              </button>
+              <button type="button" onClick={() => setLocale(locale === 'en' ? 'tr' : 'en')} className="preference-button flex h-11 min-w-11 items-center justify-center rounded-xl border px-2 text-xs font-bold transition-colors hover:border-[#e8c547]/60 hover:text-[#e8c547] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c547]/60" aria-label={t('language')} title={t('language')}>
+                {locale === 'en' ? 'TR' : 'EN'}
+              </button>
+            </div>
             {/* Admin Status (Desktop) - Only show if authenticated */}
             {isAuthenticated && (
               <div className="hidden lg:block">
@@ -419,6 +446,14 @@ export default function Header() {
           >
             <div className="px-4 py-4">
               <div className="flex flex-col space-y-2">
+                <div className="mb-2 flex items-center gap-2 border-b border-[#3e503e]/30 pb-3">
+                  <button type="button" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} className="preference-button flex min-h-11 flex-1 items-center justify-center gap-2 rounded-lg border">
+                    <span aria-hidden="true" className="text-lg leading-none">{theme === 'dark' ? '☀' : '☾'}</span><span>{theme === 'dark' ? 'Light' : 'Dark'}</span>
+                  </button>
+                  <button type="button" onClick={() => setLocale(locale === 'en' ? 'tr' : 'en')} className="preference-button flex min-h-11 flex-1 items-center justify-center gap-2 rounded-lg border font-semibold">
+                    {locale === 'en' ? 'Türkçe' : 'English'}
+                  </button>
+                </div>
                 {/* Public Links */}
                 {navigationItems.map((item) => (
                   <Link

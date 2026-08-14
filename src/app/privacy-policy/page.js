@@ -1,15 +1,17 @@
 import Link from 'next/link';
 import { SITE_CONFIG } from '@/lib/constants';
-import PrivacyHeader from './PrivacyHeader';
+export { metadata } from './metadata';
 
 export default function PrivacyPolicyPage() {
   const lastUpdated = '2026-08-14';
   
   return (
-    <div className="py-12 px-4">
-      <PrivacyHeader lastUpdated={lastUpdated} />
+    <div className="px-4 pb-16 pt-8">
+      <header className="mx-auto mb-10 max-w-5xl border-b border-[#3e503e]/40 pb-6">
+        <div className="flex items-center gap-3"><i className="fas fa-shield-alt text-2xl text-[#e8c547]"></i><div><h1 className="text-3xl font-bold text-white sm:text-4xl">Privacy Policy</h1><p className="mt-1 text-sm text-gray-400">Last updated: {lastUpdated}</p></div></div>
+      </header>
 
-      <div className="prose prose-lg prose-invert max-w-4xl mx-auto">
+      <div className="privacy-copy prose prose-lg prose-invert mx-auto max-w-5xl">
         <section className="mb-8">
           <h2 className="text-2xl font-semibold text-[#e8c547] mb-4">Introduction</h2>
           <p>

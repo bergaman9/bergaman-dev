@@ -1,5 +1,5 @@
 export const metadata = {
-    title: 'Financial Portfolio | Bergaman Dev',
+    title: 'Financial Portfolio',
     description: 'Track your personal finance assets across various categories.',
 };
 

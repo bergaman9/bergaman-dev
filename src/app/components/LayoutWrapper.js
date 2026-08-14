@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 import Header from './Header';
 import Footer from './Footer';
+import { PreferencesProvider } from './PreferencesProvider';
 import { getMiniAppByPathname, getMiniAppTheme } from '@/lib/miniApps';
 
 function LayoutContent({ children }) {
@@ -39,5 +40,5 @@ function LayoutContent({ children }) {
 }
 
 export default function LayoutWrapper({ children }) {
-  return <LayoutContent>{children}</LayoutContent>;
+  return <PreferencesProvider><LayoutContent>{children}</LayoutContent></PreferencesProvider>;
 }

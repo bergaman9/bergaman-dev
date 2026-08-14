@@ -1,4 +1,5 @@
 import { getSitemapPosts } from '@/lib/publicContent';
+import { ACTIVE_MINI_APPS } from '@/lib/miniApps';
 
 const BASE_URL = 'https://www.bergaman.dev';
 
@@ -10,7 +11,16 @@ export default async function sitemap() {
     { path: '/blog', changeFrequency: 'weekly', priority: 0.9 },
     { path: '/picks', changeFrequency: 'monthly', priority: 0.7 },
     { path: '/contact', changeFrequency: 'monthly', priority: 0.6 },
-  ].map(({ path, ...entry }) => ({ url: `${BASE_URL}${path}`, ...entry }));
+    { path: '/privacy-policy', changeFrequency: 'yearly', priority: 0.3 },
+  ].map(({ path, ...entry }) => ({ url: `${BASE_URL}${path}`, lastModified: new Date('2026-08-14'), ...entry }));
+
+  const labPages = ACTIVE_MINI_APPS.map((app) => ({
+    url: `${BASE_URL}${app.href}`,
+    lastModified: new Date('2026-08-14'),
+    changeFrequency: 'monthly',
+    priority: 0.55,
+    ...(app.image ? { images: [`${BASE_URL}${app.image}`] } : {}),
+  }));
 
   const posts = await getSitemapPosts();
   const blogPages = posts.map((post) => ({
@@ -18,7 +28,8 @@ export default async function sitemap() {
     ...(post.updatedAt ? { lastModified: new Date(post.updatedAt) } : {}),
     changeFrequency: 'monthly',
     priority: 0.7,
+    ...(post.image ? { images: [new URL(post.image, BASE_URL).toString()] } : {}),
   }));
 
-  return [...staticPages, ...blogPages];
+  return [...staticPages, ...labPages, ...blogPages];
 }

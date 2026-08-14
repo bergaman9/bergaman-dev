@@ -5,7 +5,7 @@ export const metadata = {
     canonical: 'https://www.bergaman.dev/about',
   },
   openGraph: {
-    title: 'About Me | Bergaman',
+    title: 'About Me • Bergaman',
     description: 'Electrical & Electronics Engineer and full-stack developer across high-voltage, automation, embedded, and web systems.',
     url: 'https://www.bergaman.dev/about',
     type: 'profile',

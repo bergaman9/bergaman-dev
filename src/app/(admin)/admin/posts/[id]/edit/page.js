@@ -30,6 +30,7 @@ export default function EditPost() {
       metaDescription: '',
       keywords: []
     },
+    translations: { tr: { title: '', description: '', content: '' } },
     visibility: 'public',
     password: ''
   });
@@ -332,6 +333,15 @@ export default function EditPost() {
                     placeholder="Write your blog post content here... You can use Markdown formatting."
                     className="w-full"
                   />
+                </Card>
+
+                <Card showImage={false}>
+                  <div className="space-y-4">
+                    <div><h3 className="text-lg font-semibold text-[#e8c547]"><i className="fas fa-language mr-2"></i>Türkçe Çeviri</h3><p className="text-sm text-gray-400">Boş alanlarda İngilizce içerik gösterilir.</p></div>
+                    <input type="text" value={post?.translations?.tr?.title || ''} onChange={(e) => setPost((prev) => ({ ...prev, translations: { ...prev.translations, tr: { ...prev.translations?.tr, title: e.target.value } } }))} className="w-full rounded-lg border border-[#3e503e] bg-[#0e1b12]/70 px-4 py-3 text-white focus:border-[#e8c547] focus:outline-none" placeholder="Türkçe başlık" />
+                    <textarea value={post?.translations?.tr?.description || ''} onChange={(e) => setPost((prev) => ({ ...prev, translations: { ...prev.translations, tr: { ...prev.translations?.tr, description: e.target.value } } }))} rows={3} className="w-full rounded-lg border border-[#3e503e] bg-[#0e1b12]/70 px-4 py-3 text-white focus:border-[#e8c547] focus:outline-none" placeholder="Türkçe açıklama" />
+                    <MarkdownEditor value={post?.translations?.tr?.content || ''} onChange={(content) => setPost((prev) => ({ ...prev, translations: { ...prev.translations, tr: { ...prev.translations?.tr, content } } }))} placeholder="Türkçe Markdown içeriği…" className="w-full" />
+                  </div>
                 </Card>
               </div>
 

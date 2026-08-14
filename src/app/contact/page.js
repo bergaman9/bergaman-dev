@@ -335,20 +335,23 @@ export default function Contact() {
                 {/* Message Field */}
                 <div>
                   <label htmlFor="inquiryType" className="block text-[#e8c547] font-medium mb-2">How can I help?</label>
-                  <select
-                    id="inquiryType"
-                    name="inquiryType"
-                    value={formData.inquiryType}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] focus:border-[#e8c547]/50 focus:ring-1 focus:ring-[#e8c547]/30 focus:outline-none"
-                  >
-                    <option>Project inquiry</option>
-                    <option>Electrical engineering opportunity</option>
-                    <option>Software development</option>
-                    <option>Automation / IoT</option>
-                    <option>Collaboration</option>
-                    <option>General question</option>
-                  </select>
+                  <div className="relative">
+                    <select
+                      id="inquiryType"
+                      name="inquiryType"
+                      value={formData.inquiryType}
+                      onChange={handleChange}
+                      className="w-full appearance-none rounded-lg border border-[#3e503e] bg-[#0e1b12] px-4 py-3 pr-12 text-[#d1d5db] focus:border-[#e8c547]/50 focus:outline-none focus:ring-1 focus:ring-[#e8c547]/30"
+                    >
+                      <option>Project inquiry</option>
+                      <option>Electrical engineering opportunity</option>
+                      <option>Software development</option>
+                      <option>Automation / IoT</option>
+                      <option>Collaboration</option>
+                      <option>General question</option>
+                    </select>
+                    <span aria-hidden="true" className="pointer-events-none absolute right-4 top-1/2 h-2.5 w-2.5 -translate-y-2/3 rotate-45 border-b-2 border-r-2 border-[#e8c547]"></span>
+                  </div>
                 </div>
 
                 {/* Message Field */}

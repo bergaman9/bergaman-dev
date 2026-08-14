@@ -12,6 +12,7 @@ import ProjectCard from './components/ProjectCard';
 import { SkeletonBlogCard, SkeletonProjectCard } from './components/Skeleton';
 import { blogPosts as staticBlogPosts } from '../data/blogPosts';
 import { SKILL_CATEGORIES } from '@/lib/constants';
+import { ACTIVE_MINI_APPS } from '@/lib/miniApps';
 
 export default function Home() {
   // Render useful content immediately; the API refreshes it in the background.
@@ -252,7 +253,7 @@ export default function Home() {
                 ) : featuredProjects.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {featuredProjects.map((project) => (
-                      <ProjectCard key={project._id} project={project} />
+                      <ProjectCard key={project._id} project={project} compact />
                     ))}
                   </div>
                 ) : (
@@ -311,6 +312,25 @@ export default function Home() {
                 </div>
               </section>
               </div>
+
+              {/* Bergaman Labs — compact access to the Vault and utility apps */}
+              <section className="mb-12 fade-in" aria-labelledby="labs-title">
+                <div className="mb-6 flex items-end justify-between gap-4">
+                  <div>
+                    <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#e8c547]">Bergaman Labs</p>
+                    <h2 id="labs-title" className="mt-1 text-2xl font-bold text-white">Mini Apps &amp; Vaults</h2>
+                  </div>
+                  <Link href="/portfolio#labs" className="hidden text-sm text-gray-400 transition-colors hover:text-[#e8c547] sm:inline">Explore all <i className="fas fa-arrow-right ml-1"></i></Link>
+                </div>
+                <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
+                  {ACTIVE_MINI_APPS.map((app) => (
+                    <Link key={app.id} href={app.href} className="group flex min-h-28 flex-col justify-between rounded-xl border border-[#3e503e]/40 bg-[#2e3d29]/30 p-4 transition-[border-color,background-color,box-shadow] duration-300 hover:border-[#e8c547]/45 hover:bg-[#2e3d29]/45 hover:shadow-lg hover:shadow-black/10">
+                      <span className="flex items-center justify-between"><span className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#e8c547]/10 text-[#e8c547]"><i className={app.icon}></i></span>{app.badge && <span className="rounded-full border border-[#e8c547]/25 px-2 py-0.5 text-[10px] font-bold uppercase text-[#e8c547]">{app.badge}</span>}</span>
+                      <span className="mt-3 text-sm font-semibold text-gray-200 transition-colors group-hover:text-[#e8c547]">{app.title}</span>
+                    </Link>
+                  ))}
+                </div>
+              </section>
 
               {/* Technical Skills */}
               <section className="mb-12 slide-in-right">

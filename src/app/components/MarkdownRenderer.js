@@ -10,22 +10,6 @@ export default function MarkdownRenderer({ content, className = "" }) {
     return null;
   }
 
-  // Preprocess content to strip leading 4-space indentation that causes code block rendering
-  const preprocessContent = (text) => {
-    if (!text) return text;
-    // Replace lines starting with exactly 4 spaces (but not more) with unindented version
-    // This fixes content stored with indentation in the database
-    return text.split('\n').map(line => {
-      // Only strip if line starts with exactly 4 spaces (not tabs, not 8 spaces)
-      if (line.startsWith('    ') && !line.startsWith('        ')) {
-        return line.substring(4);
-      }
-      return line;
-    }).join('\n');
-  };
-
-  const processedContent = preprocessContent(content);
-
   // Custom component renderers
   const components = {
     // Handle code blocks and inline code
@@ -72,6 +56,8 @@ export default function MarkdownRenderer({ content, className = "" }) {
             padding: '1rem',
             margin: '1rem 0',
             overflowX: 'auto',
+            whiteSpace: 'pre',
+            tabSize: 4,
           }}
           {...props}
         >
@@ -214,7 +200,7 @@ export default function MarkdownRenderer({ content, className = "" }) {
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[rehypeHighlight]}
       >
-        {processedContent}
+        {content}
       </ReactMarkdown>
     </div>
   );

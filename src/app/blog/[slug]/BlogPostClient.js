@@ -9,6 +9,8 @@ import CommentSystem from '../../components/CommentSystem';
 import ImageModal from '../../components/ImageModal';
 import MarkdownRenderer from '../../components/MarkdownRenderer';
 import { SkeletonBox, SkeletonText } from '../../components/Skeleton';
+import { localizePost, usePreferences } from '../../components/PreferencesProvider';
+import { formatReadTime } from '@/lib/readTime';
 
 // The featured image is already shown in the header, but many posts also embed
 // the same cover as the first image in their markdown — strip that leading
@@ -25,6 +27,7 @@ function stripLeadingCoverImage(content, coverUrl) {
 }
 
 export default function BlogPostClient({ slug, initialPost }) {
+  const { locale } = usePreferences();
   const params = { slug };
   const router = useRouter();
   const [post, setPost] = useState(initialPost);
@@ -44,6 +47,7 @@ export default function BlogPostClient({ slug, initialPost }) {
     avatar: '/images/profile/profile.jpg',
     showAuthorBio: true
   });
+  const displayPost = localizePost(post, locale);
 
   useEffect(() => {
     if (params.slug) {
@@ -221,7 +225,7 @@ export default function BlogPostClient({ slug, initialPost }) {
   };
 
   const formatDate = (date) => {
-    return new Date(date).toLocaleDateString('en-US', {
+    return new Date(date).toLocaleDateString(locale === 'tr' ? 'tr-TR' : 'en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric'
@@ -258,8 +262,6 @@ export default function BlogPostClient({ slug, initialPost }) {
       <div className="page-container">
         <div className="page-content">
           <div className="mx-auto max-w-4xl py-8" aria-busy="true">
-            {/* Back link */}
-            <SkeletonBox className="mb-6 h-9 w-28" rounded="rounded-lg" />
             {/* Category + meta row */}
             <div className="mb-4 flex gap-3">
               <SkeletonBox className="h-6 w-24" rounded="rounded-full" />
@@ -372,59 +374,48 @@ export default function BlogPostClient({ slug, initialPost }) {
   }
 
   return (
-    <div className="page-container">
+    <div className="pb-16 pt-6">
       <div className="page-content">
-        {/* Back to Blog */}
-        <div className="mb-8">
-          <Link
-            href="/blog"
-            className="inline-flex items-center text-[#e8c547] hover:text-[#d4b445] transition-colors duration-300"
-          >
-            <i className="fas fa-arrow-left mr-2"></i>
-            Back to Blog
-          </Link>
-        </div>
-
         {/* Article Header */}
         <header className="mb-8">
           <div className="flex items-center gap-3 mb-4">
             <span className="px-3 py-1 bg-[#e8c547]/20 text-[#e8c547] text-sm rounded-full">
-              {formatCategoryName(post.category)}
+              {formatCategoryName(displayPost.category)}
             </span>
             <span className="text-gray-400">
-              {formatDate(post.createdAt)}
+              {formatDate(displayPost.createdAt)}
             </span>
             <span className="text-gray-400">•</span>
             <span className="text-gray-400">
               <i className="fas fa-clock mr-1"></i>
-              {post.readTime ? post.readTime.replace(' read', '') : '5 min'}
+              {formatReadTime(displayPost.readTime, locale)}
             </span>
           </div>
 
           <h1 className="text-4xl md:text-5xl font-bold gradient-text mb-6 leading-tight">
-            {post.title}
+            {displayPost.title}
           </h1>
 
           <p className="text-xl text-gray-300 mb-8">
-            {post.description}
+            {displayPost.description}
           </p>
 
           {/* Featured Image */}
           <div className="mb-8">
-            {post.image ? (
+            {displayPost.image ? (
               <Image
-                src={post.image}
-                alt={post.title}
+                src={displayPost.image}
+                alt={displayPost.title}
                 width={800}
                 height={400}
                 className="w-full h-64 md:h-96 object-cover rounded-lg cursor-pointer"
-                onClick={() => openModal(post.image, post.title)}
+                onClick={() => openModal(displayPost.image, displayPost.title)}
               />
             ) : (
               <div className="cursor-pointer w-full" onClick={() => { }}>
                 <BlogImageGenerator
-                  title={post.title}
-                  category={post.category}
+                  title={displayPost.title}
+                  category={displayPost.category}
                   width={800}
                   height={400}
                   className="w-full h-64 md:h-96"
@@ -437,8 +428,8 @@ export default function BlogPostClient({ slug, initialPost }) {
         {/* Article Content */}
         <article className="mb-8 w-full overflow-hidden">
           <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-4 sm:p-6 lg:p-8 rounded-lg w-full overflow-hidden">
-            {post.content ? (
-              <MarkdownRenderer content={stripLeadingCoverImage(post.content, post.image)} className="w-full max-w-full overflow-hidden" />
+            {displayPost.content ? (
+              <MarkdownRenderer content={stripLeadingCoverImage(displayPost.content, displayPost.image)} className="w-full max-w-full overflow-hidden" />
             ) : (
               <div className="text-gray-300 leading-relaxed w-full overflow-hidden">
                 <p className="mb-4 break-words">

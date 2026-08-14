@@ -5,7 +5,7 @@ export const metadata = {
     canonical: 'https://www.bergaman.dev/picks',
   },
   openGraph: {
-    title: 'My Picks | Bergaman',
+    title: 'My Picks • Bergaman',
     description: 'A personal collection of movies, games, books, music, series, and useful links curated by Ömer.',
     url: 'https://www.bergaman.dev/picks',
     type: 'website',

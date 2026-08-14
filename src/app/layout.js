@@ -28,7 +28,7 @@ export const viewport = {
 export const metadata = {
   title: {
     default: SITE_CONFIG.title,
-    template: `%s | ${SITE_CONFIG.name}`
+    template: `%s • ${SITE_CONFIG.name}`
   },
   description: SITE_CONFIG.description,
   keywords: SITE_CONFIG.keywords,
@@ -84,8 +84,9 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" data-scroll-behavior="smooth">
+    <html lang="en" data-theme="dark" data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: "try{var t=localStorage.getItem('bergaman-theme');var l=localStorage.getItem('bergaman-locale');document.documentElement.dataset.theme=t==='light'?'light':'dark';document.documentElement.style.colorScheme=t==='light'?'light':'dark';if(l==='tr'){document.documentElement.lang='tr';document.documentElement.dataset.locale='tr'}}catch(e){}" }} />
         <meta name="theme-color" content={SITE_CONFIG.themeColor} />
 
         <link rel="stylesheet" href="/icons/fontawesome.min.css" />

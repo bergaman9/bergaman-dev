@@ -94,6 +94,18 @@ const BlogPostSchema = new mongoose.Schema({
     metaTitle: String,
     metaDescription: String,
     keywords: [String]
+  },
+  translations: {
+    tr: {
+      title: { type: String, trim: true },
+      description: { type: String, trim: true },
+      content: String
+    },
+    en: {
+      title: { type: String, trim: true },
+      description: { type: String, trim: true },
+      content: String
+    }
   }
 }, {
   timestamps: true
