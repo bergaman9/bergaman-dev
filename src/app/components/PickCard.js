@@ -86,7 +86,7 @@ export default function PickCard({ recommendation: rec, variant = 'grid' }) {
 
   // Shared media block. `frame` controls the aspect wrapper.
   const renderMedia = (frame, showOverlayBadges = true) => (
-    <div className={`relative ${frame} shrink-0 overflow-hidden bg-[#0a140d]`}>
+    <div className={`theme-dark-surface relative ${frame} shrink-0 overflow-hidden bg-[#0a140d]`}>
       {isLink ? (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-gradient-to-br from-[#13202a] to-[#0a140d] p-6 text-center">
           {domain ? (
@@ -171,7 +171,7 @@ export default function PickCard({ recommendation: rec, variant = 'grid' }) {
     <div className={`flex flex-1 flex-col ${list ? 'min-w-0 p-4' : 'p-4'}`}>
       {list && (
         <div className="mb-1.5 flex min-w-0 items-center justify-between gap-2">
-          <span className={`inline-flex min-w-0 items-center gap-1.5 rounded-md border px-2 py-0.5 text-[10px] font-semibold ${meta.chip} ${meta.accent}`}>
+          <span className={`pick-accent-text inline-flex min-w-0 items-center gap-1.5 rounded-md border px-2 py-0.5 text-[10px] font-semibold ${meta.chip} ${meta.accent}`}>
             <i className={`${meta.icon} text-[9px]`}></i>
             <span className="truncate">{categoryLabel}</span>
           </span>
@@ -183,7 +183,7 @@ export default function PickCard({ recommendation: rec, variant = 'grid' }) {
         </div>
       )}
       <h3 className={`font-bold text-white line-clamp-1 transition-colors ${hasLink ? 'group-hover:text-[#e8c547]' : ''} ${list ? 'text-base' : 'text-base'}`}>{displayTitle}</h3>
-      {subtitle && <p className={`text-xs ${meta.accent} mt-0.5 line-clamp-1`}>{subtitle}</p>}
+      {subtitle && <p className={`pick-accent-text text-xs ${meta.accent} mt-0.5 line-clamp-1`}>{subtitle}</p>}
       {blurb && <p className={`text-sm text-gray-400 leading-relaxed line-clamp-2 ${list ? 'mt-1.5' : 'mt-2'}`}>{blurb}</p>}
       {renderFooter()}
     </div>

@@ -19,7 +19,7 @@ html[data-theme='light'] {
   --surface: rgba(231, 238, 226, 0.82);
   --surface-solid: #e8eee4;
   --surface-border: rgba(62, 82, 58, 0.32);
-  --muted-text: #536251;
+  --muted-text: #344636;
 }
 
 /* Smooth scrolling */
@@ -152,14 +152,111 @@ html[data-theme='light'] .text-gray-100,
 html[data-theme='light'] .text-gray-200,
 html[data-theme='light'] .text-gray-300 { color: #253527 !important; }
 html[data-theme='light'] .text-gray-400,
-html[data-theme='light'] .text-gray-500 { color: #536251 !important; }
+html[data-theme='light'] .text-gray-500 { color: #344636 !important; }
+html[data-theme='light'] .text-\[\#d1d5db\] { color: #253527 !important; }
+html[data-theme='light'] .text-\[\#e2e8f0\] { color: #253527 !important; }
+html[data-theme='light'] .text-\[\#9ca3af\],
+html[data-theme='light'] .text-\[\#6b7280\] { color: #344636 !important; }
+html[data-theme='light'] .text-\[\#4ade80\] { color: #245f37 !important; }
+html[data-theme='light'] .text-\[\#86efac\] { color: #326744 !important; }
+html[data-theme='light'] .text-\[\#f4d76b\],
+html[data-theme='light'] .text-\[\#d4b445\] { color: #465a31 !important; }
 html[data-theme='light'] [class*="bg-[#0e1b12]"],
 html[data-theme='light'] [class*="bg-[#0a140d]"],
+html[data-theme='light'] [class*="bg-[#0a1a0f]"],
+html[data-theme='light'] [class*="bg-[#1a2e1a]"],
 html[data-theme='light'] [class*="bg-[#2e3d29]"] { background-color: var(--surface) !important; }
 html[data-theme='light'] [class~="bg-white"],
 html[data-theme='light'] [class*="bg-white/"] { background-color: var(--surface-solid) !important; }
 html[data-theme='light'] [class*="border-[#3e503e]"] { border-color: var(--surface-border) !important; }
 html[data-theme='light'] .markdown-rendered pre { background: #18211b !important; color: #f3f4f6; }
+/* MarkdownRenderer carries dark-theme inline colors so code examples can keep
+   their exact formatting. Override only the semantic article colors in light
+   mode to maintain readable contrast without changing the dark presentation. */
+html[data-theme='light'] .markdown-rendered p,
+html[data-theme='light'] .markdown-rendered ul,
+html[data-theme='light'] .markdown-rendered ol,
+html[data-theme='light'] .markdown-rendered li,
+html[data-theme='light'] .markdown-rendered td {
+  color: #2f4032 !important;
+}
+html[data-theme='light'] .markdown-rendered strong {
+  color: #17251a !important;
+}
+html[data-theme='light'] .markdown-rendered em {
+  color: #4d604f !important;
+}
+html[data-theme='light'] .markdown-rendered h1,
+html[data-theme='light'] .markdown-rendered h2,
+html[data-theme='light'] .markdown-rendered h3,
+html[data-theme='light'] .markdown-rendered h4,
+html[data-theme='light'] .markdown-rendered a {
+  color: #465a31 !important;
+}
+html[data-theme='light'] .markdown-rendered blockquote {
+  color: #2f4032 !important;
+  background-color: rgba(76, 100, 70, 0.13) !important;
+  border-left-color: #607342 !important;
+}
+html[data-theme='light'] .markdown-rendered thead,
+html[data-theme='light'] .markdown-rendered th {
+  background-color: #33482f !important;
+  color: #f3f6f0 !important;
+}
+html[data-theme='light'] .markdown-rendered td {
+  border-bottom-color: rgba(62, 80, 62, 0.28) !important;
+}
+html[data-theme='light'] .markdown-rendered code:not([class*='language-']) {
+  background-color: #dce6d7 !important;
+  color: #344a28 !important;
+  border-color: rgba(62, 80, 62, 0.38) !important;
+}
+
+/* Image overlays and branded mini apps intentionally retain a dark canvas.
+   They need their original light text even while the surrounding site uses
+   the military-green light theme. */
+html[data-theme='light'] .theme-dark-surface.text-white,
+html[data-theme='light'] .theme-dark-surface .text-white { color: #ffffff !important; }
+html[data-theme='light'] .theme-dark-surface.text-gray-100,
+html[data-theme='light'] .theme-dark-surface .text-gray-100 { color: #f3f4f6 !important; }
+html[data-theme='light'] .theme-dark-surface.text-gray-200,
+html[data-theme='light'] .theme-dark-surface .text-gray-200 { color: #e5e7eb !important; }
+html[data-theme='light'] .theme-dark-surface.text-gray-300,
+html[data-theme='light'] .theme-dark-surface .text-gray-300 { color: #d1d5db !important; }
+html[data-theme='light'] .theme-dark-surface.text-gray-400,
+html[data-theme='light'] .theme-dark-surface .text-gray-400 { color: #9ca3af !important; }
+html[data-theme='light'] .theme-dark-surface.text-gray-500,
+html[data-theme='light'] .theme-dark-surface .text-gray-500 { color: #6b7280 !important; }
+html[data-theme='light'] .theme-dark-surface[class*="bg-[#0a140d]"],
+html[data-theme='light'] .theme-dark-surface [class*="bg-[#0a140d]"] { background-color: #0a140d !important; }
+html[data-theme='light'] .pick-accent-text { color: #255f45 !important; }
+html[data-theme='light'] .blog-tag { color: #17251a !important; }
+
+html[data-theme='light'] .mini-app-shell .text-white,
+html[data-theme='light'] .mini-app-chrome .text-white { color: #ffffff !important; }
+html[data-theme='light'] .mini-app-shell .text-gray-100,
+html[data-theme='light'] .mini-app-chrome .text-gray-100 { color: #f3f4f6 !important; }
+html[data-theme='light'] .mini-app-shell .text-gray-200,
+html[data-theme='light'] .mini-app-chrome .text-gray-200 { color: #e5e7eb !important; }
+html[data-theme='light'] .mini-app-shell .text-gray-300,
+html[data-theme='light'] .mini-app-chrome .text-gray-300 { color: #d1d5db !important; }
+html[data-theme='light'] .mini-app-shell .text-gray-400,
+html[data-theme='light'] .mini-app-chrome .text-gray-400 { color: #9ca3af !important; }
+html[data-theme='light'] .mini-app-shell .text-gray-500,
+html[data-theme='light'] .mini-app-chrome .text-gray-500,
+html[data-theme='light'] .mini-app-shell .text-gray-600,
+html[data-theme='light'] .mini-app-chrome .text-gray-600 { color: #9ca3af !important; }
+html[data-theme='light'] .mini-app-shell .text-\[\#d1d5db\],
+html[data-theme='light'] .mini-app-chrome .text-\[\#d1d5db\] { color: #d1d5db !important; }
+html[data-theme='light'] .mini-app-shell .text-\[\#e2e8f0\],
+html[data-theme='light'] .mini-app-chrome .text-\[\#e2e8f0\] { color: #e2e8f0 !important; }
+html[data-theme='light'] .mini-app-shell .text-\[\#e8c547\],
+html[data-theme='light'] .mini-app-chrome .text-\[\#e8c547\] { color: #e8c547 !important; }
+html[data-theme='light'] .mini-app-shell [class*="bg-white/"] { background-color: rgba(255, 255, 255, 0.06) !important; }
+html[data-theme='light'] .mini-app-shell [class*="bg-[#0e1b12]"] { background-color: #0e1b12 !important; }
+html[data-theme='light'] .mini-app-shell [class*="bg-[#0a140d]"] { background-color: #0a140d !important; }
+html[data-theme='light'] .mini-app-shell [class*="bg-[#2e3d29]"] { background-color: rgba(46, 61, 41, 0.3) !important; }
+html[data-theme='light'] .mini-app-shell { color: #d1d5db; }
 html[data-theme='light'] .text-\[\#e8c547\] { color: #465a31 !important; }
 html[data-theme='light'] .border-\[\#e8c547\] { border-color: #607342 !important; }
 html[data-theme='light'] .gradient-text {

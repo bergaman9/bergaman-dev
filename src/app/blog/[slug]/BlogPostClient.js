@@ -488,7 +488,7 @@ export default function BlogPostClient({ slug, initialPost }) {
                 <Link
                   key={index}
                   href={`/blog?tag=${encodeURIComponent(tag)}`}
-                  className="px-3 py-1.5 bg-[#3e503e]/50 text-gray-300 text-sm rounded-full border border-[#3e503e] hover:bg-[#e8c547]/20 hover:text-[#e8c547] hover:border-[#e8c547]/50 transition-all duration-300"
+                  className="blog-tag px-3 py-1.5 bg-[#3e503e]/50 text-gray-300 text-sm rounded-full border border-[#3e503e] hover:bg-[#e8c547]/20 hover:text-[#e8c547] hover:border-[#e8c547]/50 transition-all duration-300"
                 >
                   #{tag}
                 </Link>
