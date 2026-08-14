@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { TR_BLOG_TRANSLATIONS } from '@/data/blogTranslations.tr';
 
 const PreferencesContext = createContext(null);
 
@@ -55,10 +56,11 @@ export function usePreferences() {
 export function localizePost(post, locale) {
   if (!post || locale !== 'tr') return post;
   const translation = post.translations?.tr || post.tr || {};
+  const fallback = TR_BLOG_TRANSLATIONS[post.slug] || {};
   return {
     ...post,
-    title: translation.title || post.titleTr || post.title,
-    description: translation.description || translation.excerpt || post.descriptionTr || post.description,
-    content: translation.content || post.contentTr || post.content,
+    title: translation.title || post.titleTr || fallback.title || post.title,
+    description: translation.description || translation.excerpt || post.descriptionTr || fallback.description || post.description,
+    content: translation.content || post.contentTr || fallback.content || post.content,
   };
 }

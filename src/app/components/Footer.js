@@ -42,11 +42,11 @@ export default function Footer() {
   return (
     <footer className="site-footer relative mt-auto w-full overflow-hidden border-t border-[#3e503e]/60 bg-gradient-to-t from-[#0a1a0f] via-[#0e1b12] to-[#1a2e1a]/20">
       <div className="pointer-events-none absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at center, #e8c547 1px, transparent 1px)', backgroundSize: '56px 56px' }}></div>
-      <div className="page-content relative z-10 pb-4 pt-10">
-        <div className="mb-8 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="page-content relative z-10 pt-7">
+        <div className="mb-5 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
           <div className="text-center sm:text-left">
-            <Link href="/" className="mb-4 inline-flex items-center gap-3"><i className="fas fa-dragon text-3xl text-[#e8c547]"></i><span><strong className="block text-2xl text-[#e8c547]">Bergaman</strong><small className="text-gray-400">The Dragon&apos;s Domain</small></span></Link>
-            <p className="mb-4 text-sm leading-relaxed text-gray-300">{labels.tagline}</p>
+            <Link href="/" className="mb-2 inline-flex items-center gap-3"><i className="fas fa-dragon text-3xl text-[#e8c547]"></i><span><strong className="block text-2xl text-[#e8c547]">Bergaman</strong><small className="text-gray-400">The Dragon&apos;s Domain</small></span></Link>
+            <p className="mb-3 text-sm leading-relaxed text-gray-300">{labels.tagline}</p>
             <div className="flex justify-center gap-3 sm:justify-start">
               {SOCIAL_LINKS.map((social) => <a key={social.label} href={social.href} target={social.href.startsWith('mailto:') ? undefined : '_blank'} rel={social.href.startsWith('mailto:') ? undefined : 'noopener noreferrer'} aria-label={social.label} className="flex h-11 w-11 items-center justify-center rounded-lg border border-[#3e503e]/50 bg-[#2e3d29]/50 text-gray-400 transition-all hover:scale-105 hover:border-[#e8c547]/50 hover:text-[#e8c547]"><i className={social.icon}></i></a>)}
             </div>
@@ -58,10 +58,10 @@ export default function Footer() {
             <a href={SITE_CONFIG.previousVersions.v1.url} target="_blank" rel="noopener noreferrer" className="footer-link"><i className="fas fa-history w-4 text-xs"></i>{labels.legacy}</a>
           </FooterColumn>
           <FooterColumn icon="fas fa-code" title={labels.stack}>
-            <div className="grid grid-cols-2 gap-3 text-sm text-gray-400">{[['fab fa-react','React'],['fas fa-bolt','Next.js'],['fas fa-database','MongoDB'],['fab fa-node-js','Node.js'],['fas fa-wind','Tailwind'],['fas fa-cloud','Vercel']].map(([icon,name]) => <span key={name} className="flex items-center gap-2"><i className={`${icon} text-[#e8c547]`}></i>{name}</span>)}</div>
+            <div className="grid grid-cols-2 gap-x-3 gap-y-2 text-sm text-gray-400">{[['fab fa-react','React'],['fas fa-bolt','Next.js'],['fas fa-database','MongoDB'],['fab fa-node-js','Node.js'],['fas fa-wind','Tailwind'],['vercel','Vercel']].map(([icon,name]) => <span key={name} className="flex items-center gap-2">{icon === 'vercel' ? <VercelGlyph /> : <i className={`${icon} text-[#e8c547]`}></i>}{name}</span>)}</div>
           </FooterColumn>
         </div>
-        <div className="flex flex-col gap-4 border-t border-[#3e503e]/40 pt-6 text-sm text-gray-400 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-3 border-t border-[#3e503e]/40 py-4 text-sm text-gray-400 sm:flex-row sm:items-center sm:justify-between">
           <div><p>© {currentYear} Ömer · {labels.copy} · v{appVersion}</p><p className="mt-1 text-xs text-gray-500">Made with <i className="fas fa-heart text-red-400"></i> and <i className="fas fa-dragon text-[#e8c547]"></i> by Bergaman</p></div>
           <div className="flex items-center gap-3"><a href="https://github.com/bergaman9/bergaman-dev/blob/main/LICENSE" target="_blank" rel="noopener noreferrer" className="rounded-full border border-[#3e503e]/50 px-3 py-2 text-xs hover:border-[#e8c547]/50 hover:text-[#e8c547]">MIT License</a><button type="button" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="min-h-11 rounded-lg px-3 text-sm hover:bg-[#e8c547]/10 hover:text-[#e8c547]">{labels.top} <i className="fas fa-arrow-up ml-1"></i></button></div>
         </div>
@@ -71,5 +71,9 @@ export default function Footer() {
 }
 
 function FooterColumn({ icon, title, children }) {
-  return <div className="text-center sm:text-left"><h2 className="mb-4 text-base font-semibold text-[#e8c547]"><i className={`${icon} mr-2 text-sm`}></i>{title}</h2><div className="flex flex-col items-center gap-2 sm:items-start">{children}</div></div>;
+  return <div className="text-center sm:text-left"><h2 className="mb-2 text-base font-semibold text-[#e8c547]"><i className={`${icon} mr-2 text-sm`}></i>{title}</h2><div className="flex flex-col items-center gap-1 sm:items-start">{children}</div></div>;
+}
+
+function VercelGlyph() {
+  return <svg aria-hidden="true" viewBox="0 0 24 24" className="h-4 w-4 fill-current text-[#e8c547]"><path d="M12 3 23 21H1L12 3Z" /></svg>;
 }

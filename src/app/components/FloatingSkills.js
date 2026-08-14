@@ -8,7 +8,7 @@ export default function FloatingSkills({ className = "" }) {
         {/* Top Right - Full-Stack Developer */}
         <div className="absolute top-[10%] -right-[35%] animate-float-1">
           <div className="bg-gradient-to-r from-gray-800/90 to-gray-900/90 backdrop-blur-md border border-[#e8c547]/40 rounded-full px-4 py-2 shadow-xl">
-            <div className="flex items-center text-sm text-[#e8c547] font-medium whitespace-nowrap">
+            <div className="preserve-gold flex items-center text-sm text-[#e8c547] font-medium whitespace-nowrap">
               <i className="fas fa-code mr-2"></i>
               Full-Stack Developer
             </div>
@@ -18,7 +18,7 @@ export default function FloatingSkills({ className = "" }) {
         {/* Mid Right - Tech Enthusiast */}
         <div className="absolute top-[45%] -right-[45%] animate-float-2" style={{ animationDelay: '0.5s' }}>
           <div className="bg-gradient-to-r from-gray-800/90 to-gray-900/90 backdrop-blur-md border border-[#e8c547]/40 rounded-full px-4 py-2 shadow-xl">
-            <div className="flex items-center text-sm text-[#e8c547] font-medium whitespace-nowrap">
+            <div className="preserve-gold flex items-center text-sm text-[#e8c547] font-medium whitespace-nowrap">
               <i className="fas fa-cogs mr-2"></i>
               Tech Enthusiast
             </div>
@@ -28,7 +28,7 @@ export default function FloatingSkills({ className = "" }) {
         {/* Mid Left - Electronics Engineer */}
         <div className="absolute top-[55%] -left-[40%] animate-float-3" style={{ animationDelay: '1s' }}>
           <div className="bg-gradient-to-r from-gray-800/90 to-gray-900/90 backdrop-blur-md border border-[#e8c547]/40 rounded-full px-4 py-2 shadow-xl">
-            <div className="flex items-center text-sm text-[#e8c547] font-medium whitespace-nowrap">
+            <div className="preserve-gold flex items-center text-sm text-[#e8c547] font-medium whitespace-nowrap">
               <i className="fas fa-bolt mr-2"></i>
               Electronics Engineer
             </div>
@@ -55,4 +55,4 @@ export default function FloatingSkills({ className = "" }) {
       </div>
     </div>
   );
-} 
+}

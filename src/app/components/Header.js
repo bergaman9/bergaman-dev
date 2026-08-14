@@ -289,15 +289,15 @@ export default function Header() {
   return (
     <header data-scrolled={isScrolled} className={`site-header-shell fixed left-0 right-0 top-0 z-50 ${isScrolled ? '' : 'border-b border-[#3e503e]/60 bg-gradient-to-b from-[#0a1a0f] via-[#0e1b12] to-[#1a2e1a]/20 backdrop-blur-md'} ${hideTransitionClass}`}>
       <div className="site-header-island page-content py-3.5 backdrop-blur-xl">
-        <div className="flex items-center justify-between lg:grid lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
+        <div className="relative flex items-center justify-between">
           {/* Logo with Dragon Icon */}
           <Link href="/" className="group flex items-center space-x-3 lg:justify-self-start">
             <div className="relative">
               <div className="absolute inset-0 bg-[#e8c547]/20 rounded-full blur-lg"></div>
-              <i className="fas fa-dragon text-2xl text-[#e8c547] group-hover:scale-110 transition-transform duration-300 relative z-10 drop-shadow-lg"></i>
+              <i className="site-logo-icon fas fa-dragon text-2xl text-[#e8c547] group-hover:scale-110 transition-transform duration-300 relative z-10 drop-shadow-lg"></i>
             </div>
             <div>
-              <span className="block text-2xl md:text-3xl font-extrabold bg-gradient-to-r from-[#e8c547] to-[#f4d76b] bg-clip-text text-transparent group-hover:from-[#f4d76b] group-hover:to-[#e8c547] transition-all duration-300">
+              <span className="site-logo-text block text-2xl md:text-3xl font-extrabold bg-gradient-to-r from-[#e8c547] to-[#f4d76b] bg-clip-text text-transparent group-hover:from-[#f4d76b] group-hover:to-[#e8c547] transition-all duration-300">
                 Bergaman
               </span>
               <p className="text-xs text-gray-400 -mt-1 hidden sm:block">The Dragon's Domain</p>
@@ -305,24 +305,25 @@ export default function Header() {
           </Link>
 
           {/* Desktop navigation remains geometrically centered regardless of side controls. */}
-          <nav className="hidden items-center justify-center gap-1 lg:flex lg:justify-self-center">
+          <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center justify-center gap-1 lg:flex">
             {navigationItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center space-x-2 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-300 xl:px-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c547]/60 ${isActive(item.href)
+                aria-current={isActive(item.href) ? 'page' : undefined}
+                className={`site-nav-item flex items-center space-x-2 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-300 xl:px-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c547]/60 ${isActive(item.href)
                     ? 'text-[#e8c547] bg-[#e8c547]/10 font-semibold'
                     : 'text-gray-300 hover:text-[#e8c547] hover:bg-[#e8c547]/10'
                   }`}
               >
                 <i className={`${item.icon} text-sm`}></i>
-                <span>{item.label}</span>
+                <span className="whitespace-nowrap">{item.label}</span>
               </Link>
             ))}
           </nav>
 
           {/* Right Side - Admin and Mobile Menu */}
-          <div className="flex shrink-0 items-center space-x-4 lg:justify-self-end">
+          <div className="flex shrink-0 items-center space-x-4">
             <div className="hidden items-center gap-2 lg:flex">
               <button type="button" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} className="preference-button flex h-11 w-11 items-center justify-center rounded-xl border transition-colors hover:border-[#e8c547]/60 hover:text-[#e8c547] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c547]/60" aria-label={theme === 'dark' ? t('themeLight') : t('themeDark')} title={theme === 'dark' ? t('themeLight') : t('themeDark')}>
                 <ThemeGlyph theme={theme} />

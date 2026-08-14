@@ -183,7 +183,7 @@ export default function Home() {
                 {/* Text Content - Enhanced Typography */}
                 <div className="relative z-10">
                   <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
-                    <span className="bg-gradient-to-r from-[#e8c547] via-[#f4d76b] to-[#e8c547] bg-clip-text text-transparent animate-gradient bg-300">
+                    <span className="hero-name bg-gradient-to-r from-[#e8c547] via-[#f4d76b] to-[#e8c547] bg-clip-text text-transparent animate-gradient bg-300">
                       Ömer
                     </span>
                   </h1>
