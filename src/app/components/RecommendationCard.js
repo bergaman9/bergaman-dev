@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { SITE_CONFIG } from '@/lib/constants';
+import { getSafeHttpUrl, getSpotifyEmbedUrl, parseSafeHttpUrl } from '@/lib/urlSecurity';
 
 // Get placeholder image for a category
 const getPlaceholderImage = (category) => {
@@ -742,37 +743,15 @@ export default function RecommendationCard({
 
   // Handle Spotify embed
   const getSpotifyEmbed = (url) => {
-    if (!url || !url.toString().toLowerCase().includes('spotify.com')) return null;
-
-    // Handle different Spotify URL formats including international URLs (intl-tr, intl-de, etc.)
-    // We search for /track/, /album/, /playlist/ segments regardless of what comes before (like /intl-tr/)
-
-    // Track URL
-    const trackMatch = url.match(/\/track\/([^\/?]+)/i);
-    if (trackMatch) {
-      return `https://open.spotify.com/embed/track/${trackMatch[1]}?utm_source=generator&theme=0`;
-    }
-
-    // Playlist URL
-    const playlistMatch = url.match(/\/playlist\/([^\/?]+)/i);
-    if (playlistMatch) {
-      return `https://open.spotify.com/embed/playlist/${playlistMatch[1]}?utm_source=generator&theme=0`;
-    }
-
-    // Album URL
-    const albumMatch = url.match(/\/album\/([^\/?]+)/i);
-    if (albumMatch) {
-      return `https://open.spotify.com/embed/album/${albumMatch[1]}?utm_source=generator&theme=0`;
-    }
-
-    return null;
+    return getSpotifyEmbedUrl(url);
   };
 
   // Handle favicon for links
   const getFaviconUrl = (url) => {
     if (!url) return null;
     try {
-      const domain = new URL(url).hostname;
+      const domain = parseSafeHttpUrl(url)?.hostname;
+      if (!domain) return null;
       // Use multiple favicon services as fallback
       return `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
     } catch {
@@ -783,7 +762,8 @@ export default function RecommendationCard({
   // Get domain name from URL
   const getDomainName = (url) => {
     try {
-      const domain = new URL(url).hostname;
+      const domain = parseSafeHttpUrl(url)?.hostname;
+      if (!domain) return 'Link';
       return domain.replace('www.', '');
     } catch {
       return 'Link';
@@ -800,7 +780,7 @@ export default function RecommendationCard({
 
   // Link Card - Enhanced Design with Spotify Detection
   if (recommendation.category === 'link') {
-    const linkUrl = recommendation.link || recommendation.url;
+    const linkUrl = getSafeHttpUrl(recommendation.link || recommendation.url);
 
     // Check if it's a Spotify link
     const spotifyEmbed = getSpotifyEmbed(linkUrl);
@@ -941,11 +921,11 @@ export default function RecommendationCard({
 
   // Music Card - Spotify Embed
   if (recommendation.category === 'music') {
-    let musicUrl = recommendation.link || recommendation.url;
+    let musicUrl = getSafeHttpUrl(recommendation.link || recommendation.url);
 
     // Fallback: If no URL is provided but the title looks like a Spotify URL, use the title
-    if (!musicUrl && recommendation.title && recommendation.title.includes('spotify.com')) {
-      musicUrl = recommendation.title;
+    if (!musicUrl) {
+      musicUrl = getSafeHttpUrl(recommendation.title);
     }
 
     const spotifyEmbed = getSpotifyEmbed(musicUrl);
@@ -974,7 +954,7 @@ export default function RecommendationCard({
             </div>
             <div className="flex-1">
               <h3 className="text-xl font-semibold text-gray-200 mb-1">
-                {recommendation.title && recommendation.title.includes('http') ? 'Spotify Track' : recommendation.title}
+                {getSafeHttpUrl(recommendation.title) ? 'Spotify Track' : recommendation.title}
               </h3>
               {recommendation.author && (
                 <p className="text-sm text-gray-400">{recommendation.author}</p>

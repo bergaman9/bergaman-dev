@@ -16,6 +16,7 @@ import { useRouter } from 'next/navigation';
 import PageHeader from '@/app/components/PageHeader';
 import RecommendationCard from '../../../components/RecommendationCard';
 import { SkeletonCard } from '@/app/components/Skeleton';
+import { getSpotifyResource } from '@/lib/urlSecurity';
 
 export default function AdminRecommendationsPage() {
   const [recommendations, setRecommendations] = useState([]);
@@ -341,14 +342,10 @@ export default function AdminRecommendationsPage() {
 
   // Fetch Spotify data
   const fetchSpotifyData = async (url) => {
-    if (!url || !url.includes('spotify.com')) return;
+    const resource = getSpotifyResource(url);
+    if (!resource) return;
 
-    // Extract Spotify ID from URL
-    const match = url.match(/(?:track|album|playlist)\/([a-zA-Z0-9]+)/);
-    if (!match) return;
-
-    const spotifyId = match[1];
-    const type = url.includes('/track/') ? 'track' : url.includes('/album/') ? 'album' : 'playlist';
+    const { id: spotifyId, type } = resource;
 
     try {
       // For now, just use the embed image
@@ -649,9 +646,7 @@ export default function AdminRecommendationsPage() {
               onChange={(e) => {
                 handleInputChange(e);
                 // Auto-fetch Spotify data when URL is entered
-                if (e.target.value && e.target.value.includes('spotify.com')) {
-                  fetchSpotifyData(e.target.value);
-                }
+                fetchSpotifyData(e.target.value);
               }}
               placeholder="https://open.spotify.com/track/..."
               icon="fab fa-spotify"

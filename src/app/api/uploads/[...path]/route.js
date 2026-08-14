@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { resolve, relative } from 'path';
-import { readFile, stat } from 'fs/promises';
-import { existsSync } from 'fs';
+import { open } from 'fs/promises';
 
 export async function GET(request, { params }) {
   try {
@@ -14,20 +13,6 @@ export async function GET(request, { params }) {
     if (relativePath.startsWith('..') || relativePath === '' || relativePath.includes('..')) {
       return new NextResponse('Forbidden', { status: 403 });
     }
-
-    // Check if file exists
-    if (!existsSync(filePath)) {
-      return new NextResponse('File not found', { status: 404 });
-    }
-
-    // Get file stats
-    const fileStats = await stat(filePath);
-    if (!fileStats.isFile()) {
-      return new NextResponse('Not a file', { status: 404 });
-    }
-
-    // Read file
-    const fileBuffer = await readFile(filePath);
 
     // Determine content type based on file extension
     const fileName = path[path.length - 1];
@@ -46,15 +31,33 @@ export async function GET(request, { params }) {
       return new NextResponse('Unsupported file type', { status: 415 });
     }
 
-    return new NextResponse(fileBuffer, {
-      status: 200,
-      headers: {
-        'Content-Type': contentType,
-        'X-Content-Type-Options': 'nosniff',
-        'Cache-Control': 'public, max-age=31536000, immutable',
-        'Content-Length': fileStats.size.toString(),
-      },
-    });
+    let fileHandle;
+    try {
+      fileHandle = await open(filePath, 'r');
+      const fileStats = await fileHandle.stat();
+      if (!fileStats.isFile()) {
+        return new NextResponse('Not a file', { status: 404 });
+      }
+
+      const fileBuffer = await fileHandle.readFile();
+
+      return new NextResponse(fileBuffer, {
+        status: 200,
+        headers: {
+          'Content-Type': contentType,
+          'X-Content-Type-Options': 'nosniff',
+          'Cache-Control': 'public, max-age=31536000, immutable',
+          'Content-Length': fileStats.size.toString(),
+        },
+      });
+    } catch (error) {
+      if (error?.code === 'ENOENT') {
+        return new NextResponse('File not found', { status: 404 });
+      }
+      throw error;
+    } finally {
+      await fileHandle?.close();
+    }
 
   } catch (error) {
     console.error('Error serving file:', error);

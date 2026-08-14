@@ -4,6 +4,7 @@ import Contact from '../../../../models/Contact';
 import mongoose from 'mongoose';
 import nodemailer from 'nodemailer';
 import { escapeHtml, escapeRegExp, verifySharedSecret } from '@/lib/serverSecurity';
+import { cleanEmailReply, extractEmailAddress, extractEmailDisplayName } from '@/lib/emailParsing';
 
 export async function POST(request) {
   try {
@@ -43,8 +44,8 @@ export async function POST(request) {
     }
 
     // Extract sender information
-    const fromEmail = extractEmail(emailData.from);
-    const fromName = extractName(emailData.from) || fromEmail;
+    const fromEmail = extractEmailAddress(emailData.from);
+    const fromName = extractEmailDisplayName(emailData.from) || fromEmail;
     const subject = emailData.subject || '';
     const message = emailData.text || emailData.html || '';
 
@@ -82,7 +83,7 @@ export async function POST(request) {
       // Add reply to existing contact
       const reply = {
         _id: new mongoose.Types.ObjectId(),
-        message: cleanEmailMessage(message),
+        message: cleanEmailReply(message),
         type: 'user',
         senderName: fromName,
         email: fromEmail,
@@ -107,7 +108,7 @@ export async function POST(request) {
       contact = new Contact({
         name: fromName,
         email: fromEmail,
-        message: cleanEmailMessage(message),
+        message: cleanEmailReply(message),
         status: 'new',
         ipAddress: 'email-webhook',
         userAgent: 'email-client',
@@ -137,7 +138,7 @@ export async function POST(request) {
             <p><strong>From:</strong> ${escapeHtml(fromName)} (${escapeHtml(fromEmail)})</p>
             <p><strong>Subject:</strong> ${escapeHtml(subject)}</p>
             <div style="background: #f5f5f5; padding: 15px; border-radius: 5px; margin: 15px 0;">
-              <pre style="white-space: pre-wrap; font-family: Arial, sans-serif;">${escapeHtml(cleanEmailMessage(message))}</pre>
+              <pre style="white-space: pre-wrap; font-family: Arial, sans-serif;">${escapeHtml(cleanEmailReply(message))}</pre>
             </div>
             <p><a href="${process.env.NEXTAUTH_URL || 'https://www.bergaman.dev'}/admin/contacts" style="background: #e8c547; color: #0e1b12; padding: 10px 20px; text-decoration: none; border-radius: 5px;">View in Admin Panel</a></p>
           </div>
@@ -163,72 +164,6 @@ export async function POST(request) {
   }
 }
 
-// Helper function to extract email from "Name <email@domain.com>" format
-function extractEmail(fromString) {
-  if (!fromString) return null;
-
-  const emailMatch = fromString.match(/<([^>]+)>/);
-  if (emailMatch) {
-    return emailMatch[1];
-  }
-
-  // If no angle brackets, assume the whole string is an email
-  const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/;
-  const match = fromString.match(emailRegex);
-  return match ? match[0] : fromString;
-}
-
-// Helper function to extract name from "Name <email@domain.com>" format
-function extractName(fromString) {
-  if (!fromString) return null;
-
-  const nameMatch = fromString.match(/^([^<]+)</);
-  if (nameMatch) {
-    return nameMatch[1].trim().replace(/"/g, '');
-  }
-
-  // If no angle brackets, try to extract name before @
-  const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/;
-  if (!emailRegex.test(fromString)) {
-    return fromString; // Assume it's a name
-  }
-
-  return null;
-}
-
-// Helper function to clean email message content
-function cleanEmailMessage(message) {
-  if (!message) return '';
-
-  // Remove HTML tags if it's HTML content
-  let cleaned = message.replace(/<[^>]*>/g, '');
-
-  // Remove email signatures and quoted text
-  const lines = cleaned.split('\n');
-  const cleanedLines = [];
-
-  for (const line of lines) {
-    const trimmedLine = line.trim();
-
-    // Stop at common email signature indicators
-    if (
-      trimmedLine.startsWith('--') ||
-      trimmedLine.startsWith('___') ||
-      trimmedLine.startsWith('From:') ||
-      trimmedLine.startsWith('Sent:') ||
-      trimmedLine.startsWith('To:') ||
-      trimmedLine.startsWith('Subject:') ||
-      trimmedLine.includes('wrote:') ||
-      trimmedLine.includes('On ') && trimmedLine.includes(' at ') && trimmedLine.includes(' wrote:')
-    ) {
-      break;
-    }
-
-    cleanedLines.push(line);
-  }
-
-  return cleanedLines.join('\n').trim();
-}
 
 // Allow GET for webhook verification (some services require this)
 export async function GET(request) {

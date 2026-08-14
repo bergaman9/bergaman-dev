@@ -1,5 +1,25 @@
 import mongoose from 'mongoose';
 
+function isValidNewsletterEmail(value) {
+  if (typeof value !== 'string' || value.length < 3 || value.length > 254) return false;
+  if ([...value].some((character) => character.charCodeAt(0) <= 32)) return false;
+
+  const separator = value.lastIndexOf('@');
+  if (separator < 1 || separator !== value.indexOf('@')) return false;
+
+  const local = value.slice(0, separator);
+  const domain = value.slice(separator + 1);
+  if (local.length > 64 || domain.length < 3 || domain.length > 253) return false;
+
+  const labels = domain.split('.');
+  return labels.length >= 2 && labels.every((label) => (
+    label.length > 0 &&
+    label.length <= 63 &&
+    !label.startsWith('-') &&
+    !label.endsWith('-')
+  ));
+}
+
 const NewsletterSchema = new mongoose.Schema({
   email: {
     type: String,
@@ -7,7 +27,10 @@ const NewsletterSchema = new mongoose.Schema({
     unique: true,
     trim: true,
     lowercase: true,
-    match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please enter a valid email']
+    validate: {
+      validator: isValidNewsletterEmail,
+      message: 'Please enter a valid email'
+    }
   },
   name: {
     type: String,
@@ -55,4 +78,4 @@ const NewsletterSchema = new mongoose.Schema({
 // Index for better query performance (email already has unique index)
 NewsletterSchema.index({ status: 1, subscribedAt: -1 });
 
-export default mongoose.models.Newsletter || mongoose.model('Newsletter', NewsletterSchema); 
+export default mongoose.models.Newsletter || mongoose.model('Newsletter', NewsletterSchema);

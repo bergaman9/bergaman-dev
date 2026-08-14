@@ -2,6 +2,7 @@
 
 import Tooltip from './Tooltip';
 import SafeImage from './SafeImage';
+import { getSafeHttpUrl, hostnameMatches, parseSafeHttpUrl } from '@/lib/urlSecurity';
 
 export default function ProjectCard({ project, isAdmin = false, onEdit, onDelete }) {
   // Temporary Overrides (Hotfix)
@@ -18,28 +19,29 @@ export default function ProjectCard({ project, isAdmin = false, onEdit, onDelete
 
   // Smart Link Configuration
   const getLinkConfig = (url) => {
-    if (!url) return null;
+    const parsedUrl = parseSafeHttpUrl(url);
+    if (!parsedUrl) return null;
 
     // Contro Space specific
-    if (url.includes('contro.space')) return {
+    if (hostnameMatches(parsedUrl, 'contro.space')) return {
       label: 'Dashboard',
       icon: 'fas fa-columns',
       color: 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-500/20'
     };
 
-    if (url.includes('github.com')) return {
+    if (hostnameMatches(parsedUrl, 'github.com')) return {
       label: 'Source',
       icon: 'fab fa-github',
       color: 'bg-white/10 hover:bg-white/20 text-white'
     };
 
-    if (url.includes('youtube.com') || url.includes('youtu.be')) return {
+    if (hostnameMatches(parsedUrl, 'youtube.com') || hostnameMatches(parsedUrl, 'youtu.be')) return {
       label: 'Watch',
       icon: 'fab fa-youtube',
       color: 'bg-red-600 hover:bg-red-500 text-white shadow-lg shadow-red-600/20'
     };
 
-    if (url.includes('figma.com')) return {
+    if (hostnameMatches(parsedUrl, 'figma.com')) return {
       label: 'Design',
       icon: 'fab fa-figma',
       color: 'bg-purple-600 hover:bg-purple-500 text-white'
@@ -90,10 +92,13 @@ export default function ProjectCard({ project, isAdmin = false, onEdit, onDelete
     : null;
 
   // Pre-calculate link configs
-  const mainAction = displayProject.liveUrl ? { url: displayProject.liveUrl, ...getLinkConfig(displayProject.liveUrl) } :
-    displayProject.demoUrl ? { url: displayProject.demoUrl, ...getLinkConfig(displayProject.demoUrl) } : null;
+  const safeLiveUrl = getSafeHttpUrl(displayProject.liveUrl);
+  const safeDemoUrl = getSafeHttpUrl(displayProject.demoUrl);
+  const safeGithubUrl = getSafeHttpUrl(displayProject.githubUrl);
+  const mainAction = safeLiveUrl ? { url: safeLiveUrl, ...getLinkConfig(safeLiveUrl) } :
+    safeDemoUrl ? { url: safeDemoUrl, ...getLinkConfig(safeDemoUrl) } : null;
 
-  const secondaryAction = displayProject.githubUrl ? { url: displayProject.githubUrl, ...getLinkConfig(displayProject.githubUrl) } : null;
+  const secondaryAction = safeGithubUrl ? { url: safeGithubUrl, ...getLinkConfig(safeGithubUrl) } : null;
 
   return (
     <div className="group h-full flex flex-col relative rounded-[2rem] overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-[#e8c547]/10">

@@ -109,14 +109,22 @@ async function main() {
 
             // Check if file exists (don't overwrite explicitly generated/uploaded PNGs or existing SVGs)
             const pngPath = filePath.replace('.svg', '.png');
-            if (fs.existsSync(filePath) || fs.existsSync(pngPath) || word.image) {
+            if (fs.existsSync(pngPath) || word.image) {
                 skippedCount++;
                 continue;
             }
 
             const svgContent = generateSVG(word.term);
-            fs.writeFileSync(filePath, svgContent);
-            createdCount++;
+            try {
+                fs.writeFileSync(filePath, svgContent, { flag: 'wx' });
+                createdCount++;
+            } catch (error) {
+                if (error.code === 'EEXIST') {
+                    skippedCount++;
+                    continue;
+                }
+                throw error;
+            }
 
             if (createdCount % 50 === 0) process.stdout.write('.');
         }

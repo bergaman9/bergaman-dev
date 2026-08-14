@@ -1,13 +1,10 @@
 const fs = require('fs');
 const path = require('path');
-const https = require('https');
 const axios = require('axios');
 
 // Create the directory if it doesn't exist
 const gameImagesDir = path.join(process.cwd(), 'public', 'images', 'games');
-if (!fs.existsSync(gameImagesDir)) {
-  fs.mkdirSync(gameImagesDir, { recursive: true });
-}
+fs.mkdirSync(gameImagesDir, { recursive: true });
 
 // List of games with image URLs to download
 const gamesToDownload = [
@@ -48,8 +45,7 @@ async function downloadImage(url, filename) {
     const response = await axios({
       url,
       method: 'GET',
-      responseType: 'stream',
-      httpsAgent: new https.Agent({ rejectUnauthorized: false }) // In case of SSL issues
+      responseType: 'stream'
     });
 
     // Pipe the image data to the file
@@ -109,4 +105,4 @@ async function downloadAllImages() {
   console.log('✅ All images downloaded successfully!');
 }
 
-downloadAllImages().catch(console.error); 
+downloadAllImages().catch(console.error);
