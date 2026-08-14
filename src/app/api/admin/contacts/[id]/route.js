@@ -145,7 +145,7 @@ export async function PUT(request, { params }) {
                     Reply in Conversation
                   </a>
 
-                  <a href="https://bergaman.dev"
+                  <a href="https://www.bergaman.dev"
                      style="display: inline-block; background: linear-gradient(135deg, #2e3d29 0%, #1a2e1a 100%); color: #e8c547; padding: 12px 25px; text-decoration: none; border-radius: 6px; font-weight: bold; margin: 0 10px; border: 1px solid #e8c547;">
                     🌐 Visit My Portfolio
                   </a>
@@ -156,7 +156,7 @@ export async function PUT(request, { params }) {
               <div style="background: rgba(14, 27, 18, 0.8); padding: 20px; text-align: center; border-top: 1px solid rgba(62, 80, 62, 0.3);">
                 <p style="margin: 0; font-size: 12px; color: #9ca3af;">
                   This is a personal response from
-                  <a href="https://bergaman.dev" style="color: #e8c547; text-decoration: none;">Ömer (Bergaman)</a>
+                  <a href="https://www.bergaman.dev" style="color: #e8c547; text-decoration: none;">Ömer (Bergaman)</a>
                 </p>
                 <p style="margin: 5px 0 0 0; font-size: 11px; color: #6b7280;">
                   Electrical Electronics Engineer | Full Stack Developer | The Dragon's Domain

@@ -119,7 +119,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 🌟 **Live Demo**
 
-- **🚀 Current Version (v2.5.13)**: [bergaman.dev](https://bergaman.dev)
+- **🚀 Current Version (v2.8.0)**: [bergaman.dev](https://www.bergaman.dev)
 - **🕰️ Legacy Version (v1.0.0)**: [bergaman-v1.vercel.app](https://bergaman-v1.vercel.app/)
 
 ## ✨ **Key Features**
@@ -383,7 +383,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 👨‍💻 **Author**
 
 **Ömer (Bergaman)**
-- 🌐 Website: [bergaman.dev](https://bergaman.dev)
+- 🌐 Website: [bergaman.dev](https://www.bergaman.dev)
 - 🐙 GitHub: [@bergaman9](https://github.com/bergaman9)
 - 📧 Email: contact@bergaman.dev
 
@@ -444,9 +444,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - **📚 Repository**: [github.com/bergaman9/bergaman-dev](https://github.com/bergaman9/bergaman-dev)
 - **🏷️ Releases**: [github.com/bergaman9/bergaman-dev/releases](https://github.com/bergaman9/bergaman-dev/releases)
-- **📖 Documentation**: [bergaman.dev/docs](https://bergaman.dev/docs)
+- **📖 Documentation**: [bergaman.dev/docs](https://www.bergaman.dev/docs)
 - **🐛 Issues**: [github.com/bergaman9/bergaman-dev/issues](https://github.com/bergaman9/bergaman-dev/issues)
-- **📧 Newsletter**: [bergaman.dev/newsletter](https://bergaman.dev/newsletter)
+- **📧 Newsletter**: [bergaman.dev/newsletter](https://www.bergaman.dev/newsletter)
 
 ---
 

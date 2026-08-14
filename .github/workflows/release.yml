@@ -144,7 +144,7 @@ jobs:
           This release has been automatically deployed to production.
 
           ## 🐉 Bergaman Portfolio
-          Visit the live site: [bergaman.dev](https://bergaman.dev)
+          Visit the live site: [bergaman.dev](https://www.bergaman.dev)
         draft: false
         prerelease: false
 

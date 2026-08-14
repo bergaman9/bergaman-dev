@@ -80,7 +80,7 @@ export async function POST(request, { params }) {
 
         const emailPromises = batch.map(async (subscriber) => {
           try {
-            const unsubscribeUrl = `${process.env.NEXTAUTH_URL || 'https://bergaman.dev'}/newsletter/unsubscribe?email=${encodeURIComponent(subscriber.email)}`;
+            const unsubscribeUrl = `${process.env.NEXTAUTH_URL || 'https://www.bergaman.dev'}/newsletter/unsubscribe?email=${encodeURIComponent(subscriber.email)}`;
 
             const mailOptions = {
               from: process.env.EMAIL_USER,
@@ -322,7 +322,7 @@ export async function POST(request, { params }) {
                       </p>
                       <p class="footer-links">
                         <a href="${unsubscribeUrl}">Unsubscribe</a> |
-                        <a href="https://bergaman.dev">Visit Website</a>
+                        <a href="https://www.bergaman.dev">Visit Website</a>
                       </p>
                       <div class="social-icons">
                         <a href="https://twitter.com/bergaman" class="social-icon">

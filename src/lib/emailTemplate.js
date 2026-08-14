@@ -33,7 +33,7 @@ export function brandedEmailShell({
       <!-- Footer -->
       <div style="background:rgba(8,16,11,0.85);padding:22px 40px;text-align:center;border-top:1px solid rgba(62,80,62,0.3);">
         <p style="margin:0;font-size:12px;color:#9ca3af;">
-          From <a href="https://bergaman.dev" style="color:#e8c547;text-decoration:none;font-weight:600;">bergaman.dev</a> · © ${CURRENT_YEAR()} Bergaman
+          From <a href="https://www.bergaman.dev" style="color:#e8c547;text-decoration:none;font-weight:600;">bergaman.dev</a> · © ${CURRENT_YEAR()} Bergaman
         </p>
         <p style="margin:6px 0 0 0;font-size:11px;color:#6b7280;">${footerNote}</p>
       </div>

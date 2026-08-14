@@ -139,7 +139,7 @@ export async function POST(request) {
             <div style="background: #f5f5f5; padding: 15px; border-radius: 5px; margin: 15px 0;">
               <pre style="white-space: pre-wrap; font-family: Arial, sans-serif;">${escapeHtml(cleanEmailMessage(message))}</pre>
             </div>
-            <p><a href="${process.env.NEXTAUTH_URL || 'https://bergaman.dev'}/admin/contacts" style="background: #e8c547; color: #0e1b12; padding: 10px 20px; text-decoration: none; border-radius: 5px;">View in Admin Panel</a></p>
+            <p><a href="${process.env.NEXTAUTH_URL || 'https://www.bergaman.dev'}/admin/contacts" style="background: #e8c547; color: #0e1b12; padding: 10px 20px; text-decoration: none; border-radius: 5px;">View in Admin Panel</a></p>
           </div>
         `
       };

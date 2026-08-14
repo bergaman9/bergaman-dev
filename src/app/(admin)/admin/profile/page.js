@@ -11,7 +11,7 @@ export default function AdminProfile() {
     email: 'contact@bergaman.dev',
     bio: 'Electrical & Electronics Engineer specializing in full-stack development and AI technologies.',
     about: '',
-    avatar: '/images/profile/profile.png',
+    avatar: '/images/profile/profile.jpg',
     role: 'Administrator',
     preferences: {
       theme: 'dark',
@@ -29,7 +29,7 @@ export default function AdminProfile() {
       github: 'https://github.com/bergaman9',
       linkedin: 'https://www.linkedin.com/in/omerguler/',
       twitter: '',
-      website: 'https://bergaman.dev'
+      website: 'https://www.bergaman.dev'
     }
   });
 

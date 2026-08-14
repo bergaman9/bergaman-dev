@@ -141,7 +141,7 @@ async function handler(request) {
               </div>
 
               <div style="text-align: center;">
-                <a href="https://bergaman.dev"
+                <a href="https://www.bergaman.dev"
                    style="display: inline-block; background: linear-gradient(135deg, #e8c547 0%, #f59e0b 100%); color: #1e1b4b; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
                   🌐 Visit My Portfolio
                 </a>

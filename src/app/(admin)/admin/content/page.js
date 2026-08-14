@@ -12,7 +12,7 @@ export default function AdminContent() {
   const [siteSettings, setSiteSettings] = useState({
     siteName: 'Bergaman',
     siteDescription: 'The Dragon\'s Domain - Crafting technology inspired by the strength and wisdom of a dragon',
-    siteUrl: 'https://bergaman.dev',
+    siteUrl: 'https://www.bergaman.dev',
     adminEmail: 'admin@bergaman.dev',
     socialLinks: {
       github: 'https://github.com/bergaman9',

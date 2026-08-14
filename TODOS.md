@@ -17,6 +17,8 @@
 - Analytics, Speed Insights, structured loglar, CI audit/typecheck/test/build ve Lighthouse CI bütçesi eklendi.
 - Fixed header korundu; tek yükseklik değişkeni, skip-link, mobil scroll lock ve focus trap eklendi.
 - Debug/test/seed/migrate/reset route'ları ve kullanılmayan Express CORS/Helmet/rate-limit bağımlılıkları kaldırıldı.
+- Google Search Console `bergaman.dev` domain mülkü DNS TXT ile doğrulandı; dinamik sitemap başarıyla gönderildi ve 17 URL keşfedildi. Home zaten Google dizininde. Blog, Portfolio ve high-voltage yazısı öncelikli tarama sırasına gönderildi.
+- Eski `next-sitemap` üreticisi ile `public/robots.txt`, `public/sitemap.xml` ve `public/sitemap-0.xml` kaldırıldı; canonical/robots/sitemap için yalnızca Next.js metadata route'ları kullanılıyor.
 
 ### Production sonrası temiz Lighthouse medianı (3 koşum)
 
@@ -132,16 +134,14 @@ Kanıt: Runtime loglarında DB yazısı route'u ve `/api/posts` ayrı fonksiyon 
 
 ### UI-01 — Blogdaki eski profil fotoğrafını tekilleştir
 
-- [ ] Blog author kartındaki `/images/profile/profile.png` referansını yeni görselle değiştir.
-- [ ] `SEO_DEFAULTS.openGraph`, admin profile/settings varsayılanları ve bütün author avatar fallback'lerini aynı kaynağa bağla.
+- [x] Blog author kartındaki `/images/profile/profile.png` referansını yeni görselle değiştir.
+- [x] `SEO_DEFAULTS.openGraph`, admin profile/settings varsayılanları ve bütün author avatar fallback'lerini aynı kaynağa bağla.
 - [ ] Profil verisini `SITE_CONFIG` veya ayrı bir canonical profile dosyasında tekilleştir.
 - [ ] Eski dosya kaldırılacaksa önce tüm referansları temizle; CDN cache için yeni dosya adı/hash kullan.
 
 Kanıt:
 
-- Ana sayfa: `profile.jpg` — 10 Haziran 2026, 187 KB.
-- Blog detay author kartı: `profile.png` — 14 Haziran 2025, 361 KB.
-- Canlı high-voltage yazısında kapak doğru, eski kalan görsel author profil fotoğrafı.
+- Ana sayfa, About, blog author kartı, root OG ve admin varsayılanı artık `profile.jpg` kullanıyor.
 
 Kabul kriteri: Home, About, blog author kartı, Open Graph/Twitter preview ve admin önizlemesi aynı güncel fotoğrafı kullanır.
 
@@ -154,8 +154,8 @@ Kabul kriteri: Home, About, blog author kartı, Open Graph/Twitter preview ve ad
 
 ### SEO-01 — Canonical hostname'i düzelt
 
-- [ ] Tek bir ana hostname seç: mevcut Vercel davranışına göre öneri `https://www.bergaman.dev`.
-- [ ] `SITE_CONFIG.url`, `metadataBase`, route canonical'ları, sitemap, robots, JSON-LD, e-posta linkleri ve OG URL'lerini aynı hostname'e taşı.
+- [x] Tek bir ana hostname seç: `https://www.bergaman.dev`.
+- [x] `SITE_CONFIG.url`, `metadataBase`, route canonical'ları, sitemap, robots, JSON-LD, e-posta linkleri ve OG URL'lerini aynı hostname'e taşı.
 - [ ] Alternatif olarak apex ana domain seçilecekse Vercel redirect yönünü tersine çevir; iki yönlü/karışık sinyal bırakma.
 
 Kanıt: `https://bergaman.dev` şu anda 308 ile `https://www.bergaman.dev` adresine gidiyor; canonical ve sitemap ise apex adreslerini yayımlıyor.
@@ -166,7 +166,7 @@ Kanıt: `https://bergaman.dev` şu anda 308 ile `https://www.bergaman.dev` adres
 - [ ] Private, members ve password içerikleri sitemap'e alma.
 - [ ] Statik sayfalarda her build için `new Date()` yerine gerçek son değişiklik tarihini kullan.
 - [ ] Sitemap'te duplicate slug ve redirect olan URL bırakma.
-- [ ] Deploy sonrası Search Console'da sitemap'i yeniden gönder ve URL Inspection ile öncelikli sayfaları iste.
+- [x] Deploy sonrası Search Console'da sitemap'i yeniden gönder ve URL Inspection ile öncelikli sayfaları iste.
 
 Kanıt: Canlı sitemap **11 URL** içeriyor; yalnızca 5 blog yazısı var. Canlı Blog 12 yazı gösterdiği için 7 DB yazısı sitemap dışında.
 
@@ -335,39 +335,39 @@ Kanıt: Home/Work'te kontrast ve isimsiz link; Blog'da heading order ve label/na
 
 ### UI-08 — Footer'ı sadeleştir ve sürüm kaynağını düzelt
 
-- [ ] Marka, temel navigation, GitHub/LinkedIn/email ve copyright dışında kalan yoğun alanları azalt.
-- [ ] Tech stack, MIT lisansı, eski portfolio ve build detaylarını README/More alanına taşı.
-- [ ] Canlı footer'daki **2.6.1** ile `package.json` **2.8.0** farkını gider.
+- [x] Marka, temel navigation, GitHub/LinkedIn/email ve copyright dışında kalan yoğun alanları azalt.
+- [x] Tech stack, MIT lisansı, eski portfolio ve build detaylarını README/More alanına taşı.
+- [x] Canlı footer'daki **2.6.1** ile `package.json` **2.8.0** farkını gider.
 - [ ] `NEXT_PUBLIC_APP_VERSION` Vercel override'ının build değerini ezip ezmediğini kontrol et.
 
 ### UI-09 — Contact/Bergasoft mesajını bütün yüzeylerde eşleştir
 
-- [ ] Contact metadata açıklamasını “soru/say hello” odağından project, software, automation ve electrical engineering işlerine çevir.
-- [ ] Inquiry type seçeneklerini form, e-posta konusu ve admin filtreleriyle eşleştir.
-- [ ] Başarı mesajında beklenen yanıt süresi ve kayıt ID'sini kullanıcı dostu biçimde göster.
-- [ ] Bergasoft'ın hukuki/marka statüsüne uygun dil kullan; doğrulanmamış şirket iddiası üretme.
+- [x] Contact metadata açıklamasını “soru/say hello” odağından project, software, automation ve electrical engineering işlerine çevir.
+- [x] Inquiry type seçeneklerini form, e-posta konusu ve admin filtreleriyle eşleştir.
+- [x] Başarı mesajında beklenen yanıt süresi ve kayıt ID'sini kullanıcı dostu biçimde göster.
+- [x] Bergasoft'ın hukuki/marka statüsüne uygun dil kullan; doğrulanmamış şirket iddiası üretme.
 
 ### UI-10 — About ve içerik yoğunluğunu azalt
 
-- [ ] Profesyonel özet, deneyim, eğitim ve 3 ana capability ilk sırada olmalı.
-- [ ] Hobileri kısa kişisel bölümde topla.
-- [ ] Aynı beceri ve açıklamaları farklı bölümlerde tekrar etme.
-- [ ] 89 KB HTML ve 677 DOM node olan About sayfasını içerik kaybetmeden sadeleştir.
+- [x] Profesyonel özet, deneyim, eğitim ve 3 ana capability ilk sırada olmalı.
+- [x] Hobileri kısa kişisel bölümde topla.
+- [x] Aynı beceri ve açıklamaları farklı bölümlerde tekrar etme.
+- [x] About sayfasını içerik kaybetmeden sadeleştir.
 
 ### SEO-04 — Metadata ve social preview'ları güncelle
 
-- [ ] Root OG image hâlâ eski `profile.png`; güncel görsele taşı.
-- [ ] Contact/Portfolio/Picks açıklamalarını yeni profesyonel konumlandırmaya göre güncelle.
-- [ ] JSON-LD `sameAs` içine doğru LinkedIn'i ekle; geçersiz/eski sosyal linkleri kaldır.
-- [ ] `worksFor: Bergasoft` ifadesini gerçek duruma göre Organization, brand veya service olarak modelle.
+- [x] Root OG image'i güncel `profile.jpg` görseline taşı.
+- [x] Contact/Portfolio/Picks açıklamalarını yeni profesyonel konumlandırmaya göre güncelle.
+- [x] JSON-LD `sameAs` içine doğru LinkedIn'i ekle; geçersiz/eski sosyal linkleri kaldır.
+- [x] Bergasoft'ı doğrulanmamış şirket iddiası yerine `Brand` olarak modelle.
 - [ ] OG/Twitter kartlarını deploy öncesi otomatik screenshot/validator testine ekle.
 
 ### SEO-05 — Search Console çalışma akışı kur
 
-- [ ] Domain property doğrulamasını kontrol et.
-- [ ] Page indexing raporunda Crawled/Discovered — currently not indexed URL'lerini çıkar.
-- [ ] 404, redirect, duplicate canonical ve soft-404 kayıtlarını temizle.
-- [ ] Sitemap düzeltildikten sonra ana sayfa, Work, Blog ve high-voltage yazısı için re-index iste.
+- [x] Domain property doğrulamasını kontrol et.
+- [x] Page indexing raporunda Crawled/Discovered — currently not indexed URL'lerini çıkar.
+- [x] Eski sitemap, redirect canonical ve blog soft-404 sinyallerini temizleyip yeniden gönder.
+- [x] Sitemap düzeltildikten sonra ana sayfa, Work, Blog ve high-voltage yazısı için re-index iste.
 - [ ] Arama performansında query, impression, CTR ve average position baseline'ı kaydet.
 - [ ] Lighthouse SEO 100 skorunu “Google görünürlüğü iyi” şeklinde yorumlama; indeks kapsamı ve içerik otoritesi ayrı ölçülmeli.
 

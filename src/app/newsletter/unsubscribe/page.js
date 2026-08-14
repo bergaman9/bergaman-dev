@@ -177,7 +177,7 @@ function UnsubscribeContent() {
           {/* Footer */}
           <div className="mt-8 text-center">
             <a
-              href="https://bergaman.dev"
+              href="https://www.bergaman.dev"
               className="text-gray-400 hover:text-[#4f46e5] transition-colors"
             >
               <i className="fas fa-arrow-left mr-2"></i>
