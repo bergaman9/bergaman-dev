@@ -583,25 +583,23 @@ function ThemeGlyph({ theme }) {
 function LanguageGlyph({ locale }) {
   const targetLocale = locale === 'en' ? 'tr' : 'en';
   return targetLocale === 'tr' ? (
-    <span aria-hidden="true" className="flex flex-col items-center gap-0.5 leading-none">
-      <svg viewBox="0 0 30 20" className="h-4 w-6 overflow-hidden rounded-[2px] shadow-sm" role="img">
+    <span aria-hidden="true" className="flex items-center justify-center leading-none">
+      <svg viewBox="0 0 30 20" className="h-[18px] w-[27px] overflow-hidden rounded-[2px] shadow-sm" role="img">
         <rect width="30" height="20" fill="#e30a17" />
         <circle cx="12" cy="10" r="5.2" fill="#fff" />
         <circle cx="13.7" cy="10" r="4.15" fill="#e30a17" />
         <path d="m18.2 10 2.75-.9-1.7 2.35v-2.9l1.7 2.35Z" fill="#fff" />
       </svg>
-      <span className="text-[8px] font-bold tracking-wide">TR</span>
     </span>
   ) : (
-    <span aria-hidden="true" className="flex flex-col items-center gap-0.5 leading-none">
-      <svg viewBox="0 0 30 20" className="h-4 w-6 overflow-hidden rounded-[2px] shadow-sm" role="img">
+    <span aria-hidden="true" className="flex items-center justify-center leading-none">
+      <svg viewBox="0 0 30 20" className="h-[18px] w-[27px] overflow-hidden rounded-[2px] shadow-sm" role="img">
         <rect width="30" height="20" fill="#012169" />
         <path d="M0 0 30 20M30 0 0 20" stroke="#fff" strokeWidth="4" />
         <path d="M0 0 30 20M30 0 0 20" stroke="#c8102e" strokeWidth="2" />
         <path d="M15 0v20M0 10h30" stroke="#fff" strokeWidth="6" />
         <path d="M15 0v20M0 10h30" stroke="#c8102e" strokeWidth="3.2" />
       </svg>
-      <span className="text-[8px] font-bold tracking-wide">EN</span>
     </span>
   );
 }
