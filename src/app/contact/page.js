@@ -17,6 +17,7 @@ export default function Contact() {
   const [formStartedAt, setFormStartedAt] = useState(() => Date.now());
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
+  const [submissionId, setSubmissionId] = useState(null);
   const [settings, setSettings] = useState({ allowContactForm: true });
   const [loading, setLoading] = useState(false);
   const { isAdminMode, isAuthenticated, exitEditMode } = useAdminMode();
@@ -162,11 +163,14 @@ export default function Contact() {
       });
 
       if (response.ok) {
+        const data = await response.json();
         setSubmitStatus('success');
+        setSubmissionId(data.id || null);
         setFormData({ name: '', email: '', inquiryType: 'Project inquiry', message: '', contactWebsite: '' });
         setFormStartedAt(Date.now());
       } else {
         setSubmitStatus('error');
+        setSubmissionId(null);
       }
     } catch (error) {
       console.error('Error sending message:', error);
@@ -266,6 +270,7 @@ export default function Contact() {
                     <i className="fas fa-paper-plane text-3xl text-green-400 mb-3 block"></i>
                     <p className="text-green-300 font-semibold">Message sent successfully!</p>
                     <p className="text-sm text-green-400/80 mt-1">Thanks for reaching out — I'll usually reply within 1–2 business days.</p>
+                    {submissionId && <p className="mt-2 text-xs text-green-300/70">Reference: {submissionId}</p>}
                   </div>
                 )}
 

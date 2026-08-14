@@ -62,7 +62,7 @@ Bergaman Portal is a personal portfolio, blog, and recommendation platform built
    MONGODB_URI=your_mongodb_connection_string
    JWT_SECRET=your_jwt_secret
    ADMIN_USERNAME=your_admin_username
-   ADMIN_PASSWORD=your_admin_password_hash
+   ADMIN_PASSWORD_HASH=your_bcrypt_cost_12_hash
    NEXTAUTH_URL=http://localhost:3000
    ```
 

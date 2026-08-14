@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
 import Portfolio from '@/models/Portfolio';
 import { clampString, readJsonLimited, validateEnum } from '@/lib/serverSecurity';
+import { revalidateTag } from 'next/cache';
 
 const PORTFOLIO_CATEGORIES = ['Web', 'Mobile', 'Desktop', 'Game', 'AI', 'IoT', 'Graphic Design', 'Brand', 'Bot', 'Other', 'web', 'mobile', 'desktop', 'game', 'ai', 'iot', 'graphic design', 'brand', 'bot', 'other', 'design', 'bots'];
 const PORTFOLIO_STATUSES = ['active', 'inactive', 'published', 'completed', 'in_progress', 'planned'];
@@ -66,6 +67,7 @@ export async function POST(request) {
     });
 
     await portfolio.save();
+    revalidateTag('portfolios', 'max');
 
     return NextResponse.json({
       success: true,

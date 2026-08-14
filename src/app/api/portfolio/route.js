@@ -1,48 +1,18 @@
 import { NextResponse } from 'next/server';
-import { connectDB } from '@/lib/mongodb';
-import Portfolio from '@/models/Portfolio';
+import { getPublicPortfolios } from '@/lib/publicContent';
 
 export async function GET(request) {
-  try {
-    await connectDB();
-
-    const { searchParams } = new URL(request.url);
-    const category = searchParams.get('category');
-    const featured = searchParams.get('featured');
-    const limit = searchParams.get('limit');
-
-    // Include all project statuses
-    let query = {};
-    
-    if (category && category !== 'all') {
-      query.category = category;
-    }
-    
-    if (featured === 'true') {
-      query.featured = true;
-    }
-
-    // Get portfolio items with proper sorting
-    let portfolioQuery = Portfolio.find(query)
-      .sort({ featured: -1, order: 1, createdAt: -1 });
-    
-    // Apply limit if specified
-    if (limit && !isNaN(limit)) {
-      portfolioQuery = portfolioQuery.limit(parseInt(limit));
-    }
-    
-    const portfolios = await portfolioQuery;
-
-    return NextResponse.json({
-      success: true,
-      portfolios: portfolios
-    }, { headers: { 'Cache-Control': 'public, max-age=300, s-maxage=1800, stale-while-revalidate=86400' } });
-
-  } catch (error) {
-    console.error('Error fetching portfolios:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to fetch portfolios' },
-      { status: 500 }
-    );
-  }
+  const startedAt = Date.now();
+  const { searchParams } = new URL(request.url);
+  const category = searchParams.get('category');
+  const featured = searchParams.get('featured') === 'true';
+  const limit = Math.min(100, Math.max(1, Number.parseInt(searchParams.get('limit') || '100', 10)));
+  let portfolios = await getPublicPortfolios();
+  if (category && category !== 'all') portfolios = portfolios.filter((item) => item.category === category);
+  if (featured) portfolios = portfolios.filter((item) => item.featured);
+  portfolios = portfolios.slice(0, limit);
+  console.log(JSON.stringify({ level: 'info', message: 'public_query', route: '/api/portfolio', requestId: request.headers.get('x-vercel-id'), durationMs: Date.now() - startedAt, resultCount: portfolios.length }));
+  return NextResponse.json({ success: true, portfolios }, {
+    headers: { 'Cache-Control': 'public, max-age=300, s-maxage=1800, stale-while-revalidate=86400' },
+  });
 }

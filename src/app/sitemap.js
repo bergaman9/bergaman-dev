@@ -1,55 +1,24 @@
-import { blogPosts } from '../data/blogPosts';
+import { getSitemapPosts } from '@/lib/publicContent';
 
-export default function sitemap() {
-  const baseUrl = 'https://bergaman.dev';
-  
-  // Static pages
+const BASE_URL = 'https://www.bergaman.dev';
+
+export default async function sitemap() {
   const staticPages = [
-    {
-      url: baseUrl,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 1,
-    },
-    {
-      url: `${baseUrl}/about`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/portfolio`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/blog`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/picks`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/contact`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.6,
-    },
-  ];
+    { path: '', changeFrequency: 'weekly', priority: 1 },
+    { path: '/about', changeFrequency: 'monthly', priority: 0.8 },
+    { path: '/portfolio', changeFrequency: 'weekly', priority: 0.9 },
+    { path: '/blog', changeFrequency: 'weekly', priority: 0.9 },
+    { path: '/picks', changeFrequency: 'monthly', priority: 0.7 },
+    { path: '/contact', changeFrequency: 'monthly', priority: 0.6 },
+  ].map(({ path, ...entry }) => ({ url: `${BASE_URL}${path}`, ...entry }));
 
-  // Dynamic blog posts
-  const blogPages = blogPosts.map((post) => ({
-    url: `${baseUrl}/blog/${post.slug}`,
-    lastModified: new Date(post.date),
+  const posts = await getSitemapPosts();
+  const blogPages = posts.map((post) => ({
+    url: `${BASE_URL}/blog/${post.slug}`,
+    ...(post.updatedAt ? { lastModified: new Date(post.updatedAt) } : {}),
     changeFrequency: 'monthly',
-    priority: 0.6,
+    priority: 0.7,
   }));
 
   return [...staticPages, ...blogPages];
-} 
+}

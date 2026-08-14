@@ -26,6 +26,8 @@ export async function verifyAdminSession(request) {
   try {
     const { payload } = await jwtVerify(session, encoder.encode(getJwtSecret()), {
       algorithms: [SECURITY.JWT.ALGORITHM],
+      issuer: 'https://www.bergaman.dev',
+      audience: 'bergaman-admin',
     });
 
     if (payload?.role !== 'admin') {
@@ -35,6 +37,19 @@ export async function verifyAdminSession(request) {
     return { valid: true, payload };
   } catch (error) {
     return { valid: false, error: error.message };
+  }
+}
+
+export function isTrustedMutationOrigin(request) {
+  const origin = request.headers.get('origin');
+  if (!origin) return false;
+  try {
+    const requestOrigin = new URL(request.url).origin;
+    const allowed = new Set([requestOrigin, SITE_CONFIG.url, 'https://www.bergaman.dev']);
+    if (process.env.NODE_ENV !== 'production') allowed.add('http://localhost:3000');
+    return allowed.has(new URL(origin).origin);
+  } catch {
+    return false;
   }
 }
 
@@ -161,6 +176,9 @@ export async function createContactReplyToken(contactId) {
     .setProtectedHeader({ alg: SECURITY.JWT.ALGORITHM })
     .setIssuedAt()
     .setExpirationTime('30d')
+    .setIssuer('https://www.bergaman.dev')
+    .setAudience('bergaman-contact-reply')
+    .setJti(crypto.randomUUID())
     .sign(encoder.encode(getJwtSecret()));
 }
 
@@ -168,6 +186,8 @@ export async function verifyContactReplyToken(token) {
   try {
     const { payload } = await jwtVerify(token, encoder.encode(getJwtSecret()), {
       algorithms: [SECURITY.JWT.ALGORITHM],
+      issuer: 'https://www.bergaman.dev',
+      audience: 'bergaman-contact-reply',
     });
 
     if (payload?.type !== 'contact_reply' || !payload.contactId) {
@@ -181,7 +201,7 @@ export async function verifyContactReplyToken(token) {
 }
 
 export function getSiteBaseUrl() {
-  return process.env.NEXTAUTH_URL || process.env.NEXT_PUBLIC_SITE_URL || SITE_CONFIG.url || 'https://bergaman.dev';
+  return process.env.NEXTAUTH_URL || process.env.NEXT_PUBLIC_SITE_URL || SITE_CONFIG.url || 'https://www.bergaman.dev';
 }
 
 export function verifySharedSecret(request, envNames = ['WEBHOOK_SHARED_SECRET']) {

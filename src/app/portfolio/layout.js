@@ -1,13 +1,13 @@
 export const metadata = {
   title: 'Portfolio',
-  description: "A showcase of Bergaman's projects — from web applications and Discord bots to AI experiments and mini tools.",
+  description: 'Selected software, automation, embedded, and electrical engineering work by Ömer, with project roles, technologies, and delivery context.',
   alternates: {
-    canonical: 'https://bergaman.dev/portfolio',
+    canonical: 'https://www.bergaman.dev/portfolio',
   },
   openGraph: {
     title: 'Portfolio | Bergaman',
-    description: "A showcase of Bergaman's projects — from web applications and Discord bots to AI experiments and mini tools.",
-    url: 'https://bergaman.dev/portfolio',
+    description: 'Selected software, automation, embedded, and electrical engineering work by Ömer.',
+    url: 'https://www.bergaman.dev/portfolio',
     type: 'website',
   },
 };

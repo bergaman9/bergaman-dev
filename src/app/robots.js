@@ -5,6 +5,6 @@ export default function robots() {
       allow: '/',
       disallow: ['/api/', '/admin/'],
     },
-    sitemap: 'https://bergaman.dev/sitemap.xml',
+    sitemap: 'https://www.bergaman.dev/sitemap.xml',
   };
-} 
+}

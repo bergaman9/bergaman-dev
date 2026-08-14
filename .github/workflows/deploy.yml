@@ -34,4 +34,4 @@ jobs:
           NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
           EMAIL_USER: ${{ secrets.EMAIL_USER }}
           EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
-          NEXT_PUBLIC_SITE_URL: https://bergaman.dev
+          NEXT_PUBLIC_SITE_URL: https://www.bergaman.dev

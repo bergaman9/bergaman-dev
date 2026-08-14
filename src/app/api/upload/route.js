@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
 import crypto from 'crypto';
+import sharp from 'sharp';
 import { requireAdmin } from '@/lib/serverSecurity';
 
 const ALLOWED_TYPES = {
@@ -56,8 +57,8 @@ export async function POST(request) {
       }, { status: 400 });
     }
 
-    // Validate file size (max 5MB)
-    const maxSize = 5 * 1024 * 1024; // 5MB
+    // Reject oversized source files before decoding.
+    const maxSize = 5 * 1024 * 1024;
     if (file.size > maxSize) {
       console.error(`Upload error: File size too large: ${file.size} bytes`);
       return NextResponse.json({
@@ -76,8 +77,24 @@ export async function POST(request) {
       }, { status: 400 });
     }
 
+    const image = sharp(buffer, { animated: true, limitInputPixels: 36_000_000 });
+    const metadata = await image.metadata();
+    if (!metadata.width || !metadata.height || metadata.width > 6000 || metadata.height > 6000) {
+      return NextResponse.json({ success: false, error: 'Image dimensions are invalid or too large.' }, { status: 400 });
+    }
+    const aspectRatio = metadata.width / metadata.height;
+    if (aspectRatio < 0.33 || aspectRatio > 3) {
+      return NextResponse.json({ success: false, error: 'Image aspect ratio must be between 1:3 and 3:1.' }, { status: 400 });
+    }
+
+    const optimizedBuffer = await image
+      .rotate()
+      .resize({ width: 1920, height: 1920, fit: 'inside', withoutEnlargement: true })
+      .webp({ quality: 82, effort: 5 })
+      .toBuffer();
+
     // Create unique filename
-    const fileName = `${crypto.randomUUID()}${ALLOWED_TYPES[file.type]}`;
+    const fileName = `${crypto.randomUUID()}.webp`;
 
     // Ensure uploads directory exists
     const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
@@ -89,7 +106,7 @@ export async function POST(request) {
 
     // Save file
     const filePath = path.join(uploadsDir, fileName);
-    await writeFile(filePath, buffer);
+    await writeFile(filePath, optimizedBuffer);
 
     // Return the public URL
     const publicUrl = `/uploads/${fileName}`;
@@ -97,7 +114,10 @@ export async function POST(request) {
     return NextResponse.json({
       success: true,
       url: publicUrl,
-      filename: fileName
+      filename: fileName,
+      bytes: optimizedBuffer.length,
+      width: Math.min(metadata.width, 1920),
+      height: Math.min(metadata.height, 1920),
     });
 
   } catch (error) {

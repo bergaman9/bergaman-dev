@@ -23,7 +23,11 @@ async function verifyToken(token) {
     const { payload } = await jwtVerify(
       token,
       new TextEncoder().encode(getProxyJwtSecret()),
-      { algorithms: [SECURITY.JWT.ALGORITHM] }
+      {
+        algorithms: [SECURITY.JWT.ALGORITHM],
+        issuer: 'https://www.bergaman.dev',
+        audience: 'bergaman-admin',
+      }
     );
 
     return { valid: true, payload };
@@ -70,6 +74,14 @@ export async function proxy(request) {
 
   const isApiRoute = pathname.startsWith('/api/admin/');
   const isAdminPage = pathname.startsWith('/admin/');
+
+  if (isApiRoute && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method)) {
+    const origin = request.headers.get('origin');
+    const requestOrigin = new URL(request.url).origin;
+    if (!origin || new URL(origin).origin !== requestOrigin) {
+      return NextResponse.json({ error: 'Invalid request origin' }, { status: 403 });
+    }
+  }
 
   if (!valid || !payload || payload.role !== 'admin') {
     if (isApiRoute) {

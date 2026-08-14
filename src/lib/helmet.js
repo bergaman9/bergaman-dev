@@ -1,4 +1,3 @@
-import helmet from 'helmet';
 import { SECURITY } from './constants';
 
 /**
@@ -119,11 +118,3 @@ export function addSecurityHeadersToResponse(response) {
   response.headers = addSecurityHeaders(response.headers);
   return response;
 }
-
-/**
- * Express middleware için helmet yapılandırması
- * @returns {Function} - Express middleware
- */
-export function helmetMiddleware() {
-  return helmet(getHelmetHeaders());
-} 

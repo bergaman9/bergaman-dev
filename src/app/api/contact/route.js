@@ -4,9 +4,13 @@ import { connectDB } from '../../../lib/mongodb';
 import Contact from '../../../models/Contact';
 import { withRateLimit } from '@/lib/rateLimit';
 import { detectContactSpam } from '@/lib/contactSpam';
-import { escapeHtml, normalizeClientIp, readJsonLimited, textToHtml, validateEmail } from '@/lib/serverSecurity';
+import { escapeHtml, hashClientIdentifier, normalizeClientIp, readJsonLimited, textToHtml, validateEmail } from '@/lib/serverSecurity';
+
+const INQUIRY_TYPES = ['Project inquiry', 'Electrical engineering opportunity', 'Software development', 'Automation / IoT', 'Collaboration', 'General question'];
 
 async function handler(request) {
+  const requestStartedAt = performance.now();
+  const requestId = request.headers.get('x-vercel-id') || crypto.randomUUID();
   try {
     await connectDB();
 
@@ -15,8 +19,8 @@ async function handler(request) {
     const safeName = typeof name === 'string' ? name.trim().slice(0, 80) : '';
     const safeEmail = typeof email === 'string' ? email.trim().toLowerCase().slice(0, 120) : '';
     const safeMessage = typeof message === 'string' ? message.trim().slice(0, 5000) : '';
-    const safeInquiryType = typeof inquiryType === 'string' ? inquiryType.trim().slice(0, 80) : 'General question';
-    const storedMessage = `[${safeInquiryType}]\n\n${safeMessage}`;
+    const safeInquiryType = INQUIRY_TYPES.includes(inquiryType) ? inquiryType : 'General question';
+    const storedMessage = safeMessage;
 
     // Validate required fields
     if (!safeName || !safeEmail || !safeMessage) {
@@ -35,9 +39,10 @@ async function handler(request) {
     }
 
     // Get client info from headers
-    const userAgent = request.headers.get('user-agent') || 'Unknown';
+    const userAgent = (request.headers.get('user-agent') || 'Unknown').slice(0, 512);
     const clientIp = normalizeClientIp(request);
-    const referer = request.headers.get('referer') || 'Direct';
+    const clientIpHash = hashClientIdentifier(clientIp);
+    const referer = (request.headers.get('referer') || 'Direct').slice(0, 500);
 
     const spamCheck = detectContactSpam(
       {
@@ -52,7 +57,7 @@ async function handler(request) {
     if (spamCheck.blocked) {
       console.warn('Blocked contact form submission', {
         reasons: spamCheck.reasons,
-        ipAddress: clientIp,
+        ipHash: clientIpHash,
       });
 
       return NextResponse.json(
@@ -65,7 +70,7 @@ async function handler(request) {
     const sameIpSubmissions = clientIp === 'unknown'
       ? 0
       : await Contact.countDocuments({
-        ipAddress: clientIp,
+        ipAddress: clientIpHash,
         createdAt: { $gte: oneHourAgo },
       });
 
@@ -81,6 +86,7 @@ async function handler(request) {
       name: safeName,
       email: safeEmail,
       message: storedMessage,
+      inquiryType: safeInquiryType,
       createdAt: { $gte: duplicateWindow },
     });
 
@@ -106,7 +112,8 @@ async function handler(request) {
       name: safeName,
       email: safeEmail,
       message: storedMessage,
-      ipAddress: clientIp,
+      inquiryType: safeInquiryType,
+      ipAddress: clientIpHash,
       userAgent,
       referrer: referer,
       timestamp: new Date()
@@ -122,7 +129,7 @@ async function handler(request) {
     if (!emailConfigured) {
       console.error('Contact email notification skipped: EMAIL_USER/EMAIL_PASS not set');
       return NextResponse.json(
-        { message: 'Message received successfully' },
+        { message: 'Message received successfully', id: String(contactMessage._id) },
         { status: 200 }
       );
     }
@@ -143,7 +150,7 @@ async function handler(request) {
       from: process.env.EMAIL_USER,
       to: process.env.ADMIN_EMAIL || process.env.EMAIL_USER,
       replyTo: safeEmail, // Set reply-to to the original sender
-      subject: `New Contact Message from ${safeName} - Bergaman Portfolio [ID:${contactMessage._id}]`,
+      subject: `[${safeInquiryType}] New Bergasoft inquiry from ${safeName} [ID:${contactMessage._id}]`,
       html: `
         <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; background: linear-gradient(135deg, #0e1b12 0%, #1a2e1a 100%); color: #d1d5db; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
 
@@ -202,18 +209,8 @@ async function handler(request) {
 
               <div style="display: grid; gap: 8px; font-size: 12px; color: #9ca3af;">
                 <div>
-                  <strong style="color: #d1d5db;">IP Address:</strong>
-                  <span style="margin-left: 10px; font-family: monospace; background: rgba(14, 27, 18, 0.5); padding: 2px 6px; border-radius: 3px;">${clientIp}</span>
-                </div>
-
-                <div>
-                  <strong style="color: #d1d5db;">User Agent:</strong>
-                  <span style="margin-left: 10px; font-family: monospace; background: rgba(14, 27, 18, 0.5); padding: 2px 6px; border-radius: 3px; word-break: break-all;">${escapeHtml(userAgent)}</span>
-                </div>
-
-                <div>
-                  <strong style="color: #d1d5db;">Referrer:</strong>
-                  <span style="margin-left: 10px; font-family: monospace; background: rgba(14, 27, 18, 0.5); padding: 2px 6px; border-radius: 3px;">${escapeHtml(referer)}</span>
+                  <strong style="color: #d1d5db;">Abuse-prevention ID:</strong>
+                  <span style="margin-left: 10px; font-family: monospace; background: rgba(14, 27, 18, 0.5); padding: 2px 6px; border-radius: 3px;">${clientIpHash.slice(0, 16)}</span>
                 </div>
 
                 <div>
@@ -230,7 +227,7 @@ async function handler(request) {
                 Reply to ${escapeHtml(safeName)}
               </a>
 
-              <a href="https://bergaman.dev/admin/contacts"
+              <a href="https://www.bergaman.dev/admin/contacts"
                  style="display: inline-block; background: linear-gradient(135deg, #2e3d29 0%, #1a2e1a 100%); color: #e8c547; padding: 12px 25px; text-decoration: none; border-radius: 6px; font-weight: bold; margin: 0 10px; border: 1px solid #e8c547;">
                 🛠️ Admin Panel
               </a>
@@ -241,7 +238,7 @@ async function handler(request) {
           <div style="background: rgba(14, 27, 18, 0.8); padding: 20px; text-align: center; border-top: 1px solid rgba(62, 80, 62, 0.3);">
             <p style="margin: 0; font-size: 12px; color: #9ca3af;">
               This message was sent from the contact form on
-              <a href="https://bergaman.dev" style="color: #e8c547; text-decoration: none;">bergaman.dev</a>
+              <a href="https://www.bergaman.dev" style="color: #e8c547; text-decoration: none;">bergaman.dev</a>
             </p>
             <p style="margin: 5px 0 0 0; font-size: 11px; color: #6b7280;">
               Bergaman - The Dragon's Domain | Technical Solutions & Development
@@ -253,14 +250,18 @@ async function handler(request) {
 
     // Best-effort delivery: the message is already saved, so a send failure
     // here should not be surfaced to the visitor as a lost message.
+    const emailStartedAt = performance.now();
     try {
-      await transporter.sendMail(mailOptions);
+      const delivery = await transporter.sendMail(mailOptions);
+      console.info(JSON.stringify({ event: 'contact_email_done', requestId, contactId: String(contactMessage._id), providerAccepted: delivery.accepted?.length || 0, durationMs: Math.round(performance.now() - emailStartedAt) }));
     } catch (sendError) {
-      console.error('Contact email notification failed (message still saved):', sendError.message);
+      console.error(JSON.stringify({ event: 'contact_email_failed', requestId, contactId: String(contactMessage._id), durationMs: Math.round(performance.now() - emailStartedAt), error: sendError.name }));
     }
 
+    console.info(JSON.stringify({ event: 'contact_done', requestId, status: 200, contactId: String(contactMessage._id), durationMs: Math.round(performance.now() - requestStartedAt) }));
+
     return NextResponse.json(
-      { message: 'Message sent successfully' },
+      { message: 'Message received successfully', id: String(contactMessage._id) },
       { status: 200 }
     );
 

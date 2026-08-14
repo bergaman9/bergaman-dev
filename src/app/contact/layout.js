@@ -1,13 +1,13 @@
 export const metadata = {
   title: 'Contact',
-  description: 'Get in touch with Bergaman for questions, collaborations, or just to say hello. Always open to connecting with fellow developers and tech enthusiasts.',
+  description: 'Contact Ömer through Bergasoft for software development, automation, electrical engineering, technical product work, and project collaborations.',
   alternates: {
-    canonical: 'https://bergaman.dev/contact',
+    canonical: 'https://www.bergaman.dev/contact',
   },
   openGraph: {
     title: 'Contact | Bergaman',
-    description: 'Get in touch with Bergaman for questions, collaborations, or just to say hello.',
-    url: 'https://bergaman.dev/contact',
+    description: 'Discuss software, automation, electrical engineering, or technical product work with Ömer through Bergasoft.',
+    url: 'https://www.bergaman.dev/contact',
     type: 'website',
   },
 };

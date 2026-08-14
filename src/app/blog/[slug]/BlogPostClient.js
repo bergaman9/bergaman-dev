@@ -1,9 +1,7 @@
 "use client";
 
-// Force dynamic rendering to prevent initialization errors
-export const dynamic = 'force-dynamic';
-
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import BlogImageGenerator from '../../components/BlogImageGenerator';
@@ -28,6 +26,7 @@ function stripLeadingCoverImage(content, coverUrl) {
 
 export default function BlogPostClient({ slug, initialPost }) {
   const params = { slug };
+  const router = useRouter();
   const [post, setPost] = useState(initialPost);
   const [loading, setLoading] = useState(!initialPost);
   const [error, setError] = useState(null);
@@ -35,25 +34,31 @@ export default function BlogPostClient({ slug, initialPost }) {
   const [hasLiked, setHasLiked] = useState(false);
   const [modalImage, setModalImage] = useState(null);
   const [commentCount, setCommentCount] = useState(0);
-  const [isPasswordProtected, setIsPasswordProtected] = useState(false);
+  const [isPasswordProtected, setIsPasswordProtected] = useState(Boolean(initialPost?.protected));
   const [passwordInput, setPasswordInput] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authorProfile] = useState({
     name: 'Ömer',
     about: 'Electrical & Electronics Engineer and full-stack developer working across high-voltage systems, automation, and modern software.',
-    avatar: '/images/profile/profile.png',
+    avatar: '/images/profile/profile.jpg',
     showAuthorBio: true
   });
 
   useEffect(() => {
     if (params.slug) {
-      fetchPost();
+      if (!initialPost) fetchPost();
+      else {
+        setPost(initialPost);
+        setLoading(false);
+        setIsPasswordProtected(Boolean(initialPost.protected));
+        setIsAuthenticated(true);
+        setCommentCount(initialPost.commentCount || 0);
+      }
       loadLikes();
       fetchCommentCount();
-      fetchAuthorProfile();
     }
-  }, [params.slug]);
+  }, [params.slug, initialPost]);
 
   const checkAdminAuthenticated = async () => {
     try {
@@ -86,14 +91,10 @@ export default function BlogPostClient({ slug, initialPost }) {
             return;
           }
         } else if (fetchedPost.visibility === 'password') {
-          // Check if password is already provided
-          const savedPassword = sessionStorage.getItem(`post_password_${params.slug}`);
-          if (!savedPassword || savedPassword !== fetchedPost.password) {
-            setIsPasswordProtected(true);
-            setPost(fetchedPost);
-            setLoading(false);
-            return;
-          }
+          setIsPasswordProtected(true);
+          setPost({ slug: params.slug, visibility: 'password', protected: true });
+          setLoading(false);
+          return;
         } else if (fetchedPost.visibility === 'members') {
           // Check if user is a member (you can implement member authentication)
           const memberAuth = localStorage.getItem('memberAuth');
@@ -227,16 +228,21 @@ export default function BlogPostClient({ slug, initialPost }) {
     });
   };
 
-  const handlePasswordSubmit = (e) => {
+  const handlePasswordSubmit = async (e) => {
     e.preventDefault();
-    if (passwordInput === post.password) {
-      sessionStorage.setItem(`post_password_${params.slug}`, passwordInput);
-      setIsPasswordProtected(false);
-      setIsAuthenticated(true);
-      setPasswordError('');
-      // Increment view count after successful password entry
-      incrementViews(post._id);
-    } else {
+    setPasswordError('');
+    try {
+      const response = await fetch(`/api/posts/${encodeURIComponent(params.slug)}/unlock`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({ password: passwordInput }),
+      });
+      if (!response.ok) throw new Error('Invalid password');
+      setLoading(true);
+      setPasswordInput('');
+      router.refresh();
+    } catch {
       setPasswordError('Incorrect password. Please try again.');
     }
   };
@@ -507,7 +513,7 @@ export default function BlogPostClient({ slug, initialPost }) {
               <div className="flex items-start space-x-4">
                 <div className="flex-shrink-0">
                   <img
-                    src={authorProfile?.avatar || post.authorImage || '/images/profile/profile.png'}
+                    src={authorProfile?.avatar || post.authorImage || '/images/profile/profile.jpg'}
                     alt={authorProfile?.name || post.author || 'Bergaman'}
                     className="no-drag w-16 h-16 rounded-full border-2 border-[#e8c547] shadow-lg"
                     draggable={false}

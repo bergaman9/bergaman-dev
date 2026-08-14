@@ -1,13 +1,13 @@
 export const metadata = {
   title: 'My Picks',
-  description: 'A curated collection of movies, games, books, music, TV series, and links recommended by Bergaman.',
+  description: 'A personal collection of movies, games, books, music, series, and useful links curated by Ömer.',
   alternates: {
-    canonical: 'https://bergaman.dev/picks',
+    canonical: 'https://www.bergaman.dev/picks',
   },
   openGraph: {
     title: 'My Picks | Bergaman',
-    description: 'A curated collection of movies, games, books, music, TV series, and links recommended by Bergaman.',
-    url: 'https://bergaman.dev/picks',
+    description: 'A personal collection of movies, games, books, music, series, and useful links curated by Ömer.',
+    url: 'https://www.bergaman.dev/picks',
     type: 'website',
   },
 };

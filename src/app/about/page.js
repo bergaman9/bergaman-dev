@@ -1,76 +1,11 @@
 "use client";
 
-import ImageModal from "../components/ImageModal";
 import FloatingSkills from "../components/FloatingSkills";
 import Image from 'next/image';
-import { useState } from 'react';
 import Button from "../components/Button";
 import PageHeader from "../components/PageHeader";
 import PageContainer from "../components/PageContainer";
-
-// Skill Categories Data
-const skillCategories = [
-  {
-    title: "Programming Languages",
-    icon: "fas fa-code",
-    skills: [
-      { name: "Python", level: 85 },
-      { name: "JavaScript", level: 80 },
-      { name: "C#", level: 70 },
-      { name: "HTML & CSS", level: 90 }
-    ]
-  },
-  {
-    title: "Frameworks & Libraries",
-    icon: "fas fa-layer-group",
-    skills: [
-      { name: "React & Next.js", level: 85 },
-      { name: "Node.js", level: 75 },
-      { name: "Tailwind CSS", level: 85 },
-      { name: "AI-Assisted Development (Codex, Claude, Antigravity)", level: 85 }
-    ]
-  },
-  {
-    title: "Database & Tools",
-    icon: "fas fa-database",
-    skills: [
-      { name: "SQL", level: 70 },
-      { name: "Git", level: 85 },
-      { name: "MongoDB", level: 75 },
-      { name: "AutoCAD", level: 85 }
-    ]
-  },
-  {
-    title: "Technical Skills",
-    icon: "fas fa-cogs",
-    skills: [
-      { name: "Problem Solving", level: 90 },
-      { name: "System Design", level: 75 },
-      { name: "High-Voltage Systems", level: 80 },
-      { name: "Protection & Grounding", level: 80 }
-    ]
-  },
-  {
-    title: "Hardware & IoT",
-    icon: "fas fa-microchip",
-    skills: [
-      { name: "Arduino/ESP32", level: 80 },
-      { name: "Circuit Design", level: 75 },
-      { name: "Panels & Automation", level: 80 },
-      { name: "IoT Systems", level: 75 }
-    ]
-  },
-  {
-    title: "Languages",
-    icon: "fas fa-language",
-    skills: [
-      { name: "Turkish (Native)", level: 100 },
-      { name: "English", level: 85 },
-      { name: "German (A1-A2)", level: 25 },
-      { name: "Technical Communication", level: 85 }
-    ]
-  }
-];
+import { SKILL_CATEGORIES } from '@/lib/constants';
 
 // Experience Data - Updated with correct information
 const experiences = [
@@ -136,41 +71,6 @@ const education = [
   }
 ];
 
-// Interests Data - Updated with personal hobbies
-const interests = [
-  {
-    title: "AI & Machine Learning",
-    description: "Exploring artificial intelligence applications and machine learning algorithms for innovative solutions.",
-    icon: "fas fa-brain"
-  },
-  {
-    title: "Embedded Systems",
-    description: "Working with Arduino, ESP32, and IoT devices to create smart automation solutions.",
-    icon: "fas fa-microchip"
-  },
-  {
-    title: "Full Stack Development",
-    description: "Building modern web applications with React, Next.js, and backend technologies.",
-    icon: "fas fa-laptop-code"
-  },
-  {
-    title: "Cybersecurity",
-    description: "Understanding security principles and implementing secure coding practices.",
-    icon: "fas fa-shield-alt"
-  },
-  {
-    title: "Robotics",
-    description: "Combining hardware and software to create intelligent robotic systems.",
-    icon: "fas fa-robot"
-  },
-  {
-    title: "Blockchain",
-    description: "Exploring decentralized technologies and cryptocurrency development.",
-    icon: "fas fa-link"
-  }
-];
-
-// Personal Interests & Hobbies
 const personalInterests = [
   {
     title: "Movies & Series",
@@ -183,39 +83,14 @@ const personalInterests = [
     icon: "fas fa-bicycle"
   },
   {
-    title: "Online Research",
-    description: "Continuously learning through online courses, articles, and tech communities.",
-    icon: "fas fa-globe"
-  },
-  {
     title: "Video Games",
     description: "Gaming enthusiast with interest in strategy, simulation, and technology-based games.",
     icon: "fas fa-gamepad"
   },
   {
-    title: "Cars & Technology",
-    description: "Fascinated by automotive technology, electric vehicles, and mechanical engineering.",
-    icon: "fas fa-car"
-  },
-  {
-    title: "Reading & Learning",
-    description: "Reading books on technology, science, finance, and personal development.",
+    title: "Reading, Music & Nature",
+    description: "Reading, listening to music and spending time outdoors.",
     icon: "fas fa-book"
-  },
-  {
-    title: "Music & Nature",
-    description: "Enjoying music and spending time in nature for relaxation and inspiration.",
-    icon: "fas fa-music"
-  },
-  {
-    title: "Mathematics & Finance",
-    description: "Exploring mathematical concepts and understanding financial markets and investment strategies.",
-    icon: "fas fa-calculator"
-  },
-  {
-    title: "Hardware & Repair",
-    description: "Hands-on work with electronics, soldering, and repairing various devices.",
-    icon: "fas fa-tools"
   }
 ];
 
@@ -257,20 +132,6 @@ const getSkillLevelLabel = (level) => {
 };
 
 export default function About() {
-  const [modalImage, setModalImage] = useState(null);
-
-  const openModal = (imageSrc, imageAlt) => {
-    if (!imageSrc) return; // Don't open modal if no image source
-    setModalImage({
-      src: imageSrc,
-      alt: imageAlt || 'Image preview'
-    });
-  };
-
-  const closeModal = () => {
-    setModalImage(null);
-  };
-
   return (
     <PageContainer>
       <div>
@@ -321,23 +182,10 @@ export default function About() {
             </h2>
             <div className="space-y-6 text-lg text-gray-300 leading-relaxed">
               <p>
-                Hi, I'm <span className="text-[#e8c547] font-semibold">Ömer (Bergaman)</span>! I'm an <span className="text-[#e8c547] font-semibold">Electrical & Electronics Engineer</span> based in <span className="text-[#e8c547] font-semibold">İstanbul, Turkey</span>. My journey in the tech world began with a passion for video games, which sparked my curiosity about computers. This early interest led me to pursue a degree in <span className="text-[#e8c547] font-semibold">Electrical and Electronics Engineering at Istinye University</span> (2019-2024).
+                Hi, I'm <span className="text-[#e8c547] font-semibold">Ömer</span>, an <span className="text-[#e8c547] font-semibold">Electrical & Electronics Engineer and full-stack developer</span> based in İstanbul. I build reliable web products, automation workflows and hardware–software solutions by combining engineering fundamentals with modern software development.
               </p>
-
               <p>
-                However, during my studies, I realized that the future and opportunities were shifting toward software. So, I took the initiative to teach myself programming and started developing my skills in the field of software engineering. Today, I focus on <span className="text-[#e8c547] font-semibold">full-stack development and artificial intelligence</span>, while keeping a curious eye on emerging areas like blockchain and IoT.
-              </p>
-
-              <p>
-                I'm a constant learner, always exploring new domains and seeking innovative ways to apply my knowledge. My journey is one of continual improvement, always challenging myself with new, impactful projects to work on. In addition to my technical skills, I have a <span className="text-[#e8c547] font-semibold">strong foundation in mathematics</span> that helps me solve complex problems effectively.
-              </p>
-
-              <p>
-                I also enjoy working with my hands, honing skills like soldering and mechanical repairs, and have a growing interest in the <span className="text-[#e8c547] font-semibold">Internet of Things (IoT) and electric vehicles</span>. I am always eager to learn and improve, not just in my technical skills but in my personal growth as well.
-              </p>
-
-              <p>
-                I'm excited to contribute to the ever-evolving world of technology, building the future while adapting to the continuous advancements in the digital world.
+                My work spans high-voltage and power systems, protection and grounding, AutoCAD, embedded systems, IoT and production-ready web applications. I value clear technical documentation, operational safety and practical results, and I use AI-assisted development workflows responsibly to move from idea to tested implementation.
               </p>
 
               <div className="mt-8 p-6 bg-[#e8c547]/10 border-l-4 border-[#e8c547] rounded-r-lg">
@@ -356,7 +204,7 @@ export default function About() {
             Technical Skills
           </h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-            {skillCategories.map((category, index) => {
+            {SKILL_CATEGORIES.map((category, index) => {
               const averageLevel = Math.round(
                 category.skills.reduce((total, skill) => total + skill.level, 0) / category.skills.length
               );
@@ -495,35 +343,18 @@ export default function About() {
           </div>
         </section>
 
-        {/* Interests Section */}
-        <section className="mb-16 slide-in-left">
-          <h2 className="text-3xl font-bold gradient-text mb-8 text-center flex items-center justify-center gap-3">
-            <i className="fas fa-lightbulb text-[#e8c547]"></i>
-            Technical Interests
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {interests.map((interest, index) => (
-              <div key={index} className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg text-center hover:border-[#e8c547]/30 transition-all duration-300 group">
-                <i className={`${interest.icon} text-[#e8c547] text-4xl mb-4 block group-hover:scale-110 transition-transform duration-300`}></i>
-                <h3 className="text-xl font-semibold text-[#e8c547] mb-3">{interest.title}</h3>
-                <p className="text-gray-300 leading-relaxed">{interest.description}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
         {/* Personal Interests Section */}
         <section className="mb-16 slide-in-right">
           <h2 className="text-3xl font-bold gradient-text mb-8 text-center flex items-center justify-center gap-3">
             <i className="fas fa-heart text-[#e8c547]"></i>
             Personal Interests & Hobbies
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {personalInterests.map((interest, index) => (
-              <div key={index} className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg text-center hover:border-[#e8c547]/30 transition-all duration-300 group">
-                <i className={`${interest.icon} text-[#e8c547] text-4xl mb-4 block group-hover:scale-110 transition-transform duration-300`}></i>
-                <h3 className="text-xl font-semibold text-[#e8c547] mb-3">{interest.title}</h3>
-                <p className="text-gray-300 leading-relaxed">{interest.description}</p>
+              <div key={index} className="bg-[#2e3d29]/30 border border-[#3e503e]/30 p-4 rounded-lg text-center">
+                <i className={`${interest.icon} text-[#e8c547] text-2xl mb-2 block`}></i>
+                <h3 className="font-semibold text-gray-200 mb-1">{interest.title}</h3>
+                <p className="text-sm text-gray-400">{interest.description}</p>
               </div>
             ))}
           </div>
@@ -562,13 +393,6 @@ export default function About() {
 
       </div>
 
-      {modalImage && (
-        <ImageModal
-          src={modalImage.src}
-          alt={modalImage.alt}
-          onClose={closeModal}
-        />
-      )}
     </PageContainer>
   );
 }

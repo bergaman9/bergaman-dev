@@ -2,8 +2,8 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { SITE_CONFIG, SEO_DEFAULTS } from '../lib/constants';
 import LayoutWrapper from './components/LayoutWrapper';
-import ImageWithFallback from './components/ImageWithFallback';
-import { VocabularyProvider } from '@/context/VocabularyContext';
+import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -15,6 +15,7 @@ const geistMono = localFont({
   src: "./fonts/GeistMonoVF.woff",
   variable: "--font-geist-mono",
   weight: "100 900",
+  preload: false,
 });
 
 export const viewport = {
@@ -35,7 +36,11 @@ export const metadata = {
   creator: SITE_CONFIG.name,
   publisher: SITE_CONFIG.name,
   icons: {
-    icon: '/favicon.ico',
+    icon: [
+      { url: '/favicon.ico' },
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+    ],
     shortcut: '/favicon.ico',
     apple: '/apple-touch-icon.png',
   },
@@ -81,36 +86,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" data-scroll-behavior="smooth">
       <head>
-        <link rel="icon" href="/favicon.ico" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-        <link rel="manifest" href="/site.webmanifest" />
         <meta name="theme-color" content={SITE_CONFIG.themeColor} />
 
-        {/* FontAwesome */}
-        <link
-          rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-          integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
-          crossOrigin="anonymous"
-          referrerPolicy="no-referrer"
-        />
-        {/* Additional FontAwesome for web fonts */}
-        <link
-          rel="preload"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/webfonts/fa-solid-900.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
-        <link
-          rel="preload"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/webfonts/fa-brands-400.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
+        <link rel="stylesheet" href="/icons/fontawesome.min.css" />
         {/* Güvenlik meta etiketleri */}
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
         <meta name="referrer" content="strict-origin-when-cross-origin" />
@@ -120,12 +98,11 @@ export default function RootLayout({ children }) {
         <meta name="apple-mobile-web-app-status-bar-style" content="black" />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen text-[#d1d5db] flex flex-col`}>
-        <ImageWithFallback />
-        <VocabularyProvider>
-          <LayoutWrapper>
-            {children}
-          </LayoutWrapper>
-        </VocabularyProvider>
+        <LayoutWrapper>
+          {children}
+        </LayoutWrapper>
+        <Analytics />
+        <SpeedInsights />
 
         {/* Structured Data */}
         <script
@@ -139,12 +116,11 @@ export default function RootLayout({ children }) {
               "image": `${SITE_CONFIG.url}/images/profile/profile.jpg`,
               "sameAs": [
                 SITE_CONFIG.author.github,
-                SITE_CONFIG.author.twitter,
-                SITE_CONFIG.author.discord
+                SITE_CONFIG.author.linkedin
               ],
               "jobTitle": "Electrical & Electronics Engineer & Full-Stack Developer",
-              "worksFor": {
-                "@type": "Organization",
+              "brand": {
+                "@type": "Brand",
                 "name": "Bergasoft"
               },
               "knowsAbout": [

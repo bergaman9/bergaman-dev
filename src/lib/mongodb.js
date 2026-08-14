@@ -31,38 +31,32 @@ if (process.env.NODE_ENV === 'development') {
   }
 }
 
-// Mongoose connection function
-export async function connectDB() {
-  // Skip connection during build phase
-  if (process.env.NEXT_PHASE === 'phase-production-build') {
-    console.log('Skipping MongoDB connection during build phase');
-    return null;
-  }
+const mongooseCache = globalThis.__bergamanMongoose || { connection: null, promise: null };
+globalThis.__bergamanMongoose = mongooseCache;
 
-  // Check if already connected
-  if (mongoose.connections[0].readyState === 1) {
-    console.log('MongoDB already connected via Mongoose');
-    return mongoose.connections[0];
-  }
+// Mongoose connection function. Cache the promise in every environment so a
+// warm Vercel function never opens a second pool for the same process.
+export async function connectDB() {
+  if (mongooseCache.connection) return mongooseCache.connection;
   
   try {
     if (!process.env.MONGODB_URI) {
       throw new Error('MONGODB_URI environment variable is not set');
     }
 
-    console.log('Connecting to MongoDB...');
-    const connection = await mongoose.connect(process.env.MONGODB_URI, {
-      serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
-      socketTimeoutMS: 45000, // Close sockets after 45s of inactivity
-      bufferCommands: true, // Enable mongoose buffering to prevent the error
-      maxPoolSize: 10, // Maintain up to 10 socket connections
-      serverSelectionTimeoutMS: 5000, // Keep trying to send operations for 5 seconds
-      socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
-    });
-    
-    console.log('MongoDB connected successfully via Mongoose');
-    return connection;
+    if (!mongooseCache.promise) {
+      mongooseCache.promise = mongoose.connect(process.env.MONGODB_URI, {
+        serverSelectionTimeoutMS: 5000,
+        socketTimeoutMS: 45000,
+        bufferCommands: false,
+        maxPoolSize: 10,
+      });
+    }
+
+    mongooseCache.connection = await mongooseCache.promise;
+    return mongooseCache.connection;
   } catch (error) {
+    mongooseCache.promise = null;
     console.error('MongoDB connection error:', error);
     throw new Error(`Database connection failed: ${error.message}`);
   }
@@ -70,4 +64,4 @@ export async function connectDB() {
 
 // Export a module-scoped MongoClient promise. By doing this in a
 // separate module, the client can be shared across functions.
-export default clientPromise; 
+export default clientPromise;

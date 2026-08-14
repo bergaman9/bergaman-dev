@@ -110,9 +110,9 @@ recommendationSchema.pre('save', function(next) {
 });
 
 // Create indexes
-recommendationSchema.index({ category: 1, status: 1, order: 1 });
+recommendationSchema.index({ status: 1, category: 1, order: 1, createdAt: -1 });
 recommendationSchema.index({ featured: 1, createdAt: -1 });
 
 const Recommendation = mongoose.models.Recommendation || mongoose.model('Recommendation', recommendationSchema);
 
-export default Recommendation; 
+export default Recommendation;

@@ -13,7 +13,7 @@ const SafeImage = ({
   className = '',
   loading = 'lazy',
   priority = false,
-  sizes = '(max-width: 768px) 100vw, 33vw',
+  sizes = '(max-width: 640px) 92vw, (max-width: 1024px) 45vw, 380px',
   quality = 75,
   placeholder = 'empty',
   blurDataURL,
@@ -108,7 +108,6 @@ const SafeImage = ({
         onLoadStart={() => {
           if (showLoader) setIsLoading(true);
         }}
-        unoptimized={validSrc.startsWith('http') || validSrc.startsWith('/uploads')}
         style={{ objectFit }}
         {...rest}
       />

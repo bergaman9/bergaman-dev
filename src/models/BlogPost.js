@@ -79,7 +79,12 @@ const BlogPostSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    trim: true
+    trim: true,
+    select: false
+  },
+  passwordHash: {
+    type: String,
+    select: false
   },
   memberOnly: {
     type: Boolean,
@@ -95,8 +100,7 @@ const BlogPostSchema = new mongoose.Schema({
 });
 
 // Create indexes (slug already has unique index from schema)
-BlogPostSchema.index({ category: 1 });
-BlogPostSchema.index({ published: 1 });
-BlogPostSchema.index({ createdAt: -1 });
+BlogPostSchema.index({ published: 1, visibility: 1, createdAt: -1 });
+BlogPostSchema.index({ published: 1, visibility: 1, category: 1, createdAt: -1 });
 
-export default mongoose.models.BlogPost || mongoose.model('BlogPost', BlogPostSchema); 
+export default mongoose.models.BlogPost || mongoose.model('BlogPost', BlogPostSchema);

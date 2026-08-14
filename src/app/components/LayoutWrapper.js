@@ -2,7 +2,6 @@
 
 import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
-import Head from 'next/head';
 import Header from './Header';
 import Footer from './Footer';
 import { getMiniAppByPathname, getMiniAppTheme } from '@/lib/miniApps';
@@ -23,10 +22,13 @@ function LayoutContent({ children }) {
   // Show home link when not on home page
   return (
     <>
+      {!isAdminPage && <a href="#main-content" className="skip-link">Skip to main content</a>}
       {!isAdminPage && <Header />}
       {/* Add padding-top to account for fixed header */}
       <main
-        className={!isAdminPage ? (activeMiniApp ? "mini-app-shell pt-[72px]" : "pt-20") : ""}
+        id="main-content"
+        tabIndex={-1}
+        className={!isAdminPage ? (activeMiniApp ? "mini-app-shell pt-[var(--mini-header-height)]" : "pt-[var(--site-header-height)]") : ""}
         style={miniTheme?.cssVars}
       >
         {children}

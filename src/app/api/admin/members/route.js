@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { connectDB } from '../../../../lib/mongodb';
-import bcrypt from 'bcryptjs';
+import bcrypt from 'bcrypt';
 import {
   clampString,
   jsonError,

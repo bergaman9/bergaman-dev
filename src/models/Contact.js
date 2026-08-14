@@ -16,6 +16,11 @@ const ContactSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  inquiryType: {
+    type: String,
+    enum: ['Project inquiry', 'Electrical engineering opportunity', 'Software development', 'Automation / IoT', 'Collaboration', 'General question'],
+    default: 'Project inquiry'
+  },
   status: {
     type: String,
     enum: ['new', 'read', 'replied', 'active', 'closed'],
@@ -68,16 +73,20 @@ const ContactSchema = new mongoose.Schema({
       type: Boolean,
       default: false
     },
-    ipAddress: String,
-    userAgent: String
+    ipAddress: { type: String, maxlength: 128 },
+    userAgent: { type: String, maxlength: 512 }
   }],
   // Technical information
-  ipAddress: String,
-  userAgent: String,
-  referrer: String,
+  ipAddress: { type: String, maxlength: 128 },
+  userAgent: { type: String, maxlength: 512 },
+  referrer: { type: String, maxlength: 500 },
   timestamp: {
     type: Date,
     default: Date.now
+  },
+  expiresAt: {
+    type: Date,
+    default: () => new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
   }
 }, {
   timestamps: true
@@ -86,5 +95,6 @@ const ContactSchema = new mongoose.Schema({
 // Index for better query performance
 ContactSchema.index({ status: 1, createdAt: -1 });
 ContactSchema.index({ email: 1 });
+ContactSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
-export default mongoose.models.Contact || mongoose.model('Contact', ContactSchema); 
+export default mongoose.models.Contact || mongoose.model('Contact', ContactSchema);

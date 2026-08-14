@@ -32,11 +32,12 @@ export const SITE_CONFIG = {
   name: 'Bergaman',
   title: 'Ömer | Electrical Engineer & Full-Stack Developer',
   description: 'Ömer builds reliable high-voltage, automation, embedded, and full-stack software solutions through Bergasoft in Istanbul, Turkey.',
-  url: process.env.NEXT_PUBLIC_SITE_URL || 'https://bergaman.dev',
+  url: process.env.NEXT_PUBLIC_SITE_URL || 'https://www.bergaman.dev',
   author: {
     name: 'Ömer',
     email: 'contact@bergaman.dev',
     github: 'https://github.com/bergaman9',
+    linkedin: 'https://www.linkedin.com/in/omerguler/',
     twitter: 'https://twitter.com/bergaman9',
     discord: 'https://discord.gg/bergaman'
   },
@@ -90,7 +91,7 @@ export const SOCIAL_LINKS = [
   },
   {
     label: 'LinkedIn',
-    href: 'https://www.linkedin.com/in/omerguler/',
+    href: SITE_CONFIG.author.linkedin,
     icon: 'fab fa-linkedin'
   },
   {
@@ -113,7 +114,7 @@ export const SEO_DEFAULTS = {
     siteName: SITE_CONFIG.name,
     images: [
       {
-        url: '/images/profile/profile.png',
+        url: '/images/profile/profile.jpg',
         width: 512,
         height: 512,
         alt: SITE_CONFIG.title,
@@ -131,7 +132,7 @@ export const SEO_DEFAULTS = {
 export const APP_NAME = 'Bergaman';
 export const APP_VERSION = APP_VERSION_VALUE;
 export const APP_DESCRIPTION = 'Personal portfolio and blog';
-export const APP_URL = 'https://bergaman.dev';
+export const APP_URL = 'https://www.bergaman.dev';
 
 // API rotaları
 export const API_ROUTES = {
@@ -185,7 +186,7 @@ export const PORTFOLIO_CATEGORIES = [
 export const SECURITY = {
   // Session ayarları
   SESSION: {
-    DURATION: 24 * 60 * 60 * 1000, // 24 saat (ms)
+    DURATION: 8 * 60 * 60 * 1000, // 8 hours
     REFRESH_BEFORE: 5 * 60 * 1000, // Son 5 dakikada yenile (ms)
     COOKIE_NAME: 'admin_session',
     COOKIE_OPTIONS: {
@@ -220,7 +221,7 @@ export const SECURITY = {
 
   // Güvenlik başlıkları
   HEADERS: {
-    CONTENT_SECURITY_POLICY: `default-src 'self'; script-src ${scriptSources}; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src ${imageSources}; font-src 'self' data: https://cdnjs.cloudflare.com; connect-src 'self' https://*.vercel-insights.com; frame-src 'self' https://open.spotify.com; object-src 'none'; base-uri 'self'; form-action 'self'`,
+      CONTENT_SECURITY_POLICY: `default-src 'self'; script-src ${scriptSources}; style-src 'self' 'unsafe-inline'; img-src ${imageSources}; font-src 'self' data:; connect-src 'self' https://*.vercel-insights.com; frame-src 'self' https://open.spotify.com; frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests`,
     XSS_PROTECTION: '1; mode=block',
     FRAME_OPTIONS: 'SAMEORIGIN',
     CONTENT_TYPE_OPTIONS: 'nosniff',
@@ -239,26 +240,78 @@ export const SECURITY = {
   CORS: {
     ALLOWED_ORIGINS: process.env.CORS_ALLOWED_ORIGINS ?
       process.env.CORS_ALLOWED_ORIGINS.split(',') :
-      ['http://localhost:3000', 'https://bergaman.dev'],
+      ['http://localhost:3000', 'https://www.bergaman.dev'],
     ALLOWED_METHODS: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     ALLOWED_HEADERS: ['Content-Type', 'Authorization', 'X-CSRF-Token'],
   },
 };
 
-// Skills Data — canonical proficiency levels shared across Home and About.
-// Keep these in sync if a skill's level changes anywhere in the UI.
-export const SKILLS = [
-  { name: 'Python', level: 85 },
-  { name: 'JavaScript', level: 80 },
-  { name: 'React/Next.js', level: 82 },
-  { name: 'Node.js', level: 75 },
-  { name: 'C#', level: 70 },
-  { name: 'SQL', level: 70 },
-  { name: 'MongoDB', level: 75 },
-  { name: 'Git', level: 85 },
-  { name: 'AI/ML', level: 65 },
-  { name: 'Blockchain', level: 55 }
+// Canonical skills source shared by Home and About. The established card and
+// progress-bar presentation is intentionally preserved in both places.
+export const SKILL_CATEGORIES = [
+  {
+    title: 'Programming Languages',
+    icon: 'fas fa-code',
+    skills: [
+      { name: 'Python', level: 85 },
+      { name: 'JavaScript', level: 80 },
+      { name: 'C#', level: 70 },
+      { name: 'HTML & CSS', level: 90 },
+    ],
+  },
+  {
+    title: 'Web & Software',
+    icon: 'fas fa-layer-group',
+    skills: [
+      { name: 'React & Next.js', level: 85 },
+      { name: 'Node.js', level: 75 },
+      { name: 'Tailwind CSS', level: 85 },
+      { name: 'AI-Assisted Development', level: 85 },
+    ],
+  },
+  {
+    title: 'Electrical Engineering',
+    icon: 'fas fa-bolt',
+    skills: [
+      { name: 'High-Voltage Systems', level: 80 },
+      { name: 'Power Systems', level: 80 },
+      { name: 'Protection & Grounding', level: 80 },
+      { name: 'AutoCAD', level: 85 },
+    ],
+  },
+  {
+    title: 'Data & Engineering Tools',
+    icon: 'fas fa-database',
+    skills: [
+      { name: 'MongoDB', level: 75 },
+      { name: 'SQL', level: 70 },
+      { name: 'Git', level: 85 },
+      { name: 'Technical Documentation', level: 85 },
+    ],
+  },
+  {
+    title: 'Hardware & Automation',
+    icon: 'fas fa-microchip',
+    skills: [
+      { name: 'Arduino/ESP32', level: 80 },
+      { name: 'Circuit Design', level: 75 },
+      { name: 'Panels & Automation', level: 80 },
+      { name: 'IoT Systems', level: 75 },
+    ],
+  },
+  {
+    title: 'Professional Practice',
+    icon: 'fas fa-cogs',
+    skills: [
+      { name: 'Problem Solving', level: 90 },
+      { name: 'System Design', level: 75 },
+      { name: 'Technical Communication', level: 85 },
+      { name: 'Operational Safety', level: 85 },
+    ],
+  },
 ];
+
+export const SKILLS = SKILL_CATEGORIES.flatMap((category) => category.skills);
 
 // Default export for ESM compatibility
 export default {
@@ -276,6 +329,7 @@ export default {
   BLOG_CATEGORIES,
   PORTFOLIO_CATEGORIES,
   SECURITY,
-  SKILLS
+  SKILLS,
+  SKILL_CATEGORIES,
 };
 

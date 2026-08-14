@@ -14,6 +14,8 @@ const remoteImageHosts = (
     'www.bergaman.dev',
     'localhost',
     'i.scdn.co',
+    'image-cdn-ak.spotifycdn.com',
+    'image-cdn-fa.spotifycdn.com',
     'open.spotify.com',
     'www.google.com',
     't1.gstatic.com',

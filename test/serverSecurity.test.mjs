@@ -6,6 +6,7 @@ import {
   createSafeRegex,
   parseObjectId,
   pickAllowedFields,
+  isTrustedMutationOrigin,
   validateEnum,
 } from '../src/lib/serverSecurity.js';
 
@@ -53,4 +54,14 @@ test('pickAllowedFields drops unknown import or API fields', () => {
 
 test('clampString normalizes non-string values to an empty string', () => {
   assert.equal(clampString(null, 20), '');
+});
+
+test('mutation origin validation rejects missing and foreign origins', () => {
+  const missing = { url: 'https://www.bergaman.dev/api/admin/posts', headers: new Headers() };
+  const foreign = { url: missing.url, headers: new Headers({ origin: 'https://attacker.example' }) };
+  const trusted = { url: missing.url, headers: new Headers({ origin: 'https://www.bergaman.dev' }) };
+
+  assert.equal(isTrustedMutationOrigin(missing), false);
+  assert.equal(isTrustedMutationOrigin(foreign), false);
+  assert.equal(isTrustedMutationOrigin(trusted), true);
 });

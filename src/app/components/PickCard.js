@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import SafeImage from './SafeImage';
 
@@ -52,19 +52,7 @@ export default function PickCard({ recommendation: rec, variant = 'grid' }) {
   const hasLink = !!destination;
   const domain = useMemo(() => domainFromUrl(rec?.url || rec?.link), [rec]);
 
-  // For music picks, pull the real album art + track title from Spotify oEmbed.
-  const [spotify, setSpotify] = useState(null);
-  useEffect(() => {
-    if (category !== 'music') return;
-    const spUrl = rec?.url || rec?.link;
-    if (!spUrl || !/open\.spotify\.com/.test(spUrl)) return;
-    let cancelled = false;
-    fetch(`/api/picks/spotify-oembed?url=${encodeURIComponent(spUrl)}`)
-      .then((r) => r.json())
-      .then((d) => { if (!cancelled) setSpotify(d); })
-      .catch(() => {});
-    return () => { cancelled = true; };
-  }, [category, rec]);
+  const spotify = isMusic ? { title: rec?.spotifyTitle, thumbnail: rec?.spotifyThumbnail } : null;
 
   // Real album art from Spotify oEmbed when available.
   const musicArt = isMusic ? (hasRealImage(rec?.image) ? rec.image : (spotify?.thumbnail || null)) : null;
@@ -130,7 +118,7 @@ export default function PickCard({ recommendation: rec, variant = 'grid' }) {
           fallbackSrc={rec.image}
           alt={displayTitle}
           fill
-          sizes={variant === 'grid' ? '(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw' : '120px'}
+          sizes={variant === 'grid' ? '(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 260px' : '120px'}
           className="object-cover transition-transform duration-500 group-hover:scale-105"
           onError={() => setCoverFailed(true)}
           draggable={false}

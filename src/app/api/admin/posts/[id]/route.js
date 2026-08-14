@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import BlogPost from '../../../../../models/BlogPost';
 import { connectDB } from '../../../../../lib/mongodb';
 import { parseObjectId, readJsonLimited } from '../../../../../lib/serverSecurity';
+import { hashPassword } from '@/lib/userInfo';
+import { revalidateTag } from 'next/cache';
 
 
 
@@ -40,9 +42,27 @@ export async function PUT(request, { params }) {
     const id = parseObjectId(rawId, 'post ID');
     const data = await readJsonLimited(request, { maxBytes: 128 * 1024 });
 
+    const updateData = { ...data, updatedAt: new Date() };
+    const unsetFields = {};
+    if (data.visibility === 'password' && data.password) {
+      if (data.password.length < 12) {
+        return NextResponse.json({ error: 'Protected post passwords must be at least 12 characters' }, { status: 400 });
+      }
+      updateData.passwordHash = await hashPassword(data.password);
+      unsetFields.password = 1;
+    }
+    delete updateData.password;
+    if (data.visibility && data.visibility !== 'password') {
+      unsetFields.password = 1;
+      unsetFields.passwordHash = 1;
+    }
+
+    const update = { $set: updateData };
+    if (Object.keys(unsetFields).length) update.$unset = unsetFields;
+
     const post = await BlogPost.findByIdAndUpdate(
       id,
-      { ...data, updatedAt: new Date() },
+      update,
       { new: true, runValidators: true }
     );
 
@@ -52,6 +72,8 @@ export async function PUT(request, { params }) {
         { status: 404 }
       );
     }
+
+    revalidateTag('blog-posts', 'max');
 
     return NextResponse.json(post);
   } catch (error) {
@@ -86,6 +108,8 @@ export async function DELETE(request, { params }) {
         { status: 404 }
       );
     }
+
+    revalidateTag('blog-posts', 'max');
 
     return NextResponse.json({ message: 'Post deleted successfully' });
   } catch (error) {

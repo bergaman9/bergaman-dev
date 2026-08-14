@@ -3,7 +3,6 @@ import { SignJWT } from 'jose';
 import { SECURITY } from '@/lib/constants';
 import {
   verifyPassword,
-  hashPasswordWithPbkdf2,
   isValidSession
 } from '@/lib/userInfo';
 import {
@@ -13,47 +12,18 @@ import {
   withRateLimit
 } from '@/lib/rateLimit';
 import { getSecurityHeadersObject } from '@/lib/helmet';
-import { getJwtSecret, normalizeClientIp, readJsonLimited, verifyAdminSession } from '@/lib/serverSecurity';
+import { getJwtSecret, hashClientIdentifier, isTrustedMutationOrigin, normalizeClientIp, readJsonLimited, verifyAdminSession } from '@/lib/serverSecurity';
 import crypto from 'crypto';
-
 const ADMIN_USER = {
   username: process.env.ADMIN_USERNAME || 'bergaman',
   passwordHash: process.env.ADMIN_PASSWORD_HASH,
-  password: process.env.ADMIN_PASSWORD,
-  pbkdf2Hash: process.env.ADMIN_PASSWORD_PBKDF2_HASH,
-  salt: process.env.ADMIN_PASSWORD_SALT
 };
 
 async function verifyAdminPassword(password) {
   if (!password) return false;
 
-  if (ADMIN_USER.passwordHash?.startsWith('$2')) {
-    return verifyPassword(password, ADMIN_USER.passwordHash);
-  }
-
-  if (ADMIN_USER.pbkdf2Hash && ADMIN_USER.salt) {
-    const candidateHash = hashPasswordWithPbkdf2(password, ADMIN_USER.salt);
-    const expected = Buffer.from(ADMIN_USER.pbkdf2Hash, 'hex');
-    const candidate = Buffer.from(candidateHash, 'hex');
-    return expected.length === candidate.length && crypto.timingSafeEqual(expected, candidate);
-  }
-
-  // Vercel stores environment variables encrypted at rest. Support the common
-  // ADMIN_PASSWORD configuration in every environment, but compare it in
-  // constant time. ADMIN_PASSWORD_HASH/PBKDF2 remain preferred for portability.
-  const plaintextSecret = ADMIN_USER.password || (
-    ADMIN_USER.passwordHash && !ADMIN_USER.passwordHash.startsWith('$2')
-      ? ADMIN_USER.passwordHash
-      : null
-  );
-  if (plaintextSecret) {
-    const expected = Buffer.from(plaintextSecret, 'utf8');
-    const candidate = Buffer.from(password, 'utf8');
-    return expected.length === candidate.length && crypto.timingSafeEqual(expected, candidate);
-  }
-
-  console.error('Admin password hash is not configured securely');
-  return false;
+  if (!ADMIN_USER.passwordHash?.match(/^\$2[aby]\$1[12]\$/)) return false;
+  return verifyPassword(password, ADMIN_USER.passwordHash);
 }
 
 /**
@@ -65,6 +35,9 @@ async function createToken(payload) {
   return new SignJWT(payload)
     .setProtectedHeader({ alg: SECURITY.JWT.ALGORITHM })
     .setIssuedAt()
+    .setIssuer('https://www.bergaman.dev')
+    .setAudience('bergaman-admin')
+    .setJti(crypto.randomUUID())
     .setExpirationTime(Math.floor((Date.now() + SECURITY.SESSION.DURATION) / 1000))
     .sign(new TextEncoder().encode(getJwtSecret()));
 }
@@ -74,7 +47,11 @@ async function createToken(payload) {
  */
 async function handleLogin(request) {
   try {
+    if (!isTrustedMutationOrigin(request)) {
+      return NextResponse.json({ error: 'Invalid request origin' }, { status: 403 });
+    }
     const ip = normalizeClientIp(request);
+    const requestId = request.headers.get('x-vercel-id') || crypto.randomUUID();
 
     // Rate limiting kontrolü
     const rateLimitCheck = await checkIPRateLimit(ip, 'login');
@@ -94,8 +71,8 @@ async function handleLogin(request) {
 
     const { username, password } = await readJsonLimited(request, { maxBytes: 4 * 1024 });
 
-    if (!ADMIN_USER.passwordHash && !ADMIN_USER.pbkdf2Hash && !ADMIN_USER.password) {
-      console.error('Admin password environment variable is not set');
+    if (!ADMIN_USER.passwordHash?.match(/^\$2[aby]\$1[12]\$/)) {
+      console.error('A bcrypt ADMIN_PASSWORD_HASH with cost 10-12 is required');
       return NextResponse.json({
         error: 'Server configuration error'
       }, {
@@ -108,10 +85,10 @@ async function handleLogin(request) {
 
     if (isPasswordValid) {
       // Başarılı giriş - deneme sayacını sıfırla
-      resetAttempts(ip, 'login');
+      await resetAttempts(ip, 'login');
 
       // Login başarılı - console log
-      console.info(`Admin login successful for ${username} at ${new Date().toISOString()}`);
+      console.info('Admin login result', { requestId, username, ipHash: hashClientIdentifier(ip), success: true });
 
       // TODO: Admin log oluşturma işlemi daha sonra eklenecek
       // Şu an middleware token kontrolü yüzünden log oluşturamıyoruz
@@ -148,7 +125,8 @@ async function handleLogin(request) {
       return response;
     } else {
       // Başarısız giriş - deneme sayacını artır
-      const record = recordFailedAttempt(ip, 'login');
+      const record = await recordFailedAttempt(ip, 'login');
+      console.warn('Admin login result', { requestId, username: String(username || '').slice(0, 80), ipHash: hashClientIdentifier(ip), success: false });
 
       // Kalan deneme sayısını hesapla
       const remainingAttempts = SECURITY.RATE_LIMIT.MAX_LOGIN_ATTEMPTS - record.count;
@@ -269,6 +247,9 @@ async function checkSession(request) {
  */
 async function handleLogout(request) {
   try {
+    if (!isTrustedMutationOrigin(request)) {
+      return NextResponse.json({ error: 'Invalid request origin' }, { status: 403 });
+    }
     // Session cookie'sini temizle
     const response = NextResponse.json({
       success: true,

@@ -95,6 +95,7 @@ High voltage is unforgiving, but it is not mysterious. With sound calculations, 
     description: "Insights into electricity's role in modern life.",
     excerpt: "Electricity is one of the fundamental pillars of modern civilization. From powering our homes to enabling complex computer systems, electricity drives almost every aspect of our lives.",
     category: 'technology',
+    visibility: 'private',
     image: '/images/posts/the-importance-of-electricity.png',
     readTime: '5 min read',
     content: `Electricity is one of the fundamental pillars of modern civilization. From the moment light bulbs were first introduced to society, electricity has evolved into an irreplaceable resource. Today, it is the driving force behind almost every aspect of our lives.

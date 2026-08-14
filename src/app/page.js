@@ -11,6 +11,7 @@ import BlogPostCard from './components/BlogPostCard';
 import ProjectCard from './components/ProjectCard';
 import { SkeletonBlogCard, SkeletonProjectCard } from './components/Skeleton';
 import { blogPosts as staticBlogPosts } from '../data/blogPosts';
+import { SKILL_CATEGORIES } from '@/lib/constants';
 
 export default function Home() {
   // Render useful content immediately; the API refreshes it in the background.
@@ -23,40 +24,6 @@ export default function Home() {
   const { isAdminMode } = useAdminMode();
   const [featuredProjects, setFeaturedProjects] = useState([]);
   const [loadingProjects, setLoadingProjects] = useState(true);
-
-  // Skills data with categories
-  const skillCategories = [
-    {
-      title: "Programming Languages",
-      icon: "fas fa-code",
-      skills: [
-        { name: "Python", level: 85 },
-        { name: "JavaScript", level: 80 },
-        { name: "C#", level: 70 },
-        { name: "C++", level: 65 }
-      ]
-    },
-    {
-      title: "Web Technologies",
-      icon: "fas fa-globe",
-      skills: [
-        { name: "React", level: 85 },
-        { name: "Next.js", level: 80 },
-        { name: "Node.js", level: 75 },
-        { name: "HTML & CSS", level: 90 }
-      ]
-    },
-    {
-      title: "Tools & Databases",
-      icon: "fas fa-database",
-      skills: [
-        { name: "MongoDB", level: 75 },
-        { name: "Git", level: 85 },
-        { name: "Docker", level: 60 },
-        { name: "SQL", level: 70 }
-      ]
-    }
-  ];
 
   // Interests data
   const interests = [
@@ -270,8 +237,36 @@ export default function Home() {
               </section>
 
               <div className="flex flex-col">
+              {/* Featured Projects */}
+              <section className="mb-12 slide-in-left">
+                <h2 className="text-3xl font-bold gradient-text mb-8 text-center">
+                  <i className="fas fa-star mr-3"></i>
+                  Featured Projects
+                </h2>
+                {loadingProjects ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {Array.from({ length: 3 }).map((_, index) => (
+                      <SkeletonProjectCard key={index} />
+                    ))}
+                  </div>
+                ) : featuredProjects.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {featuredProjects.map((project) => (
+                      <ProjectCard key={project._id} project={project} />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <p className="text-gray-400">No featured projects found.</p>
+                  </div>
+                )}
+                <div className="text-center mt-8">
+                  <Button href="/portfolio">View All Projects<i className="fas fa-arrow-right ml-2"></i></Button>
+                </div>
+              </section>
+
               {/* Latest Blog Posts */}
-              <section className="order-2 mb-12 slide-in-right">
+              <section className="mb-12 slide-in-right">
                 <h2 className="text-3xl font-bold gradient-text mb-6 text-center">
                   <i className="fas fa-blog mr-3"></i>
                   Latest Blog Posts
@@ -315,34 +310,6 @@ export default function Home() {
                   <Button href="/blog" variant="secondary">View All Posts<i className="fas fa-arrow-right ml-2"></i></Button>
                 </div>
               </section>
-
-              {/* Featured Projects */}
-              <section className="order-1 mb-12 slide-in-left">
-                <h2 className="text-3xl font-bold gradient-text mb-8 text-center">
-                  <i className="fas fa-star mr-3"></i>
-                  Featured Projects
-                </h2>
-                {loadingProjects ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {Array.from({ length: 3 }).map((_, index) => (
-                      <SkeletonProjectCard key={index} />
-                    ))}
-                  </div>
-                ) : featuredProjects.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {featuredProjects.map((project) => (
-                      <ProjectCard key={project._id} project={project} />
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-8">
-                    <p className="text-gray-400">No featured projects found.</p>
-                  </div>
-                )}
-                <div className="text-center mt-8">
-                  <Button href="/portfolio">View All Projects<i className="fas fa-arrow-right ml-2"></i></Button>
-                </div>
-              </section>
               </div>
 
               {/* Technical Skills */}
@@ -353,7 +320,7 @@ export default function Home() {
                     Technical Skills
                   </h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {skillCategories.map((category, index) => (
+                    {SKILL_CATEGORIES.slice(0, 4).map((category, index) => (
                       <div key={index} className="p-6">
                         <div className="flex items-center mb-4">
                           <i className={`${category.icon} text-[#e8c547] text-2xl mr-3`}></i>

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
 import Portfolio from '@/models/Portfolio';
 import { parseObjectId, readJsonLimited } from '@/lib/serverSecurity';
+import { revalidateTag } from 'next/cache';
 
 export async function GET(request, { params }) {
   try {
@@ -87,6 +88,8 @@ export async function PUT(request, { params }) {
       );
     }
 
+    revalidateTag('portfolios', 'max');
+
     return NextResponse.json({
       success: true,
       portfolio
@@ -115,6 +118,8 @@ export async function DELETE(request, { params }) {
         { status: 404 }
       );
     }
+
+    revalidateTag('portfolios', 'max');
 
     return NextResponse.json({
       success: true,

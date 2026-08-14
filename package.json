@@ -42,31 +42,31 @@
     "sitemap": "next-sitemap",
     "semantic-release": "semantic-release",
     "download-images": "node scripts/download-game-images.js",
-    "seed:played-games": "node scripts/seed-played-game-picks.mjs"
+    "seed:played-games": "node scripts/seed-played-game-picks.mjs",
+    "check:blog-slugs": "node scripts/check-blog-slugs.mjs",
+    "icons:build": "node scripts/build-fontawesome-subset.mjs",
+    "postinstall": "npm run icons:build"
   },
   "dependencies": {
     "@vercel/analytics": "^1.6.1",
+    "@vercel/speed-insights": "^2.0.0",
     "axios": "^1.16.0",
     "bcrypt": "^6.0.0",
-    "bcryptjs": "^3.0.3",
     "chart.js": "^4.5.1",
-    "cors": "^2.8.6",
     "critters": "^0.0.23",
     "cross-env": "^7.0.3",
     "csstype": "^3.2.3",
     "dotenv": "^16.6.1",
-    "express-rate-limit": "^7.5.1",
-    "helmet": "^8.1.0",
-    "highlight.js": "^11.11.1",
+    "highlight.js": "^11.12.0",
     "jose": "^6.2.3",
     "jspdf": "^4.2.1",
     "jspdf-autotable": "^5.0.7",
     "marked": "^15.0.12",
     "mongodb": "^6.21.0",
-    "mongoose": "^8.23.1",
-    "next": "^16.2.4",
+    "mongoose": "^8.24.3",
+    "next": "16.3.1",
     "next-sitemap": "^4.2.3",
-    "nodemailer": "^9.0.3",
+    "nodemailer": "^9.0.5",
     "prismjs": "^1.30.0",
     "react": "^19.2.5",
     "react-chartjs-2": "^5.3.1",
@@ -78,7 +78,7 @@
     "react-simple-image-viewer": "^1.2.2",
     "rehype-highlight": "^7.0.2",
     "remark-gfm": "^4.0.1",
-    "sanitize-html": "^2.17.3"
+    "sanitize-html": "^2.17.7"
   },
   "overrides": {
     "react": "$react",
@@ -86,11 +86,13 @@
     "body-parser": "^2.2.1",
     "dompurify": "^3.4.0",
     "mdast-util-to-hast": "^13.2.1",
+    "nanoid": "^3.3.18",
     "path-to-regexp": "^8.4.0",
     "postcss": "$postcss",
     "qs": "^6.14.2"
   },
   "devDependencies": {
+    "@fortawesome/fontawesome-free": "^6.7.2",
     "@semantic-release/changelog": "^6.0.0",
     "@semantic-release/commit-analyzer": "^13.0.1",
     "@semantic-release/git": "^10.0.0",
@@ -100,14 +102,14 @@
     "@types/react-syntax-highlighter": "^15.5.13",
     "conventional-changelog-conventionalcommits": "^9.3.1",
     "eslint": "^9.39.4",
-    "eslint-config-next": "^16.2.4",
-    "postcss": "^8.5.13",
-    "semantic-release": "^25.0.3",
+    "eslint-config-next": "16.3.1",
+    "postcss": "^8.5.26",
+    "semantic-release": "^25.0.9",
     "tailwindcss": "^3.4.19",
     "typescript": "^6.0.3"
   },
   "engines": {
-    "node": ">=18.0.0",
+    "node": ">=20.9.0",
     "npm": ">=8.0.0"
   },
   "license": "MIT"

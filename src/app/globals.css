@@ -2,9 +2,33 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --site-header-height: 5rem;
+  --mini-header-height: 4.5rem;
+}
+
 /* Smooth scrolling */
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: var(--site-header-height);
+}
+
+.skip-link {
+  position: fixed;
+  left: 1rem;
+  top: -4rem;
+  z-index: 100;
+  border-radius: 0.5rem;
+  background: #e8c547;
+  color: #0e1b12;
+  padding: 0.75rem 1rem;
+  font-weight: 700;
+}
+
+.skip-link:focus { top: 0.75rem; }
+
+@media (max-width: 767px) {
+  :root { --site-header-height: 4rem; }
 }
 
 /* Prevent body width shift */
@@ -92,6 +116,37 @@ body::-webkit-scrollbar-corner {
   @keyframes circuit-move {
     0% { transform: translate(0, 0); }
     100% { transform: translate(50px, 50px); }
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    background-attachment: scroll;
+  }
+
+  body::before {
+    animation: none;
+    background-size: 64px 64px;
+  }
+
+  .backdrop-blur-xl,
+  .backdrop-blur-md {
+    --tw-backdrop-blur: blur(4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
   }
 }
 

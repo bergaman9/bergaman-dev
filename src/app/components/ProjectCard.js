@@ -24,7 +24,7 @@ export default function ProjectCard({ project, isAdmin = false, onEdit, onDelete
     if (url.includes('contro.space')) return {
       label: 'Dashboard',
       icon: 'fas fa-columns',
-      color: 'bg-indigo-500 hover:bg-indigo-400 text-white shadow-lg shadow-indigo-500/20'
+      color: 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-500/20'
     };
 
     if (url.includes('github.com')) return {
@@ -111,6 +111,7 @@ export default function ProjectCard({ project, isAdmin = false, onEdit, onDelete
               src={displayProject.image}
               alt={displayProject.title}
               fill
+              sizes="(max-width: 640px) 92vw, (max-width: 1024px) 45vw, 380px"
               className="object-cover transition-transform duration-700 group-hover:scale-105"
             />
           ) : (
@@ -180,7 +181,7 @@ export default function ProjectCard({ project, isAdmin = false, onEdit, onDelete
                 href={mainAction.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl transition-all duration-300 ${mainAction.color}`}
+                className={`min-h-11 flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl transition-all duration-300 ${mainAction.color}`}
               >
                 <i className={mainAction.icon}></i>
                 <span className="font-semibold text-sm">{mainAction.label}</span>
@@ -196,7 +197,8 @@ export default function ProjectCard({ project, isAdmin = false, onEdit, onDelete
                 href={secondaryAction.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-300 ${secondaryAction.color} border border-white/5`}
+                aria-label="View source code"
+                className={`w-11 h-11 flex items-center justify-center rounded-xl transition-all duration-300 ${secondaryAction.color} border border-white/5`}
               >
                 <i className={`${secondaryAction.icon} text-lg`}></i>
               </a>
@@ -205,10 +207,10 @@ export default function ProjectCard({ project, isAdmin = false, onEdit, onDelete
             {/* Admin Controls */}
             {isAdmin && (
               <div className="flex gap-2 ml-auto pl-2 border-l border-white/10">
-                <button onClick={() => onEdit(displayProject)} className="text-gray-400 hover:text-[#e8c547]">
+                <button aria-label="Edit project" onClick={() => onEdit(displayProject)} className="min-h-11 min-w-11 text-gray-400 hover:text-[#e8c547]">
                   <i className="fas fa-edit"></i>
                 </button>
-                <button onClick={() => onDelete(displayProject._id)} className="text-gray-400 hover:text-red-400">
+                <button aria-label="Delete project" onClick={() => onDelete(displayProject._id)} className="min-h-11 min-w-11 text-gray-400 hover:text-red-400">
                   <i className="fas fa-trash"></i>
                 </button>
               </div>

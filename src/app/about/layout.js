@@ -1,13 +1,13 @@
 export const metadata = {
   title: 'About Me',
-  description: 'Learn more about Bergaman — Electrical & Electronics Engineer specializing in innovative solutions, full-stack development, and technical projects based in İstanbul, Turkey.',
+  description: 'Meet Ömer, an Electrical & Electronics Engineer and full-stack developer working across high-voltage systems, automation, embedded products, and web software.',
   alternates: {
-    canonical: 'https://bergaman.dev/about',
+    canonical: 'https://www.bergaman.dev/about',
   },
   openGraph: {
     title: 'About Me | Bergaman',
-    description: 'Electrical & Electronics Engineer specializing in innovative solutions and full-stack development.',
-    url: 'https://bergaman.dev/about',
+    description: 'Electrical & Electronics Engineer and full-stack developer across high-voltage, automation, embedded, and web systems.',
+    url: 'https://www.bergaman.dev/about',
     type: 'profile',
   },
 };

@@ -3,7 +3,7 @@ import { SITE_CONFIG } from '@/lib/constants';
 import PrivacyHeader from './PrivacyHeader';
 
 export default function PrivacyPolicyPage() {
-  const lastUpdated = '2026-08-03';
+  const lastUpdated = '2026-08-14';
   
   return (
     <div className="py-12 px-4">
@@ -27,19 +27,15 @@ export default function PrivacyPolicyPage() {
           <h2 className="text-2xl font-semibold text-[#e8c547] mb-4">Information We Collect</h2>
           
           <h3 className="text-xl font-medium text-white mt-6 mb-3">Information Automatically Collected</h3>
-          <p>When you visit our Site, we automatically collect certain information about your device, including:</p>
+          <p>When you submit a contact form, we store limited technical information for abuse prevention and troubleshooting:</p>
           <ul className="list-disc pl-6 mt-2 mb-4">
-            <li>IP address</li>
-            <li>Browser type and version</li>
-            <li>Operating system</li>
-            <li>Referring website</li>
-            <li>Time and date of your visit</li>
-            <li>Pages you viewed</li>
-            <li>Time spent on those pages</li>
+            <li>A keyed, non-reversible HMAC of the IP address (not the raw IP)</li>
+            <li>A length-limited browser user-agent string</li>
+            <li>A length-limited referring page</li>
+            <li>The submission time and inquiry type</li>
           </ul>
           <p>
-            This information helps us analyze trends, administer the site, track users' movements around the site, 
-            and gather demographic information about our user base as a whole.
+            This information is used to rate-limit spam, investigate delivery problems, and protect the contact service.
           </p>
           
           <h3 className="text-xl font-medium text-white mt-6 mb-3">Information You Provide</h3>
@@ -82,9 +78,7 @@ export default function PrivacyPolicyPage() {
         <section className="mb-8">
           <h2 className="text-2xl font-semibold text-[#e8c547] mb-4">Data Retention</h2>
           <p>
-            We will retain your personal information only for as long as is necessary for the purposes set out in this Privacy Policy. 
-            We will retain and use your information to the extent necessary to comply with our legal obligations, 
-            resolve disputes, and enforce our policies.
+            Contact submissions are scheduled for automatic deletion after 365 days unless they must be retained longer for an active project, a legal obligation, dispute resolution, or a user-requested business relationship. You may request earlier deletion by emailing the address below.
           </p>
         </section>
 

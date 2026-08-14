@@ -20,7 +20,7 @@ export default function BlogPostCard({ post, formatDate, formatCategoryName, ope
             src={post.image}
             alt={post.title}
             fill
-            sizes="(max-width: 768px) 100vw, 33vw"
+            sizes="(max-width: 640px) 92vw, (max-width: 1024px) 45vw, 360px"
             className="object-cover group-hover:scale-105 transition-transform duration-300"
             onClick={handleImageClick}
           />
@@ -40,7 +40,7 @@ export default function BlogPostCard({ post, formatDate, formatCategoryName, ope
           <h3 className="text-lg font-bold">{post.title}</h3>
         </div>
         <div className="absolute top-3 right-3 text-xs text-white bg-black/50 px-2 py-1 rounded-full">
-          {formatDate(post.createdAt)}
+          {formatDate(post.createdAt || post.date)}
         </div>
       </div>
 

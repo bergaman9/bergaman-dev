@@ -77,6 +77,27 @@ export default function Header() {
     return () => { document.body.style.overflow = previousOverflow; };
   }, [isMenuOpen]);
 
+  useEffect(() => {
+    if (!isMenuOpen || !mobileMenuRef.current) return;
+    const menu = mobileMenuRef.current;
+    const focusable = [...menu.querySelectorAll('a[href], button:not([disabled])')];
+    if (!focusable.length) return;
+    const trapFocus = (event) => {
+      if (event.key !== 'Tab') return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    menu.addEventListener('keydown', trapFocus);
+    return () => menu.removeEventListener('keydown', trapFocus);
+  }, [isMenuOpen]);
+
   // Auto-close dropdowns when clicking outside or pressing Escape
   useEffect(() => {
     function handleClickOutside(event) {
@@ -195,6 +216,7 @@ export default function Header() {
                 className="mini-app-accent rounded-lg p-2 transition-colors duration-300 hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-current lg:hidden"
                 aria-label="Toggle mini app navigation"
                 aria-expanded={isMenuOpen}
+                aria-controls="mini-app-mobile-navigation"
               >
                 <i className={`fas ${isMenuOpen ? 'fa-times' : 'fa-bars'} text-xl transition-transform duration-300 ${isMenuOpen ? 'rotate-90' : ''}`}></i>
               </button>
@@ -203,6 +225,7 @@ export default function Header() {
 
           {isMenuOpen && (
             <nav
+              id="mini-app-mobile-navigation"
               ref={mobileMenuRef}
               className="mini-app-chrome absolute left-0 right-0 top-full border-b px-4 py-4 shadow-xl backdrop-blur-xl lg:hidden"
             >

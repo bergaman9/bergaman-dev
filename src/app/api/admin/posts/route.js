@@ -3,6 +3,8 @@ import mongoose from 'mongoose';
 import BlogPost from '../../../../models/BlogPost';
 import { connectDB } from '../../../../lib/mongodb';
 import { escapeRegExp, readJsonLimited } from '../../../../lib/serverSecurity';
+import { hashPassword } from '@/lib/userInfo';
+import { revalidateTag } from 'next/cache';
 
 // GET - Fetch blog posts with pagination and filtering
 export async function GET(request) {
@@ -100,10 +102,19 @@ export async function POST(request) {
         .replace(/(^-|-$)/g, '');
     }
 
+    if (data.visibility === 'password') {
+      if (!data.password || data.password.length < 12) {
+        return NextResponse.json({ error: 'Protected post passwords must be at least 12 characters' }, { status: 400 });
+      }
+      data.passwordHash = await hashPassword(data.password);
+    }
+    delete data.password;
+
     const post = new BlogPost(data);
     await post.save();
+    revalidateTag('blog-posts', 'max');
 
-    return NextResponse.json(post, { status: 201 });
+    return NextResponse.json(post.toObject({ transform: (_doc, value) => { delete value.passwordHash; delete value.password; return value; } }), { status: 201 });
   } catch (error) {
     console.error('Error creating post:', error);
 
