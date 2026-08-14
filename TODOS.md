@@ -2,7 +2,34 @@
 
 > Denetim tarihi: 14 Ağustos 2026  
 > Kapsam: canlı üretim sitesi (`www.bergaman.dev`) + yerel kaynak kodu  
-> Durum: Bu denetimde siteye, veritabanına, Vercel ayarlarına veya mevcut UI'a değişiklik yapılmadı. Yalnızca bu plan dosyası oluşturuldu.
+> Uygulama durumu: P0 düzeltmeleri ve ana P1/P2 uygulama dalgası production'a alındı. Bu dosya artık denetim planı ve kalan optimizasyon backlog'u olarak birlikte kullanılıyor.
+
+## 14 Ağustos 2026 uygulama özeti
+
+- Blog, Work ve Picks içerikleri Server Component + ISR/cache ile ilk HTML içinde render ediliyor; admin mutation'ları cache tag invalid ediyor.
+- Blog detail tek server veri akışına taşındı; `BlogPosting` JSON-LD, canonical ve DB sitemap kapsamı eklendi.
+- Eski profil fotoğrafı kaldırıldı; high-voltage yazısı, kapak görseli ve profesyonel skill içeriği production'da yayında.
+- Picks 24 kayıtlık pagination/load-more akışına geçti; Spotify metadata server cache'e taşındı; eksik görseller ve Music kaydı düzeltildi.
+- Admin parola/JWT rotation yapıldı; yalnızca bcrypt hash kabul ediliyor. Protected blog parolaları server-side hash/cookie akışına, rate limiting MongoDB ortak store'a taşındı.
+- Contact verisinde ham IP yerine HMAC, 365 günlük TTL ve alan sınırları uygulanıyor. Bergasoft iş/proje inquiry akışı ve kayıt ID'si eklendi.
+- Font Awesome CDN kaldırıldı; kullanılan ikonlardan üretilen yerel alt küme toplam yükü yaklaşık 295 KB'den 43 KB'ye indirildi.
+- Next.js 16.3.1, Node 24.x ve güvenli minor bağımlılık dalgası uygulandı; production audit sonucu 0 açık.
+- Analytics, Speed Insights, structured loglar, CI audit/typecheck/test/build ve Lighthouse CI bütçesi eklendi.
+- Fixed header korundu; tek yükseklik değişkeni, skip-link, mobil scroll lock ve focus trap eklendi.
+- Debug/test/seed/migrate/reset route'ları ve kullanılmayan Express CORS/Helmet/rate-limit bağımlılıkları kaldırıldı.
+
+### Production sonrası temiz Lighthouse medianı (3 koşum)
+
+| Sayfa | Performance | Accessibility | Best Practices | SEO | LCP | TBT | CLS |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Home | 70 | 100 | 100 | 100 | 5,67 sn | 58 ms | 0 |
+| Writing | 75 | 100 | 100 | 100 | 4,81 sn | 18 ms | 0 |
+| Work | 74 | 100 | 100 | 100 | 4,95 sn | 30 ms | 0 |
+| Picks | 70 | 100 | 96 | 100 | 5,75 sn | 17 ms | 0 |
+| Contact | 81 | 100 | 100 | 100 | 4,17 sn | 33 ms | 0,002 |
+| About | 75 | 100 | 100 | 100 | 4,72 sn | 37 ms | 0 |
+
+Tam rapor: `reports/lighthouse/2026-08-14-mobile.json`. Accessibility, CLS ve SEO hedefleri karşılandı; LCP/Performance bütçesi henüz karşılanmadığı için aşağıdaki ilgili maddeler açık kalır.
 
 ## Kısa karar: fixed header iyi mi?
 
@@ -466,4 +493,3 @@ Kanıt: Canlı Home ve Blog HTML cevapları global `Access-Control-Allow-Origin:
 - [ ] Security headers/CSP/CORS ve admin auth negative testleri.
 - [ ] Search Console sitemap, canonical, index coverage ve rich result testleri.
 - [ ] 390 px mobil: fixed header, focus, menu scroll lock, kart görselleri ve touch targets.
-

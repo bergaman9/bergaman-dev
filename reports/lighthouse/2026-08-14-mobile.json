@@ -1,0 +1,276 @@
+{
+  "generatedAt": "2026-08-14T09:36:31.386Z",
+  "baseUrl": "https://www.bergaman.dev",
+  "results": [
+    {
+      "route": "/",
+      "runs": [
+        {
+          "performance": 70,
+          "accessibility": 100,
+          "bestPractices": 100,
+          "seo": 100,
+          "fcpMs": 3141,
+          "lcpMs": 5666,
+          "tbtMs": 58,
+          "cls": 0
+        },
+        {
+          "performance": 70,
+          "accessibility": 100,
+          "bestPractices": 100,
+          "seo": 100,
+          "fcpMs": 3143,
+          "lcpMs": 5671,
+          "tbtMs": 84,
+          "cls": 0
+        },
+        {
+          "performance": 70,
+          "accessibility": 100,
+          "bestPractices": 100,
+          "seo": 100,
+          "fcpMs": 3151,
+          "lcpMs": 5743,
+          "tbtMs": 50,
+          "cls": 0
+        }
+      ],
+      "median": {
+        "performance": 70,
+        "accessibility": 100,
+        "bestPractices": 100,
+        "seo": 100,
+        "fcpMs": 3143,
+        "lcpMs": 5671,
+        "tbtMs": 58,
+        "cls": 0
+      }
+    },
+    {
+      "route": "/blog",
+      "runs": [
+        {
+          "performance": 77,
+          "accessibility": 100,
+          "bestPractices": 100,
+          "seo": 100,
+          "fcpMs": 3035,
+          "lcpMs": 4809,
+          "tbtMs": 29,
+          "cls": 0
+        },
+        {
+          "performance": 73,
+          "accessibility": 100,
+          "bestPractices": 100,
+          "seo": 100,
+          "fcpMs": 3001,
+          "lcpMs": 5120,
+          "tbtMs": 18,
+          "cls": 0
+        },
+        {
+          "performance": 75,
+          "accessibility": 100,
+          "bestPractices": 100,
+          "seo": 100,
+          "fcpMs": 3002,
+          "lcpMs": 4659,
+          "tbtMs": 10,
+          "cls": 0
+        }
+      ],
+      "median": {
+        "performance": 75,
+        "accessibility": 100,
+        "bestPractices": 100,
+        "seo": 100,
+        "fcpMs": 3002,
+        "lcpMs": 4809,
+        "tbtMs": 18,
+        "cls": 0
+      }
+    },
+    {
+      "route": "/portfolio",
+      "runs": [
+        {
+          "performance": 77,
+          "accessibility": 100,
+          "bestPractices": 100,
+          "seo": 100,
+          "fcpMs": 2970,
+          "lcpMs": 4790,
+          "tbtMs": 45,
+          "cls": 0.002
+        },
+        {
+          "performance": 74,
+          "accessibility": 100,
+          "bestPractices": 100,
+          "seo": 100,
+          "fcpMs": 3011,
+          "lcpMs": 4951,
+          "tbtMs": 30,
+          "cls": 0
+        },
+        {
+          "performance": 73,
+          "accessibility": 100,
+          "bestPractices": 100,
+          "seo": 100,
+          "fcpMs": 3003,
+          "lcpMs": 4947,
+          "tbtMs": 24,
+          "cls": 0
+        }
+      ],
+      "median": {
+        "performance": 74,
+        "accessibility": 100,
+        "bestPractices": 100,
+        "seo": 100,
+        "fcpMs": 3003,
+        "lcpMs": 4947,
+        "tbtMs": 30,
+        "cls": 0
+      }
+    },
+    {
+      "route": "/picks",
+      "runs": [
+        {
+          "performance": 77,
+          "accessibility": 100,
+          "bestPractices": 96,
+          "seo": 100,
+          "fcpMs": 3135,
+          "lcpMs": 4639,
+          "tbtMs": 17,
+          "cls": 0.002
+        },
+        {
+          "performance": 70,
+          "accessibility": 100,
+          "bestPractices": 96,
+          "seo": 100,
+          "fcpMs": 3197,
+          "lcpMs": 5749,
+          "tbtMs": 20,
+          "cls": 0
+        },
+        {
+          "performance": 69,
+          "accessibility": 100,
+          "bestPractices": 96,
+          "seo": 100,
+          "fcpMs": 3198,
+          "lcpMs": 5764,
+          "tbtMs": 11,
+          "cls": 0
+        }
+      ],
+      "median": {
+        "performance": 70,
+        "accessibility": 100,
+        "bestPractices": 96,
+        "seo": 100,
+        "fcpMs": 3197,
+        "lcpMs": 5749,
+        "tbtMs": 17,
+        "cls": 0
+      }
+    },
+    {
+      "route": "/contact",
+      "runs": [
+        {
+          "performance": 81,
+          "accessibility": 100,
+          "bestPractices": 100,
+          "seo": 100,
+          "fcpMs": 2804,
+          "lcpMs": 4153,
+          "tbtMs": 34,
+          "cls": 0.002
+        },
+        {
+          "performance": 81,
+          "accessibility": 100,
+          "bestPractices": 100,
+          "seo": 100,
+          "fcpMs": 2907,
+          "lcpMs": 4173,
+          "tbtMs": 33,
+          "cls": 0.002
+        },
+        {
+          "performance": 81,
+          "accessibility": 100,
+          "bestPractices": 100,
+          "seo": 100,
+          "fcpMs": 2816,
+          "lcpMs": 4172,
+          "tbtMs": 24,
+          "cls": 0.002
+        }
+      ],
+      "median": {
+        "performance": 81,
+        "accessibility": 100,
+        "bestPractices": 100,
+        "seo": 100,
+        "fcpMs": 2816,
+        "lcpMs": 4172,
+        "tbtMs": 33,
+        "cls": 0.002
+      }
+    },
+    {
+      "route": "/about",
+      "runs": [
+        {
+          "performance": 77,
+          "accessibility": 100,
+          "bestPractices": 100,
+          "seo": 100,
+          "fcpMs": 2971,
+          "lcpMs": 4718,
+          "tbtMs": 34,
+          "cls": 0
+        },
+        {
+          "performance": 74,
+          "accessibility": 100,
+          "bestPractices": 100,
+          "seo": 100,
+          "fcpMs": 2983,
+          "lcpMs": 4957,
+          "tbtMs": 47,
+          "cls": 0
+        },
+        {
+          "performance": 75,
+          "accessibility": 100,
+          "bestPractices": 100,
+          "seo": 100,
+          "fcpMs": 2969,
+          "lcpMs": 4715,
+          "tbtMs": 37,
+          "cls": 0
+        }
+      ],
+      "median": {
+        "performance": 75,
+        "accessibility": 100,
+        "bestPractices": 100,
+        "seo": 100,
+        "fcpMs": 2971,
+        "lcpMs": 4718,
+        "tbtMs": 37,
+        "cls": 0
+      }
+    }
+  ]
+}

@@ -44,7 +44,8 @@
     "download-images": "node scripts/download-game-images.js",
     "seed:played-games": "node scripts/seed-played-game-picks.mjs",
     "check:blog-slugs": "node scripts/check-blog-slugs.mjs",
-    "icons:build": "node scripts/build-fontawesome-subset.mjs"
+    "icons:build": "node scripts/build-fontawesome-subset.mjs",
+    "lighthouse:baseline": "node scripts/run-lighthouse-baseline.mjs"
   },
   "dependencies": {
     "@vercel/analytics": "^1.6.1",

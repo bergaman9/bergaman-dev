@@ -1,0 +1,27 @@
+{
+  "ci": {
+    "collect": {
+      "numberOfRuns": 3,
+      "url": [
+        "https://www.bergaman.dev/",
+        "https://www.bergaman.dev/blog",
+        "https://www.bergaman.dev/portfolio",
+        "https://www.bergaman.dev/picks",
+        "https://www.bergaman.dev/contact",
+        "https://www.bergaman.dev/about"
+      ],
+      "settings": {
+        "chromeFlags": "--headless --no-sandbox --disable-extensions"
+      }
+    },
+    "assert": {
+      "assertions": {
+        "categories:performance": ["warn", { "minScore": 0.85 }],
+        "categories:accessibility": ["error", { "minScore": 1 }],
+        "largest-contentful-paint": ["warn", { "maxNumericValue": 2500 }],
+        "cumulative-layout-shift": ["error", { "maxNumericValue": 0.1 }]
+      }
+    },
+    "upload": { "target": "temporary-public-storage" }
+  }
+}
