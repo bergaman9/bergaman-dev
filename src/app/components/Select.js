@@ -94,15 +94,6 @@ export default function Select({
 
   // Handle option selection
   const handleSelect = (option) => {
-    // Create a synthetic event like object to match native select behavior
-    const syntheticEvent = {
-      target: {
-        value: option.value,
-        name: name,
-        id: id
-      }
-    };
-
     // Check if onChange expects an event or value
     // In recommendations page we passed (value) => ... 
     // But original Select passed event. 
@@ -137,7 +128,7 @@ export default function Select({
     const dropdownContent = (
       <div
         id={`select-portal-${id || name || 'dropdown'}`}
-        className="bg-[#1a2e1a]/95 backdrop-blur-md border border-[#3e503e]/50 rounded-xl shadow-2xl shadow-black/40 overflow-hidden min-w-[180px] z-[100000] animate-in fade-in slide-in-from-top-2 duration-200"
+        className="theme-select-menu bg-[#1a2e1a]/95 backdrop-blur-md border border-[#3e503e]/50 rounded-xl shadow-2xl shadow-black/40 overflow-hidden min-w-[180px] z-[100000] animate-in fade-in slide-in-from-top-2 duration-200"
         style={shouldUsePortal ? {
           position: 'fixed',
           top: `${dropdownPosition.top}px`,
@@ -202,7 +193,7 @@ export default function Select({
         ref={buttonRef}
         type="button"
         onClick={() => !disabled && setIsOpen(!isOpen)}
-        className={`relative flex items-center justify-between w-full h-full ${variants[variant] || variants.default} ${sizes[size]} rounded-xl transition-all duration-300 ${disabled ? 'opacity-50 cursor-not-allowed' : ''} focus:outline-none focus:ring-2 focus:ring-[#e8c547]/30 ${isOpen ? 'ring-2 ring-[#e8c547]/20 border-[#e8c547]/50' : ''}`}
+        className={`theme-select-trigger relative flex items-center justify-between w-full h-full ${variants[variant] || variants.default} ${sizes[size]} rounded-xl transition-all duration-300 ${disabled ? 'opacity-50 cursor-not-allowed' : ''} focus:outline-none focus:ring-2 focus:ring-[#e8c547]/30 ${isOpen ? 'ring-2 ring-[#e8c547]/20 border-[#e8c547]/50' : ''}`}
         disabled={disabled}
         id={id}
         name={name}
@@ -228,4 +219,4 @@ export default function Select({
       )}
     </div>
   );
-} 
+}

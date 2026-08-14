@@ -200,10 +200,10 @@ export default function Header() {
 
             <div className="flex shrink-0 items-center gap-2">
               <button type="button" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} className="mini-app-nav-item h-11 w-11 justify-center rounded-lg" aria-label={theme === 'dark' ? t('themeLight') : t('themeDark')} title={theme === 'dark' ? t('themeLight') : t('themeDark')}>
-                <span aria-hidden="true" className="text-lg leading-none">{theme === 'dark' ? '☀' : '☾'}</span>
+                <ThemeGlyph theme={theme} />
               </button>
-              <button type="button" onClick={() => setLocale(locale === 'en' ? 'tr' : 'en')} className="mini-app-nav-item h-11 min-w-11 justify-center rounded-lg px-2 text-xs font-bold" aria-label={t('language')} title={t('language')}>
-                {locale === 'en' ? 'TR' : 'EN'}
+              <button type="button" onClick={() => setLocale(locale === 'en' ? 'tr' : 'en')} className="mini-app-nav-item h-11 min-w-14 justify-center gap-1.5 rounded-lg px-2 text-[10px] font-bold" aria-label={t('language')} title={t('language')}>
+                <LanguageGlyph /><span>{locale === 'en' ? 'TR' : 'EN'}</span>
               </button>
               <Link
                 href="/"
@@ -325,10 +325,10 @@ export default function Header() {
           <div className="flex shrink-0 items-center space-x-4">
             <div className="hidden items-center gap-2 lg:flex">
               <button type="button" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} className="preference-button flex h-11 w-11 items-center justify-center rounded-xl border transition-colors hover:border-[#e8c547]/60 hover:text-[#e8c547] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c547]/60" aria-label={theme === 'dark' ? t('themeLight') : t('themeDark')} title={theme === 'dark' ? t('themeLight') : t('themeDark')}>
-                <span aria-hidden="true" className="text-lg leading-none">{theme === 'dark' ? '☀' : '☾'}</span>
+                <ThemeGlyph theme={theme} />
               </button>
-              <button type="button" onClick={() => setLocale(locale === 'en' ? 'tr' : 'en')} className="preference-button flex h-11 min-w-11 items-center justify-center rounded-xl border px-2 text-xs font-bold transition-colors hover:border-[#e8c547]/60 hover:text-[#e8c547] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c547]/60" aria-label={t('language')} title={t('language')}>
-                {locale === 'en' ? 'TR' : 'EN'}
+              <button type="button" onClick={() => setLocale(locale === 'en' ? 'tr' : 'en')} className="preference-button flex h-11 min-w-14 items-center justify-center gap-1.5 rounded-xl border px-2 text-[10px] font-bold transition-colors hover:border-[#e8c547]/60 hover:text-[#e8c547] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c547]/60" aria-label={t('language')} title={t('language')}>
+                <LanguageGlyph /><span>{locale === 'en' ? 'TR' : 'EN'}</span>
               </button>
             </div>
             {/* Admin Status (Desktop) - Only show if authenticated */}
@@ -448,10 +448,10 @@ export default function Header() {
               <div className="flex flex-col space-y-2">
                 <div className="mb-2 flex items-center gap-2 border-b border-[#3e503e]/30 pb-3">
                   <button type="button" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} className="preference-button flex min-h-11 flex-1 items-center justify-center gap-2 rounded-lg border">
-                    <span aria-hidden="true" className="text-lg leading-none">{theme === 'dark' ? '☀' : '☾'}</span><span>{theme === 'dark' ? 'Light' : 'Dark'}</span>
+                    <ThemeGlyph theme={theme} /><span>{theme === 'dark' ? 'Light' : 'Dark'}</span>
                   </button>
                   <button type="button" onClick={() => setLocale(locale === 'en' ? 'tr' : 'en')} className="preference-button flex min-h-11 flex-1 items-center justify-center gap-2 rounded-lg border font-semibold">
-                    {locale === 'en' ? 'Türkçe' : 'English'}
+                    <LanguageGlyph /><span>{locale === 'en' ? 'Türkçe' : 'English'}</span>
                   </button>
                 </div>
                 {/* Public Links */}
@@ -564,5 +564,25 @@ export default function Header() {
         )}
       </div>
     </header>
+  );
+}
+
+function ThemeGlyph({ theme }) {
+  return theme === 'dark' ? (
+    <svg aria-hidden="true" viewBox="0 0 24 24" className="h-[18px] w-[18px]" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+      <circle cx="12" cy="12" r="3.5" /><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.41M17.66 6.34l1.41-1.41" />
+    </svg>
+  ) : (
+    <svg aria-hidden="true" viewBox="0 0 24 24" className="h-[18px] w-[18px]" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20.3 15.6A8.7 8.7 0 0 1 8.4 3.7 8.7 8.7 0 1 0 20.3 15.6Z" />
+    </svg>
+  );
+}
+
+function LanguageGlyph() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" className="h-[17px] w-[17px]" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a14.5 14.5 0 0 1 0 18M12 3a14.5 14.5 0 0 0 0 18" />
+    </svg>
   );
 }

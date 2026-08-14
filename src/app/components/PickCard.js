@@ -80,7 +80,7 @@ export default function PickCard({ recommendation: rec, variant = 'grid' }) {
   if (!rec) return null;
 
   // Shared media block. `frame` controls the aspect wrapper.
-  const renderMedia = (frame) => (
+  const renderMedia = (frame, showOverlayBadges = true) => (
     <div className={`relative ${frame} shrink-0 overflow-hidden bg-[#0a140d]`}>
       {isLink ? (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-gradient-to-br from-[#13202a] to-[#0a140d] p-6 text-center">
@@ -136,10 +136,12 @@ export default function PickCard({ recommendation: rec, variant = 'grid' }) {
         </div>
       )}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0e1b12]/70 via-transparent to-transparent"></div>
-      <span className={`absolute left-2.5 top-2.5 inline-flex items-center gap-1.5 rounded-md border bg-black/65 px-2 py-1 text-[11px] font-medium backdrop-blur-sm ${meta.chip} ${meta.accent}`}>
-        <i className={`${meta.icon} text-[10px]`}></i> {meta.label}
-      </span>
-      {showRating && (
+      {showOverlayBadges && (
+        <span className={`absolute left-2.5 top-2.5 inline-flex items-center gap-1.5 rounded-md border bg-black/65 px-2 py-1 text-[11px] font-medium backdrop-blur-sm ${meta.chip} ${meta.accent}`}>
+          <i className={`${meta.icon} text-[10px]`}></i> {meta.label}
+        </span>
+      )}
+      {showOverlayBadges && showRating && (
         <span className="absolute right-2.5 top-2.5 inline-flex items-center gap-1 rounded-md bg-[#e8c547] px-2 py-1 text-[11px] font-bold text-[#0e1b12]">
           <i className="fas fa-star text-[10px]"></i> {rec.rating}/10
         </span>
@@ -162,6 +164,19 @@ export default function PickCard({ recommendation: rec, variant = 'grid' }) {
 
   const renderBody = (list = false) => (
     <div className={`flex flex-1 flex-col ${list ? 'min-w-0 p-4' : 'p-4'}`}>
+      {list && (
+        <div className="mb-1.5 flex min-w-0 items-center justify-between gap-2">
+          <span className={`inline-flex min-w-0 items-center gap-1.5 rounded-md border px-2 py-0.5 text-[10px] font-semibold ${meta.chip} ${meta.accent}`}>
+            <i className={`${meta.icon} text-[9px]`}></i>
+            <span className="truncate">{meta.label}</span>
+          </span>
+          {showRating && (
+            <span className="inline-flex shrink-0 items-center gap-1 rounded-md bg-[#e8c547] px-2 py-0.5 text-[10px] font-bold text-[#0e1b12]">
+              <i className="fas fa-star text-[9px]"></i> {rec.rating}/10
+            </span>
+          )}
+        </div>
+      )}
       <h3 className={`font-bold text-white line-clamp-1 transition-colors ${hasLink ? 'group-hover:text-[#e8c547]' : ''} ${list ? 'text-base' : 'text-base'}`}>{displayTitle}</h3>
       {subtitle && <p className={`text-xs ${meta.accent} mt-0.5 line-clamp-1`}>{subtitle}</p>}
       {blurb && <p className={`text-sm text-gray-400 leading-relaxed line-clamp-2 ${list ? 'mt-1.5' : 'mt-2'}`}>{blurb}</p>}
@@ -172,7 +187,7 @@ export default function PickCard({ recommendation: rec, variant = 'grid' }) {
   const inner =
     variant === 'list' ? (
       <div className={`${shell} flex`}>
-        {renderMedia(`w-20 sm:w-24 ${isMusic || isLink ? 'aspect-square' : 'aspect-[2/3]'}`)}
+        {renderMedia(`w-24 sm:w-28 ${isMusic || isLink ? 'aspect-square' : 'aspect-[2/3]'}`, false)}
         {renderBody(true)}
       </div>
     ) : (
