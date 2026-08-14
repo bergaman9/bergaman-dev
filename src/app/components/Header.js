@@ -289,9 +289,9 @@ export default function Header() {
   return (
     <header data-scrolled={isScrolled} className={`site-header-shell fixed left-0 right-0 top-0 z-50 ${isScrolled ? '' : 'border-b border-[#3e503e]/60 bg-gradient-to-b from-[#0a1a0f] via-[#0e1b12] to-[#1a2e1a]/20 backdrop-blur-md'} ${hideTransitionClass}`}>
       <div className="site-header-island page-content py-3.5 backdrop-blur-xl">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between lg:grid lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
           {/* Logo with Dragon Icon */}
-          <Link href="/" className="flex items-center space-x-3 group">
+          <Link href="/" className="group flex items-center space-x-3 lg:justify-self-start">
             <div className="relative">
               <div className="absolute inset-0 bg-[#e8c547]/20 rounded-full blur-lg"></div>
               <i className="fas fa-dragon text-2xl text-[#e8c547] group-hover:scale-110 transition-transform duration-300 relative z-10 drop-shadow-lg"></i>
@@ -304,8 +304,8 @@ export default function Header() {
             </div>
           </Link>
 
-          {/* Desktop Navigation - Center when authenticated, right when not */}
-          <nav className={`hidden lg:flex flex-1 min-w-0 items-center gap-1 pl-4 ${isAuthenticated ? 'justify-center' : 'justify-end'}`}>
+          {/* Desktop navigation remains geometrically centered regardless of side controls. */}
+          <nav className="hidden items-center justify-center gap-1 lg:flex lg:justify-self-center">
             {navigationItems.map((item) => (
               <Link
                 key={item.href}
@@ -322,7 +322,7 @@ export default function Header() {
           </nav>
 
           {/* Right Side - Admin and Mobile Menu */}
-          <div className="flex shrink-0 items-center space-x-4">
+          <div className="flex shrink-0 items-center space-x-4 lg:justify-self-end">
             <div className="hidden items-center gap-2 lg:flex">
               <button type="button" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} className="preference-button flex h-11 w-11 items-center justify-center rounded-xl border transition-colors hover:border-[#e8c547]/60 hover:text-[#e8c547] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c547]/60" aria-label={theme === 'dark' ? t('themeLight') : t('themeDark')} title={theme === 'dark' ? t('themeLight') : t('themeDark')}>
                 <ThemeGlyph theme={theme} />
