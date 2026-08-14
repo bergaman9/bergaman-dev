@@ -44,8 +44,7 @@
     "download-images": "node scripts/download-game-images.js",
     "seed:played-games": "node scripts/seed-played-game-picks.mjs",
     "check:blog-slugs": "node scripts/check-blog-slugs.mjs",
-    "icons:build": "node scripts/build-fontawesome-subset.mjs",
-    "postinstall": "npm run icons:build"
+    "icons:build": "node scripts/build-fontawesome-subset.mjs"
   },
   "dependencies": {
     "@vercel/analytics": "^1.6.1",
@@ -109,7 +108,7 @@
     "typescript": "^6.0.3"
   },
   "engines": {
-    "node": ">=20.9.0",
+    "node": "20.x",
     "npm": ">=8.0.0"
   },
   "license": "MIT"
