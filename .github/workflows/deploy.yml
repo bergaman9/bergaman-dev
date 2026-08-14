@@ -22,16 +22,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Deploy to Vercel (production)
-        uses: amondnet/vercel-action@v25
+      - name: Use Node.js 24
+        uses: actions/setup-node@v4
         with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-args: '--prod'
+          node-version: 24
+
+      - name: Install supported Vercel CLI
+        run: npm install --global vercel@58.1.0
+
+      - name: Deploy to Vercel (production)
+        run: vercel deploy --prod --yes --token="$VERCEL_TOKEN"
         env:
-          MONGODB_URI: ${{ secrets.MONGODB_URI }}
-          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
-          EMAIL_USER: ${{ secrets.EMAIL_USER }}
-          EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
-          NEXT_PUBLIC_SITE_URL: https://www.bergaman.dev
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
