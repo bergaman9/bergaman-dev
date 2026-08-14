@@ -4,8 +4,11 @@
 export const dynamic = 'force-dynamic';
 
 import { useEffect, useState } from 'react';
+import { usePreferences } from '../components/PreferencesProvider';
 
 export default function MaintenancePage() {
+  const { locale } = usePreferences();
+  const tr = locale === 'tr';
   const [timeLeft, setTimeLeft] = useState({
     hours: 0,
     minutes: 0,
@@ -57,59 +60,58 @@ export default function MaintenancePage() {
         {/* Main Title */}
         <h1 className="text-5xl md:text-7xl font-bold mb-6">
           <span className="bg-gradient-to-r from-[#e8c547] to-[#f4d76b] bg-clip-text text-transparent">
-            Under Maintenance
+            {tr ? 'Bakım Çalışması' : 'Under Maintenance'}
           </span>
         </h1>
 
         {/* Subtitle */}
         <p className="text-xl md:text-2xl text-gray-300 mb-8 leading-relaxed">
-          The dragon is upgrading its lair with powerful new features
+          {tr ? 'Ejderha, yuvasını güçlü yeni özelliklerle geliştiriyor' : 'The dragon is upgrading its lair with powerful new features'}
         </p>
 
         {/* Description */}
         <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 rounded-lg p-8 mb-8">
           <p className="text-lg text-gray-300 mb-6">
-            We're currently performing scheduled maintenance to improve your experience. 
-            The site will be back online shortly with enhanced performance and new features.
+            {tr ? 'Deneyiminizi geliştirmek için planlı bakım çalışması yapıyoruz. Site, iyileştirilmiş performans ve yeni özelliklerle kısa süre içinde yeniden erişilebilir olacak.' : "We're currently performing scheduled maintenance to improve your experience. The site will be back online shortly with enhanced performance and new features."}
           </p>
           
           {/* Features Being Added */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             <div className="flex items-center space-x-3">
               <i className="fas fa-rocket text-[#e8c547]"></i>
-              <span className="text-gray-300">Performance Boost</span>
+              <span className="text-gray-300">{tr ? 'Performans Artışı' : 'Performance Boost'}</span>
             </div>
             <div className="flex items-center space-x-3">
               <i className="fas fa-shield-alt text-[#e8c547]"></i>
-              <span className="text-gray-300">Security Updates</span>
+              <span className="text-gray-300">{tr ? 'Güvenlik Güncellemeleri' : 'Security Updates'}</span>
             </div>
             <div className="flex items-center space-x-3">
               <i className="fas fa-magic text-[#e8c547]"></i>
-              <span className="text-gray-300">New Features</span>
+              <span className="text-gray-300">{tr ? 'Yeni Özellikler' : 'New Features'}</span>
             </div>
           </div>
         </div>
 
         {/* Countdown Timer */}
         <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 rounded-lg p-6 mb-8">
-          <h3 className="text-xl font-semibold text-[#e8c547] mb-4">Estimated Time Remaining</h3>
+          <h3 className="text-xl font-semibold text-[#e8c547] mb-4">{tr ? 'Tahmini Kalan Süre' : 'Estimated Time Remaining'}</h3>
           <div className="flex justify-center space-x-6">
             <div className="text-center">
               <div className="bg-[#e8c547]/20 rounded-lg p-4 min-w-[80px]">
                 <div className="text-3xl font-bold text-[#e8c547]">{timeLeft.hours.toString().padStart(2, '0')}</div>
-                <div className="text-sm text-gray-400">Hours</div>
+                <div className="text-sm text-gray-400">{tr ? 'Saat' : 'Hours'}</div>
               </div>
             </div>
             <div className="text-center">
               <div className="bg-[#e8c547]/20 rounded-lg p-4 min-w-[80px]">
                 <div className="text-3xl font-bold text-[#e8c547]">{timeLeft.minutes.toString().padStart(2, '0')}</div>
-                <div className="text-sm text-gray-400">Minutes</div>
+                <div className="text-sm text-gray-400">{tr ? 'Dakika' : 'Minutes'}</div>
               </div>
             </div>
             <div className="text-center">
               <div className="bg-[#e8c547]/20 rounded-lg p-4 min-w-[80px]">
                 <div className="text-3xl font-bold text-[#e8c547]">{timeLeft.seconds.toString().padStart(2, '0')}</div>
-                <div className="text-sm text-gray-400">Seconds</div>
+                <div className="text-sm text-gray-400">{tr ? 'Saniye' : 'Seconds'}</div>
               </div>
             </div>
           </div>
@@ -117,9 +119,9 @@ export default function MaintenancePage() {
 
         {/* Contact Info */}
         <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 rounded-lg p-6">
-          <h3 className="text-lg font-semibold text-[#e8c547] mb-4">Need Immediate Assistance?</h3>
+          <h3 className="text-lg font-semibold text-[#e8c547] mb-4">{tr ? 'Acil Yardıma mı İhtiyacınız Var?' : 'Need Immediate Assistance?'}</h3>
           <p className="text-gray-300 mb-4">
-            If you have urgent questions or need support, feel free to reach out:
+            {tr ? 'Acil bir sorunuz veya destek ihtiyacınız varsa bize ulaşabilirsiniz:' : 'If you have urgent questions or need support, feel free to reach out:'}
           </p>
           <div className="flex justify-center space-x-6">
             <a 
@@ -127,7 +129,7 @@ export default function MaintenancePage() {
               className="flex items-center space-x-2 text-[#e8c547] hover:text-[#f4d76b] transition-colors duration-300"
             >
               <i className="fas fa-envelope"></i>
-              <span>Email Support</span>
+              <span>{tr ? 'E-posta Desteği' : 'Email Support'}</span>
             </a>
             <a 
               href="https://github.com/bergaman9" 
@@ -143,9 +145,9 @@ export default function MaintenancePage() {
 
         {/* Footer */}
         <div className="mt-8 text-gray-400">
-          <p>&copy; 2024 Bergaman - The Dragon's Domain. All rights reserved.</p>
+          <p>&copy; 2026 Bergaman · {tr ? 'Tüm hakları saklıdır.' : 'All rights reserved.'}</p>
         </div>
       </div>
     </div>
   );
-} 
+}

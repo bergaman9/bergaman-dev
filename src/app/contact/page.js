@@ -5,8 +5,11 @@ import { useAdminMode } from '../../hooks/useAdminMode';
 import PageHeader from '../components/PageHeader';
 import PageContainer from '../components/PageContainer';
 import { SkeletonBox, SkeletonText } from '../components/Skeleton';
+import { usePreferences } from '../components/PreferencesProvider';
 
 export default function Contact() {
+  const { locale, t } = usePreferences();
+  const tr = locale === 'tr';
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -54,8 +57,8 @@ export default function Contact() {
     return (
       <PageContainer>
         <PageHeader
-          title="Contact"
-          subtitle="Send a message or use one of the contact channels below"
+          title={t('contactMe')}
+          subtitle={t('contactSubtitle')}
           icon="fas fa-envelope"
         />
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -90,14 +93,14 @@ export default function Contact() {
           <section className="text-center mb-12 fade-in">
             <h1 className="text-4xl md:text-5xl font-bold gradient-text mb-4 leading-tight">
               <i className="fas fa-envelope-slash mr-3"></i>
-              Contact Form Disabled
+              {tr ? 'İletişim Formu Kapalı' : 'Contact Form Disabled'}
             </h1>
             <p className="text-lg text-gray-300 max-w-3xl mx-auto mb-8">
-              The contact form is currently disabled. Please reach out through alternative methods.
+              {tr ? 'İletişim formu şu anda kapalı. Lütfen diğer iletişim kanallarını kullanın.' : 'The contact form is currently disabled. Please reach out through alternative methods.'}
             </p>
 
             <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 rounded-lg p-8 max-w-2xl mx-auto">
-              <h2 className="text-2xl font-bold mb-6 text-[#e8c547]">Alternative Contact Methods</h2>
+              <h2 className="text-2xl font-bold mb-6 text-[#e8c547]">{tr ? 'Diğer İletişim Kanalları' : 'Alternative Contact Methods'}</h2>
 
               <div className="space-y-6">
                 {/* Email */}
@@ -203,8 +206,8 @@ export default function Contact() {
 
         {/* Page Header */}
         <PageHeader
-          title="Contact Me"
-          subtitle="Have a software project, electrical engineering opportunity, automation need, or collaboration in mind? Contact Bergasoft and let's discuss the work."
+          title={t('contactMe')}
+          subtitle={t('contactSubtitle')}
           icon="fas fa-envelope"
           variant="large"
         />
@@ -216,10 +219,10 @@ export default function Contact() {
             {/* Let's Connect Card */}
             <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-8 rounded-lg slide-in-left">
               <h2 className="text-2xl font-bold mb-6 text-[#e8c547]">
-                Let's Connect
+                {t('letsConnect')}
               </h2>
               <p className="text-gray-300 mb-8 leading-relaxed">
-                Bergasoft is open to project inquiries, engineering opportunities, technical consulting, collaborations, and product work across software, automation, and electrical systems.
+                {t('contactIntro')}
               </p>
 
               <div className="space-y-6">
@@ -229,7 +232,7 @@ export default function Contact() {
                     <i className="fas fa-envelope text-[#e8c547]"></i>
                   </div>
                   <div>
-                    <h3 className="text-[#e8c547] font-semibold">Email Me</h3>
+                    <h3 className="text-[#e8c547] font-semibold">{t('emailMe')}</h3>
                     <a href="mailto:contact@bergaman.dev" className="text-gray-300 hover:text-[#e8c547] transition-colors">contact@bergaman.dev</a>
                   </div>
                 </div>
@@ -240,7 +243,7 @@ export default function Contact() {
                     <i className="fas fa-globe text-[#e8c547]"></i>
                   </div>
                   <div>
-                    <h3 className="text-[#e8c547] font-semibold">Portfolio</h3>
+                    <h3 className="text-[#e8c547] font-semibold">{t('portfolio')}</h3>
                     <p className="text-gray-300">bergaman.dev</p>
                   </div>
                 </div>
@@ -251,8 +254,8 @@ export default function Contact() {
                     <i className="fas fa-clock text-[#e8c547]"></i>
                   </div>
                   <div>
-                    <h3 className="text-[#e8c547] font-semibold">Response Time</h3>
-                    <p className="text-gray-300">Usually within 1–2 business days</p>
+                    <h3 className="text-[#e8c547] font-semibold">{t('responseTime')}</h3>
+                    <p className="text-gray-300">{t('responseValue')}</p>
                   </div>
                 </div>
               </div>
@@ -261,16 +264,16 @@ export default function Contact() {
             {/* Send Message Form */}
             <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-8 rounded-lg slide-in-right">
               <h2 className="text-2xl font-bold mb-6 text-[#e8c547]">
-                Send me a Message
+                {t('sendMessage')}
               </h2>
 
               <div aria-live="polite">
                 {submitStatus === 'success' && (
                   <div className="mb-6 p-5 bg-green-500/15 border border-green-500/30 rounded-lg text-center">
                     <i className="fas fa-paper-plane text-3xl text-green-400 mb-3 block"></i>
-                    <p className="text-green-300 font-semibold">Message sent successfully!</p>
-                    <p className="text-sm text-green-400/80 mt-1">Thanks for reaching out — I'll usually reply within 1–2 business days.</p>
-                    {submissionId && <p className="mt-2 text-xs text-green-300/70">Reference: {submissionId}</p>}
+                    <p className="text-green-300 font-semibold">{t('messageSuccess')}</p>
+                    <p className="text-sm text-green-400/80 mt-1">{t('messageThanks')}</p>
+                    {submissionId && <p className="mt-2 text-xs text-green-300/70">{tr ? 'Referans' : 'Reference'}: {submissionId}</p>}
                   </div>
                 )}
 
@@ -278,7 +281,7 @@ export default function Contact() {
                   <div className="mb-6 p-4 bg-red-500/15 border border-red-500/30 rounded-lg">
                     <div className="flex items-center">
                       <i className="fas fa-exclamation-circle text-red-400 mr-2"></i>
-                      <span className="text-red-300">Something went wrong while sending your message. Please try again in a moment.</span>
+                      <span className="text-red-300">{t('sendError')}</span>
                     </div>
                   </div>
                 )}
@@ -301,7 +304,7 @@ export default function Contact() {
                 {/* Name Field */}
                 <div>
                   <label htmlFor="name" className="block text-[#e8c547] font-medium mb-2">
-                    Your Name
+                    {t('yourName')}
                   </label>
                   <input
                     type="text"
@@ -310,7 +313,7 @@ export default function Contact() {
                     value={formData.name}
                     onChange={handleChange}
                     required
-                    placeholder="Enter your name"
+                    placeholder={t('enterName')}
                     className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] placeholder-gray-400 focus:border-[#e8c547]/50 focus:ring-1 focus:ring-[#e8c547]/30 focus:outline-none transition-colors duration-300"
                   />
                 </div>
@@ -318,7 +321,7 @@ export default function Contact() {
                 {/* Email Field */}
                 <div>
                   <label htmlFor="email" className="block text-[#e8c547] font-medium mb-2">
-                    Your Email
+                    {t('yourEmail')}
                   </label>
                   <input
                     type="email"
@@ -327,14 +330,14 @@ export default function Contact() {
                     value={formData.email}
                     onChange={handleChange}
                     required
-                    placeholder="Enter your email"
+                    placeholder={t('enterEmail')}
                     className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] placeholder-gray-400 focus:border-[#e8c547]/50 focus:ring-1 focus:ring-[#e8c547]/30 focus:outline-none transition-colors duration-300"
                   />
                 </div>
 
                 {/* Message Field */}
                 <div>
-                  <label htmlFor="inquiryType" className="block text-[#e8c547] font-medium mb-2">How can I help?</label>
+                  <label htmlFor="inquiryType" className="block text-[#e8c547] font-medium mb-2">{t('howHelp')}</label>
                   <div className="relative">
                     <select
                       id="inquiryType"
@@ -343,12 +346,12 @@ export default function Contact() {
                       onChange={handleChange}
                       className="w-full appearance-none rounded-lg border border-[#3e503e] bg-[#0e1b12] px-4 py-3 pr-12 text-[#d1d5db] focus:border-[#e8c547]/50 focus:outline-none focus:ring-1 focus:ring-[#e8c547]/30"
                     >
-                      <option>Project inquiry</option>
-                      <option>Electrical engineering opportunity</option>
-                      <option>Software development</option>
-                      <option>Automation / IoT</option>
-                      <option>Collaboration</option>
-                      <option>General question</option>
+                      <option value="Project inquiry">{t('projectInquiry')}</option>
+                      <option value="Electrical engineering opportunity">{t('electricalOpportunity')}</option>
+                      <option value="Software development">{t('softwareDevelopment')}</option>
+                      <option value="Automation / IoT">{t('automationIot')}</option>
+                      <option value="Collaboration">{t('collaboration')}</option>
+                      <option value="General question">{t('generalQuestion')}</option>
                     </select>
                     <span aria-hidden="true" className="pointer-events-none absolute right-4 top-1/2 h-2.5 w-2.5 -translate-y-2/3 rotate-45 border-b-2 border-r-2 border-[#e8c547]"></span>
                   </div>
@@ -357,7 +360,7 @@ export default function Contact() {
                 {/* Message Field */}
                 <div>
                   <label htmlFor="message" className="block text-[#e8c547] font-medium mb-2">
-                    Your Message
+                    {t('yourMessage')}
                   </label>
                   <textarea
                     id="message"
@@ -366,7 +369,7 @@ export default function Contact() {
                     onChange={handleChange}
                     required
                     rows={6}
-                    placeholder="Tell me about the goal, scope, timeline, and how I can help..."
+                    placeholder={t('messagePlaceholder')}
                     className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] placeholder-gray-400 focus:border-[#e8c547]/50 focus:ring-1 focus:ring-[#e8c547]/30 focus:outline-none transition-colors duration-300 resize-none"
                   />
                 </div>
@@ -380,12 +383,12 @@ export default function Contact() {
                   {isSubmitting ? (
                     <>
                       <i className="fas fa-hourglass-half mr-2"></i>
-                      Sending Message...
+                      {t('sending')}
                     </>
                   ) : (
                     <>
                       <i className="fas fa-paper-plane mr-2"></i>
-                      SEND MESSAGE
+                      {t('send')}
                     </>
                   )}
                 </button>
@@ -399,20 +402,20 @@ export default function Contact() {
           <div className="bg-[#2e3d29]/20 backdrop-blur-md border border-[#3e503e]/20 p-6 rounded-lg max-w-6xl mx-auto">
             <h3 className="text-xl font-semibold text-[#e8c547] mb-4">
               <i className="fas fa-info-circle mr-2"></i>
-              Additional Information
+              {t('additionalInfo')}
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-gray-400">
               <div>
-                <p><strong className="text-gray-300">Location:</strong> Istanbul, Turkey</p>
-                <p><strong className="text-gray-300">Timezone:</strong> GMT+3 (Turkey Time)</p>
+                <p><strong className="text-gray-300">{t('location')}</strong> {t('locationValue')}</p>
+                <p><strong className="text-gray-300">{t('timezone')}</strong> {t('timezoneValue')}</p>
               </div>
               <div>
-                <p><strong className="text-gray-300">Languages:</strong> Turkish, English, German</p>
-                <p><strong className="text-gray-300">Availability:</strong> Monday - Friday</p>
+                <p><strong className="text-gray-300">{t('languages')}</strong> {t('languagesValue')}</p>
+                <p><strong className="text-gray-300">{t('availability')}</strong> {t('availabilityValue')}</p>
               </div>
               <div>
-                <p><strong className="text-gray-300">Response Time:</strong> Usually within 1–2 business days</p>
-                <p><strong className="text-gray-300">Services:</strong> Software, automation, electrical engineering</p>
+                <p><strong className="text-gray-300">{t('responseTime')}:</strong> {t('responseValue')}</p>
+                <p><strong className="text-gray-300">{t('services')}</strong> {t('servicesValue')}</p>
               </div>
             </div>
           </div>

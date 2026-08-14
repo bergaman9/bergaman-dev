@@ -5,8 +5,11 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { FaVolumeUp, FaEye, FaCheckCircle, FaBook, FaStar, FaMicrophone, FaTimesCircle } from 'react-icons/fa';
 import { useVocabulary } from '@/context/VocabularyContext';
+import { usePreferences } from '@/components/PreferencesProvider';
 
 export default function WordCard({ word }) {
+    const { locale } = usePreferences();
+    const tr = locale === 'tr';
     const [isRevealed, setIsRevealed] = useState(false);
     const [listening, setListening] = useState(false);
     const [pronunciationStatus, setPronunciationStatus] = useState(null); // 'correct', 'incorrect', null
@@ -184,12 +187,12 @@ export default function WordCard({ word }) {
                 {/* Pronunciation Feedback (Expandable) */}
                 <div className={`overflow-hidden transition-all duration-300 ${pronunciationStatus || listening ? 'max-h-12 opacity-100 mt-2' : 'max-h-0 opacity-0'}`}>
                     <div className="bg-white/5 rounded-lg px-3 py-2 text-xs">
-                        {listening && <div className="text-yellow-400 animate-pulse flex items-center gap-2"><div className="w-1.5 h-1.5 bg-yellow-400 rounded-full" /> Listening...</div>}
+                        {listening && <div className="text-yellow-400 animate-pulse flex items-center gap-2"><div className="w-1.5 h-1.5 bg-yellow-400 rounded-full" /> {tr ? 'Dinleniyor...' : 'Listening...'}</div>}
                         {pronunciationStatus === 'correct' && (
-                            <p className="text-green-400 flex items-center gap-2 font-bold"><FaCheckCircle /> Perfect pronunciation!</p>
+                            <p className="text-green-400 flex items-center gap-2 font-bold"><FaCheckCircle /> {tr ? 'Mükemmel telaffuz!' : 'Perfect pronunciation!'}</p>
                         )}
                         {pronunciationStatus === 'incorrect' && (
-                            <p className="text-red-400 flex items-center gap-2"><FaTimesCircle /> Heard: <span className="font-mono text-white">"{heardText}"</span></p>
+                            <p className="text-red-400 flex items-center gap-2"><FaTimesCircle /> {tr ? 'Algılanan' : 'Heard'}: <span className="font-mono text-white">"{heardText}"</span></p>
                         )}
                     </div>
                 </div>
@@ -215,21 +218,21 @@ export default function WordCard({ word }) {
                                     className={`py-2 rounded-xl flex flex-col items-center gap-1 transition-all border ${currentStatus === 'known' ? 'bg-green-500/10 border-green-500/50 text-green-400' : 'bg-white/5 border-transparent hover:bg-white/10 text-gray-500 hover:text-green-400'}`}
                                 >
                                     <FaCheckCircle className="text-lg" />
-                                    <span className="text-[10px] font-bold uppercase tracking-wider">Known</span>
+                                    <span className="text-[10px] font-bold uppercase tracking-wider">{tr ? 'Biliniyor' : 'Known'}</span>
                                 </button>
                                 <button
                                     onClick={(e) => handleStatusUpdate(e, 'learning')}
                                     className={`py-2 rounded-xl flex flex-col items-center gap-1 transition-all border ${currentStatus === 'learning' ? 'bg-yellow-500/10 border-yellow-500/50 text-yellow-400' : 'bg-white/5 border-transparent hover:bg-white/10 text-gray-500 hover:text-yellow-400'}`}
                                 >
                                     <FaBook className="text-lg" />
-                                    <span className="text-[10px] font-bold uppercase tracking-wider">Learning</span>
+                                    <span className="text-[10px] font-bold uppercase tracking-wider">{tr ? 'Öğreniliyor' : 'Learning'}</span>
                                 </button>
                                 <button
                                     onClick={(e) => handleStatusUpdate(e, 'want_to_learn')}
                                     className={`py-2 rounded-xl flex flex-col items-center gap-1 transition-all border ${currentStatus === 'want_to_learn' ? 'bg-purple-500/10 border-purple-500/50 text-purple-400' : 'bg-white/5 border-transparent hover:bg-white/10 text-gray-500 hover:text-purple-400'}`}
                                 >
                                     <FaStar className="text-lg" />
-                                    <span className="text-[10px] font-bold uppercase tracking-wider">Target</span>
+                                    <span className="text-[10px] font-bold uppercase tracking-wider">{tr ? 'Hedef' : 'Target'}</span>
                                 </button>
                             </div>
                         </div>
@@ -239,7 +242,7 @@ export default function WordCard({ word }) {
                         <div className="flex items-center justify-center pt-2">
                             <div className="px-4 py-1.5 rounded-full bg-white/5 border border-white/5 group-hover:border-[#e8c547]/30 group-hover:bg-[#e8c547]/10 transition-all flex items-center gap-2 group/reveal">
                                 <FaEye className="text-gray-500 group-hover/reveal:text-[#e8c547] text-xs transition-colors" />
-                                <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500 group-hover/reveal:text-[#e8c547] transition-colors">Reveal Definition</span>
+                                <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500 group-hover/reveal:text-[#e8c547] transition-colors">{tr ? 'Tanımı Göster' : 'Reveal Definition'}</span>
                             </div>
                         </div>
                     )}

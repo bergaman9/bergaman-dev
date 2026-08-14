@@ -3,10 +3,13 @@
 import { FaTimes, FaChartPie, FaChartBar, FaTrophy } from 'react-icons/fa';
 import { Doughnut, Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title } from 'chart.js';
+import { usePreferences } from '@/components/PreferencesProvider';
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title);
 
 export default function StatsModal({ onClose, userProgress, words }) {
+    const { locale } = usePreferences();
+    const tr = locale === 'tr';
     // Calculate Stats
     const totalKnown = userProgress.filter(w => w.status === 'known').length;
     const totalLearning = userProgress.filter(w => w.status === 'learning').length;
@@ -29,7 +32,7 @@ export default function StatsModal({ onClose, userProgress, words }) {
     });
 
     const statusData = {
-        labels: ['Known', 'Learning', 'Want to Learn'],
+        labels: tr ? ['Bilinen', 'Öğreniliyor', 'Öğrenilecek'] : ['Known', 'Learning', 'Want to Learn'],
         datasets: [
             {
                 data: [totalKnown, totalLearning, totalWant],
@@ -52,7 +55,7 @@ export default function StatsModal({ onClose, userProgress, words }) {
         labels: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'],
         datasets: [
             {
-                label: 'Words by Level',
+                label: tr ? 'Seviyeye Göre Kelimeler' : 'Words by Level',
                 data: [levelCounts.A1, levelCounts.A2, levelCounts.B1, levelCounts.B2, levelCounts.C1, levelCounts.C2],
                 backgroundColor: 'rgba(56, 189, 248, 0.5)', // Cyan
                 borderColor: 'rgba(56, 189, 248, 1)',
@@ -93,7 +96,7 @@ export default function StatsModal({ onClose, userProgress, words }) {
                 </button>
 
                 <h2 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent mb-8 flex items-center gap-3">
-                    <FaTrophy className="text-[#e8c547]" /> Your Progress
+                    <FaTrophy className="text-[#e8c547]" /> {tr ? 'İlerlemeniz' : 'Your Progress'}
                 </h2>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
@@ -101,22 +104,22 @@ export default function StatsModal({ onClose, userProgress, words }) {
                     <div className="md:col-span-2 grid grid-cols-3 gap-4">
                         <div className="bg-green-500/10 border border-green-500/20 p-4 rounded-xl text-center">
                             <h3 className="text-2xl font-bold text-green-400">{totalKnown}</h3>
-                            <p className="text-xs text-green-300/80 uppercase tracking-wider">Known</p>
+                            <p className="text-xs text-green-300/80 uppercase tracking-wider">{tr ? 'Bilinen' : 'Known'}</p>
                         </div>
                         <div className="bg-yellow-500/10 border border-yellow-500/20 p-4 rounded-xl text-center">
                             <h3 className="text-2xl font-bold text-yellow-400">{totalLearning}</h3>
-                            <p className="text-xs text-yellow-300/80 uppercase tracking-wider">Learning</p>
+                            <p className="text-xs text-yellow-300/80 uppercase tracking-wider">{tr ? 'Öğreniliyor' : 'Learning'}</p>
                         </div>
                         <div className="bg-purple-500/10 border border-purple-500/20 p-4 rounded-xl text-center">
                             <h3 className="text-2xl font-bold text-purple-400">{totalWant}</h3>
-                            <p className="text-xs text-purple-300/80 uppercase tracking-wider">Targets</p>
+                            <p className="text-xs text-purple-300/80 uppercase tracking-wider">{tr ? 'Hedefler' : 'Targets'}</p>
                         </div>
                     </div>
 
                     {/* Status Chart */}
                     <div className="bg-white/5 rounded-xl p-6 border border-white/10 flex flex-col items-center">
                         <h3 className="text-xl font-bold text-gray-200 mb-4 flex items-center gap-2">
-                            <FaChartPie className="text-accent" /> Status Distribution
+                            <FaChartPie className="text-accent" /> {tr ? 'Durum Dağılımı' : 'Status Distribution'}
                         </h3>
                         <div className="w-full max-w-[300px]">
                             <Doughnut data={statusData} options={{ ...options, scales: {} }} />
@@ -126,7 +129,7 @@ export default function StatsModal({ onClose, userProgress, words }) {
                     {/* Level Chart */}
                     <div className="bg-white/5 rounded-xl p-6 border border-white/10 flex flex-col items-center">
                         <h3 className="text-xl font-bold text-gray-200 mb-4 flex items-center gap-2">
-                            <FaChartBar className="text-accent" /> Level Breakdown
+                            <FaChartBar className="text-accent" /> {tr ? 'Seviye Dağılımı' : 'Level Breakdown'}
                         </h3>
                         <div className="w-full">
                             <Bar data={levelData} options={options} />

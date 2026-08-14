@@ -6,6 +6,7 @@ import { Doughnut } from 'react-chartjs-2';
 import { useMemo, useState, useRef } from 'react';
 import { FaEye, FaEyeSlash, FaArrowUp, FaArrowDown, FaPlus, FaTrash, FaFileExport, FaFileImport, FaWallet, FaCog } from 'react-icons/fa';
 import { SkeletonBox, SkeletonCard } from '../Skeleton';
+import { usePreferences } from '@/components/PreferencesProvider';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -25,6 +26,8 @@ const OTHER_RATES = [
 ];
 
 export default function FinanceDashboard() {
+    const { locale } = usePreferences();
+    const tr = locale === 'tr';
     const {
         assets,
         getPortfolioStats,
@@ -57,12 +60,12 @@ export default function FinanceDashboard() {
         const file = e.target.files[0];
         if (!file) return;
         if (file.type && file.type !== 'application/json') {
-            setImportStatus({ type: 'error', message: 'Import only accepts JSON backup files.' });
+            setImportStatus({ type: 'error', message: tr ? 'Yalnızca JSON yedek dosyaları içe aktarılabilir.' : 'Import only accepts JSON backup files.' });
             e.target.value = '';
             return;
         }
         if (file.size > 1024 * 1024) {
-            setImportStatus({ type: 'error', message: 'Backup file is too large. Maximum size is 1 MB.' });
+            setImportStatus({ type: 'error', message: tr ? 'Yedek dosyası çok büyük. En fazla 1 MB olabilir.' : 'Backup file is too large. Maximum size is 1 MB.' });
             e.target.value = '';
             return;
         }
@@ -70,14 +73,14 @@ export default function FinanceDashboard() {
         reader.onload = (event) => {
             const result = importData(event.target.result);
             if (result.success) {
-                setImportStatus({ type: 'success', message: 'Backup restored successfully.' });
+                setImportStatus({ type: 'success', message: tr ? 'Yedek başarıyla geri yüklendi.' : 'Backup restored successfully.' });
             } else {
                 setImportStatus({ type: 'error', message: `Backup import failed: ${result.error}` });
             }
             e.target.value = '';
         };
         reader.onerror = () => {
-            setImportStatus({ type: 'error', message: 'Backup file could not be read.' });
+            setImportStatus({ type: 'error', message: tr ? 'Yedek dosyası okunamadı.' : 'Backup file could not be read.' });
             e.target.value = '';
         };
         reader.readAsText(file);
@@ -151,7 +154,7 @@ export default function FinanceDashboard() {
     };
 
     const handleReset = () => {
-        if (window.confirm('Delete all local finance data from this browser? This cannot be undone.')) resetData();
+        if (window.confirm(tr ? 'Bu tarayıcıdaki tüm yerel finans verileri silinsin mi? Bu işlem geri alınamaz.' : 'Delete all local finance data from this browser? This cannot be undone.')) resetData();
     };
 
     const currentPortfolio = portfolios.find(p => p.id === currentPortfolioId);
@@ -169,7 +172,7 @@ export default function FinanceDashboard() {
                     <select
                         value={currentPortfolioId}
                         onChange={(e) => setCurrentPortfolioId(e.target.value)}
-                    aria-label="Current portfolio"
+                    aria-label={tr ? 'Geçerli portföy' : 'Current portfolio'}
                     className="bg-transparent text-white font-semibold text-lg outline-none cursor-pointer hover:text-[#e8c547] transition-colors focus:ring-2 focus:ring-[#e8c547]/70 rounded-lg"
                     >
                         {portfolios.map(p => (
@@ -183,10 +186,10 @@ export default function FinanceDashboard() {
                                 autoFocus
                                 value={newPortfolioName}
                                 onChange={(e) => setNewPortfolioName(e.target.value)}
-                                placeholder="Name..."
+                                placeholder={tr ? 'Ad...' : 'Name...'}
                             className="bg-white/10 border border-white/20 rounded-lg px-3 py-1.5 text-sm text-white w-28 outline-none focus:border-[#e8c547] focus:ring-2 focus:ring-[#e8c547]/40"
                             />
-                            <button type="submit" className="bg-[#e8c547] text-black px-3 py-1.5 rounded-lg text-sm font-bold focus:outline-none focus:ring-2 focus:ring-[#e8c547]/70">Add</button>
+                            <button type="submit" className="bg-[#e8c547] text-black px-3 py-1.5 rounded-lg text-sm font-bold focus:outline-none focus:ring-2 focus:ring-[#e8c547]/70">{tr ? 'Ekle' : 'Add'}</button>
                             <button type="button" onClick={() => setIsCreating(false)} aria-label="Cancel portfolio creation" className="text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-[#e8c547]/70 rounded">✕</button>
                         </form>
                     ) : (
@@ -207,19 +210,19 @@ export default function FinanceDashboard() {
                             <Doughnut data={chartData} options={options} />
                         ) : (
                             <div className="w-full h-full rounded-full border-4 border-dashed border-white/10 flex items-center justify-center">
-                                <span className="text-white/20 text-xs">No Data</span>
+                                <span className="text-white/20 text-xs">{tr ? 'Veri Yok' : 'No Data'}</span>
                             </div>
                         )}
                         {/* Center text */}
                         <div className="absolute inset-0 flex items-center justify-center">
-                            <span className="text-[10px] text-white/40 font-bold">{assets.length} ASSETS</span>
+                            <span className="text-[10px] text-white/40 font-bold">{assets.length} {tr ? 'VARLIK' : 'ASSETS'}</span>
                         </div>
                     </div>
 
                     {/* Stats */}
                     <div className="flex-1 space-y-4">
                         <div>
-                            <div className="text-xs text-white/40 uppercase tracking-wider mb-1">Total Balance</div>
+                            <div className="text-xs text-white/40 uppercase tracking-wider mb-1">{tr ? 'Toplam Bakiye' : 'Total Balance'}</div>
                             <div className="flex items-center gap-3">
                                 <span className="text-3xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
                                     {showBalance ? formatCurrency(getConvertedValue(stats.totalValue)) : '••••••'}
@@ -232,13 +235,13 @@ export default function FinanceDashboard() {
 
                         <div className="flex gap-6">
                             <div>
-                                <div className="text-[10px] text-white/30 uppercase">Cost Basis</div>
+                                <div className="text-[10px] text-white/30 uppercase">{tr ? 'Maliyet' : 'Cost Basis'}</div>
                                 <div className="text-sm text-white/60 font-mono">
                                     {showBalance ? formatCurrency(getConvertedValue(stats.totalCost)) : '••••'}
                                 </div>
                             </div>
                             <div>
-                                <div className="text-[10px] text-white/30 uppercase">Profit/Loss</div>
+                                <div className="text-[10px] text-white/30 uppercase">{tr ? 'Kâr/Zarar' : 'Profit/Loss'}</div>
                                 <div className={`text-sm font-mono flex items-center gap-1 ${stats.totalProfitLoss >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                                     {showBalance ? (
                                         <>
@@ -275,18 +278,18 @@ export default function FinanceDashboard() {
                     <div className="mt-6 pt-4 border-t border-white/10 flex flex-wrap gap-3">
                         <input type="file" accept=".json" ref={fileInputRef} className="hidden" onChange={handleFileChange} />
                         <button onClick={handleImportClick} className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-sm text-gray-400 hover:text-white transition-all focus:outline-none focus:ring-2 focus:ring-[#e8c547]/70">
-                            <FaFileImport /> Import
+                            <FaFileImport /> {tr ? 'İçe Aktar' : 'Import'}
                         </button>
                         <button onClick={exportData} className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-sm text-gray-400 hover:text-white transition-all focus:outline-none focus:ring-2 focus:ring-[#e8c547]/70">
-                            <FaFileExport /> Export
+                            <FaFileExport /> {tr ? 'Dışa Aktar' : 'Export'}
                         </button>
                         {portfolios.length > 1 && (
                             <button onClick={() => window.confirm(`Delete portfolio "${currentPortfolio?.name}" from this browser?`) && deletePortfolio(currentPortfolioId)} className="flex items-center gap-2 px-4 py-2 bg-red-500/10 hover:bg-red-500/20 rounded-lg text-sm text-red-400 hover:text-red-300 transition-all focus:outline-none focus:ring-2 focus:ring-red-400/70">
-                                <FaTrash /> Delete Portfolio
+                                <FaTrash /> {tr ? 'Portföyü Sil' : 'Delete Portfolio'}
                             </button>
                         )}
                         <button onClick={handleReset} className="ml-auto flex items-center gap-2 px-4 py-2 bg-red-900/20 hover:bg-red-900/30 border border-red-500/20 rounded-lg text-sm text-red-500 hover:text-red-400 transition-all focus:outline-none focus:ring-2 focus:ring-red-400/70">
-                            Reset All Data
+                            {tr ? 'Tüm Verileri Sıfırla' : 'Reset All Data'}
                         </button>
                         {importStatus && (
                             <p
@@ -308,7 +311,7 @@ export default function FinanceDashboard() {
                         <div key={metal.key} className={`${metal.bg} rounded-2xl border border-white/10 p-4 relative overflow-hidden group hover:border-white/20 transition-all`}>
                             <div className={`absolute inset-0 bg-gradient-to-br ${metal.color} opacity-0 group-hover:opacity-5 transition-opacity`} />
                             <div className="relative">
-                                <div className="text-[10px] text-white/40 uppercase tracking-wider mb-1">{metal.label}</div>
+                                <div className="text-[10px] text-white/40 uppercase tracking-wider mb-1">{tr ? ({ Gold: 'Altın', Silver: 'Gümüş', Platinum: 'Platin' }[metal.label]) : metal.label}</div>
                                 <div className={`text-xl font-bold bg-gradient-to-r ${metal.color} bg-clip-text text-transparent`}>
                                     {price ? `₺${formatCompact(price)}` : '...'}
                                 </div>

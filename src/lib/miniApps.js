@@ -60,6 +60,18 @@ export const MINI_APPS = [
 
 export const ACTIVE_MINI_APPS = MINI_APPS.filter((app) => app.status === 'active' && app.href);
 
+const TR_MINI_APPS = {
+  vocabulary: { title: 'Kelime Kasası', shortTitle: 'Kelimeler', description: '25.000’den fazla kelimede ustalaşın ve kalıcı Kasa Anahtarı ile ilerlemenizi anonim olarak takip edin.', badge: 'Yeni' },
+  finance: { title: 'Finansal Portföy', shortTitle: 'Finans', description: 'Hisse, kripto, döviz ve altın varlıklarınızı gerçek zamanlı piyasa verileriyle takip edin.', badge: 'Canlı' },
+  snippets: { title: 'Kod Parçacığı Kasası', shortTitle: 'Kodlar', description: 'Kullanışlı regex kalıpları, React hook’ları ve yardımcı fonksiyonlardan oluşan seçilmiş koleksiyon.' },
+  pomodoro: { title: 'Odak Sayacı', shortTitle: 'Odak', description: 'Derin çalışma oturumları için çalışma ve mola döngülerine sahip sade bir Pomodoro sayacı.' },
+  palette: { title: 'Renk Paleti Oluşturucu', shortTitle: 'Palet', description: 'Renk şemaları oluşturun, beğendiklerinizi kilitleyin ve hex kodlarını veya Tailwind çıktısını kopyalayın.' },
+};
+
+export function localizeMiniApp(app, locale) {
+  return locale === 'tr' && app ? { ...app, ...(TR_MINI_APPS[app.id] || {}) } : app;
+}
+
 const MINI_APP_THEME_PRESETS = {
   gold: {
     accent: '#e8c547',

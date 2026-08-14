@@ -3,6 +3,7 @@ import AssetListModal from './AssetListModal';
 import AddAssetModal from './AddAssetModal';
 import { useFinance } from '@/context/FinanceContext';
 import { FaPlus } from 'react-icons/fa';
+import { usePreferences } from '@/components/PreferencesProvider';
 
 const CATEGORIES = [
     { id: 'TL', name: 'Turkish Lira', icon: '₺', gradient: 'from-red-500/20 to-red-900/10' },
@@ -16,6 +17,8 @@ const CATEGORIES = [
 ];
 
 export default function AssetCategoryGrid() {
+    const { locale } = usePreferences();
+    const tr = locale === 'tr';
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [editingAsset, setEditingAsset] = useState(null);
@@ -73,7 +76,7 @@ export default function AssetCategoryGrid() {
                     <button
                         key={cat.id}
                         onClick={() => handleCategoryClick(cat.id)}
-                        aria-label={`Open ${cat.name} assets`}
+                        aria-label={`${tr ? 'Varlıkları aç' : 'Open assets'}: ${cat.name}`}
                         className={`group relative overflow-hidden rounded-2xl bg-gradient-to-br ${cat.gradient} border border-white/10 hover:border-white/20 transition-all duration-300 p-5 text-left focus:outline-none focus:ring-2 focus:ring-[#e8c547]/70 motion-reduce:transition-none`}
                     >
                         {/* Hover highlight */}
@@ -89,7 +92,7 @@ export default function AssetCategoryGrid() {
                         {/* Category Name */}
                         <div className="relative z-10 mb-2">
                             <span className="text-sm font-semibold text-white/90 group-hover:text-white transition-colors">
-                                {cat.name}
+                                {tr ? ({ 'Turkish Lira': 'Türk Lirası', 'Borsa Istanbul': 'Borsa İstanbul', Commodities: 'Emtialar', 'Foreign Exchange': 'Döviz', 'Investment Funds': 'Yatırım Fonları', Crypto: 'Kripto', 'US Stocks': 'ABD Hisseleri', Other: 'Diğer' }[cat.name] || cat.name) : cat.name}
                             </span>
                         </div>
 
@@ -99,7 +102,7 @@ export default function AssetCategoryGrid() {
                                 {hasAssets ? formatCurrency(totalValueConverted) : '₺0'}
                             </div>
                             <div className="text-xs text-white/40 mt-0.5">
-                                {assets.length} {assets.length === 1 ? 'asset' : 'assets'}
+                                {assets.length} {tr ? 'varlık' : (assets.length === 1 ? 'asset' : 'assets')}
                             </div>
                         </div>
 

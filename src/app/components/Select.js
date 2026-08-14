@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { usePreferences } from './PreferencesProvider';
 
 export default function Select({
   options = [],
@@ -21,6 +22,7 @@ export default function Select({
   id,
   usePortal = false,
 }) {
+  const { locale } = usePreferences();
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 0 });
   const [mounted, setMounted] = useState(false);
@@ -164,7 +166,7 @@ export default function Select({
             </li>
           ))}
           {options.length === 0 && (
-            <li className="px-4 py-3 text-gray-500 italic">No options available</li>
+            <li className="px-4 py-3 text-gray-500 italic">{locale === 'tr' ? 'Seçenek bulunmuyor' : 'No options available'}</li>
           )}
         </ul>
       </div>

@@ -3,10 +3,25 @@
 import Tooltip from './Tooltip';
 import SafeImage from './SafeImage';
 import { getSafeHttpUrl, hostnameMatches, parseSafeHttpUrl } from '@/lib/urlSecurity';
+import { usePreferences } from './PreferencesProvider';
 
 export default function ProjectCard({ project, isAdmin = false, onEdit, onDelete, compact = false }) {
+  const { locale } = usePreferences();
   // Temporary Overrides (Hotfix)
-  const displayProject = { ...project };
+  const translatedProject = locale === 'tr' ? (project?.translations?.tr || project?.translation?.tr || {}) : {};
+  const displayProject = { ...project, ...translatedProject };
+  if (locale === 'tr' && !translatedProject.description) {
+    displayProject.description = ({
+      'Contro Bot': 'Pandemi döneminde geliştirilen; moderasyon, eğlence komutları ve kapsamlı ekonomi sistemi sunan çok amaçlı Discord botu.',
+      'Contro Dashboard': 'Contro bot örneklerini, sunucu yapılandırmalarını ve analizleri yönetmek için geliştirilen gelişmiş kontrol paneli.',
+      'Ligroup': 'Bot geliştirmeden kapsamlı web çözümlerine geçişimi temsil eden ilk full-stack web projem.',
+      'Indoor Air Quality Monitoring': 'Arduino Uno R4 WiFi ile kablosuz veri aktarımı ve gerçek zamanlı hava kalitesi takibi sağlayan IoT çözümü.',
+      'RVC & Stable Diffusion Projects': 'Üretken yapay zekânın yükseliş döneminde ses dönüştürme ve görsel üretimini araştıran deneysel yapay zekâ projeleri.',
+      'Timekeepers Bot': 'Kullanıcı destek taleplerini yönetmek ve sorunları takip etmek için geliştirilen gelişmiş destek talebi botu.',
+      'Stardust RP Bot': 'Envanter sistemleriyle rol yapma sunucuları için özel olarak tasarlanmış Discord botu.',
+      'Bergaman Portfolio': 'Modern tasarım ve etkileşimli öğelerle Next.js kullanılarak geliştirilen kişisel portföy sitesi.'
+    })[displayProject.title] || displayProject.description;
+  }
 
   if (displayProject.title?.includes('Contro Bot')) {
     displayProject.liveUrl = 'https://www.contro.space';
@@ -24,32 +39,32 @@ export default function ProjectCard({ project, isAdmin = false, onEdit, onDelete
 
     // Contro Space specific
     if (hostnameMatches(parsedUrl, 'contro.space')) return {
-      label: 'Dashboard',
+      label: locale === 'tr' ? 'Panel' : 'Dashboard',
       icon: 'fas fa-columns',
       color: 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-500/20'
     };
 
     if (hostnameMatches(parsedUrl, 'github.com')) return {
-      label: 'Source',
+      label: locale === 'tr' ? 'Kaynak' : 'Source',
       icon: 'fab fa-github',
       color: 'bg-white/10 hover:bg-white/20 text-white'
     };
 
     if (hostnameMatches(parsedUrl, 'youtube.com') || hostnameMatches(parsedUrl, 'youtu.be')) return {
-      label: 'Watch',
+      label: locale === 'tr' ? 'İzle' : 'Watch',
       icon: 'fab fa-youtube',
       color: 'bg-red-600 hover:bg-red-500 text-white shadow-lg shadow-red-600/20'
     };
 
     if (hostnameMatches(parsedUrl, 'figma.com')) return {
-      label: 'Design',
+      label: locale === 'tr' ? 'Tasarım' : 'Design',
       icon: 'fab fa-figma',
       color: 'bg-purple-600 hover:bg-purple-500 text-white'
     };
 
     // Default
     return {
-      label: 'Visit',
+      label: locale === 'tr' ? 'Ziyaret Et' : 'Visit',
       icon: 'fas fa-external-link-alt',
       color: 'bg-[#e8c547] hover:bg-[#ffe066] text-black font-semibold shadow-lg shadow-[#e8c547]/20'
     };
@@ -88,7 +103,7 @@ export default function ProjectCard({ project, isAdmin = false, onEdit, onDelete
   };
 
   const formattedDate = displayProject.createdAt
-    ? new Date(displayProject.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long' })
+    ? new Date(displayProject.createdAt).toLocaleDateString(locale === 'tr' ? 'tr-TR' : 'en-US', { year: 'numeric', month: 'long' })
     : null;
 
   // Pre-calculate link configs
@@ -130,7 +145,7 @@ export default function ProjectCard({ project, isAdmin = false, onEdit, onDelete
           {/* Featured Ribbon - Icon Only */}
           {displayProject.featured && (
             <div className="absolute top-4 left-4 z-10">
-              <Tooltip content="Featured Project" position="right">
+              <Tooltip content={locale === 'tr' ? 'Öne Çıkan Proje' : 'Featured Project'} position="right">
                 <div className="bg-black/60 backdrop-blur-md border border-[#e8c547]/30 text-[#e8c547] w-8 h-8 rounded-full flex items-center justify-center shadow-lg shadow-black/20">
                   <i className="fas fa-star text-xs"></i>
                 </div>
@@ -193,7 +208,7 @@ export default function ProjectCard({ project, isAdmin = false, onEdit, onDelete
               </a>
             ) : (
               <div className="flex-1 py-2.5 text-center text-sm text-gray-500 bg-white/5 rounded-xl border border-white/5 cursor-not-allowed">
-                Coming Soon
+                {locale === 'tr' ? 'Yakında' : 'Coming Soon'}
               </div>
             )}
 
@@ -202,7 +217,7 @@ export default function ProjectCard({ project, isAdmin = false, onEdit, onDelete
                 href={secondaryAction.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="View source code"
+                aria-label={locale === 'tr' ? 'Kaynak kodu görüntüle' : 'View source code'}
                 className={`w-11 h-11 flex items-center justify-center rounded-xl transition-all duration-300 ${secondaryAction.color} border border-white/5`}
               >
                 <i className={`${secondaryAction.icon} text-lg`}></i>
@@ -212,10 +227,10 @@ export default function ProjectCard({ project, isAdmin = false, onEdit, onDelete
             {/* Admin Controls */}
             {isAdmin && (
               <div className="flex gap-2 ml-auto pl-2 border-l border-white/10">
-                <button aria-label="Edit project" onClick={() => onEdit(displayProject)} className="min-h-11 min-w-11 text-gray-400 hover:text-[#e8c547]">
+                <button aria-label={locale === 'tr' ? 'Projeyi düzenle' : 'Edit project'} onClick={() => onEdit(displayProject)} className="min-h-11 min-w-11 text-gray-400 hover:text-[#e8c547]">
                   <i className="fas fa-edit"></i>
                 </button>
-                <button aria-label="Delete project" onClick={() => onDelete(displayProject._id)} className="min-h-11 min-w-11 text-gray-400 hover:text-red-400">
+                <button aria-label={locale === 'tr' ? 'Projeyi sil' : 'Delete project'} onClick={() => onDelete(displayProject._id)} className="min-h-11 min-w-11 text-gray-400 hover:text-red-400">
                   <i className="fas fa-trash"></i>
                 </button>
               </div>

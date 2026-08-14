@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from 'react';
+import { usePreferences } from '../components/PreferencesProvider';
 
 const INITIAL_COLORS = ['#0f5132', '#e8c547', '#1f2937', '#2563eb', '#be185d'];
 
@@ -19,6 +20,8 @@ function readableText(hex) {
 }
 
 export default function PalettePage() {
+  const { locale } = usePreferences();
+  const tr = locale === 'tr';
   const [colors, setColors] = useState(() => INITIAL_COLORS.map((hex) => ({ hex, locked: false })));
   const [copied, setCopied] = useState(null);
 
@@ -59,11 +62,11 @@ export default function PalettePage() {
     <div className="mx-auto w-full max-w-5xl px-4 py-10 sm:py-14">
       <header className="text-center mb-8">
         <h1 className="text-3xl sm:text-4xl font-bold" style={{ color: 'var(--mini-accent, #f472b6)' }}>
-          <i className="fas fa-palette mr-2"></i> Palette Generator
+          <i className="fas fa-palette mr-2"></i> {tr ? 'Renk Paleti Oluşturucu' : 'Palette Generator'}
         </h1>
         <p className="text-gray-400 mt-2">
-          Tap a swatch to copy its hex. Lock the ones you love, then regenerate the rest
-          <span className="hidden sm:inline"> (or press space)</span>.
+          {tr ? 'Hex kodunu kopyalamak için bir renge dokunun. Beğendiklerinizi kilitleyip kalanları yeniden oluşturun' : 'Tap a swatch to copy its hex. Lock the ones you love, then regenerate the rest'}
+          <span className="hidden sm:inline"> {tr ? '(veya boşluk tuşuna basın)' : '(or press space)'}</span>.
         </p>
       </header>
 
@@ -80,7 +83,7 @@ export default function PalettePage() {
               <div className="flex justify-end">
                 <button
                   onClick={() => toggleLock(i)}
-                  aria-label={c.locked ? 'Unlock color' : 'Lock color'}
+                  aria-label={c.locked ? (tr ? 'Rengin kilidini aç' : 'Unlock color') : (tr ? 'Rengi kilitle' : 'Lock color')}
                   aria-pressed={c.locked}
                   className="w-9 h-9 rounded-full grid place-items-center bg-black/20 hover:bg-black/35 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
                   style={{ color: label }}
@@ -92,11 +95,11 @@ export default function PalettePage() {
                 onClick={() => copy(c.hex, `swatch-${i}`)}
                 className="text-left focus:outline-none"
                 style={{ color: label }}
-                aria-label={`Copy ${c.hex}`}
+                aria-label={`${tr ? 'Kopyala' : 'Copy'} ${c.hex}`}
               >
                 <span className="font-mono font-bold text-lg uppercase tracking-wide">{c.hex}</span>
                 <span className="block text-xs opacity-70">
-                  {copied === `swatch-${i}` ? 'Copied!' : 'Tap to copy'}
+                  {copied === `swatch-${i}` ? (tr ? 'Kopyalandı!' : 'Copied!') : (tr ? 'Kopyalamak için dokunun' : 'Tap to copy')}
                 </span>
               </button>
             </div>
@@ -111,13 +114,13 @@ export default function PalettePage() {
           className="px-8 py-3 rounded-full font-bold text-black transition-all hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-400/60"
           style={{ background: 'var(--mini-accent, #f472b6)' }}
         >
-          <i className="fas fa-shuffle mr-2"></i> Generate
+          <i className="fas fa-shuffle mr-2"></i> {tr ? 'Oluştur' : 'Generate'}
         </button>
         <button
           onClick={() => copy(colors.map((c) => c.hex).join(', '), 'all')}
           className="px-8 py-3 rounded-full font-medium bg-white/5 border border-white/10 text-gray-200 hover:bg-white/10 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-400/60"
         >
-          <i className="fas fa-copy mr-2"></i> {copied === 'all' ? 'Copied!' : 'Copy all hex'}
+          <i className="fas fa-copy mr-2"></i> {copied === 'all' ? (tr ? 'Kopyalandı!' : 'Copied!') : (tr ? 'Tüm hex kodlarını kopyala' : 'Copy all hex')}
         </button>
       </div>
 
@@ -131,7 +134,7 @@ export default function PalettePage() {
             onClick={() => copy(tailwindSnippet, 'tw')}
             className="text-xs px-3 py-1.5 rounded-md bg-white/5 border border-white/10 text-gray-300 hover:text-white hover:bg-white/10 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-400/60"
           >
-            {copied === 'tw' ? 'Copied!' : 'Copy'}
+            {copied === 'tw' ? (tr ? 'Kopyalandı!' : 'Copied!') : (tr ? 'Kopyala' : 'Copy')}
           </button>
         </div>
         <pre className="p-4 text-sm text-gray-300 overflow-x-auto"><code>{tailwindSnippet}</code></pre>

@@ -4,8 +4,11 @@ import { FinanceProvider } from '@/context/FinanceContext';
 import FinanceDashboard from '@/components/Finance/FinanceDashboard';
 import AssetCategoryGrid from '@/components/Finance/AssetCategoryGrid';
 import PageContainer from '@/components/PageContainer';
+import { usePreferences } from '@/components/PreferencesProvider';
 
 export default function FinancePage() {
+    const { locale } = usePreferences();
+    const tr = locale === 'tr';
     return (
         <FinanceProvider>
             <PageContainer className="bg-black min-h-screen relative overflow-hidden">
@@ -20,10 +23,10 @@ export default function FinancePage() {
                     {/* Compact Header */}
                     <div className="mb-8">
                         <h1 className="text-4xl font-bold bg-gradient-to-r from-white via-gray-200 to-gray-500 bg-clip-text text-transparent">
-                            Portfolio Tracker
+                            {tr ? 'Portföy Takipçisi' : 'Portfolio Tracker'}
                         </h1>
                         <p className="text-gray-500 mt-1">
-                            Real-time <span className="text-[#e8c547]">market data</span> • Multi-portfolio • Multi-currency
+                            {tr ? <>Gerçek zamanlı <span className="text-[#e8c547]">piyasa verileri</span> • Çoklu portföy • Çoklu para birimi</> : <>Real-time <span className="text-[#e8c547]">market data</span> • Multi-portfolio • Multi-currency</>}
                         </p>
                     </div>
 
@@ -34,7 +37,7 @@ export default function FinancePage() {
 
                         {/* Categories Section */}
                         <div>
-                            <h2 className="text-lg font-bold text-white/80 mb-4">Asset Categories</h2>
+                            <h2 className="text-lg font-bold text-white/80 mb-4">{tr ? 'Varlık Kategorileri' : 'Asset Categories'}</h2>
                             <AssetCategoryGrid />
                         </div>
                     </div>

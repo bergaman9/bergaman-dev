@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { SkeletonBox, SkeletonText } from './Skeleton';
+import { usePreferences } from './PreferencesProvider';
 
 // Email validation
 const isValidEmail = (email) => {
@@ -21,7 +22,9 @@ const CommentItem = ({
   replyErrors,
   handleReplySubmit,
   handleInputChange,
-  isSubmitting
+  isSubmitting,
+  locale,
+  t
 }) => {
   const isReplying = replyingTo === comment._id;
 
@@ -42,7 +45,7 @@ const CommentItem = ({
           </div>
           <div className="flex items-center space-x-4">
             <span className="text-xs text-gray-400">
-              {new Date(comment.createdAt).toLocaleDateString('en-US', {
+              {new Date(comment.createdAt).toLocaleDateString(locale === 'tr' ? 'tr-TR' : 'en-US', {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric',
@@ -63,7 +66,7 @@ const CommentItem = ({
               className="text-sm font-medium text-[#e8c547] hover:text-[#0e1b12] hover:bg-[#e8c547] px-3 py-1 rounded transition-all flex items-center border border-[#e8c547]/30"
             >
               <i className={`fas fa-${replyingTo === comment._id ? 'times' : 'reply'} mr-2`}></i>
-              {replyingTo === comment._id ? 'Cancel' : 'Reply'}
+              {replyingTo === comment._id ? (locale === 'tr' ? 'İptal' : 'Cancel') : (locale === 'tr' ? 'Yanıtla' : 'Reply')}
             </button>
           </div>
         </div>
@@ -72,7 +75,7 @@ const CommentItem = ({
         {/* Reply Form */}
         {isReplying && (
           <div className="mt-4 pt-4 border-t border-[#3e503e] animate-fade-in-down">
-            <h5 className="text-sm font-semibold text-[#e8c547] mb-3">Reply to {comment.name}</h5>
+            <h5 className="text-sm font-semibold text-[#e8c547] mb-3">{locale === 'tr' ? `${comment.name} kullanıcısına yanıt` : `Reply to ${comment.name}`}</h5>
             <form onSubmit={(e) => handleReplySubmit(e, comment._id)} className="space-y-3">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
@@ -84,7 +87,7 @@ const CommentItem = ({
                     required
                     maxLength="50"
                     className="w-full px-3 py-2 bg-[#1a2a1f] border border-[#3e503e] rounded-lg text-[#d1d5db] placeholder-gray-500 text-sm focus:border-[#e8c547]/50 focus:outline-none"
-                    placeholder="Name *"
+                    placeholder={`${t('name')} *`}
                   />
                   {replyErrors.name && <p className="text-red-400 text-xs mt-1">{replyErrors.name}</p>}
                 </div>
@@ -97,7 +100,7 @@ const CommentItem = ({
                     required
                     maxLength="100"
                     className="w-full px-3 py-2 bg-[#1a2a1f] border border-[#3e503e] rounded-lg text-[#d1d5db] placeholder-gray-500 text-sm focus:border-[#e8c547]/50 focus:outline-none"
-                    placeholder="Email *"
+                    placeholder={`${t('email')} *`}
                   />
                   {replyErrors.email && <p className="text-red-400 text-xs mt-1">{replyErrors.email}</p>}
                 </div>
@@ -111,7 +114,7 @@ const CommentItem = ({
                   rows={3}
                   maxLength="1000"
                   className="w-full px-3 py-2 bg-[#1a2a1f] border border-[#3e503e] rounded-lg text-[#d1d5db] placeholder-gray-500 text-sm focus:border-[#e8c547]/50 focus:outline-none resize-vertical"
-                  placeholder="Your reply..."
+                  placeholder={locale === 'tr' ? 'Yanıtınız...' : 'Your reply...'}
                 />
                 {replyErrors.message && <p className="text-red-400 text-xs mt-1">{replyErrors.message}</p>}
               </div>
@@ -120,7 +123,7 @@ const CommentItem = ({
                 disabled={isSubmitting}
                 className="bg-[#e8c547] text-[#0e1b12] text-sm font-semibold hover:bg-[#d4b445] transition-colors px-4 py-2 rounded-lg disabled:opacity-50"
               >
-                {isSubmitting ? 'Posting...' : 'Post Reply'}
+                {isSubmitting ? t('submitting') : (locale === 'tr' ? 'Yanıtı Gönder' : 'Post Reply')}
               </button>
             </form>
           </div>
@@ -144,6 +147,8 @@ const CommentItem = ({
               handleReplySubmit={handleReplySubmit}
               handleInputChange={handleInputChange}
               isSubmitting={isSubmitting}
+              locale={locale}
+              t={t}
             />
           ))}
         </div>
@@ -153,6 +158,7 @@ const CommentItem = ({
 };
 
 export default function CommentSystem({ postSlug, onCommentCountUpdate }) {
+  const { locale, t } = usePreferences();
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState({ name: '', email: '', message: '' });
   const [replyComment, setReplyComment] = useState({ name: '', email: '', message: '' });
@@ -278,21 +284,21 @@ export default function CommentSystem({ postSlug, onCommentCountUpdate }) {
     const newErrors = {};
 
     if (!data.name.trim() || data.name.trim().length < 2) {
-      newErrors.name = 'Name must be at least 2 characters long';
+      newErrors.name = locale === 'tr' ? 'Ad en az 2 karakter olmalıdır' : 'Name must be at least 2 characters long';
     }
 
     if (!data.email.trim()) {
-      newErrors.email = 'Email is required';
+      newErrors.email = locale === 'tr' ? 'E-posta gereklidir' : 'Email is required';
     } else if (!isValidEmail(data.email.trim())) {
-      newErrors.email = 'Please enter a valid email address';
+      newErrors.email = locale === 'tr' ? 'Geçerli bir e-posta adresi girin' : 'Please enter a valid email address';
     }
 
     if (!data.message.trim() || data.message.trim().length < 10) {
-      newErrors.message = 'Message must be at least 10 characters long';
+      newErrors.message = locale === 'tr' ? 'Mesaj en az 10 karakter olmalıdır' : 'Message must be at least 10 characters long';
     }
 
     if (data.message.trim().length > 1000) {
-      newErrors.message = 'Message must be less than 1000 characters';
+      newErrors.message = locale === 'tr' ? 'Mesaj 1000 karakterden kısa olmalıdır' : 'Message must be less than 1000 characters';
     }
 
     return newErrors;
@@ -303,7 +309,7 @@ export default function CommentSystem({ postSlug, onCommentCountUpdate }) {
     e.preventDefault();
 
     if (hasCommented) {
-      alert('You have already commented on this post!');
+      alert(locale === 'tr' ? 'Bu yazıya daha önce yorum yaptınız!' : 'You have already commented on this post!');
       return;
     }
 
@@ -330,7 +336,7 @@ export default function CommentSystem({ postSlug, onCommentCountUpdate }) {
       setNewComment({ name: '', email: '', message: '' });
       setErrors({});
     } catch {
-      alert('Failed to post comment. Please try again.');
+      alert(locale === 'tr' ? 'Yorum gönderilemedi. Lütfen tekrar deneyin.' : 'Failed to post comment. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -362,7 +368,7 @@ export default function CommentSystem({ postSlug, onCommentCountUpdate }) {
       setReplyComment({ name: '', email: '', message: '' });
       setReplyErrors({});
     } catch {
-      alert('Failed to post reply. Please try again.');
+      alert(locale === 'tr' ? 'Yanıt gönderilemedi. Lütfen tekrar deneyin.' : 'Failed to post reply. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -409,7 +415,7 @@ export default function CommentSystem({ postSlug, onCommentCountUpdate }) {
       <div className="mt-12 mb-8 bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg">
         <div className="text-center py-8">
           <i className="fas fa-comment-slash text-2xl text-gray-400 mb-2"></i>
-          <p className="text-gray-400">Comments are currently disabled for this post.</p>
+          <p className="text-gray-400">{t('commentsDisabled')}</p>
         </div>
       </div>
     );
@@ -419,10 +425,10 @@ export default function CommentSystem({ postSlug, onCommentCountUpdate }) {
     <div className="mt-12 mb-8 bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg transition-all duration-300">
       <h3 className="text-2xl font-bold bg-gradient-to-r from-[#e8c547] to-[#d4b445] bg-clip-text text-transparent mb-6 flex items-center">
         <i className="fas fa-comments mr-3 text-[#e8c547]"></i>
-        Comments ({comments.length})
+        {t('comments')} ({comments.length})
         {settings && settings.moderateComments && (
           <span className="ml-2 text-xs bg-orange-500/20 text-orange-400 px-2 py-1 rounded-full">
-            Moderated
+            {locale === 'tr' ? 'Denetimli' : 'Moderated'}
           </span>
         )}
       </h3>
@@ -431,7 +437,7 @@ export default function CommentSystem({ postSlug, onCommentCountUpdate }) {
       <div className="space-y-4 mb-8">
         {comments.length === 0 ? (
           <p className="text-gray-400 text-center py-8">
-            No comments yet. Be the first to share your thoughts!
+            {t('noComments')}
           </p>
         ) : (
           threadedComments.map((comment) => (
@@ -447,6 +453,8 @@ export default function CommentSystem({ postSlug, onCommentCountUpdate }) {
               handleReplySubmit={handleReplySubmit}
               handleInputChange={handleInputChange}
               isSubmitting={isSubmitting}
+              locale={locale}
+              t={t}
             />
           ))
         )}
@@ -455,14 +463,14 @@ export default function CommentSystem({ postSlug, onCommentCountUpdate }) {
       {/* Main Comment Form */}
       {!hasCommented ? (
         <form onSubmit={handleSubmit} className="space-y-4 border-t border-[#3e503e] pt-6">
-          <h4 className="text-lg font-semibold text-[#e8c547] mb-4">Leave a Comment</h4>
+          <h4 className="text-lg font-semibold text-[#e8c547] mb-4">{t('leaveComment')}</h4>
 
           {settings && settings.moderateComments && (
             <div className="bg-orange-500/10 border border-orange-500/30 rounded-lg p-4 mb-4">
               <div className="flex items-center">
                 <i className="fas fa-info-circle text-orange-400 mr-2"></i>
                 <p className="text-orange-400 text-sm">
-                  Comments are moderated and will be reviewed before being published.
+                  {t('commentModerated')}
                 </p>
               </div>
             </div>
@@ -471,7 +479,7 @@ export default function CommentSystem({ postSlug, onCommentCountUpdate }) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
-                Name *
+                {t('name')} *
               </label>
               <input
                 type="text"
@@ -482,14 +490,14 @@ export default function CommentSystem({ postSlug, onCommentCountUpdate }) {
                 required
                 maxLength="50"
                 className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] placeholder-gray-400 focus:border-[#e8c547]/50 focus:outline-none transition-colors duration-300"
-                placeholder="Your name"
+                placeholder={locale === 'tr' ? 'Adınız' : 'Your name'}
               />
               {errors.name && <p className="text-red-400 text-sm mt-1">{errors.name}</p>}
             </div>
 
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
-                Email *
+                {t('email')} *
               </label>
               <input
                 type="email"
@@ -508,7 +516,7 @@ export default function CommentSystem({ postSlug, onCommentCountUpdate }) {
 
           <div>
             <label htmlFor="message" className="block text-sm font-medium text-gray-300 mb-2">
-              Message *
+              {t('message')} *
             </label>
             <textarea
               id="message"
@@ -519,10 +527,10 @@ export default function CommentSystem({ postSlug, onCommentCountUpdate }) {
               rows={4}
               maxLength="1000"
               className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] placeholder-gray-400 focus:border-[#e8c547]/50 focus:outline-none transition-colors duration-300 resize-vertical"
-              placeholder="Share your thoughts..."
+              placeholder={locale === 'tr' ? 'Düşüncelerinizi paylaşın...' : 'Share your thoughts...'}
             />
             {errors.message && <p className="text-red-400 text-sm mt-1">{errors.message}</p>}
-            <p className="text-xs text-gray-500 mt-1">{newComment.message.length}/1000 characters</p>
+            <p className="text-xs text-gray-500 mt-1">{newComment.message.length}/1000 {locale === 'tr' ? 'karakter' : 'characters'}</p>
           </div>
 
           <button
@@ -533,12 +541,12 @@ export default function CommentSystem({ postSlug, onCommentCountUpdate }) {
             {isSubmitting ? (
               <>
                 <i className="fas fa-hourglass-half mr-2"></i>
-                Posting...
+                {t('submitting')}
               </>
             ) : (
               <>
                 <i className="fas fa-paper-plane mr-2"></i>
-                Post Comment
+                {t('postComment')}
               </>
             )}
           </button>
@@ -547,7 +555,7 @@ export default function CommentSystem({ postSlug, onCommentCountUpdate }) {
         <div className="text-center py-6 bg-[#0e1b12] border border-[#3e503e] rounded-lg border-t border-[#3e503e] mt-6">
           <i className="fas fa-check-circle text-[#e8c547] text-2xl mb-2"></i>
           <p className="text-gray-300">
-            Thank you for your comment! You have already commented on this post.
+            {locale === 'tr' ? 'Yorumunuz için teşekkürler! Bu yazıya daha önce yorum yaptınız.' : 'Thank you for your comment! You have already commented on this post.'}
           </p>
         </div>
       )}

@@ -4,10 +4,11 @@ import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 import Header from './Header';
 import Footer from './Footer';
-import { PreferencesProvider } from './PreferencesProvider';
+import { PreferencesProvider, usePreferences } from './PreferencesProvider';
 import { getMiniAppByPathname, getMiniAppTheme } from '@/lib/miniApps';
 
 function LayoutContent({ children }) {
+  const { locale } = usePreferences();
   const pathname = usePathname();
   const activeMiniApp = getMiniAppByPathname(pathname);
   const miniTheme = activeMiniApp ? getMiniAppTheme(activeMiniApp) : null;
@@ -23,7 +24,7 @@ function LayoutContent({ children }) {
   // Show home link when not on home page
   return (
     <>
-      {!isAdminPage && <a href="#main-content" className="skip-link">Skip to main content</a>}
+      {!isAdminPage && <a href="#main-content" className="skip-link">{locale === 'tr' ? 'Ana içeriğe geç' : 'Skip to main content'}</a>}
       {!isAdminPage && <Header />}
       {/* Add padding-top to account for fixed header */}
       <main

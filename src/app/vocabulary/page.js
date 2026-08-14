@@ -16,6 +16,7 @@ import autoTable from 'jspdf-autotable';
 import PageContainer from '@/components/PageContainer';
 import Modal from '@/components/UI/Modal';
 import { SkeletonCard } from '@/components/Skeleton';
+import { usePreferences } from '@/components/PreferencesProvider';
 
 const ALLOWED_VAULT_STATUSES = new Set(['known', 'learning', 'want_to_learn']);
 const MAX_IMPORT_SIZE = 256 * 1024;
@@ -78,6 +79,8 @@ function parseCsv(text) {
 }
 
 export default function VocabularyPage() {
+    const { locale } = usePreferences();
+    const tr = locale === 'tr';
     const [words, setWords] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -99,7 +102,7 @@ export default function VocabularyPage() {
     // then open the flashcard review. Marked words live in userProgress.
     const openReview = async () => {
         if (!userProgress || userProgress.length === 0) {
-            alert('Mark some words as "learning" first, then come back to review them.');
+            alert(tr ? 'Önce bazı kelimeleri “öğreniliyor” olarak işaretleyin, ardından gözden geçirmeye dönün.' : 'Mark some words as "learning" first, then come back to review them.');
             return;
         }
         try {
@@ -316,10 +319,10 @@ export default function VocabularyPage() {
         if (syncWithCode(inputCode)) {
             setShowKeyModal(false);
             // Ideally trigger a toast here
-            alert("Progress synced successfully!");
+            alert(tr ? 'İlerleme başarıyla eşitlendi!' : 'Progress synced successfully!');
             window.location.reload(); // Reload to refresh context state cleanly
         } else {
-            alert("Invalid code format.");
+            alert(tr ? 'Geçersiz kod biçimi.' : 'Invalid code format.');
         }
     };
 
@@ -328,13 +331,13 @@ export default function VocabularyPage() {
             return (
                 <div className="text-center py-12 bg-red-500/10 rounded-2xl border border-red-500/20 mb-8">
                     <FaExclamationTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-                    <h3 className="text-xl font-bold text-red-400 mb-2">Oops! Something went wrong</h3>
+                    <h3 className="text-xl font-bold text-red-400 mb-2">{tr ? 'Bir sorun oluştu' : 'Oops! Something went wrong'}</h3>
                     <p className="text-gray-400">{error}</p>
                     <button
                         onClick={() => fetchWords()}
                         className="mt-4 px-6 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg transition-colors"
                     >
-                        Try Again
+                        {tr ? 'Tekrar Dene' : 'Try Again'}
                     </button>
                 </div>
             );
@@ -354,12 +357,12 @@ export default function VocabularyPage() {
             return (
                 <div className="text-center py-20 bg-white/5 rounded-2xl border border-dashed border-white/10">
                     <FaExclamationTriangle className="text-4xl text-yellow-500 mx-auto mb-4 opacity-50" />
-                    <p className="text-gray-400">No words found trying clearing filters.</p>
+                    <p className="text-gray-400">{tr ? 'Kelime bulunamadı. Filtreleri temizlemeyi deneyin.' : 'No words found. Try clearing the filters.'}</p>
                     <button
                         onClick={() => setFilters({ search: '', level: 'All' })}
                         className="mt-4 text-[#e8c547] hover:underline"
                     >
-                        Clear Filters
+                        {tr ? 'Filtreleri Temizle' : 'Clear Filters'}
                     </button>
                 </div>
             );
@@ -394,7 +397,7 @@ export default function VocabularyPage() {
                 <div className="absolute top-0 left-0 w-full h-[500px] opacity-20">
                     <img
                         src="/images/vocabulary/vocabulary-vault-banner.png"
-                        alt="Vocabulary Vault Banner"
+                        alt={tr ? 'Kelime Kasası Bannerı' : 'Vocabulary Vault Banner'}
                         className="w-full h-full object-cover mask-image-gradient"
                         style={{ maskImage: 'linear-gradient(to bottom, black, transparent)' }}
                     />
@@ -408,10 +411,10 @@ export default function VocabularyPage() {
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-6">
                     <div>
                         <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent mb-2">
-                            Vocabulary Vault
+                            {tr ? 'Kelime Kasası' : 'Vocabulary Vault'}
                         </h1>
                         <p className="text-gray-400 text-lg">
-                            Master <span className="text-[#e8c547] font-bold">{totalWordCount.toLocaleString()}+</span> words. Track your progress anywhere.
+                            {tr ? <><span className="text-[#e8c547] font-bold">{totalWordCount.toLocaleString()}+</span> kelimede ustalaşın. İlerlemenizi her yerden takip edin.</> : <>Master <span className="text-[#e8c547] font-bold">{totalWordCount.toLocaleString()}+</span> words. Track your progress anywhere.</>}
                         </p>
                     </div>
 
@@ -422,13 +425,13 @@ export default function VocabularyPage() {
                                 <FaKey className="text-accent" />
                             </div>
                             <div className="flex flex-col">
-                                <span className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Your Vault Key</span>
+                                <span className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">{tr ? 'Kasa Anahtarınız' : 'Your Vault Key'}</span>
                                 <div className="flex items-center gap-2">
                                     <code className="text-sm font-mono text-white bg-black/30 px-2 py-1 rounded">
-                                        {userId ? userId.slice(0, 8) + '...' : 'Loading...'}
+                                        {userId ? userId.slice(0, 8) + '...' : (tr ? 'Yükleniyor...' : 'Loading...')}
                                     </code>
                                     <button onClick={() => setShowKeyModal(true)} className="text-xs text-accent hover:underline">
-                                        Manage
+                                        {tr ? 'Yönet' : 'Manage'}
                                     </button>
                                 </div>
                             </div>
@@ -438,18 +441,18 @@ export default function VocabularyPage() {
                         <button
                             onClick={() => setShowStatsModal(true)}
                             className="h-full px-4 flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-colors text-sm font-medium"
-                            title="View Statistics"
+                            title={tr ? 'İstatistikleri Görüntüle' : 'View Statistics'}
                         >
-                            <FaChartBar /> <span className="hidden md:inline">Stats</span>
+                            <FaChartBar /> <span className="hidden md:inline">{tr ? 'İstatistikler' : 'Stats'}</span>
                         </button>
 
                         {/* Spaced-repetition Review */}
                         <button
                             onClick={openReview}
                             className="relative h-full px-4 flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-colors text-sm font-medium"
-                            title="Spaced repetition review"
+                            title={tr ? 'Aralıklı tekrar' : 'Spaced repetition review'}
                         >
-                            <FaLayerGroup /> <span className="hidden md:inline">Review</span>
+                            <FaLayerGroup /> <span className="hidden md:inline">{tr ? 'Tekrar' : 'Review'}</span>
                             {dueCount > 0 && (
                                 <span className="absolute -top-2 -right-2 min-w-[20px] h-5 px-1 flex items-center justify-center rounded-full bg-[#e8c547] text-black text-[11px] font-bold">
                                     {dueCount > 99 ? '99+' : dueCount}
@@ -461,33 +464,33 @@ export default function VocabularyPage() {
                         <button
                             onClick={() => setShowQuizModal(true)}
                             className="h-full px-6 flex items-center gap-2 bg-[#e8c547] hover:bg-[#d4b445] text-black border border-[#e8c547] rounded-xl transition-colors text-sm font-bold shadow-[0_0_15px_rgba(232,197,71,0.2)] hover:shadow-[0_0_25px_rgba(232,197,71,0.4)]"
-                            title="Start Quiz"
+                            title={tr ? 'Teste Başla' : 'Start Quiz'}
                         >
-                            <FaTrophy /> Practice
+                            <FaTrophy /> {tr ? 'Alıştırma' : 'Practice'}
                         </button>
 
                         {/* Export Dropdown */}
                         <div className="relative group">
                             <button className="h-full px-6 flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-colors text-sm font-medium">
-                                <FaDownload /> Export
+                                <FaDownload /> {tr ? 'Dışa Aktar' : 'Export'}
                             </button>
                             <div className="absolute right-0 top-full pt-2 w-48 opacity-0 group-hover:opacity-100 transition-opacity invisible group-hover:visible z-50">
                                 <div className="bg-black border border-white/10 rounded-xl shadow-xl overflow-hidden">
                                     <button onClick={() => handleExport('csv')} className="w-full text-left px-4 py-3 hover:bg-white/5 text-sm font-medium text-gray-300 hover:text-white border-b border-white/5">
-                                        Export as CSV (.csv)
+                                        {tr ? 'CSV Olarak Dışa Aktar' : 'Export as CSV'} (.csv)
                                     </button>
                                     <button onClick={() => handleExport('pdf')} className="w-full text-left px-4 py-3 hover:bg-white/5 text-sm font-medium text-gray-300 hover:text-white">
-                                        Export as PDF (.pdf)
+                                        {tr ? 'PDF Olarak Dışa Aktar' : 'Export as PDF'} (.pdf)
                                     </button>
                                     <div className="border-t border-white/5 my-1"></div>
                                     <label className="w-full text-left px-4 py-3 hover:bg-white/5 text-sm font-medium text-[#e8c547] hover:text-[#e8c547]/80 cursor-pointer block flex flex-col gap-1">
                                         <div className="flex items-center gap-2">
                                             <input type="file" accept=".csv,text/csv" onChange={handleImport} className="hidden" />
                                             <FaDownload className="rotate-180" />
-                                            <span>Import CSV (.csv)</span>
+                                            <span>{tr ? 'CSV İçe Aktar' : 'Import CSV'} (.csv)</span>
                                         </div>
                                         <span className="text-[10px] text-gray-500 font-normal ml-6">
-                                            Format: Columns "Term" & "Status" (optional)
+                                            {tr ? 'Biçim: “Term” ve “Status” sütunları (isteğe bağlı)' : 'Format: Columns "Term" & "Status" (optional)'}
                                         </span>
                                     </label>
                                 </div>
@@ -508,17 +511,17 @@ export default function VocabularyPage() {
             <Modal
                 isOpen={showKeyModal}
                 onClose={() => setShowKeyModal(false)}
-                title="Manage Vault Key"
+                title={tr ? 'Kasa Anahtarını Yönet' : 'Manage Vault Key'}
                 className="max-w-md"
             >
                 <div className="p-6">
                     <p className="text-gray-400 text-sm mb-6">
-                        This key allows you to sync your vocabulary progress across devices or browsers without creating an account. Keep it safe!
+                        {tr ? 'Bu anahtar, hesap oluşturmadan kelime ilerlemenizi cihazlar veya tarayıcılar arasında eşitlemenizi sağlar. Güvenli bir yerde saklayın!' : 'This key allows you to sync your vocabulary progress across devices or browsers without creating an account. Keep it safe!'}
                     </p>
 
                     {/* Current Key */}
                     <div className="mb-6">
-                        <label className="block text-xs uppercase text-gray-500 font-bold mb-2">Your Current Key</label>
+                        <label className="block text-xs uppercase text-gray-500 font-bold mb-2">{tr ? 'Mevcut Anahtarınız' : 'Your Current Key'}</label>
                         <div className="flex gap-2">
                             <code className="flex-1 bg-black border border-white/10 rounded-lg p-3 font-mono text-sm break-all">
                                 {userId}
@@ -534,12 +537,12 @@ export default function VocabularyPage() {
 
                     {/* Restore Key */}
                     <div className="mb-6">
-                        <label className="block text-xs uppercase text-gray-500 font-bold mb-2">Restore Progress / Enter Key</label>
+                        <label className="block text-xs uppercase text-gray-500 font-bold mb-2">{tr ? 'İlerlemeyi Geri Yükle / Anahtar Gir' : 'Restore Progress / Enter Key'}</label>
                         <input
                             type="text"
                             value={inputCode}
                             onChange={(e) => setInputCode(e.target.value)}
-                            placeholder="Paste your key here..."
+                            placeholder={tr ? 'Anahtarınızı buraya yapıştırın...' : 'Paste your key here...'}
                             className="w-full bg-black border border-white/10 rounded-lg p-3 text-white focus:border-accent outline-none"
                         />
                     </div>
@@ -550,14 +553,14 @@ export default function VocabularyPage() {
                             onClick={() => setShowKeyModal(false)}
                             className="px-4 py-2 text-gray-400 hover:text-white"
                         >
-                            Close
+                            {tr ? 'Kapat' : 'Close'}
                         </button>
                         <button
                             onClick={handleSync}
                             disabled={!inputCode}
                             className="px-6 py-2 bg-accent hover:bg-accent/80 text-black font-bold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            Restore
+                            {tr ? 'Geri Yükle' : 'Restore'}
                         </button>
                     </div>
                 </div>

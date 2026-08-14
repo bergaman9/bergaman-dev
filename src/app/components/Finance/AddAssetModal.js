@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { FaSave, FaTimes, FaCoins, FaBitcoin, FaDollarSign, FaChartLine } from 'react-icons/fa';
+import { usePreferences } from '@/components/PreferencesProvider';
 
 // Categories must match AssetCategoryGrid
 const CATEGORIES = [
@@ -16,6 +17,8 @@ const CATEGORIES = [
 ];
 
 export default function AddAssetModal({ isOpen, onClose, onAdd, initialData = null, initialCategory = null }) {
+    const { locale } = usePreferences();
+    const tr = locale === 'tr';
     const [formData, setFormData] = useState({
         name: '',
         amount: '',
@@ -133,14 +136,14 @@ export default function AddAssetModal({ isOpen, onClose, onAdd, initialData = nu
                                 </div>
                                 <div>
                                     <h2 id="finance-asset-modal-title" className="text-xl font-bold text-white">
-                                        {initialData ? 'Edit Asset' : 'Add Asset'}
+                                        {initialData ? (tr ? 'Varlığı Düzenle' : 'Edit Asset') : (tr ? 'Varlık Ekle' : 'Add Asset')}
                                     </h2>
                                     <p className="text-xs text-gray-500">{currentCategory?.name}</p>
                                 </div>
                             </div>
                             <button
                                 onClick={onClose}
-                                aria-label="Close asset modal"
+                                aria-label={tr ? 'Varlık penceresini kapat' : 'Close asset modal'}
                                 className="p-2 text-gray-500 hover:text-white hover:bg-white/10 rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-[#e8c547]/70"
                             >
                                 <FaTimes size={18} />
@@ -152,7 +155,7 @@ export default function AddAssetModal({ isOpen, onClose, onAdd, initialData = nu
                     <form onSubmit={handleSubmit} className="relative p-6 space-y-5 overflow-y-auto">
                         {/* Category Selection - Chips */}
                         <div>
-                            <label className="text-xs uppercase font-bold text-gray-500 mb-2 block">Category</label>
+                            <label className="text-xs uppercase font-bold text-gray-500 mb-2 block">{tr ? 'Kategori' : 'Category'}</label>
                             <div className="flex flex-wrap gap-2">
                                 {CATEGORIES.map(cat => (
                                     <button
@@ -175,7 +178,7 @@ export default function AddAssetModal({ isOpen, onClose, onAdd, initialData = nu
                         {symbolOptions.length > 0 && (
                             <div>
                                 <label className="text-xs uppercase font-bold text-gray-500 mb-2 block">
-                                    Asset Type <span className="text-[#e8c547]">(Live Price)</span>
+                                    {tr ? 'Varlık Türü' : 'Asset Type'} <span className="text-[#e8c547]">({tr ? 'Canlı Fiyat' : 'Live Price'})</span>
                                 </label>
                                 <div className="flex flex-wrap gap-2">
                                     {symbolOptions.map(opt => (
@@ -198,11 +201,11 @@ export default function AddAssetModal({ isOpen, onClose, onAdd, initialData = nu
 
                         {/* Name Input */}
                         <div>
-                            <label className="text-xs uppercase font-bold text-gray-500 mb-2 block">Asset Name</label>
+                            <label className="text-xs uppercase font-bold text-gray-500 mb-2 block">{tr ? 'Varlık Adı' : 'Asset Name'}</label>
                             <input
                                 required
                                 type="text"
-                                placeholder="e.g., Apple Stock, My Bitcoin"
+                                placeholder={tr ? 'örn. Apple Hissesi, Bitcoin’im' : 'e.g., Apple Stock, My Bitcoin'}
                                 value={formData.name}
                                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                 className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-gray-600 outline-none focus:border-[#e8c547] focus:ring-2 focus:ring-[#e8c547]/40 focus:bg-white/10 transition-all"
@@ -212,7 +215,7 @@ export default function AddAssetModal({ isOpen, onClose, onAdd, initialData = nu
                         {/* Amount & Cost Row */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label className="text-xs uppercase font-bold text-gray-500 mb-2 block">Amount</label>
+                                <label className="text-xs uppercase font-bold text-gray-500 mb-2 block">{tr ? 'Miktar' : 'Amount'}</label>
                                 <input
                                     required
                                     type="number"
@@ -225,7 +228,7 @@ export default function AddAssetModal({ isOpen, onClose, onAdd, initialData = nu
                             </div>
                             <div>
                                 <label className="text-xs uppercase font-bold text-gray-500 mb-2 block">
-                                    Total Cost <span className="text-gray-600 font-normal">(Optional)</span>
+                                    {tr ? 'Toplam Maliyet' : 'Total Cost'} <span className="text-gray-600 font-normal">({tr ? 'İsteğe Bağlı' : 'Optional'})</span>
                                 </label>
                                 <input
                                     type="number"
@@ -237,14 +240,14 @@ export default function AddAssetModal({ isOpen, onClose, onAdd, initialData = nu
                                 />
                             </div>
                         </div>
-                        <p className="text-[11px] text-gray-600 -mt-2">Enter total cost to track profit/loss.</p>
+                        <p className="text-[11px] text-gray-600 -mt-2">{tr ? 'Kâr/zararı izlemek için toplam maliyeti girin.' : 'Enter total cost to track profit/loss.'}</p>
 
                         {/* Submit Button */}
                         <button
                             type="submit"
                             className="w-full py-4 bg-gradient-to-r from-[#e8c547] to-[#d4a84b] hover:from-[#f0d060] hover:to-[#e8c547] text-black font-bold rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#e8c547]/20 hover:shadow-[#e8c547]/30 mt-6 focus:outline-none focus:ring-2 focus:ring-[#e8c547]/70 motion-reduce:transition-none"
                         >
-                            <FaSave /> {initialData ? 'Update Asset' : 'Save Asset'}
+                            <FaSave /> {initialData ? (tr ? 'Varlığı Güncelle' : 'Update Asset') : (tr ? 'Varlığı Kaydet' : 'Save Asset')}
                         </button>
                     </form>
                 </div>

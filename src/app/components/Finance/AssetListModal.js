@@ -3,8 +3,11 @@
 import { useFinance } from '@/context/FinanceContext';
 import { useEffect } from 'react';
 import { FaTrash, FaPlus, FaPen, FaTimes, FaArrowUp, FaArrowDown } from 'react-icons/fa';
+import { usePreferences } from '@/components/PreferencesProvider';
 
 export default function AssetListModal({ isOpen, onClose, category, onAddClick, onEditClick }) {
+    const { locale } = usePreferences();
+    const tr = locale === 'tr';
     const { getAssetsByCategory, removeAsset, getAssetCurrentValue, getAssetProfitLoss, marketRates, currency } = useFinance();
     const assets = getAssetsByCategory(category);
 
@@ -61,12 +64,12 @@ export default function AssetListModal({ isOpen, onClose, category, onAddClick, 
                             <div>
                                 <h2 id="finance-category-modal-title" className="text-2xl font-bold text-white">{category}</h2>
                                 <p className="text-sm text-gray-500 mt-1">
-                                    {assets.length} assets • {currency}
+                                    {assets.length} {tr ? 'varlık' : 'assets'} • {currency}
                                 </p>
                             </div>
                             <button
                                 onClick={onClose}
-                                aria-label="Close asset list"
+                                aria-label={tr ? 'Varlık listesini kapat' : 'Close asset list'}
                                 className="p-2 text-gray-500 hover:text-white hover:bg-white/10 rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-[#e8c547]/70"
                             >
                                 <FaTimes size={18} />
@@ -77,11 +80,11 @@ export default function AssetListModal({ isOpen, onClose, category, onAddClick, 
                         {assets.length > 0 && (
                             <div className="flex gap-6 mt-4">
                                 <div>
-                                    <div className="text-[10px] text-white/40 uppercase">Total Value</div>
+                                    <div className="text-[10px] text-white/40 uppercase">{tr ? 'Toplam Değer' : 'Total Value'}</div>
                                     <div className="text-lg font-bold text-white">{formatCurrency(getConvertedValue(totalValue))}</div>
                                 </div>
                                 <div>
-                                    <div className="text-[10px] text-white/40 uppercase">Total P/L</div>
+                                    <div className="text-[10px] text-white/40 uppercase">{tr ? 'Toplam K/Z' : 'Total P/L'}</div>
                                     <div className={`text-lg font-bold flex items-center gap-1 ${totalPL >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                                         {totalPL >= 0 ? <FaArrowUp size={12} /> : <FaArrowDown size={12} />}
                                         {formatCurrency(getConvertedValue(Math.abs(totalPL)))}
@@ -98,8 +101,8 @@ export default function AssetListModal({ isOpen, onClose, category, onAddClick, 
                                 <div className="w-20 h-20 mx-auto rounded-full bg-white/5 flex items-center justify-center text-4xl mb-4">
                                     📭
                                 </div>
-                                <h3 className="text-lg font-semibold text-white/80 mb-2">No Assets Yet</h3>
-                                <p className="text-gray-500 text-sm">Add your first asset to start tracking.</p>
+                                <h3 className="text-lg font-semibold text-white/80 mb-2">{tr ? 'Henüz Varlık Yok' : 'No Assets Yet'}</h3>
+                                <p className="text-gray-500 text-sm">{tr ? 'Takibe başlamak için ilk varlığınızı ekleyin.' : 'Add your first asset to start tracking.'}</p>
                             </div>
                         ) : (
                             <div className="p-4 space-y-3">
@@ -139,7 +142,7 @@ export default function AssetListModal({ isOpen, onClose, category, onAddClick, 
                                                         )}
                                                     </div>
                                                     <div className="text-sm text-gray-500 mt-0.5">
-                                                        {parseFloat(asset.amount).toLocaleString('tr-TR')} units
+                                                        {parseFloat(asset.amount).toLocaleString('tr-TR')} {tr ? 'birim' : 'units'}
                                                         {livePrice > 0 && (
                                                             <span className="text-gray-600"> • {formatCurrency(getConvertedValue(livePrice))}/unit</span>
                                                         )}

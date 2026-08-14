@@ -4,8 +4,11 @@ import { useState, useEffect } from 'react';
 import Loading from "../components/Loading";
 import PageHeader from "../components/PageHeader";
 import PageContainer from "../components/PageContainer";
+import { usePreferences } from '../components/PreferencesProvider';
 
 export default function NewsletterSignup() {
+  const { locale } = usePreferences();
+  const tr = locale === 'tr';
   const [formData, setFormData] = useState({
     email: '',
     name: '',
@@ -39,7 +42,7 @@ export default function NewsletterSignup() {
     e.preventDefault();
 
     if (!formData.email.trim()) {
-      setError('Email is required');
+      setError(tr ? 'E-posta gereklidir' : 'Email is required');
       return;
     }
 
@@ -98,8 +101,8 @@ export default function NewsletterSignup() {
       <div>
         <div className="container mx-auto">
           <PageHeader
-            title="Newsletter"
-            subtitle="Join the Dragon's Domain"
+            title={tr ? 'E-posta Bülteni' : 'Newsletter'}
+            subtitle={tr ? 'Ejderhanın Dünyasına Katılın' : "Join the Dragon's Domain"}
             icon="fas fa-envelope"
             variant="large"
           />
@@ -112,9 +115,9 @@ export default function NewsletterSignup() {
                 <div className="flex items-center justify-center mb-4">
                   <i className="fas fa-check-circle text-4xl text-[#4ade80]"></i>
                 </div>
-                <h3 className="text-xl font-semibold text-[#4ade80] mb-2">Welcome to the Dragon's Domain!</h3>
+                <h3 className="text-xl font-semibold text-[#4ade80] mb-2">{tr ? 'Ejderhanın Dünyasına Hoş Geldiniz!' : "Welcome to the Dragon's Domain!"}</h3>
                 <p className="text-[#86efac]">
-                  Thank you for subscribing! Check your email for a welcome message.
+                  {tr ? 'Abone olduğunuz için teşekkürler! Hoş geldiniz mesajı için e-postanızı kontrol edin.' : 'Thank you for subscribing! Check your email for a welcome message.'}
                 </p>
               </div>
             )}
@@ -127,7 +130,7 @@ export default function NewsletterSignup() {
                   {/* Email */}
                   <div>
                     <label className="block text-sm font-medium text-[#d1d5db] mb-2">
-                      Email Address *
+                      {tr ? 'E-posta Adresi' : 'Email Address'} *
                     </label>
                     <input
                       type="email"
@@ -142,21 +145,21 @@ export default function NewsletterSignup() {
                   {/* Name */}
                   <div>
                     <label className="block text-sm font-medium text-[#d1d5db] mb-2">
-                      Name (Optional)
+                      {tr ? 'Ad (İsteğe Bağlı)' : 'Name (Optional)'}
                     </label>
                     <input
                       type="text"
                       value={formData.name}
                       onChange={(e) => setFormData({...formData, name: e.target.value})}
                       className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] placeholder-gray-400 focus:border-[#e8c547] focus:outline-none transition-colors"
-                      placeholder="Your name"
+                      placeholder={tr ? 'Adınız' : 'Your name'}
                     />
                   </div>
 
                   {/* Frequency */}
                   <div>
                     <label className="block text-sm font-medium text-[#d1d5db] mb-3">
-                      Email Frequency
+                      {tr ? 'E-posta Sıklığı' : 'Email Frequency'}
                     </label>
                     <div className="grid grid-cols-3 gap-3">
                       {['daily', 'weekly', 'monthly'].map((freq) => (
@@ -173,7 +176,7 @@ export default function NewsletterSignup() {
                               : 'bg-[#0e1b12] border-[#3e503e] text-gray-300 hover:border-[#e8c547]'
                           }`}
                         >
-                          {freq.charAt(0).toUpperCase() + freq.slice(1)}
+                          {tr ? ({ daily: 'Günlük', weekly: 'Haftalık', monthly: 'Aylık' }[freq]) : freq.charAt(0).toUpperCase() + freq.slice(1)}
                         </button>
                       ))}
                     </div>
@@ -182,14 +185,14 @@ export default function NewsletterSignup() {
                   {/* Categories */}
                   <div>
                     <label className="block text-sm font-medium text-[#d1d5db] mb-3">
-                      Content Preferences
+                      {tr ? 'İçerik Tercihleri' : 'Content Preferences'}
                     </label>
                     <div className="grid grid-cols-2 gap-3">
                       {[
-                        { id: 'tech', label: 'Tech Updates', icon: 'fas fa-code' },
-                        { id: 'projects', label: 'New Projects', icon: 'fas fa-rocket' },
-                        { id: 'ai', label: 'AI Insights', icon: 'fas fa-robot' },
-                        { id: 'tutorials', label: 'Tutorials', icon: 'fas fa-graduation-cap' }
+                        { id: 'tech', label: tr ? 'Teknoloji Güncellemeleri' : 'Tech Updates', icon: 'fas fa-code' },
+                        { id: 'projects', label: tr ? 'Yeni Projeler' : 'New Projects', icon: 'fas fa-rocket' },
+                        { id: 'ai', label: tr ? 'Yapay Zekâ İçerikleri' : 'AI Insights', icon: 'fas fa-robot' },
+                        { id: 'tutorials', label: tr ? 'Rehberler' : 'Tutorials', icon: 'fas fa-graduation-cap' }
                       ].map((category) => (
                         <button
                           key={category.id}
@@ -224,12 +227,12 @@ export default function NewsletterSignup() {
                     {loading ? (
                       <>
                         <i className="fas fa-hourglass-half"></i>
-                        <span>Subscribing...</span>
+                        <span>{tr ? 'Abone olunuyor...' : 'Subscribing...'}</span>
                       </>
                     ) : (
                       <>
                         <i className="fas fa-paper-plane"></i>
-                        <span>Subscribe to Newsletter</span>
+                        <span>{tr ? 'Bültene Abone Ol' : 'Subscribe to Newsletter'}</span>
                       </>
                     )}
                   </button>
@@ -243,11 +246,11 @@ export default function NewsletterSignup() {
                 <div className="flex items-center justify-center space-x-8">
                   <div className="text-center">
                     <div className="text-2xl font-bold text-[#e8c547]">{subscriberCount}+</div>
-                    <div className="text-sm text-gray-400">Subscribers</div>
+                    <div className="text-sm text-gray-400">{tr ? 'Abone' : 'Subscribers'}</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-[#4ade80]">Weekly</div>
-                    <div className="text-sm text-gray-400">Updates</div>
+                    <div className="text-2xl font-bold text-[#4ade80]">{tr ? 'Haftalık' : 'Weekly'}</div>
+                    <div className="text-sm text-gray-400">{tr ? 'Güncellemeler' : 'Updates'}</div>
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-[#e8c547]">0%</div>
@@ -262,20 +265,20 @@ export default function NewsletterSignup() {
               <div className="bg-[#0a1a0f]/30 backdrop-blur-md border border-[#3e503e]/50 rounded-lg p-6">
                 <div className="flex items-center space-x-3 mb-3">
                   <i className="fas fa-dragon text-2xl text-[#e8c547]"></i>
-                  <h3 className="text-lg font-semibold text-[#e8c547]">Exclusive Content</h3>
+                  <h3 className="text-lg font-semibold text-[#e8c547]">{tr ? 'Özel İçerik' : 'Exclusive Content'}</h3>
                 </div>
                 <p className="text-gray-300 text-sm">
-                  Get behind-the-scenes insights into my latest projects, AI experiments, and development journey.
+                  {tr ? 'Son projelerimin, yapay zekâ deneylerimin ve geliştirme sürecimin perde arkasını keşfedin.' : 'Get behind-the-scenes insights into my latest projects, AI experiments, and development journey.'}
                 </p>
               </div>
 
               <div className="bg-[#0a1a0f]/30 backdrop-blur-md border border-[#3e503e]/50 rounded-lg p-6">
                 <div className="flex items-center space-x-3 mb-3">
                   <i className="fas fa-code text-2xl text-[#4ade80]"></i>
-                  <h3 className="text-lg font-semibold text-[#4ade80]">Technical Deep Dives</h3>
+                  <h3 className="text-lg font-semibold text-[#4ade80]">{tr ? 'Teknik Derinlemesine İncelemeler' : 'Technical Deep Dives'}</h3>
                 </div>
                 <p className="text-gray-300 text-sm">
-                  Detailed tutorials, code snippets, and technical analysis of cutting-edge technologies.
+                  {tr ? 'Güncel teknolojiler hakkında ayrıntılı rehberler, kod parçacıkları ve teknik analizler.' : 'Detailed tutorials, code snippets, and technical analysis of cutting-edge technologies.'}
                 </p>
               </div>
             </div>
@@ -283,9 +286,9 @@ export default function NewsletterSignup() {
             {/* Unsubscribe Link */}
             <div className="mt-8 text-center">
               <p className="text-sm text-gray-400">
-                Already subscribed?
+                {tr ? 'Zaten abone misiniz?' : 'Already subscribed?'}
                 <a href="/newsletter/unsubscribe" className="text-[#e8c547] hover:text-[#d4b445] ml-1 transition-colors">
-                  Manage your subscription
+                  {tr ? 'Aboneliğinizi yönetin' : 'Manage your subscription'}
                 </a>
               </p>
             </div>

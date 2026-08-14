@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from 'react';
+import { usePreferences } from '../components/PreferencesProvider';
 
 const SNIPPETS = [
   {
@@ -120,6 +121,7 @@ const strong =
 const CATEGORIES = ['All', ...Array.from(new Set(SNIPPETS.map((s) => s.category)))];
 
 function SnippetCard({ snippet }) {
+  const { locale } = usePreferences();
   const [copied, setCopied] = useState(false);
   const copy = async () => {
     try {
@@ -134,16 +136,16 @@ function SnippetCard({ snippet }) {
     <div className="rounded-2xl border border-white/10 bg-black/30 overflow-hidden flex flex-col">
       <div className="flex items-center justify-between gap-2 px-4 py-3 border-b border-white/10">
         <div className="min-w-0">
-          <h3 className="font-semibold text-gray-200 truncate">{snippet.title}</h3>
+          <h3 className="font-semibold text-gray-200 truncate">{locale === 'tr' ? ({ 'Debounce a function': 'Bir fonksiyona debounce uygulama', 'useDebouncedValue hook': 'useDebouncedValue hook’u', 'useMediaQuery hook': 'useMediaQuery hook’u', 'Email validation': 'E-posta doğrulama', 'Slugify a string': 'Metni slug biçimine dönüştürme', 'Strong password regex': 'Güçlü parola regex’i', 'Format bytes': 'Baytları biçimlendirme', 'Sleep / delay': 'Bekleme / gecikme', 'Center with flex': 'Flex ile ortalama', 'Truncate to N lines': 'N satırda kısaltma' }[snippet.title] || snippet.title) : snippet.title}</h3>
           <span className="text-xs text-cyan-400/80">{snippet.category} · {snippet.lang}</span>
         </div>
         <button
           onClick={copy}
-          aria-label={`Copy ${snippet.title}`}
+          aria-label={`${locale === 'tr' ? 'Kopyala' : 'Copy'} ${snippet.title}`}
           className="shrink-0 text-xs px-3 py-1.5 rounded-md bg-white/5 border border-white/10 text-gray-300 hover:text-white hover:bg-white/10 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60"
         >
           <i className={`fas ${copied ? 'fa-check' : 'fa-copy'} mr-1.5`}></i>
-          {copied ? 'Copied' : 'Copy'}
+          {copied ? (locale === 'tr' ? 'Kopyalandı' : 'Copied') : (locale === 'tr' ? 'Kopyala' : 'Copy')}
         </button>
       </div>
       <pre className="p-4 text-sm text-gray-300 overflow-x-auto flex-1"><code>{snippet.code}</code></pre>
@@ -152,6 +154,8 @@ function SnippetCard({ snippet }) {
 }
 
 export default function SnippetsPage() {
+  const { locale } = usePreferences();
+  const tr = locale === 'tr';
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('All');
 
@@ -168,20 +172,20 @@ export default function SnippetsPage() {
     <div className="mx-auto w-full max-w-5xl px-4 py-10 sm:py-14">
       <header className="text-center mb-8">
         <h1 className="text-3xl sm:text-4xl font-bold" style={{ color: 'var(--mini-accent, #22d3ee)' }}>
-          <i className="fas fa-code mr-2"></i> Snippet Vault
+          <i className="fas fa-code mr-2"></i> {tr ? 'Kod Parçacığı Kasası' : 'Snippet Vault'}
         </h1>
-        <p className="text-gray-400 mt-2">A small, hand-picked set of snippets I reach for often.</p>
+        <p className="text-gray-400 mt-2">{tr ? 'Sık kullandığım, özenle seçilmiş küçük bir kod parçacığı koleksiyonu.' : 'A small, hand-picked set of snippets I reach for often.'}</p>
       </header>
 
       {/* Controls */}
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
         <div className="relative flex-1">
-          <label htmlFor="snippet-search" className="sr-only">Search snippets</label>
+          <label htmlFor="snippet-search" className="sr-only">{tr ? 'Kod parçacıklarında ara' : 'Search snippets'}</label>
           <i className="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"></i>
           <input
             id="snippet-search"
             type="text"
-            placeholder="Search snippets..."
+            placeholder={tr ? 'Kod parçacıklarında ara...' : 'Search snippets...'}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             className="w-full h-12 pl-11 pr-4 rounded-lg bg-black/30 border border-white/10 text-gray-200 focus:outline-none focus:border-cyan-400/50 focus:ring-1 focus:ring-cyan-400/30 transition-all"
@@ -199,7 +203,7 @@ export default function SnippetsPage() {
                   : 'bg-white/5 text-gray-400 border border-white/10 hover:text-white'
               }`}
             >
-              {cat}
+              {tr && cat === 'All' ? 'Tümü' : cat}
             </button>
           ))}
         </div>
@@ -209,7 +213,7 @@ export default function SnippetsPage() {
       {filtered.length === 0 ? (
         <div className="text-center py-16 text-gray-500">
           <i className="fas fa-box-open text-4xl mb-3 block text-cyan-400/40"></i>
-          No snippets match your search.
+          {tr ? 'Aramanızla eşleşen kod parçacığı yok.' : 'No snippets match your search.'}
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">

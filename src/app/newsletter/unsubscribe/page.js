@@ -7,8 +7,11 @@ import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Head from 'next/head';
 import { SkeletonBox, SkeletonText } from '../../components/Skeleton';
+import { usePreferences } from '../../components/PreferencesProvider';
 
 function UnsubscribeContent() {
+  const { locale } = usePreferences();
+  const tr = locale === 'tr';
   const searchParams = useSearchParams();
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
@@ -26,7 +29,7 @@ function UnsubscribeContent() {
     e.preventDefault();
 
     if (!email.trim()) {
-      setError('Email is required');
+      setError(tr ? 'E-posta gereklidir' : 'Email is required');
       return;
     }
 
@@ -76,11 +79,11 @@ function UnsubscribeContent() {
             </div>
             <h1 className="text-3xl font-bold mb-2">
               <span className="bg-gradient-to-r from-[#ef4444] to-[#dc2626] bg-clip-text text-transparent">
-                Unsubscribe
+                {tr ? 'Abonelikten Ayrıl' : 'Unsubscribe'}
               </span>
             </h1>
             <p className="text-gray-400">
-              We're sorry to see you go
+              {tr ? 'Ayrıldığınızı görmek bizi üzdü' : "We're sorry to see you go"}
             </p>
           </div>
 
@@ -90,12 +93,12 @@ function UnsubscribeContent() {
               <div className="flex items-center justify-center mb-4">
                 <i className="fas fa-check-circle text-3xl text-green-400"></i>
               </div>
-              <h3 className="text-lg font-semibold text-green-400 mb-2">Successfully Unsubscribed</h3>
+              <h3 className="text-lg font-semibold text-green-400 mb-2">{tr ? 'Abonelik Başarıyla Sonlandırıldı' : 'Successfully Unsubscribed'}</h3>
               <p className="text-green-300 mb-4">
-                You have been removed from our newsletter list.
+                {tr ? 'E-posta bülteni listemizden çıkarıldınız.' : 'You have been removed from our newsletter list.'}
               </p>
               <p className="text-sm text-gray-400">
-                You can always <a href="/newsletter" className="text-[#4f46e5] hover:underline">resubscribe</a> if you change your mind.
+                {tr ? <>Fikrinizi değiştirirseniz her zaman <a href="/newsletter" className="text-[#4f46e5] hover:underline">yeniden abone olabilirsiniz</a>.</> : <>You can always <a href="/newsletter" className="text-[#4f46e5] hover:underline">resubscribe</a> if you change your mind.</>}
               </p>
             </div>
           )}
@@ -107,7 +110,7 @@ function UnsubscribeContent() {
 
                 <div>
                   <label className="block text-sm font-medium text-[#e2e8f0] mb-2">
-                    Email Address
+                    {tr ? 'E-posta Adresi' : 'Email Address'}
                   </label>
                   <input
                     type="email"
@@ -138,12 +141,12 @@ function UnsubscribeContent() {
                   {loading ? (
                     <>
                       <i className="fas fa-hourglass-half mr-2"></i>
-                      Unsubscribing...
+                      {tr ? 'Abonelik sonlandırılıyor...' : 'Unsubscribing...'}
                     </>
                   ) : (
                     <>
                       <i className="fas fa-unlink mr-2"></i>
-                      Unsubscribe
+                      {tr ? 'Abonelikten Ayrıl' : 'Unsubscribe'}
                     </>
                   )}
                 </button>
@@ -151,7 +154,7 @@ function UnsubscribeContent() {
                 {/* Alternative Actions */}
                 <div className="text-center space-y-3">
                   <p className="text-sm text-gray-400">
-                    Instead of unsubscribing, you could:
+                    {tr ? 'Abonelikten ayrılmak yerine şunları yapabilirsiniz:' : 'Instead of unsubscribing, you could:'}
                   </p>
                   <div className="space-y-2">
                     <a
@@ -159,14 +162,14 @@ function UnsubscribeContent() {
                       className="block text-[#4f46e5] hover:text-[#4338ca] transition-colors text-sm"
                     >
                       <i className="fas fa-cog mr-2"></i>
-                      Update your preferences
+                      {tr ? 'Tercihlerinizi güncelleyin' : 'Update your preferences'}
                     </a>
                     <a
                       href="mailto:omerguler53@gmail.com?subject=Newsletter Feedback"
                       className="block text-[#4f46e5] hover:text-[#4338ca] transition-colors text-sm"
                     >
                       <i className="fas fa-comment mr-2"></i>
-                      Send us feedback
+                      {tr ? 'Geri bildirim gönderin' : 'Send us feedback'}
                     </a>
                   </div>
                 </div>
@@ -181,7 +184,7 @@ function UnsubscribeContent() {
               className="text-gray-400 hover:text-[#4f46e5] transition-colors"
             >
               <i className="fas fa-arrow-left mr-2"></i>
-              Back to Portfolio
+              {tr ? 'Portföye Dön' : 'Back to Portfolio'}
             </a>
           </div>
 

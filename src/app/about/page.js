@@ -6,6 +6,7 @@ import Button from "../components/Button";
 import PageHeader from "../components/PageHeader";
 import PageContainer from "../components/PageContainer";
 import { SKILL_CATEGORIES } from '@/lib/constants';
+import { usePreferences } from '../components/PreferencesProvider';
 
 // Experience Data - Updated with correct information
 const experiences = [
@@ -109,37 +110,74 @@ const getExperienceIcon = (type) => {
   }
 };
 
-const getExperienceTypeLabel = (type) => {
+const getExperienceTypeLabel = (type, locale) => {
+  const tr = locale === 'tr';
   switch (type) {
     case "personal":
-      return "Venture";
+      return tr ? "Girişim" : "Venture";
     case "freelance":
       return "Freelance";
     case "internship":
-      return "Internship";
+      return tr ? "Staj" : "Internship";
     case "military":
-      return "Service";
+      return tr ? "Görev" : "Service";
     default:
-      return "Experience";
+      return tr ? "Deneyim" : "Experience";
   }
 };
 
-const getSkillLevelLabel = (level) => {
-  if (level >= 90) return "Expert";
-  if (level >= 75) return "Advanced";
-  if (level >= 60) return "Solid";
-  return "Learning";
+const getSkillLevelLabel = (level, locale) => {
+  if (level >= 90) return locale === 'tr' ? "Uzman" : "Expert";
+  if (level >= 75) return locale === 'tr' ? "İleri" : "Advanced";
+  if (level >= 60) return locale === 'tr' ? "Yetkin" : "Solid";
+  return locale === 'tr' ? "Öğreniyor" : "Learning";
 };
 
 export default function About() {
+  const { locale, t } = usePreferences();
+  const tr = locale === 'tr';
+  const displayedExperiences = tr ? experiences.map((exp, index) => ({
+    ...exp,
+    title: ['Kurucu', 'Yedek Subay — Elektrik-Elektronik Mühendisi', 'Serbest Yazılım Geliştirici', 'Stajyer', 'Stajyer'][index],
+    company: [exp.company, 'Türk Silahlı Kuvvetleri', 'Fiverr, Freelancer.com ve Upwork', 'Çevre, Şehircilik ve İklim Değişikliği Bakanlığı', exp.company][index],
+    period: ['2024 - Günümüz', 'Ağu 2025 - Ağu 2026', 'Ağu 2022 - Kas 2024', 'Haz 2023 - Tem 2023', 'Ağu 2022 - Eyl 2022'][index],
+    description: [
+      'Yarı profesyonel girişimler kapsamında yenilikçi yazılım çözümleri ve teknoloji projeleri geliştiriyorum. Yapay zekâ destekli uygulamalar, web geliştirme ve gelişen teknolojilere odaklanarak pratik ürünler ortaya çıkarıyor, değerli deneyimler kazanıyorum.',
+      'Yedek subay ve Elektrik-Elektronik Mühendisi olarak; mühendislik sorumluluğunu liderlik, disiplinli operasyon, teknik dokümantasyon ve baskı altında karar verme becerileriyle birleştirerek görev yaptım.',
+      'Başlıca serbest çalışma platformlarında uluslararası müşterilere grafik tasarım ve yazılım geliştirme hizmetleri sundum. Web uygulamaları, Discord botları ve tasarım çözümleri teslim ettim.',
+      'Yalova’da yapı denetimi stajımı tamamladım. Kamu işleyişi, yapısal denetimler ve çevre mühendisliği uygulamaları hakkında deneyim kazandım.',
+      'Yalova’daki pano üretimi ve otomasyon şirketinde atölye stajı yaptım. Elektrik panoları, otomasyon sistemleri ve elektronik bileşenlerle uygulamalı çalışma deneyimi kazandım.'
+    ][index]
+  })) : experiences;
+  const displayedEducation = tr ? education.map((edu, index) => ({
+    ...edu,
+    title: index === 0 ? 'Lisans Derecesi' : 'Lise Diploması',
+    institution: index === 0 ? 'İstinye Üniversitesi' : edu.institution,
+    field: index === 0 ? 'Elektrik-Elektronik Mühendisliği' : 'Sayısal Alan',
+    period: index === 0 ? 'Eyl 2019 - Haz 2024' : 'Eyl 2018 - Haz 2019',
+    description: index === 0
+      ? 'Elektrik-Elektronik Mühendisliği lisans eğitimimi tamamladım. Matematik, devre tasarımı ve mühendislik ilkelerinde güçlü bir temel edindim; eğitim sürecinde odağımı yazılım geliştirmeye de genişlettim.'
+      : '96,32 diploma notuyla yüksek başarı derecesiyle mezun oldum. Matematik ve fen bilimlerinde güçlü bir akademik performans sergiledim.',
+    achievements: index === 0 ? ['Güçlü Matematik Temeli', 'Devre Tasarımı', 'Problem Çözme', 'Mühendislik İlkeleri'] : ['Not: 96,32', 'Matematik Başarısı', 'Fen Bilimleri Odağı']
+  })) : education;
+  const displayedInterests = tr ? personalInterests.map((interest, index) => ({
+    ...interest,
+    title: ['Film ve Diziler', 'Fitness ve Bisiklet', 'Video Oyunları', 'Okuma, Müzik ve Doğa'][index],
+    description: [
+      'Özellikle bilim kurgu, gerilim ve teknoloji belgeselleri olmak üzere film ve dizileri takip ediyorum.',
+      'Düzenli fitness çalışmaları ve bisiklet sürüşleriyle aktif kalıyorum.',
+      'Strateji, simülasyon ve teknoloji temalı oyunlara ilgi duyuyorum.',
+      'Kitap okumaktan, müzik dinlemekten ve doğada zaman geçirmekten keyif alıyorum.'
+    ][index]
+  })) : personalInterests;
   return (
     <PageContainer>
       <div>
 
         {/* Page Header */}
         <PageHeader
-          title="About Me"
-          subtitle="Passionate engineer transforming ideas into digital solutions with a focus on innovation and continuous learning"
+          title={tr ? 'Hakkımda' : 'About Me'}
+          subtitle={tr ? 'Yenilik ve sürekli öğrenme odağıyla fikirleri güvenilir dijital ve mühendislik çözümlerine dönüştüren bir mühendis' : 'Passionate engineer transforming ideas into digital solutions with a focus on innovation and continuous learning'}
           icon="fas fa-user"
           variant="large"
         />
@@ -178,19 +216,19 @@ export default function About() {
           <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-8 rounded-lg">
             <h2 className="text-3xl font-bold gradient-text mb-6 text-center flex items-center justify-center gap-3">
               <i className="fas fa-user text-[#e8c547]"></i>
-              Who Am I?
+              {tr ? 'Ben Kimim?' : 'Who Am I?'}
             </h2>
             <div className="space-y-6 text-lg text-gray-300 leading-relaxed">
               <p>
-                Hi, I'm <span className="text-[#e8c547] font-semibold">Ömer</span>, an <span className="text-[#e8c547] font-semibold">Electrical & Electronics Engineer and full-stack developer</span> based in İstanbul. I build reliable web products, automation workflows and hardware–software solutions by combining engineering fundamentals with modern software development.
+                {tr ? <>Merhaba, ben <span className="text-[#e8c547] font-semibold">Ömer</span>. İstanbul’da yaşayan bir <span className="text-[#e8c547] font-semibold">Elektrik-Elektronik Mühendisi ve full-stack geliştiriciyim</span>. Mühendislik temellerini modern yazılım geliştirmeyle birleştirerek güvenilir web ürünleri, otomasyon iş akışları ve donanım-yazılım çözümleri geliştiriyorum.</> : <>Hi, I'm <span className="text-[#e8c547] font-semibold">Ömer</span>, an <span className="text-[#e8c547] font-semibold">Electrical & Electronics Engineer and full-stack developer</span> based in İstanbul. I build reliable web products, automation workflows and hardware–software solutions by combining engineering fundamentals with modern software development.</>}
               </p>
               <p>
-                My work spans high-voltage and power systems, protection and grounding, AutoCAD, embedded systems, IoT and production-ready web applications. I value clear technical documentation, operational safety and practical results, and I use AI-assisted development workflows responsibly to move from idea to tested implementation.
+                {tr ? 'Çalışmalarım yüksek gerilim ve güç sistemleri, koruma ve topraklama, AutoCAD, gömülü sistemler, IoT ve production seviyesinde web uygulamalarını kapsıyor. Açık teknik dokümantasyona, operasyonel güvenliğe ve pratik sonuçlara önem veriyor; fikirleri test edilmiş uygulamalara dönüştürmek için yapay zekâ destekli geliştirme iş akışlarını sorumlu biçimde kullanıyorum.' : 'My work spans high-voltage and power systems, protection and grounding, AutoCAD, embedded systems, IoT and production-ready web applications. I value clear technical documentation, operational safety and practical results, and I use AI-assisted development workflows responsibly to move from idea to tested implementation.'}
               </p>
 
               <div className="mt-8 p-6 bg-[#e8c547]/10 border-l-4 border-[#e8c547] rounded-r-lg">
                 <p className="text-[#e8c547] font-semibold italic text-center">
-                  "Crafting technology inspired by the strength and wisdom of a dragon."
+                  {tr ? '“Ejderhanın gücü ve bilgeliğinden ilham alan teknolojiler geliştiriyorum.”' : '“Crafting technology inspired by the strength and wisdom of a dragon.”'}
                 </p>
               </div>
             </div>
@@ -201,7 +239,7 @@ export default function About() {
         <section className="mb-16 slide-in-right">
           <h2 className="text-3xl font-bold gradient-text mb-8 text-center flex items-center justify-center gap-3">
             <i className="fas fa-code text-[#e8c547]"></i>
-            Technical Skills
+            {t('technicalSkills')}
           </h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
             {SKILL_CATEGORIES.map((category, index) => {
@@ -217,12 +255,12 @@ export default function About() {
                         <i className={`${category.icon} text-[#e8c547] text-xl`}></i>
                       </span>
                       <div className="min-w-0">
-                        <h3 className="text-xl font-semibold text-[#e8c547] truncate">{category.title}</h3>
-                        <p className="text-sm text-gray-400">{category.skills.length} focused skills</p>
+                        <h3 className="text-xl font-semibold text-[#e8c547] truncate">{tr ? ({ 'Programming Languages': 'Programlama Dilleri', 'Web & Software': 'Web ve Yazılım', 'Electrical Engineering': 'Elektrik Mühendisliği', 'Data & Engineering Tools': 'Veri ve Mühendislik Araçları', 'Hardware & Automation': 'Donanım ve Otomasyon', 'Professional Practice': 'Profesyonel Uygulama' }[category.title] || category.title) : category.title}</h3>
+                        <p className="text-sm text-gray-400">{category.skills.length} {tr ? 'odak yetkinlik' : 'focused skills'}</p>
                       </div>
                     </div>
                     <div className="shrink-0 rounded-full border border-[#e8c547]/25 bg-[#e8c547]/10 px-3 py-1 text-sm font-semibold text-[#e8c547]">
-                      {averageLevel}% avg
+                      {tr ? `Ort. %${averageLevel}` : `${averageLevel}% avg`}
                     </div>
                   </div>
 
@@ -232,14 +270,14 @@ export default function About() {
                         <div className="mb-2 flex items-center justify-between gap-3">
                           <div className="min-w-0">
                             <span className="block truncate text-gray-200 font-medium">{skill.name}</span>
-                            <span className="text-xs uppercase tracking-wide text-gray-500">{getSkillLevelLabel(skill.level)}</span>
+                            <span className="text-xs uppercase tracking-wide text-gray-500">{getSkillLevelLabel(skill.level, locale)}</span>
                           </div>
                           <span className="shrink-0 text-[#e8c547] font-semibold">{skill.level}%</span>
                         </div>
                         <div
                           className="h-2.5 w-full overflow-hidden rounded-full bg-[#0e1b12] ring-1 ring-[#3e503e]/45"
                           role="progressbar"
-                          aria-label={`${skill.name} proficiency`}
+                          aria-label={`${skill.name} ${tr ? 'yetkinliği' : 'proficiency'}`}
                           aria-valuenow={skill.level}
                           aria-valuemin="0"
                           aria-valuemax="100"
@@ -262,13 +300,13 @@ export default function About() {
         <section className="mb-16 slide-in-left">
           <h2 className="text-3xl font-bold gradient-text mb-8 text-center flex items-center justify-center gap-3">
             <i className="fas fa-briefcase text-[#e8c547]"></i>
-            Professional Experience
+            {tr ? 'Profesyonel Deneyim' : 'Professional Experience'}
           </h2>
           <div className="relative">
             <div className="hidden lg:block absolute left-[109px] top-6 bottom-6 w-px bg-gradient-to-b from-[#e8c547]/80 via-[#e8c547]/35 to-[#d4b445]/70"></div>
 
             <div className="space-y-5">
-              {experiences.map((exp, index) => (
+              {displayedExperiences.map((exp, index) => (
                 <article key={index} className="relative grid grid-cols-1 lg:grid-cols-[220px_minmax(0,1fr)] gap-4 lg:gap-8 bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-5 sm:p-6 rounded-lg hover:border-[#e8c547]/35 transition-all duration-300">
                   <div className="relative z-10 flex items-start gap-4 lg:block">
                     <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-[#e8c547]/35 bg-[#0e1b12] shadow-lg shadow-[#e8c547]/10 lg:mx-auto lg:mb-4">
@@ -276,7 +314,7 @@ export default function About() {
                     </div>
                     <div className="min-w-0 lg:text-center">
                       <span className="inline-flex items-center rounded-full bg-[#e8c547]/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[#e8c547] border border-[#e8c547]/20">
-                        {getExperienceTypeLabel(exp.type)}
+                        {getExperienceTypeLabel(exp.type, locale)}
                       </span>
                       <p className="mt-2 text-sm text-gray-400 leading-relaxed">{exp.period}</p>
                     </div>
@@ -308,10 +346,10 @@ export default function About() {
         <section className="mb-16 slide-in-right">
           <h2 className="text-3xl font-bold gradient-text mb-8 text-center flex items-center justify-center gap-3">
             <i className="fas fa-graduation-cap text-[#e8c547]"></i>
-            Education
+            {tr ? 'Eğitim' : 'Education'}
           </h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {education.map((edu, index) => (
+            {displayedEducation.map((edu, index) => (
               <article key={index} className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-6 rounded-lg hover:border-[#e8c547]/35 transition-all duration-300">
                 <div className="flex items-start gap-4 mb-5">
                   <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-[#e8c547]/10 border border-[#e8c547]/25">
@@ -347,10 +385,10 @@ export default function About() {
         <section className="mb-16 slide-in-right">
           <h2 className="text-3xl font-bold gradient-text mb-8 text-center flex items-center justify-center gap-3">
             <i className="fas fa-heart text-[#e8c547]"></i>
-            Personal Interests & Hobbies
+            {tr ? 'Kişisel İlgi Alanları ve Hobiler' : 'Personal Interests & Hobbies'}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {personalInterests.map((interest, index) => (
+            {displayedInterests.map((interest, index) => (
               <div key={index} className="bg-[#2e3d29]/30 border border-[#3e503e]/30 p-4 rounded-lg text-center">
                 <i className={`${interest.icon} text-[#e8c547] text-2xl mb-2 block`}></i>
                 <h3 className="font-semibold text-gray-200 mb-1">{interest.title}</h3>
@@ -365,11 +403,10 @@ export default function About() {
           <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-8 rounded-lg">
             <h2 className="text-3xl font-bold gradient-text mb-4 flex items-center justify-center gap-3">
               <i className="fas fa-paper-plane text-[#e8c547]"></i>
-              Let's Connect!
+              {tr ? 'İletişime Geçelim!' : "Let's Connect!"}
             </h2>
             <p className="text-gray-300 mb-6 max-w-2xl mx-auto">
-              I'm always excited to discuss new opportunities, collaborate on interesting projects,
-              or simply chat about technology and innovation. Feel free to reach out!
+              {tr ? 'Yeni fırsatları değerlendirmek, ilgi çekici projelerde iş birliği yapmak veya teknoloji ve yenilik üzerine konuşmak için benimle iletişime geçebilirsiniz.' : "I'm always excited to discuss new opportunities, collaborate on interesting projects, or simply chat about technology and innovation. Feel free to reach out!"}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
@@ -377,7 +414,7 @@ export default function About() {
                 size="lg"
               >
                 <i className="fas fa-envelope mr-2"></i>
-                Get In Touch
+                {tr ? 'İletişime Geçin' : 'Get In Touch'}
               </Button>
               <Button
                 href="/portfolio"
@@ -385,7 +422,7 @@ export default function About() {
                 size="lg"
               >
                 <i className="fas fa-briefcase mr-2"></i>
-                My Portfolio
+                {tr ? 'Portföyüm' : 'My Portfolio'}
               </Button>
             </div>
           </div>

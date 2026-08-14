@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import SafeImage from './SafeImage';
+import { usePreferences } from './PreferencesProvider';
 
 // Unified, equal-height card for the Picks page and the home "My Picks" teaser.
 // Visual categories (movie/game/book/series) use a vertical 2:3 cover; music
@@ -42,8 +43,12 @@ function domainFromUrl(url) {
 }
 
 export default function PickCard({ recommendation: rec, variant = 'grid' }) {
+  const { locale } = usePreferences();
+  const localizedRec = locale === 'tr' && rec?.translations?.tr ? { ...rec, ...rec.translations.tr } : rec;
+  rec = localizedRec;
   const category = (rec?.category || 'link').toLowerCase();
   const meta = metaFor(category);
+  const categoryLabel = locale === 'tr' ? ({ movie: 'Film', series: 'Dizi', tv: 'Dizi', game: 'Oyun', book: 'Kitap', music: 'Müzik', link: 'Bağlantı' }[category] || 'Bağlantı') : meta.label;
   const isLink = category === 'link';
   const isMusic = category === 'music';
   const [coverFailed, setCoverFailed] = useState(false);
@@ -66,16 +71,16 @@ export default function PickCard({ recommendation: rec, variant = 'grid' }) {
   const displayTitle = isMusic && spotify?.title
     ? spotify.title
     : isUrlLike(rec?.title)
-      ? (rec?.artist || rec?.author || (isMusic ? 'Music pick' : domain) || meta.label)
-      : (rec?.title || meta.label);
+      ? (rec?.artist || rec?.author || (isMusic ? (locale === 'tr' ? 'Müzik seçimi' : 'Music pick') : domain) || categoryLabel)
+      : (rec?.title || categoryLabel);
   const rawSubtitle = rec?.author || rec?.developer || rec?.studio || rec?.director || rec?.artist || (isMusic ? 'Spotify' : domain) || rec?.linkType || null;
   const subtitle = isUrlLike(rawSubtitle) ? null : rawSubtitle;
   const rawBlurb = rec?.recommendation || rec?.description || '';
-  const blurb = isUrlLike(rawBlurb) ? '' : rawBlurb;
+  const blurb = isUrlLike(rawBlurb) ? '' : (locale === 'tr' ? ({ 'Game pick.': 'Oyun seçimi.', 'Music pick.': 'Müzik seçimi.', 'Movie pick.': 'Film seçimi.', 'Book pick.': 'Kitap seçimi.', 'Link pick.': 'Bağlantı seçimi.' }[rawBlurb] || rawBlurb) : rawBlurb);
 
   // Links are bookmarks, not rated items — no score badge for them.
   const showRating = !isLink && rec?.rating;
-  const cta = isMusic ? 'Listen' : 'Visit';
+  const cta = isMusic ? (locale === 'tr' ? 'Dinle' : 'Listen') : (locale === 'tr' ? 'Ziyaret Et' : 'Visit');
 
   if (!rec) return null;
 
@@ -138,7 +143,7 @@ export default function PickCard({ recommendation: rec, variant = 'grid' }) {
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0e1b12]/70 via-transparent to-transparent"></div>
       {showOverlayBadges && (
         <span className={`absolute left-2.5 top-2.5 inline-flex items-center gap-1.5 rounded-md border bg-black/65 px-2 py-1 text-[11px] font-medium backdrop-blur-sm ${meta.chip} ${meta.accent}`}>
-          <i className={`${meta.icon} text-[10px]`}></i> {meta.label}
+          <i className={`${meta.icon} text-[10px]`}></i> {categoryLabel}
         </span>
       )}
       {showOverlayBadges && showRating && (
@@ -168,7 +173,7 @@ export default function PickCard({ recommendation: rec, variant = 'grid' }) {
         <div className="mb-1.5 flex min-w-0 items-center justify-between gap-2">
           <span className={`inline-flex min-w-0 items-center gap-1.5 rounded-md border px-2 py-0.5 text-[10px] font-semibold ${meta.chip} ${meta.accent}`}>
             <i className={`${meta.icon} text-[9px]`}></i>
-            <span className="truncate">{meta.label}</span>
+            <span className="truncate">{categoryLabel}</span>
           </span>
           {showRating && (
             <span className="inline-flex shrink-0 items-center gap-1 rounded-md bg-[#e8c547] px-2 py-0.5 text-[10px] font-bold text-[#0e1b12]">

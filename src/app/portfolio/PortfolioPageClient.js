@@ -5,13 +5,7 @@ import Button from '../components/Button';
 import ProjectCard from '../components/ProjectCard';
 import PageHeader from '../components/PageHeader';
 import PageContainer from '../components/PageContainer';
-
-const FILTERS = [
-  { id: 'all', label: 'All' },
-  { id: 'web', label: 'Web' },
-  { id: 'engineering', label: 'Engineering' },
-  { id: 'ai', label: 'AI' }
-];
+import { usePreferences } from '../components/PreferencesProvider';
 
 function projectGroup(category = '') {
   const value = category.toLowerCase();
@@ -22,10 +16,17 @@ function projectGroup(category = '') {
 }
 
 export default function PortfolioPageClient({ initialPortfolios = [], initialError = null }) {
+  const { t } = usePreferences();
   const [portfolioItems, setPortfolioItems] = useState(initialPortfolios);
   const [activeCategory, setActiveCategory] = useState('all');
   const [error, setError] = useState(initialError);
   const [loading, setLoading] = useState(false);
+  const filters = [
+    { id: 'all', label: t('filterAll') },
+    { id: 'web', label: t('filterWeb') },
+    { id: 'engineering', label: t('filterEngineering') },
+    { id: 'ai', label: t('filterAi') }
+  ];
 
   const selectedProjects = useMemo(() => {
     const featured = portfolioItems.filter((item) => item.featured);
@@ -42,12 +43,12 @@ export default function PortfolioPageClient({ initialPortfolios = [], initialErr
     setLoading(true);
     try {
       const response = await fetch('/api/portfolio');
-      if (!response.ok) throw new Error('Projects are temporarily unavailable.');
+      if (!response.ok) throw new Error(t('projectLoadError'));
       const data = await response.json();
       setPortfolioItems(data.portfolios || []);
       setError(null);
     } catch {
-      setError('Projects could not be loaded right now. Please try again shortly.');
+      setError(t('projectLoadError'));
     } finally {
       setLoading(false);
     }
@@ -56,24 +57,24 @@ export default function PortfolioPageClient({ initialPortfolios = [], initialErr
   return (
     <PageContainer className="page-scrollbar">
       <PageHeader
-        title="Selected Work"
-        subtitle="Software, automation and engineering projects focused on solving practical problems"
+        title={t('selectedWork')}
+        subtitle={t('selectedWorkSubtitle')}
         icon="fas fa-briefcase"
         variant="large"
       />
 
       {error && (
         <div role="alert" className="mb-8 rounded-xl border border-amber-400/30 bg-amber-400/10 p-4 text-gray-200">
-          <p>{error}</p>
+          <p>{initialError ? t('projectLoadError') : error}</p>
           <Button onClick={fetchPortfolios} disabled={loading} variant="secondary" icon="fas fa-sync" className="mt-3">
-            {loading ? 'Loading…' : 'Try Again'}
+            {loading ? t('loading') : t('tryAgain')}
           </Button>
         </div>
       )}
 
       {selectedProjects.length > 0 && (
         <section aria-labelledby="selected-projects" className="mb-14">
-          <h2 id="selected-projects" className="mb-6 text-2xl font-bold text-[#e8c547]">Selected Case Studies</h2>
+          <h2 id="selected-projects" className="mb-6 text-2xl font-bold text-[#e8c547]">{t('selectedCaseStudies')}</h2>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
             {selectedProjects.map((project) => <ProjectCard key={project._id} project={project} />)}
           </div>
@@ -83,11 +84,11 @@ export default function PortfolioPageClient({ initialPortfolios = [], initialErr
       <section aria-labelledby="all-projects">
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h2 id="all-projects" className="text-2xl font-bold text-white">All Projects</h2>
-            <p className="mt-1 text-gray-400">Browse by core capability.</p>
+            <h2 id="all-projects" className="text-2xl font-bold text-white">{t('allProjects')}</h2>
+            <p className="mt-1 text-gray-400">{t('browseCapability')}</p>
           </div>
-          <div className="flex gap-2 overflow-x-auto pb-1" aria-label="Filter projects">
-            {FILTERS.map((filter) => (
+          <div className="flex gap-2 overflow-x-auto pb-1" aria-label={t('filterProjects')}>
+            {filters.map((filter) => (
               <button
                 key={filter.id}
                 type="button"
@@ -107,9 +108,9 @@ export default function PortfolioPageClient({ initialPortfolios = [], initialErr
           </div>
         ) : (
           <div className="rounded-xl border border-[#3e503e]/40 bg-[#1a2e1a]/30 p-10 text-center">
-            <h3 className="text-xl font-bold text-gray-200">No projects in this category yet</h3>
-            <p className="mt-2 text-gray-400">Explore all work while this section is being expanded.</p>
-            <Button onClick={() => setActiveCategory('all')} variant="secondary" className="mt-5">View All</Button>
+            <h3 className="text-xl font-bold text-gray-200">{t('noCategoryProjects')}</h3>
+            <p className="mt-2 text-gray-400">{t('categoryExpanding')}</p>
+            <Button onClick={() => setActiveCategory('all')} variant="secondary" className="mt-5">{t('viewAll')}</Button>
           </div>
         )}
       </section>

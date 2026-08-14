@@ -4,8 +4,10 @@
 import { useState, useEffect } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { useDebounce } from '@/hooks/useDebounce'; // Assuming you might have one, if not I'll implement debounce locally
+import { usePreferences } from '@/components/PreferencesProvider';
 
 export default function SearchFilters({ onSearch, initialFilters }) {
+    const { locale } = usePreferences();
     const [searchTerm, setSearchTerm] = useState(initialFilters?.search || '');
     const [selectedLevel, setSelectedLevel] = useState(initialFilters?.level || 'All');
 
@@ -34,7 +36,7 @@ export default function SearchFilters({ onSearch, initialFilters }) {
                     <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
                     <input
                         type="text"
-                        placeholder="Search for a word..."
+                        placeholder={locale === 'tr' ? 'Kelime ara...' : 'Search for a word...'}
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="w-full bg-black/20 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white placeholder-gray-500 focus:outline-none focus:border-accent/50 focus:ring-1 focus:ring-accent/50 transition-all"
@@ -52,7 +54,7 @@ export default function SearchFilters({ onSearch, initialFilters }) {
                                     : 'bg-black/20 border-white/10 text-gray-400 hover:bg-white/10 hover:text-white'
                                 }`}
                         >
-                            {level}
+                            {locale === 'tr' && level === 'All' ? 'Tümü' : level}
                         </button>
                     ))}
                 </div>

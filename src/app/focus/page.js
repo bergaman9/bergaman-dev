@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { usePreferences } from '../components/PreferencesProvider';
 
 const MODES = {
   work: { label: 'Focus', minutes: 25, icon: 'fas fa-brain' },
@@ -15,6 +16,8 @@ function format(totalSeconds) {
 }
 
 export default function FocusTimerPage() {
+  const { locale } = usePreferences();
+  const tr = locale === 'tr';
   const [mode, setMode] = useState('work');
   const [secondsLeft, setSecondsLeft] = useState(MODES.work.minutes * 60);
   const [isRunning, setIsRunning] = useState(false);
@@ -63,9 +66,10 @@ export default function FocusTimerPage() {
   useEffect(() => {
     if (typeof document === 'undefined') return;
     const base = 'Focus Timer • Bergaman';
-    document.title = isRunning ? `${format(secondsLeft)} · ${MODES[mode].label}` : base;
+    const modeLabel = tr ? ({ work: 'Odaklanma', short: 'Kısa Mola', long: 'Uzun Mola' }[mode]) : MODES[mode].label;
+    document.title = isRunning ? `${format(secondsLeft)} · ${modeLabel}` : base;
     return () => { document.title = base; };
-  }, [secondsLeft, isRunning, mode]);
+  }, [secondsLeft, isRunning, mode, tr]);
 
   const reset = () => {
     setIsRunning(false);
@@ -80,13 +84,13 @@ export default function FocusTimerPage() {
     <div className="mx-auto w-full max-w-xl px-4 py-10 sm:py-14">
       <header className="text-center mb-8">
         <h1 className="text-3xl sm:text-4xl font-bold" style={{ color: 'var(--mini-accent, #fb7185)' }}>
-          <i className="fas fa-hourglass-half mr-2"></i> Focus Timer
+          <i className="fas fa-hourglass-half mr-2"></i> {tr ? 'Odak Sayacı' : 'Focus Timer'}
         </h1>
-        <p className="text-gray-400 mt-2">Work in focused sprints with the Pomodoro technique.</p>
+        <p className="text-gray-400 mt-2">{tr ? 'Pomodoro tekniğiyle odaklı çalışma aralıkları oluşturun.' : 'Work in focused sprints with the Pomodoro technique.'}</p>
       </header>
 
       {/* Mode switcher */}
-      <div className="flex flex-wrap justify-center gap-2 mb-8" role="tablist" aria-label="Timer mode">
+      <div className="flex flex-wrap justify-center gap-2 mb-8" role="tablist" aria-label={tr ? 'Sayaç modu' : 'Timer mode'}>
         {Object.entries(MODES).map(([key, m]) => (
           <button
             key={key}
@@ -99,7 +103,7 @@ export default function FocusTimerPage() {
                 : 'bg-white/5 text-gray-400 border border-white/10 hover:text-white'
             }`}
           >
-            <i className={`${m.icon} mr-2 text-xs`}></i>{m.label}
+            <i className={`${m.icon} mr-2 text-xs`}></i>{tr ? ({ work: 'Odaklanma', short: 'Kısa Mola', long: 'Uzun Mola' }[key]) : m.label}
           </button>
         ))}
       </div>
@@ -119,7 +123,7 @@ export default function FocusTimerPage() {
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             <span className="text-6xl font-bold tabular-nums text-white">{format(secondsLeft)}</span>
-            <span className="text-sm text-gray-400 mt-2">{MODES[mode].label}</span>
+            <span className="text-sm text-gray-400 mt-2">{tr ? ({ work: 'Odaklanma', short: 'Kısa Mola', long: 'Uzun Mola' }[mode]) : MODES[mode].label}</span>
           </div>
         </div>
       </div>
@@ -128,7 +132,7 @@ export default function FocusTimerPage() {
       <div className="flex items-center justify-center gap-4">
         <button
           onClick={reset}
-          aria-label="Reset timer"
+          aria-label={tr ? 'Sayacı sıfırla' : 'Reset timer'}
           className="w-12 h-12 rounded-full bg-white/5 border border-white/10 text-gray-300 hover:text-white hover:bg-white/10 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-400/60"
         >
           <i className="fas fa-rotate-left"></i>
@@ -139,11 +143,11 @@ export default function FocusTimerPage() {
           style={{ background: 'var(--mini-accent, #fb7185)' }}
         >
           <i className={`fas ${isRunning ? 'fa-pause' : 'fa-play'} mr-2`}></i>
-          {isRunning ? 'Pause' : 'Start'}
+          {isRunning ? (tr ? 'Duraklat' : 'Pause') : (tr ? 'Başlat' : 'Start')}
         </button>
         <button
           onClick={() => { setSecondsLeft(0); }}
-          aria-label="Skip to next session"
+          aria-label={tr ? 'Sonraki oturuma geç' : 'Skip to next session'}
           className="w-12 h-12 rounded-full bg-white/5 border border-white/10 text-gray-300 hover:text-white hover:bg-white/10 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-400/60"
         >
           <i className="fas fa-forward-step"></i>
@@ -152,7 +156,7 @@ export default function FocusTimerPage() {
 
       <p className="text-center text-gray-500 text-sm mt-8">
         <i className="fas fa-check-circle text-rose-400/70 mr-1.5"></i>
-        {completedRounds} focus {completedRounds === 1 ? 'round' : 'rounds'} completed
+        {tr ? `${completedRounds} odaklanma turu tamamlandı` : `${completedRounds} focus ${completedRounds === 1 ? 'round' : 'rounds'} completed`}
       </p>
     </div>
   );

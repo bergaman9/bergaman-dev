@@ -1,6 +1,8 @@
 "use client";
+import { usePreferences } from './PreferencesProvider';
 
 export default function FloatingSkills({ className = "" }) {
+  const { locale } = usePreferences();
   return (
     <div className={`absolute inset-0 pointer-events-none ${className}`}>
       {/* Floating Skill Clouds - Hidden on mobile for better UX */}
@@ -10,7 +12,7 @@ export default function FloatingSkills({ className = "" }) {
           <div className="bg-gradient-to-r from-gray-800/90 to-gray-900/90 backdrop-blur-md border border-[#e8c547]/40 rounded-full px-4 py-2 shadow-xl">
             <div className="preserve-gold flex items-center text-sm text-[#e8c547] font-medium whitespace-nowrap">
               <i className="fas fa-code mr-2"></i>
-              Full-Stack Developer
+              {locale === 'tr' ? 'Full-Stack Geliştirici' : 'Full-Stack Developer'}
             </div>
           </div>
         </div>
@@ -20,7 +22,7 @@ export default function FloatingSkills({ className = "" }) {
           <div className="bg-gradient-to-r from-gray-800/90 to-gray-900/90 backdrop-blur-md border border-[#e8c547]/40 rounded-full px-4 py-2 shadow-xl">
             <div className="preserve-gold flex items-center text-sm text-[#e8c547] font-medium whitespace-nowrap">
               <i className="fas fa-cogs mr-2"></i>
-              Tech Enthusiast
+              {locale === 'tr' ? 'Teknoloji Meraklısı' : 'Tech Enthusiast'}
             </div>
           </div>
         </div>
@@ -30,7 +32,7 @@ export default function FloatingSkills({ className = "" }) {
           <div className="bg-gradient-to-r from-gray-800/90 to-gray-900/90 backdrop-blur-md border border-[#e8c547]/40 rounded-full px-4 py-2 shadow-xl">
             <div className="preserve-gold flex items-center text-sm text-[#e8c547] font-medium whitespace-nowrap">
               <i className="fas fa-bolt mr-2"></i>
-              Electronics Engineer
+              {locale === 'tr' ? 'Elektronik Mühendisi' : 'Electronics Engineer'}
             </div>
           </div>
         </div>
@@ -45,11 +47,11 @@ export default function FloatingSkills({ className = "" }) {
           </span>
           <span className="bg-gradient-to-r from-gray-800/80 to-gray-900/80 backdrop-blur-sm border border-[#e8c547]/30 rounded-full px-3 py-1 text-xs text-[#e8c547] font-medium">
             <i className="fas fa-bolt mr-1"></i>
-            Electronics
+            {locale === 'tr' ? 'Elektronik' : 'Electronics'}
           </span>
           <span className="bg-gradient-to-r from-gray-800/80 to-gray-900/80 backdrop-blur-sm border border-[#e8c547]/30 rounded-full px-3 py-1 text-xs text-[#e8c547] font-medium">
             <i className="fas fa-cogs mr-1"></i>
-            Tech
+            {locale === 'tr' ? 'Teknoloji' : 'Tech'}
           </span>
         </div>
       </div>

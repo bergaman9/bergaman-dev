@@ -19,7 +19,7 @@ const INITIAL_POSTS = [...staticBlogPosts]
 // useSearchParams() must sit under a Suspense boundary for the build to
 // generate the route shell; BlogContent holds the actual page.
 function BlogContent({ initialPosts = INITIAL_POSTS, initialTotal = staticBlogPosts.length }) {
-  const { locale } = usePreferences();
+  const { locale, t } = usePreferences();
   const [posts, setPosts] = useState(initialPosts);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -148,14 +148,14 @@ function BlogContent({ initialPosts = INITIAL_POSTS, initialTotal = staticBlogPo
   const formatCategoryName = (category) => {
     switch (category) {
       case 'ai': return 'AI';
-      case 'web-development': return 'Web Development';
-      case 'technology': return 'Technology';
-      case 'tutorial': return 'Tutorial';
-      case 'programming': return 'Programming';
-      case 'blockchain': return 'Blockchain';
+      case 'web-development': return locale === 'tr' ? 'Web Geliştirme' : 'Web Development';
+      case 'technology': return locale === 'tr' ? 'Teknoloji' : 'Technology';
+      case 'tutorial': return locale === 'tr' ? 'Rehber' : 'Tutorial';
+      case 'programming': return locale === 'tr' ? 'Programlama' : 'Programming';
+      case 'blockchain': return locale === 'tr' ? 'Blokzincir' : 'Blockchain';
       case 'mobile': return 'Mobile';
-      case 'design': return 'Design';
-      case 'all': return 'All Categories';
+      case 'design': return locale === 'tr' ? 'Tasarım' : 'Design';
+      case 'all': return t('allCategories');
       default: return category.charAt(0).toUpperCase() + category.slice(1);
     }
   };
@@ -196,8 +196,8 @@ function BlogContent({ initialPosts = INITIAL_POSTS, initialTotal = staticBlogPo
           icon="fas fa-blog"
           variant="large"
           stats={[
-            { label: "Posts", value: totalPosts },
-            { label: "Categories", value: categories.length - 1 } // Subtract 1 for "all"
+            { label: t('posts'), value: totalPosts },
+            { label: t('categories'), value: categories.length - 1 }
           ]}
         />
 
@@ -213,7 +213,7 @@ function BlogContent({ initialPosts = INITIAL_POSTS, initialTotal = staticBlogPo
                   <i className="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-[#e8c547]"></i>
                   <input
                     type="text"
-                    placeholder="Search posts..."
+                    placeholder={t('searchPosts')}
                     value={searchTerm}
                     onChange={handleSearchChange}
                     className="w-full pl-12 pr-4 py-4 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] placeholder-gray-500 focus:border-[#e8c547] focus:ring-1 focus:ring-[#e8c547]/30 focus:outline-none transition-all duration-300 text-base"
@@ -226,7 +226,7 @@ function BlogContent({ initialPosts = INITIAL_POSTS, initialTotal = staticBlogPo
                     onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
                     aria-haspopup="listbox"
                     aria-expanded={isCategoryDropdownOpen}
-                    aria-label={`Filter by category: ${formatCategoryName(selectedCategory)}`}
+                    aria-label={`${t('categories')}: ${formatCategoryName(selectedCategory)}`}
                     className="w-full pl-12 pr-4 py-4 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-[#d1d5db] focus:border-[#e8c547] focus:ring-1 focus:ring-[#e8c547]/30 focus:outline-none transition-all duration-300 text-base text-left flex items-center justify-between"
                   >
                     <i className="fas fa-filter absolute left-4 text-[#e8c547]"></i>
@@ -260,15 +260,15 @@ function BlogContent({ initialPosts = INITIAL_POSTS, initialTotal = staticBlogPo
               {/* Active Tag Filter */}
               {selectedTag && (
                 <div className="mt-4 flex items-center gap-2">
-                  <span className="text-sm text-gray-400">Filtering by tag:</span>
+                  <span className="text-sm text-gray-400">{t('filteringTag')}</span>
                   <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#e8c547]/20 text-[#e8c547] text-sm rounded-full border border-[#e8c547]/50">
                     <i className="fas fa-tag text-xs"></i>
                     #{selectedTag}
                     <button
                       onClick={() => setSelectedTag('')}
-                      aria-label={`Clear ${selectedTag} tag filter`}
+                      aria-label={`${t('clearFilters')}: ${selectedTag}`}
                       className="ml-1 hover:text-white transition-colors"
-                      title="Clear tag filter"
+                      title={t('clearFilters')}
                     >
                       <i className="fas fa-times text-xs"></i>
                     </button>
@@ -280,7 +280,7 @@ function BlogContent({ initialPosts = INITIAL_POSTS, initialTotal = staticBlogPo
 
           {/* Blog Posts */}
           <section className="relative z-0 section-spacing slide-in-right">
-            <h2 className="sr-only">Blog posts</h2>
+            <h2 className="sr-only">{t('blogPosts')}</h2>
             {loading ? (
               <div className="card-grid card-grid-3">
                 {Array.from({ length: postsPerPage }).map((_, index) => (
@@ -293,13 +293,13 @@ function BlogContent({ initialPosts = INITIAL_POSTS, initialTotal = staticBlogPo
                   <i className={`${searchTerm || selectedCategory !== 'all' ? 'fas fa-search' : 'fas fa-dragon'} text-6xl text-[#e8c547]/30 mb-4 block`}></i>
                   <h3 className="text-xl font-medium text-gray-300 mb-2">
                     {searchTerm || selectedCategory !== 'all'
-                      ? 'No posts match your filters'
-                      : 'No posts in the lair yet'}
+                      ? t('noPostMatches')
+                      : t('noLairPosts')}
                   </h3>
                   <p className="text-gray-500 mb-4">
                     {searchTerm || selectedCategory !== 'all'
-                      ? 'Try a different search term or category.'
-                      : 'New articles are being forged — check back soon.'}
+                      ? t('tryDifferentFilter')
+                      : t('newArticlesSoon')}
                   </p>
                   {(searchTerm || selectedCategory !== 'all') && (
                     <button
@@ -309,7 +309,7 @@ function BlogContent({ initialPosts = INITIAL_POSTS, initialTotal = staticBlogPo
                       }}
                       className="text-[#e8c547] hover:text-[#f4d76b] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c547]/60 rounded px-2 py-1"
                     >
-                      Clear filters
+                      {t('clearFilters')}
                     </button>
                   )}
                 </div>
@@ -356,14 +356,14 @@ function BlogContent({ initialPosts = INITIAL_POSTS, initialTotal = staticBlogPo
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
-                  aria-label="Previous page"
+                  aria-label={t('previous')}
                   className={`px-3 sm:px-4 py-2 rounded-lg border transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c547]/60 ${currentPage === 1
                     ? 'border-[#3e503e] text-gray-500 cursor-not-allowed'
                     : 'border-[#e8c547] text-[#e8c547] hover:bg-[#e8c547] hover:text-[#0e1b12]'
                     }`}
                 >
                   <i className="fas fa-chevron-left sm:mr-2"></i>
-                  <span className="hidden sm:inline">Previous</span>
+                  <span className="hidden sm:inline">{t('previous')}</span>
                 </button>
 
                 <div className="flex gap-1">
@@ -384,7 +384,7 @@ function BlogContent({ initialPosts = INITIAL_POSTS, initialTotal = staticBlogPo
                       <button
                         key={page}
                         onClick={() => handlePageChange(page)}
-                        aria-label={`Page ${page}`}
+                        aria-label={`${locale === 'tr' ? 'Sayfa' : 'Page'} ${page}`}
                         aria-current={currentPage === page ? 'page' : undefined}
                         className={`min-w-[2.5rem] px-3 sm:px-4 py-2 rounded-lg border transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c547]/60 ${currentPage === page
                           ? 'bg-[#e8c547] text-[#0e1b12] border-[#e8c547]'
@@ -400,18 +400,18 @@ function BlogContent({ initialPosts = INITIAL_POSTS, initialTotal = staticBlogPo
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
-                  aria-label="Next page"
+                  aria-label={t('next')}
                   className={`px-3 sm:px-4 py-2 rounded-lg border transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c547]/60 ${currentPage === totalPages
                     ? 'border-[#3e503e] text-gray-500 cursor-not-allowed'
                     : 'border-[#e8c547] text-[#e8c547] hover:bg-[#e8c547] hover:text-[#0e1b12]'
                     }`}
                 >
-                  <span className="hidden sm:inline">Next</span>
+                  <span className="hidden sm:inline">{t('next')}</span>
                   <i className="fas fa-chevron-right sm:ml-2"></i>
                 </button>
               </div>
               <div className="text-center mt-4 text-sm text-gray-400">
-                Page {currentPage} of {totalPages} • {totalPosts} total posts
+                {locale === 'tr' ? `Sayfa ${currentPage} / ${totalPages} • Toplam ${totalPosts} yazı` : `Page ${currentPage} of ${totalPages} • ${totalPosts} total posts`}
               </div>
             </section>
           )}
@@ -423,25 +423,25 @@ function BlogContent({ initialPosts = INITIAL_POSTS, initialTotal = staticBlogPo
             <div className="mb-6">
               <i className="fas fa-dragon text-3xl text-[#e8c547] mb-3"></i>
               <h2 className="text-2xl md:text-3xl font-bold gradient-text mb-3 leading-tight">
-                Join the Dragon's Domain
+                {locale === 'tr' ? "Ejderhanın Dünyasına Katılın" : "Join the Dragon's Domain"}
               </h2>
               <p className="text-gray-300 max-w-2xl mx-auto">
-                Weekly insights on AI, full-stack development, and project showcases — straight to your inbox.
+                {locale === 'tr' ? 'Yapay zekâ, full-stack geliştirme ve proje vitrinlerinden haftalık içerikler doğrudan e-posta kutunuza gelsin.' : 'Weekly insights on AI, full-stack development, and project showcases — straight to your inbox.'}
               </p>
             </div>
 
             <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 mb-6 text-sm text-gray-400">
               <span className="flex items-center">
                 <i className="fas fa-check text-green-400 mr-2"></i>
-                Weekly Updates
+                {locale === 'tr' ? 'Haftalık Güncellemeler' : 'Weekly Updates'}
               </span>
               <span className="flex items-center">
                 <i className="fas fa-check text-green-400 mr-2"></i>
-                No Spam
+                {locale === 'tr' ? 'Spam Yok' : 'No Spam'}
               </span>
               <span className="flex items-center">
                 <i className="fas fa-check text-green-400 mr-2"></i>
-                Unsubscribe Anytime
+                {locale === 'tr' ? 'İstediğiniz Zaman Ayrılın' : 'Unsubscribe Anytime'}
               </span>
             </div>
 
@@ -451,14 +451,14 @@ function BlogContent({ initialPosts = INITIAL_POSTS, initialTotal = staticBlogPo
                 className="px-6 py-3 font-medium bg-[#e8c547] text-[#0e1b12] rounded-lg hover:bg-[#d4b445] transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c547]/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0e1b12]"
               >
                 <i className="fas fa-paper-plane mr-2"></i>
-                Subscribe to Newsletter
+                {locale === 'tr' ? 'Bültene Abone Olun' : 'Subscribe to Newsletter'}
               </Link>
               <Link
                 href="/contact"
                 className="px-6 py-3 font-medium border border-[#3e503e] rounded-lg hover:border-[#e8c547] transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c547]/60"
               >
                 <i className="fas fa-envelope mr-2"></i>
-                Get in Touch
+                {locale === 'tr' ? 'İletişime Geçin' : 'Get in Touch'}
               </Link>
             </div>
           </div>
@@ -479,13 +479,14 @@ function BlogContent({ initialPosts = INITIAL_POSTS, initialTotal = staticBlogPo
 }
 
 export default function BlogPageClient({ initialPosts, initialTotal }) {
+  const { locale } = usePreferences();
   return (
     <Suspense
       fallback={
         <PageContainer>
           <PageHeader
-            title="Blog"
-            subtitle="Thoughts, tutorials, and insights from the dragon's lair"
+            title={locale === 'tr' ? 'Yazılar' : 'Blog'}
+            subtitle={locale === 'tr' ? 'Mühendislik, yazılım ve teknoloji üzerine notlar' : "Thoughts, tutorials, and insights from the dragon's lair"}
             icon="fas fa-blog"
             variant="large"
           />

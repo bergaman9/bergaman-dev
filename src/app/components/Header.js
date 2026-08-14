@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { NAV_LINKS } from "@/lib/constants";
-import { ACTIVE_MINI_APPS, getMiniAppByPathname, getMiniAppTheme } from "@/lib/miniApps";
+import { ACTIVE_MINI_APPS, getMiniAppByPathname, getMiniAppTheme, localizeMiniApp } from "@/lib/miniApps";
 import { usePreferences } from './PreferencesProvider';
 
 export default function Header() {
@@ -170,6 +170,7 @@ export default function Header() {
 
   if (activeMiniApp) {
     const miniTheme = getMiniAppTheme(activeMiniApp);
+    const localizedActiveMiniApp = localizeMiniApp(activeMiniApp, locale);
 
     return (
       <header className={`mini-app-chrome mini-app-header fixed left-0 right-0 top-0 z-50 border-b backdrop-blur-xl ${hideTransitionClass}`} style={miniTheme.cssVars}>
@@ -177,16 +178,16 @@ export default function Header() {
           <div className="flex items-center justify-between gap-4">
             <Link href="/portfolio" className="group flex min-w-0 items-center gap-3">
               <span className="mini-app-icon-box relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border">
-                <i className={`${activeMiniApp.icon} mini-app-accent text-lg`}></i>
+                <i className={`${localizedActiveMiniApp.icon} mini-app-accent text-lg`}></i>
               </span>
               <span className="min-w-0">
-                <span className="mini-app-muted block text-xs font-semibold uppercase tracking-[0.18em]">Mini App</span>
-                <span className="mini-app-accent block truncate text-xl font-bold">{activeMiniApp.title}</span>
+                <span className="mini-app-muted block text-xs font-semibold uppercase tracking-[0.18em]">{locale === 'tr' ? 'Mini Uygulama' : 'Mini App'}</span>
+                <span className="mini-app-accent block truncate text-xl font-bold">{localizedActiveMiniApp.title}</span>
               </span>
             </Link>
 
             <nav className="hidden items-center gap-2 lg:flex">
-              {ACTIVE_MINI_APPS.map((app) => (
+              {ACTIVE_MINI_APPS.map((sourceApp) => { const app = localizeMiniApp(sourceApp, locale); return (
                 <Link
                   key={app.id}
                   href={app.href}
@@ -195,7 +196,7 @@ export default function Header() {
                   <i className={`${app.icon} text-xs`}></i>
                   <span>{app.shortTitle}</span>
                 </Link>
-              ))}
+              ); })}
             </nav>
 
             <div className="flex shrink-0 items-center gap-2">
@@ -208,17 +209,17 @@ export default function Header() {
               <Link
                 href="/"
                 className="mini-app-nav-item hidden rounded-lg px-3 py-2 text-sm font-medium transition-all duration-300 sm:inline-flex"
-                title="Back to bergaman.dev"
+                title={locale === 'tr' ? 'bergaman.dev ana sayfasına dön' : 'Back to bergaman.dev'}
               >
                 <i className="fas fa-home mr-2 text-xs"></i>
-                Home
+                {t('home')}
               </Link>
               <Link
                 href="/portfolio"
                 className="mini-app-nav-item hidden rounded-lg px-3 py-2 text-sm font-medium transition-all duration-300 sm:inline-flex"
               >
                 <i className="fas fa-arrow-left mr-2 text-xs"></i>
-                Portfolio
+                {t('portfolio')}
               </Link>
               {isAuthenticated && (
                 <Link
@@ -233,7 +234,7 @@ export default function Header() {
                 ref={menuButtonRef}
                 onClick={toggleMenu}
                 className="mini-app-accent rounded-lg p-2 transition-colors duration-300 hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-current lg:hidden"
-                aria-label="Toggle mini app navigation"
+                aria-label={locale === 'tr' ? 'Mini uygulama menüsünü aç veya kapat' : 'Toggle mini app navigation'}
                 aria-expanded={isMenuOpen}
                 aria-controls="mini-app-mobile-navigation"
               >
@@ -249,7 +250,7 @@ export default function Header() {
               className="mini-app-chrome absolute left-0 right-0 top-full border-b px-4 py-4 shadow-xl backdrop-blur-xl lg:hidden"
             >
               <div className="flex flex-col gap-2">
-                {ACTIVE_MINI_APPS.map((app) => (
+                {ACTIVE_MINI_APPS.map((sourceApp) => { const app = localizeMiniApp(sourceApp, locale); return (
                   <Link
                     key={app.id}
                     href={app.href}
@@ -259,7 +260,7 @@ export default function Header() {
                     <i className={app.icon}></i>
                     <span className="font-medium">{app.title}</span>
                   </Link>
-                ))}
+                ); })}
                 <div className="mt-2 grid grid-cols-2 gap-2 border-t pt-3" style={{ borderColor: 'var(--mini-border)' }}>
                   <Link
                     href="/"
@@ -267,7 +268,7 @@ export default function Header() {
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <i className="fas fa-home"></i>
-                    <span className="font-medium">Home</span>
+                    <span className="font-medium">{t('home')}</span>
                   </Link>
                   <Link
                     href="/portfolio"
@@ -275,7 +276,7 @@ export default function Header() {
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <i className="fas fa-arrow-left"></i>
-                    <span className="font-medium">Portfolio</span>
+                    <span className="font-medium">{t('portfolio')}</span>
                   </Link>
                 </div>
               </div>
@@ -300,7 +301,7 @@ export default function Header() {
               <span className="site-logo-text block text-2xl md:text-3xl font-extrabold bg-gradient-to-r from-[#e8c547] to-[#f4d76b] bg-clip-text text-transparent group-hover:from-[#f4d76b] group-hover:to-[#e8c547] transition-all duration-300">
                 Bergaman
               </span>
-              <p className="text-xs text-gray-400 -mt-1 hidden sm:block">The Dragon's Domain</p>
+              <p className="text-xs text-gray-400 -mt-1 hidden sm:block">{locale === 'tr' ? 'Ejderhanın Dünyası' : "The Dragon's Domain"}</p>
             </div>
           </Link>
 

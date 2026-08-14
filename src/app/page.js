@@ -12,9 +12,11 @@ import ProjectCard from './components/ProjectCard';
 import { SkeletonBlogCard, SkeletonProjectCard } from './components/Skeleton';
 import { blogPosts as staticBlogPosts } from '../data/blogPosts';
 import { SKILL_CATEGORIES } from '@/lib/constants';
-import { ACTIVE_MINI_APPS } from '@/lib/miniApps';
+import { ACTIVE_MINI_APPS, localizeMiniApp } from '@/lib/miniApps';
+import { localizePost, usePreferences } from './components/PreferencesProvider';
 
 export default function Home() {
+  const { locale, t } = usePreferences();
   // Render useful content immediately; the API refreshes it in the background.
   // This removes the blank/skeleton-only blog experience on cold starts.
   const [blogPosts, setBlogPosts] = useState(() => [...staticBlogPosts]
@@ -27,7 +29,14 @@ export default function Home() {
   const [loadingProjects, setLoadingProjects] = useState(true);
 
   // Interests data
-  const interests = [
+  const interests = locale === 'tr' ? [
+    { name: "Yapay Zekâ", icon: "fas fa-robot", description: "Makine öğrenmesi, sinir ağları ve yapay zekâ uygulamaları" },
+    { name: "Gömülü Sistemler", icon: "fas fa-microchip", description: "Arduino, IoT cihazları ve donanım-yazılım entegrasyonu" },
+    { name: "Full Stack Geliştirme", icon: "fas fa-code", description: "React, Node.js ve veri tabanlarıyla modern web uygulamaları" },
+    { name: "Siber Güvenlik", icon: "fas fa-shield-alt", description: "Güvenlik protokolleri, etik güvenlik testleri ve sistem koruması" },
+    { name: "Blokzincir Teknolojisi", icon: "fas fa-link", description: "Kripto varlıklar, akıllı sözleşmeler ve merkeziyetsiz sistemler" },
+    { name: "Robotik", icon: "fas fa-cogs", description: "Otomasyon, kontrol sistemleri ve robotik uygulamalar" }
+  ] : [
     {
       name: "Artificial Intelligence",
       icon: "fas fa-robot",
@@ -64,20 +73,20 @@ export default function Home() {
   const formatCategoryName = (category) => {
     switch(category) {
       case 'ai': return 'AI';
-      case 'web-development': return 'Web Development';
-      case 'technology': return 'Technology';
-      case 'tutorial': return 'Tutorial';
-      case 'programming': return 'Programming';
-      case 'blockchain': return 'Blockchain';
-      case 'mobile': return 'Mobile';
-      case 'design': return 'Design';
-      default: return category ? category.charAt(0).toUpperCase() + category.slice(1) : 'Tech';
+      case 'web-development': return locale === 'tr' ? 'Web Geliştirme' : 'Web Development';
+      case 'technology': return locale === 'tr' ? 'Teknoloji' : 'Technology';
+      case 'tutorial': return locale === 'tr' ? 'Rehber' : 'Tutorial';
+      case 'programming': return locale === 'tr' ? 'Programlama' : 'Programming';
+      case 'blockchain': return locale === 'tr' ? 'Blokzincir' : 'Blockchain';
+      case 'mobile': return 'Mobil';
+      case 'design': return locale === 'tr' ? 'Tasarım' : 'Design';
+      default: return category ? category.charAt(0).toUpperCase() + category.slice(1) : (locale === 'tr' ? 'Teknoloji' : 'Tech');
     }
   };
 
   // Format date for display
   const formatDate = (date) => {
-    return new Date(date).toLocaleDateString('en-US', {
+    return new Date(date).toLocaleDateString(locale === 'tr' ? 'tr-TR' : 'en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric'
@@ -189,44 +198,43 @@ export default function Home() {
                   </h1>
 
                   <p className="text-xl md:text-2xl text-gray-300 mb-6 font-light">
-                    Electrical & Electronics Engineer &amp; Full-Stack Developer
+                    {t('heroRole')}
                   </p>
 
                   <div className="flex flex-wrap justify-center items-center gap-3 text-gray-400 mb-6">
                     <span className="flex items-center gap-2">
                       <i className="fas fa-bolt text-[#e8c547]"></i>
-                      Electrical & Electronics Engineer
+                      {t('heroElectrical')}
                     </span>
                     <span className="hidden sm:inline text-gray-600">•</span>
                     <span className="flex items-center gap-2">
                       <i className="fas fa-code text-[#e8c547]"></i>
-                      Full-Stack Developer
+                      {t('heroDeveloper')}
                     </span>
                     <span className="hidden sm:inline text-gray-600">•</span>
                     <span className="flex items-center gap-2">
                       <i className="fas fa-brain text-[#e8c547]"></i>
-                      High-Voltage &amp; Power Systems
+                      {t('heroPower')}
                     </span>
                   </div>
 
                   <p className="text-lg text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
-                    I build reliable web, automation, and electrical engineering solutions by combining
-                    engineering fundamentals with modern software development.
+                    {t('heroSummary')}
                   </p>
 
                   {/* CTA Buttons - Enhanced */}
                   <div className="flex flex-wrap gap-4 justify-center">
                     <Button href="/portfolio" size="lg" className="group">
                       <i className="fas fa-briefcase mr-2 group-hover:rotate-12 transition-transform"></i>
-                      Selected Projects
+                      {t('selectedProjects')}
                     </Button>
                     <Button href="/about" variant="secondary" size="lg" className="group">
                       <i className="fas fa-user mr-2 group-hover:scale-110 transition-transform"></i>
-                      About &amp; Experience
+                      {t('aboutExperience')}
                     </Button>
                     <Button href="/contact" variant="secondary" size="lg" className="group">
                       <i className="fas fa-envelope mr-2 group-hover:translate-x-1 transition-transform"></i>
-                      Discuss a Project
+                      {t('discussProject')}
                     </Button>
                   </div>
                 </div>
@@ -242,7 +250,7 @@ export default function Home() {
               <section className="mb-12 slide-in-left">
                 <h2 className="text-3xl font-bold gradient-text mb-8 text-center">
                   <i className="fas fa-star mr-3"></i>
-                  Featured Projects
+                  {t('featuredProjects')}
                 </h2>
                 {loadingProjects ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -258,11 +266,11 @@ export default function Home() {
                   </div>
                 ) : (
                   <div className="text-center py-8">
-                    <p className="text-gray-400">No featured projects found.</p>
+                    <p className="text-gray-400">{t('noFeaturedProjects')}</p>
                   </div>
                 )}
                 <div className="text-center mt-8">
-                  <Button href="/portfolio">View All Projects<i className="fas fa-arrow-right ml-2"></i></Button>
+                  <Button href="/portfolio">{t('viewAllProjects')}<i className="fas fa-arrow-right ml-2"></i></Button>
                 </div>
               </section>
 
@@ -270,7 +278,7 @@ export default function Home() {
               <section className="mb-12 slide-in-right">
                 <h2 className="text-3xl font-bold gradient-text mb-6 text-center">
                   <i className="fas fa-blog mr-3"></i>
-                  Latest Blog Posts
+                  {t('latestPosts')}
                 </h2>
                 {loading ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -294,7 +302,7 @@ export default function Home() {
                           </div>
                         )}
                         <BlogPostCard
-                          post={post}
+                          post={localizePost(post, locale)}
                           formatDate={formatDate}
                           formatCategoryName={formatCategoryName}
                           openModal={openModal}
@@ -304,11 +312,11 @@ export default function Home() {
                   </div>
                 ) : (
                   <div className="text-center py-8">
-                    <p className="text-gray-400">No blog posts found.</p>
+                    <p className="text-gray-400">{t('noPosts')}</p>
                   </div>
                 )}
                 <div className="text-center mt-8">
-                  <Button href="/blog" variant="secondary">View All Posts<i className="fas fa-arrow-right ml-2"></i></Button>
+                  <Button href="/blog" variant="secondary">{t('viewAllPosts')}<i className="fas fa-arrow-right ml-2"></i></Button>
                 </div>
               </section>
               </div>
@@ -318,17 +326,20 @@ export default function Home() {
                 <div className="mb-6 flex items-end justify-between gap-4">
                   <div>
                     <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#e8c547]">Bergaman Labs</p>
-                    <h2 id="labs-title" className="mt-1 text-2xl font-bold text-white">Mini Apps &amp; Vaults</h2>
+                    <h2 id="labs-title" className="mt-1 text-2xl font-bold text-white">{t('miniAppsVaults')}</h2>
                   </div>
-                  <Link href="/portfolio#labs" className="hidden text-sm text-gray-400 transition-colors hover:text-[#e8c547] sm:inline">Explore all <i className="fas fa-arrow-right ml-1"></i></Link>
+                  <Link href="/portfolio#labs" className="hidden text-sm text-gray-400 transition-colors hover:text-[#e8c547] sm:inline">{t('exploreAll')} <i className="fas fa-arrow-right ml-1"></i></Link>
                 </div>
                 <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
-                  {ACTIVE_MINI_APPS.map((app) => (
+                  {ACTIVE_MINI_APPS.map((sourceApp) => {
+                    const app = localizeMiniApp(sourceApp, locale);
+                    return (
                     <Link key={app.id} href={app.href} className="group flex min-h-28 flex-col justify-between rounded-xl border border-[#3e503e]/40 bg-[#2e3d29]/30 p-4 transition-[border-color,background-color,box-shadow] duration-300 hover:border-[#e8c547]/45 hover:bg-[#2e3d29]/45 hover:shadow-lg hover:shadow-black/10">
                       <span className="flex items-center justify-between"><span className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#e8c547]/10 text-[#e8c547]"><i className={app.icon}></i></span>{app.badge && <span className="rounded-full border border-[#e8c547]/25 px-2 py-0.5 text-[10px] font-bold uppercase text-[#e8c547]">{app.badge}</span>}</span>
                       <span className="mt-3 text-sm font-semibold text-gray-200 transition-colors group-hover:text-[#e8c547]">{app.title}</span>
                     </Link>
-                  ))}
+                    );
+                  })}
                 </div>
               </section>
 
@@ -337,14 +348,14 @@ export default function Home() {
                 <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-8 rounded-lg">
                   <h2 className="text-3xl font-bold gradient-text mb-8 text-center">
                     <i className="fas fa-code mr-3"></i>
-                    Technical Skills
+                    {t('technicalSkills')}
                   </h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {SKILL_CATEGORIES.slice(0, 4).map((category, index) => (
                       <div key={index} className="p-6">
                         <div className="flex items-center mb-4">
                           <i className={`${category.icon} text-[#e8c547] text-2xl mr-3`}></i>
-                          <h3 className="text-xl font-semibold text-[#e8c547]">{category.title}</h3>
+                          <h3 className="text-xl font-semibold text-[#e8c547]">{locale === 'tr' ? ({ 'Programming Languages': 'Programlama Dilleri', 'Web & Software': 'Web ve Yazılım', 'Electrical Engineering': 'Elektrik Mühendisliği', 'Data & Engineering Tools': 'Veri ve Mühendislik Araçları', 'Hardware & Automation': 'Donanım ve Otomasyon', 'Professional Practice': 'Profesyonel Uygulama' }[category.title] || category.title) : category.title}</h3>
                         </div>
                         <div className="space-y-3">
                           {category.skills.map((skill, skillIndex) => (
@@ -372,7 +383,7 @@ export default function Home() {
               <section className="mb-12 slide-in-left">
                 <h2 className="text-3xl font-bold gradient-text mb-8 text-center">
                   <i className="fas fa-heart mr-3"></i>
-                  Interests & Passions
+                  {t('interestsPassions')}
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {interests.map((interest, index) => (
@@ -390,14 +401,14 @@ export default function Home() {
                 <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-8 rounded-lg text-center">
                   <h2 className="text-3xl font-bold gradient-text mb-4">
                     <i className="fas fa-handshake mr-3"></i>
-                    Build with Bergasoft
+                    {t('buildBergasoft')}
                   </h2>
                   <p className="text-gray-300 mb-6 max-w-2xl mx-auto">
-                    Have a software project, automation need, electrical engineering opportunity, or technical product in mind? Share the scope and let's explore how I can help.
+                    {t('contactCta')}
                   </p>
                   <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                    <Button href="/contact" size="lg"><i className="fas fa-envelope mr-2"></i>Discuss a Project</Button>
-                    <Button href="/about" variant="secondary" size="lg"><i className="fas fa-user mr-2"></i>More About Me</Button>
+                    <Button href="/contact" size="lg"><i className="fas fa-envelope mr-2"></i>{t('discussProject')}</Button>
+                    <Button href="/about" variant="secondary" size="lg"><i className="fas fa-user mr-2"></i>{t('moreAbout')}</Button>
                   </div>
                 </div>
               </section>

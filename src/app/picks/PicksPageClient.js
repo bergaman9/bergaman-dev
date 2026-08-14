@@ -6,8 +6,10 @@ import PageHeader from '../components/PageHeader';
 import PageContainer from '../components/PageContainer';
 import Select from '../components/Select';
 import { PageSkeleton, SkeletonBox } from '../components/Skeleton';
+import { usePreferences } from '../components/PreferencesProvider';
 
 export default function PicksPageClient({ initialRecommendations = [], initialCounts = { all: 0 }, initialPagination = {} }) {
+  const { locale, t } = usePreferences();
   const [recommendations, setRecommendations] = useState(initialRecommendations);
   const [loading, setLoading] = useState(false);
   const [counts] = useState(initialCounts);
@@ -30,20 +32,20 @@ export default function PicksPageClient({ initialRecommendations = [], initialCo
   }, []);
 
   const categories = [
-    { id: 'all', label: 'All', icon: 'fas fa-th' },
-    { id: 'movie', label: 'Movies', icon: 'fas fa-film' },
-    { id: 'game', label: 'Games', icon: 'fas fa-gamepad' },
-    { id: 'book', label: 'Books', icon: 'fas fa-book' },
-    { id: 'music', label: 'Music', icon: 'fas fa-music' },
-    { id: 'tv', label: 'TV Series', icon: 'fas fa-tv' },
-    { id: 'link', label: 'Links', icon: 'fas fa-link' }
+    { id: 'all', label: t('filterAll'), icon: 'fas fa-th' },
+    { id: 'movie', label: t('movies'), icon: 'fas fa-film' },
+    { id: 'game', label: t('games'), icon: 'fas fa-gamepad' },
+    { id: 'book', label: t('books'), icon: 'fas fa-book' },
+    { id: 'music', label: t('music'), icon: 'fas fa-music' },
+    { id: 'tv', label: t('tvSeries'), icon: 'fas fa-tv' },
+    { id: 'link', label: t('links'), icon: 'fas fa-link' }
   ];
 
   const sortOptions = [
-    { value: 'newest', label: 'Newest First', icon: 'fas fa-clock' },
-    { value: 'oldest', label: 'Oldest First', icon: 'fas fa-history' },
-    { value: 'rating', label: 'Highest Rated', icon: 'fas fa-star' },
-    { value: 'title', label: 'Title A-Z', icon: 'fas fa-sort-alpha-down' }
+    { value: 'newest', label: t('newest'), icon: 'fas fa-clock' },
+    { value: 'oldest', label: t('oldest'), icon: 'fas fa-history' },
+    { value: 'rating', label: t('highestRated'), icon: 'fas fa-star' },
+    { value: 'title', label: t('titleAz'), icon: 'fas fa-sort-alpha-down' }
   ];
 
   useEffect(() => {
@@ -118,8 +120,8 @@ export default function PicksPageClient({ initialRecommendations = [], initialCo
     return (
       <PageContainer>
         <PageSkeleton
-          title="My Picks"
-          subtitle="Curated collection of movies, games, books, music, and more"
+          title={t('myPicks')}
+          subtitle={t('picksSubtitle')}
           icon="fas fa-heart"
           headerVariant="large"
           controls={
@@ -158,8 +160,8 @@ export default function PicksPageClient({ initialRecommendations = [], initialCo
   return (
     <PageContainer>
       <PageHeader
-        title="My Picks"
-        subtitle="Curated collection of movies, games, books, music, and more"
+        title={t('myPicks')}
+        subtitle={t('picksSubtitle')}
         icon="fas fa-heart"
         variant="large"
       />
@@ -188,7 +190,7 @@ export default function PicksPageClient({ initialRecommendations = [], initialCo
         <div className="flex items-center gap-1 bg-[#2e3d29]/30 rounded-lg p-1 self-start">
           <button
             onClick={() => setView('grid')}
-            aria-label="Grid view"
+            aria-label={t('gridView')}
             aria-pressed={view === 'grid'}
             className={`p-2 rounded transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c547]/60 ${view === 'grid' ? 'bg-[#e8c547]/20 text-[#e8c547]' : 'text-gray-400 hover:text-[#e8c547]'}`}
           >
@@ -196,7 +198,7 @@ export default function PicksPageClient({ initialRecommendations = [], initialCo
           </button>
           <button
             onClick={() => setView('list')}
-            aria-label="List view"
+            aria-label={t('listView')}
             aria-pressed={view === 'list'}
             className={`p-2 rounded transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c547]/60 ${view === 'list' ? 'bg-[#e8c547]/20 text-[#e8c547]' : 'text-gray-400 hover:text-[#e8c547]'}`}
           >
@@ -205,7 +207,7 @@ export default function PicksPageClient({ initialRecommendations = [], initialCo
         </div>
 
         <div className="flex items-center gap-3">
-          <span className="text-gray-400 text-sm font-medium whitespace-nowrap">Sort by:</span>
+          <span className="text-gray-400 text-sm font-medium whitespace-nowrap">{t('sortBy')}</span>
           <div className="w-48">
             <Select options={sortOptions} value={sortBy} onChange={setSortBy} variant="primary" icon="fas fa-sort" />
           </div>
@@ -213,22 +215,22 @@ export default function PicksPageClient({ initialRecommendations = [], initialCo
       </div>
 
       {/* Content */}
-      <h2 className="sr-only">Curated picks</h2>
+      <h2 className="sr-only">{t('curatedPicks')}</h2>
       <div aria-busy={loading || isPending}>
       {sorted.length === 0 ? (
         <div className="text-center py-20">
           <div className="inline-block p-8 bg-[#2e3d29]/30 rounded-lg border border-[#3e503e]/30">
             <i className={`${categories.find(c => c.id === activeCategory)?.icon || 'fas fa-heart'} text-6xl text-[#e8c547]/30 mb-4 block`}></i>
             <h3 className="text-xl font-medium text-gray-400 mb-2">
-              No {activeCategory === 'all' ? 'picks' : categories.find(c => c.id === activeCategory)?.label.toLowerCase()} found
+              {activeCategory === 'all' ? t('noPicks') : (locale === 'tr' ? `${categories.find(c => c.id === activeCategory)?.label} kategorisinde seçim bulunamadı` : `No ${categories.find(c => c.id === activeCategory)?.label.toLowerCase()} found`)}
             </h3>
-            <p className="text-gray-500 mb-4">New picks are added regularly — check back soon!</p>
+            <p className="text-gray-500 mb-4">{t('picksSoon')}</p>
             {activeCategory !== 'all' && (
               <button
                 onClick={() => setActiveCategory('all')}
                 className="text-[#e8c547] hover:text-[#f4d76b] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c547]/60 rounded px-2 py-1"
               >
-                View all picks →
+                {t('viewAllPicks')}
               </button>
             )}
           </div>
@@ -248,14 +250,14 @@ export default function PicksPageClient({ initialRecommendations = [], initialCo
       )}
       </div>
 
-      {hasMore && sorted.length > 0 && <div ref={loadMoreRef} className="mt-8 flex min-h-16 items-center justify-center" role="status" aria-live="polite">{loading && <><i className="fas fa-circle-notch mr-2 animate-spin text-[#e8c547]"></i><span className="text-sm text-gray-400">Loading more picks…</span></>}</div>}
+      {hasMore && sorted.length > 0 && <div ref={loadMoreRef} className="mt-8 flex min-h-16 items-center justify-center" role="status" aria-live="polite">{loading && <><i className="fas fa-circle-notch mr-2 animate-spin text-[#e8c547]"></i><span className="text-sm text-gray-400">{t('loadingPicks')}</span></>}</div>}
 
       {/* Back to top — appears after scrolling */}
       {showTop && (
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           className="fixed bottom-6 right-6 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-[#e8c547] text-[#0e1b12] shadow-lg shadow-black/30 transition-all duration-300 hover:bg-[#f4d76b] hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0e1b12] group"
-          aria-label="Back to top"
+          aria-label={t('backTop')}
         >
           <i className="fas fa-arrow-up transition-transform group-hover:-translate-y-0.5"></i>
         </button>

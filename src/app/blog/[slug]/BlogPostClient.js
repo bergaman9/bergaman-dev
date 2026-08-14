@@ -27,7 +27,7 @@ function stripLeadingCoverImage(content, coverUrl) {
 }
 
 export default function BlogPostClient({ slug, initialPost }) {
-  const { locale } = usePreferences();
+  const { locale, t } = usePreferences();
   const params = { slug };
   const router = useRouter();
   const [post, setPost] = useState(initialPost);
@@ -213,13 +213,13 @@ export default function BlogPostClient({ slug, initialPost }) {
   const formatCategoryName = (category) => {
     switch (category) {
       case 'ai': return 'AI';
-      case 'web-development': return 'Web Development';
-      case 'technology': return 'Technology';
-      case 'tutorial': return 'Tutorial';
-      case 'programming': return 'Programming';
-      case 'blockchain': return 'Blockchain';
+      case 'web-development': return locale === 'tr' ? 'Web Geliştirme' : 'Web Development';
+      case 'technology': return locale === 'tr' ? 'Teknoloji' : 'Technology';
+      case 'tutorial': return locale === 'tr' ? 'Rehber' : 'Tutorial';
+      case 'programming': return locale === 'tr' ? 'Programlama' : 'Programming';
+      case 'blockchain': return locale === 'tr' ? 'Blokzincir' : 'Blockchain';
       case 'mobile': return 'Mobile';
-      case 'design': return 'Design';
+      case 'design': return locale === 'tr' ? 'Tasarım' : 'Design';
       default: return category.charAt(0).toUpperCase() + category.slice(1);
     }
   };
@@ -247,7 +247,7 @@ export default function BlogPostClient({ slug, initialPost }) {
       setPasswordInput('');
       router.refresh();
     } catch {
-      setPasswordError('Incorrect password. Please try again.');
+      setPasswordError(locale === 'tr' ? 'Parola yanlış. Lütfen tekrar deneyin.' : 'Incorrect password. Please try again.');
     }
   };
 
@@ -293,14 +293,14 @@ export default function BlogPostClient({ slug, initialPost }) {
         <div className="page-content">
           <div className="text-center py-16">
             <i className="fas fa-exclamation-triangle text-4xl text-red-400 mb-4"></i>
-            <h1 className="text-2xl font-bold text-gray-300 mb-4">Post Not Found</h1>
-            <p className="text-gray-400 mb-8">{error || 'The requested blog post could not be found.'}</p>
+            <h1 className="text-2xl font-bold text-gray-300 mb-4">{t('postNotFound')}</h1>
+            <p className="text-gray-400 mb-8">{locale === 'tr' ? 'İstenen blog yazısı bulunamadı.' : (error || 'The requested blog post could not be found.')}</p>
             <Link
               href="/blog"
               className="btn-cyber px-6 py-3"
             >
               <i className="fas fa-arrow-left mr-2"></i>
-              Back to Blog
+              {locale === 'tr' ? 'Yazılara Dön' : 'Back to Blog'}
             </Link>
           </div>
         </div>
@@ -316,8 +316,8 @@ export default function BlogPostClient({ slug, initialPost }) {
           <div className="max-w-md mx-auto text-center py-16">
             <div className="bg-[#2e3d29]/30 backdrop-blur-md border border-[#3e503e]/30 p-8 rounded-lg">
               <i className="fas fa-lock text-4xl text-[#e8c547] mb-6"></i>
-              <h1 className="text-2xl font-bold text-gray-300 mb-4">Protected Post</h1>
-              <p className="text-gray-400 mb-6">This post is password protected. Please enter the password to continue.</p>
+              <h1 className="text-2xl font-bold text-gray-300 mb-4">{t('protectedPost')}</h1>
+              <p className="text-gray-400 mb-6">{t('protectedPrompt')}</p>
 
               <form onSubmit={handlePasswordSubmit} className="space-y-4">
                 <div>
@@ -325,7 +325,7 @@ export default function BlogPostClient({ slug, initialPost }) {
                     type="password"
                     value={passwordInput}
                     onChange={(e) => setPasswordInput(e.target.value)}
-                    placeholder="Enter password"
+                    placeholder={locale === 'tr' ? 'Parolayı girin' : 'Enter password'}
                     className="w-full px-4 py-3 bg-[#0e1b12] border border-[#3e503e] rounded-lg text-white focus:border-[#e8c547] focus:outline-none"
                     required
                   />
@@ -338,7 +338,7 @@ export default function BlogPostClient({ slug, initialPost }) {
                   className="w-full bg-[#e8c547] text-[#0e1b12] px-6 py-3 rounded-lg font-medium hover:bg-[#d4b445] transition-colors duration-300"
                 >
                   <i className="fas fa-unlock mr-2"></i>
-                  Access Post
+                  {locale === 'tr' ? 'Yazıya Eriş' : 'Access Post'}
                 </button>
               </form>
 
@@ -348,7 +348,7 @@ export default function BlogPostClient({ slug, initialPost }) {
                   className="text-gray-400 hover:text-[#e8c547] transition-colors duration-300"
                 >
                   <i className="fas fa-arrow-left mr-2"></i>
-                  Back to Blog
+                  {locale === 'tr' ? 'Yazılara Dön' : 'Back to Blog'}
                 </Link>
               </div>
             </div>
@@ -433,13 +433,13 @@ export default function BlogPostClient({ slug, initialPost }) {
             ) : (
               <div className="text-gray-300 leading-relaxed w-full overflow-hidden">
                 <p className="mb-4 break-words">
-                  This is the full content of the blog post. The content can be edited in the admin panel.
+                  {locale === 'tr' ? 'Bu alan blog yazısının tam içeriğini gösterir. İçerik yönetim panelinden düzenlenebilir.' : 'This is the full content of the blog post. The content can be edited in the admin panel.'}
                 </p>
                 <p className="mb-4 break-words">
                   {post.description}
                 </p>
                 <p className="break-words">
-                  More detailed content would go here. You can add rich text, code examples, images, and more through the admin interface.
+                  {locale === 'tr' ? 'Yönetim arayüzünden ayrıntılı metin, kod örnekleri, görseller ve daha fazlası eklenebilir.' : 'More detailed content would go here. You can add rich text, code examples, images, and more through the admin interface.'}
                 </p>
               </div>
             )}
@@ -455,11 +455,11 @@ export default function BlogPostClient({ slug, initialPost }) {
             </span>
             <span className="flex items-center text-[#e8c547]">
               <i className="fas fa-eye mr-2"></i>
-              <span className="text-gray-200">{post.views || 0} views</span>
+              <span className="text-gray-200">{post.views || 0} {t('views')}</span>
             </span>
             <span className="flex items-center text-[#e8c547]">
               <i className="fas fa-comments mr-2"></i>
-              <span className="text-gray-200">{commentCount} comments</span>
+              <span className="text-gray-200">{commentCount} {t('comments')}</span>
             </span>
           </div>
 
@@ -481,7 +481,7 @@ export default function BlogPostClient({ slug, initialPost }) {
           <div className="mb-12">
             <h3 className="text-lg font-semibold text-[#e8c547] mb-4 flex items-center">
               <i className="fas fa-tags mr-2"></i>
-              Tags
+              {t('tags')}
             </h3>
             <div className="flex flex-wrap gap-2">
               {post.tags.map((tag, index) => (
@@ -521,7 +521,9 @@ export default function BlogPostClient({ slug, initialPost }) {
                     </div>
                   </div>
                   <p className="text-gray-300 leading-relaxed">
-                    {authorProfile?.about || authorProfile?.bio || 'Electrical & Electronics Engineer specializing in full-stack development and AI technologies.'}
+                    {locale === 'tr'
+                      ? 'Yüksek gerilim sistemleri, otomasyon ve modern yazılım alanlarında çalışan Elektrik-Elektronik Mühendisi ve full-stack geliştirici.'
+                      : (authorProfile?.about || authorProfile?.bio || 'Electrical & Electronics Engineer specializing in full-stack development and AI technologies.')}
                   </p>
                   {authorProfile?.social && (
                     <div className="flex items-center space-x-4 mt-3">
