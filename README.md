@@ -102,7 +102,7 @@ npm run lighthouse:baseline  # Multi-route performance baseline
 - Uploaded images are validated, resized and converted before storage.
 - Security headers and Content Security Policy are configured centrally.
 
-Please report security issues privately through the contact address below. Do not open a public issue containing credentials or exploit details.
+Please follow the [security policy](SECURITY.md) and use GitHub private vulnerability reporting or the contact address below. Do not open a public issue containing credentials or exploit details.
 
 ## Deployment and releases
 
