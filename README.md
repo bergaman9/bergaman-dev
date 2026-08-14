@@ -108,7 +108,7 @@ Please follow the [security policy](SECURITY.md) and use GitHub private vulnerab
 
 Pushes to `main` are built and deployed by the native Vercel Git integration. GitHub Actions independently runs the quality gate. Releases are intentionally curated instead of being generated for every deployment.
 
-- `v2.8.0` — current maintained release line
+- `v2.9.0` — current maintained release
 - `v1-legacy` — archived original site; not maintained
 
 The production environment is [www.bergaman.dev](https://www.bergaman.dev). Preview deployments are temporary and must not contain production-only secrets unless explicitly required.
