@@ -63,7 +63,7 @@
     "mongodb": "^6.21.0",
     "mongoose": "^8.24.3",
     "next": "16.3.1",
-    "nodemailer": "^9.0.5",
+    "nodemailer": "^10.1.4",
     "prismjs": "^1.30.0",
     "react": "^19.2.5",
     "react-chartjs-2": "^5.3.1",
