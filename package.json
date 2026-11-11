@@ -61,7 +61,7 @@
     "jspdf-autotable": "^5.0.7",
     "marked": "^15.0.12",
     "mongodb": "^6.21.0",
-    "mongoose": "^8.24.3",
+    "mongoose": "^8.24.7",
     "next": "16.3.1",
     "nodemailer": "^9.0.5",
     "prismjs": "^1.30.0",
